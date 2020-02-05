@@ -1,0 +1,64 @@
+configfile: "config.yaml"
+
+rule qual_filt:
+    input:
+      read1=expand("{projectpath}/00-Rawdata/{sample}_1.fastq.gz", sample=config['samples'], projectpath=config['projectpath']),
+      read2=expand("{projectpath}/00-Rawdata/{sample}_2.fastq.gz", sample=config['samples'], projectpath=config['projectpath'])
+    output:
+      read1=expand("{projectpath}/01-QualityFiltered/{sample}_1.fastq", sample=config['samples'], projectpath=config['projectpath']),
+      read2=expand("{projectpath}/01-QualityFiltered/{sample}_2.fastq", sample=config['samples'], projectpath=config['projectpath'])
+    params:
+        maxns = "5",
+        minquality = "30",
+        threads = "24"
+    shell:
+        "module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.1.3 && AdapterRemoval --file1 {input.read1} --file2 {input.read2} --output1 {output.read1} --output2 {output.read2} --trimqualities --trimns --maxns {params.maxns} --minquality {params.minquality} --threads {params.threads}"
+
+##
+# Duplicate removal (single-based)
+##
+
+rule dup_rem_single:
+    input:
+      read1=expand("{projectpath}/01-QualityFiltered/{sample}_1.fastq", sample=config['samples'], projectpath=config['projectpath']),
+      read2=expand("{projectpath}/01-QualityFiltered/{sample}_2.fastq", sample=config['samples'], projectpath=config['projectpath'])
+    output:
+      read1=expand("{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq.tmp", sample=config['samples'], projectpath=config['projectpath']),
+      read2=expand("{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq.tmp", sample=config['samples'], projectpath=config['projectpath'])
+    run:
+      shell("module load tools pigz/2.3.4 seqkit/0.7.1 && cat {input.read1} | seqkit rmdup -s -o {output.read1}")
+      shell("module load tools pigz/2.3.4 seqkit/0.7.1 && cat {input.read2} | seqkit rmdup -s -o {output.read2}")
+
+rule dup_rem_single_repair:
+    input:
+      read1=expand("{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq.tmp", sample=config['samples'], projectpath=config['projectpath']),
+      read2=expand("{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq.tmp", sample=config['samples'], projectpath=config['projectpath'])
+    output:
+      read1=expand("{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq", sample=config['samples'], projectpath=config['projectpath']),
+      read2=expand("{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq", sample=config['samples'], projectpath=config['projectpath'])
+    shell:
+      "module load tools jre/1.8.0 bbmap/36.49 && repair.sh in={input.read1} in2={input.read2} out={output.read1} out2={output.read2} overwrite=t && rm {input.read1} {input.read2}"
+
+##
+# Duplicate removal (single-based)
+##
+
+rule dup_rem_paired:
+    input:
+      read1=expand("{projectpath}/01-QualityFiltered/{sample}_1.fastq", sample=config['samples'], projectpath=config['projectpath']),
+      read2=expand("{projectpath}/01-QualityFiltered/{sample}_2.fastq", sample=config['samples'], projectpath=config['projectpath'])
+    output:
+      expand("{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq", sample=config['samples'], projectpath=config['projectpath'])
+    run:
+      shell("module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '_' {input.read1} {input.read2} | seqkit rmdup -s -j 28 -o {output} ")
+
+rule dup_rem_paired_repair:
+    input:
+      expand("{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq", sample=config['samples'], projectpath=config['projectpath'])
+    output:
+      read1=expand("{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq", sample=config['samples'], projectpath=config['projectpath']),
+      read2=expand("{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq", sample=config['samples'], projectpath=config['projectpath'])
+    run:
+      shell("cut --delimiter='_' -f1 {input} > {output.read1}")
+      shell("cut --delimiter='_' -f2 {input} > {output.read2}")
+      shell("rm {input}")
