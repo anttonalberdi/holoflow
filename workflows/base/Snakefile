@@ -1,4 +1,8 @@
-#configfile: "config.yaml"
+configfile: "config.yaml
+
+##
+# Quality-filtering
+##
 
 rule qual_filt:
     input:
@@ -62,3 +66,16 @@ rule dup_rem_paired_repair:
       shell("cut --delimiter='_' -f1 {input} > {output.read1}")
       shell("cut --delimiter='_' -f2 {input} > {output.read2}")
       shell("rm {input}")
+
+##
+# Mapping to host
+##
+rule mapping:
+    input:
+        read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
+        read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq",
+        refgenome=expand("{refgenome}", refgenome=config['refgenome'])
+    output:
+        "{projectpath}/03-HostMapping/{sample}_all.bam"
+    run:
+      shell("module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t 28 -R '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample' {input.refgenome} {input.read1} {input.read2} | samtools view -T {input.refgenome} -b - > {output}")
