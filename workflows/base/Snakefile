@@ -2,11 +2,11 @@ configfile: "config.yaml"
 
 rule qual_filt:
     input:
-      read1=expand("{projectpath}/00-Rawdata/{sample}_1.fastq.gz", sample=config['samples'], projectpath=config['projectpath']),
-      read2=expand("{projectpath}/00-Rawdata/{sample}_2.fastq.gz", sample=config['samples'], projectpath=config['projectpath'])
+      read1="{projectpath}/00-Rawdata/{sample}_1.fastq.gz",
+      read2="{projectpath}/00-Rawdata/{sample}_2.fastq.gz"
     output:
-      read1=expand("{projectpath}/01-QualityFiltered/{sample}_1.fastq", sample=config['samples'], projectpath=config['projectpath']),
-      read2=expand("{projectpath}/01-QualityFiltered/{sample}_2.fastq", sample=config['samples'], projectpath=config['projectpath'])
+      read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
+      read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq"
     params:
         maxns = "5",
         minquality = "30",
@@ -20,44 +20,44 @@ rule qual_filt:
 
 rule dup_rem_single:
     input:
-      read1=expand("{projectpath}/01-QualityFiltered/{sample}_1.fastq", sample=config['samples'], projectpath=config['projectpath']),
-      read2=expand("{projectpath}/01-QualityFiltered/{sample}_2.fastq", sample=config['samples'], projectpath=config['projectpath'])
+      read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
+      read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq"
     output:
-      read1=expand("{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq.tmp", sample=config['samples'], projectpath=config['projectpath']),
-      read2=expand("{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq.tmp", sample=config['samples'], projectpath=config['projectpath'])
+      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq.tmp",
+      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq.tmp"
     run:
       shell("module load tools pigz/2.3.4 seqkit/0.7.1 && cat {input.read1} | seqkit rmdup -s -o {output.read1}")
       shell("module load tools pigz/2.3.4 seqkit/0.7.1 && cat {input.read2} | seqkit rmdup -s -o {output.read2}")
 
 rule dup_rem_single_repair:
     input:
-      read1=expand("{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq.tmp", sample=config['samples'], projectpath=config['projectpath']),
-      read2=expand("{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq.tmp", sample=config['samples'], projectpath=config['projectpath'])
+      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq.tmp",
+      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq.tmp"
     output:
-      read1=expand("{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq", sample=config['samples'], projectpath=config['projectpath']),
-      read2=expand("{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq", sample=config['samples'], projectpath=config['projectpath'])
+      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
+      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq"
     shell:
       "module load tools jre/1.8.0 bbmap/36.49 && repair.sh in={input.read1} in2={input.read2} out={output.read1} out2={output.read2} overwrite=t && rm {input.read1} {input.read2}"
 
 ##
-# Duplicate removal (single-based)
+# Duplicate removal (pair-based)
 ##
 
 rule dup_rem_paired:
     input:
-      read1=expand("{projectpath}/01-QualityFiltered/{sample}_1.fastq", sample=config['samples'], projectpath=config['projectpath']),
-      read2=expand("{projectpath}/01-QualityFiltered/{sample}_2.fastq", sample=config['samples'], projectpath=config['projectpath'])
+      read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
+      read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq"
     output:
-      expand("{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq", sample=config['samples'], projectpath=config['projectpath'])
+      "{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq"
     run:
       shell("module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '_' {input.read1} {input.read2} | seqkit rmdup -s -j 28 -o {output} ")
 
 rule dup_rem_paired_repair:
     input:
-      expand("{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq", sample=config['samples'], projectpath=config['projectpath'])
+      "{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq"
     output:
-      read1=expand("{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq", sample=config['samples'], projectpath=config['projectpath']),
-      read2=expand("{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq", sample=config['samples'], projectpath=config['projectpath'])
+      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
+      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq"
     run:
       shell("cut --delimiter='_' -f1 {input} > {output.read1}")
       shell("cut --delimiter='_' -f2 {input} > {output.read2}")
