@@ -1,3 +1,9 @@
+inputdir:
+  /home/projects/ku-cbd/people/antalb/anvio_test2/RawData
+
+removeintermediate:
+  TRUE
+
 #qual_filt options
 adapter1:
   AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA
@@ -16,8 +22,8 @@ separator:
 
 #map_host options
 refgenomehost:
-  /home/projects/ku-cbd/people/antalb/holofood/chicken_host_transcriptome_test/genomes/chicken.fna
+  /home/projects/ku-cbd/people/antalb/reference_genomes/Gallus_gallus.Gallus_gallus-5.0.dna.toplevel.fa
 
 #map_human options
 refgenomehuman:
-  /home/projects/ku-cbd/people/antalb/holofood/reference_genomes/
+  /home/projects/ku-cbd/people/antalb/reference_genomes/Homo_sapiens.fasta

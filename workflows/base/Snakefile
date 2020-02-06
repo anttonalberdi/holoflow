@@ -1,4 +1,4 @@
-configfile: "config.yaml"
+configfile: "/home/projects/ku-cbd/people/antalb/anvio_test2/config.yaml"
 
 ##
 # Quality-filtering
@@ -6,8 +6,8 @@ configfile: "config.yaml"
 
 rule qual_filt:
     input:
-      read1="{projectpath}/00-Rawdata/{sample}_1.fastq.gz",
-      read2="{projectpath}/00-Rawdata/{sample}_2.fastq.gz",
+      read1=expand("{inputdir}/{{sample}}_1.fastq.gz", inputdir=config['inputdir']),
+      read2=expand("{inputdir}/{{sample}}_2.fastq.gz", inputdir=config['inputdir'])
     output:
       read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
       read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq"
@@ -24,26 +24,26 @@ rule qual_filt:
 # Duplicate removal (single-based)
 ##
 
-rule dup_rem_single:
-    input:
-      read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
-      read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq"
-    output:
-      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq.tmp",
-      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq.tmp"
-    run:
-      shell("module load tools pigz/2.3.4 seqkit/0.7.1 && cat {input.read1} | seqkit rmdup -s -o {output.read1}")
-      shell("module load tools pigz/2.3.4 seqkit/0.7.1 && cat {input.read2} | seqkit rmdup -s -o {output.read2}")
-
-rule dup_rem_single_repair:
-    input:
-      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq.tmp",
-      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq.tmp"
-    output:
-      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
-      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq"
-    shell:
-      "module load tools jre/1.8.0 bbmap/36.49 && repair.sh in={input.read1} in2={input.read2} out={output.read1} out2={output.read2} overwrite=t && rm {input.read1} {input.read2}"
+#rule dup_rem_single:
+#    input:
+#      read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
+#      read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq"
+#    output:
+#      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq.tmp",
+#      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq.tmp"
+#    run:
+#      shell("module load tools pigz/2.3.4 seqkit/0.7.1 && cat {input.read1} | seqkit rmdup -s -o {output.read1}")
+#      shell("module load tools pigz/2.3.4 seqkit/0.7.1 && cat {input.read2} | seqkit rmdup -s -o {output.read2}")
+#
+#rule dup_rem_single_repair:
+#    input:
+#      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq.tmp",
+#      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq.tmp"
+#    output:
+#      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
+#      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq"
+#    shell:
+#      "module load tools jre/1.8.0 bbmap/36.49 && repair.sh in={input.read1} in2={input.read2} out={output.read1} out2={output.read2} overwrite=t && rm {input.read1} {input.read2}"
 
 ##
 # Duplicate removal (pair-based)
@@ -76,11 +76,12 @@ rule dup_rem_paired_repair:
 ##
 # Mapping to host
 ##
+
 rule map_host:
     input:
         read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
         read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq",
-        refgenome=expand("{refgenome}", refgenome=config['refgenome'])
+        refgenome=expand("{refgenome}", refgenome=config['refgenomehost'])
     output:
         "{projectpath}/03-MappedToHost/{sample}_all.bam"
     run:
@@ -88,8 +89,6 @@ rule map_host:
 
 rule map_host_split:
     input:
-        read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
-        read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq",
         refgenome=expand("{refgenomehost}", refgenomehost=config['refgenomehost']),
         all_bam="{projectpath}/03-MappedToHost/{sample}_all.bam"
     output:
@@ -106,7 +105,7 @@ rule map_host_split:
 ##
 # Mapping to human
 ##
-rule map_host:
+rule map_human:
     input:
         read1="{projectpath}/03-MappedToHost/{sample}_1.fastq",
         read2="{projectpath}/03-MappedToHost/{sample}_2.fastq",
@@ -116,19 +115,15 @@ rule map_host:
     run:
       shell("module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t 28 -R '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample' {input.refgenome} {input.read1} {input.read2} | samtools view -T {input.refgenome} -b - > {output}")
 
-rule map_host_split:
+rule map_human_split:
     input:
-        read1="{projectpath}/03-MappedToHost/{sample}_1.fastq",
-        read2="{projectpath}/03-MappedToHost/{sample}_2.fastq",
         refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman']),
         all_bam="{projectpath}/04-MappedToHuman/{sample}_all.bam"
     output:
-        host="{projectpath}/04-MappedToHuman/{sample}_human.bam",
         read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
         read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
     shell:
         """
-        module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -F12 {input.all_bam} > {output.host}
         module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -
         rm {input.all_bam}
         """
@@ -137,9 +132,9 @@ rule map_host_split:
 # Assembly
 ##
 
-rule assembly:
-    input:
-        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
-        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq",
-    output:
-    run:
+#rule assembly:
+#    input:
+#        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
+#        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq",
+#    output:
+#    run:
