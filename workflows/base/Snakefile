@@ -137,11 +137,21 @@ rule assembly:
         read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
         read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
     output:
-        "{projectpath}/05-Assembly/{sample}"
+        dir=directory("{projectpath}/05-Assembly/{sample}")
     params:
         klist=expand("{klist}", klist=config['klist']),
         threads=expand("{threads}", threads=config['threads'])
     shell:
         """
-        module load tools megahit/1.1.1 && rm -rf {output} && megahit -1 {input.read1} -2 {input.read2} -t {params.threads} --k-list {params.klist} -o {output}
+        module load tools megahit/1.1.1 && rm -rf {output.dir} && megahit -1 {input.read1} -2 {input.read2} -t {params.threads} --k-list {params.klist} -o {output.dir}
+        """
+
+rule assembly_move:
+    input:
+        dir = rules.assembly.output.dir
+    output:
+        "{projectpath}/05-Assembly/{sample}.fa"
+    shell:
+        """
+        mv {input.dir}/final.contigs.fa {output}
         """
