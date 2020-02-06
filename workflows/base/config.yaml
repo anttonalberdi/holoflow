@@ -9,11 +9,15 @@ minquality:
   30
 threads:
   24
-        
+
 #dup_rem_paired options
 separator:
   ^
 
 #map_host options
-refgenome:
+refgenomehost:
   /home/projects/ku-cbd/people/antalb/holofood/chicken_host_transcriptome_test/genomes/chicken.fna
+
+#map_human options
+refgenomehuman:
+  /home/projects/ku-cbd/people/antalb/holofood/reference_genomes/

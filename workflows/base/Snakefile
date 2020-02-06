@@ -90,7 +90,7 @@ rule map_host_split:
     input:
         read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
         read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq",
-        refgenome=expand("{refgenome}", refgenome=config['refgenome']),
+        refgenome=expand("{refgenomehost}", refgenomehost=config['refgenomehost']),
         all_bam="{projectpath}/03-MappedToHost/{sample}_all.bam"
     output:
         host="{projectpath}/03-MappedToHost/{sample}_host.bam",
@@ -102,3 +102,47 @@ rule map_host_split:
         module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -
         rm {input.all_bam}
         """
+
+##
+# Mapping to human
+##
+rule map_host:
+    input:
+        read1="{projectpath}/03-MappedToHost/{sample}_1.fastq",
+        read2="{projectpath}/03-MappedToHost/{sample}_2.fastq",
+        refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman'])
+    output:
+        "{projectpath}/04-MappedToHuman/{sample}_all.bam"
+    run:
+      shell("module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t 28 -R '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample' {input.refgenome} {input.read1} {input.read2} | samtools view -T {input.refgenome} -b - > {output}")
+
+rule map_host_split:
+    input:
+        read1="{projectpath}/03-MappedToHost/{sample}_1.fastq",
+        read2="{projectpath}/03-MappedToHost/{sample}_2.fastq",
+        refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman']),
+        all_bam="{projectpath}/04-MappedToHuman/{sample}_all.bam"
+    output:
+        host="{projectpath}/04-MappedToHuman/{sample}_human.bam",
+        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
+        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
+    shell:
+        """
+        module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -F12 {input.all_bam} > {output.host}
+        module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -
+        rm {input.all_bam}
+        """
+
+##
+# Assembly
+##
+
+rule assembly:
+    input:
+        read1="{projectpath}/03-MappedToHost/{sample}_1.fastq",
+        read2="{projectpath}/03-MappedToHost/{sample}_2.fastq",
+        refgenome=expand("{refgenome}", refgenome=config['refgenome'])
+    output:
+        "{projectpath}/03-MappedToHost/{sample}_all.bam"
+    run:
+      shell("module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t 28 -R '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample' {input.refgenome} {input.read1} {input.read2} | samtools view -T {input.refgenome} -b - > {output}")
