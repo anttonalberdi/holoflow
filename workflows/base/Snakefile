@@ -12,11 +12,11 @@ rule qual_filt:
       read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
       read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq"
     params:
-        maxns = "5",
-        minquality = "30",
-        threads = "24",
         adapter1=expand("{adapter1}", adapter1=config['adapter1']),
-        adapter2=expand("{adapter2}", adapter2=config['adapter2'])
+        adapter2=expand("{adapter2}", adapter2=config['adapter2']),
+        maxns=expand("{maxns}", maxns=config['maxns']),
+        minquality=expand("{minquality}", minquality=config['minquality']),
+        threads=expand("{threads}", threads=config['threads'])
     shell:
         "module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.1.3 && AdapterRemoval --file1 {input.read1} --file2 {input.read2} --output1 {output.read1} --output2 {output.read2} --trimqualities --trimns --maxns {params.maxns} --minquality {params.minquality} --threads {params.threads} --adapter1 {params.adapter1} --adapter2 {params.adapter2}"
 
@@ -55,8 +55,10 @@ rule dup_rem_paired:
       read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq"
     output:
       "{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq"
+    params:
+        separator=expand("{separator}", separator=config['separator'])
     run:
-      shell("module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '_' {input.read1} {input.read2} | seqkit rmdup -s -j 28 -o {output} ")
+      shell("module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d {params.separator} {input.read1} {input.read2} | seqkit rmdup -s -j 28 -o {output} ")
 
 rule dup_rem_paired_repair:
     input:
@@ -64,9 +66,11 @@ rule dup_rem_paired_repair:
     output:
       read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
       read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq"
+    params:
+        separator=expand("{separator}", separator=config['separator'])
     run:
-      shell("cut --delimiter='_' -f1 {input} > {output.read1}")
-      shell("cut --delimiter='_' -f2 {input} > {output.read2}")
+      shell("cut --delimiter={params.separator} -f1 {input} > {output.read1}")
+      shell("cut --delimiter={params.separator} -f2 {input} > {output.read2}")
       shell("rm {input}")
 
 ##

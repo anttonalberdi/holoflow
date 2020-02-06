@@ -1,1 +1,19 @@
-refgenome="/home/projects/ku-cbd/people/antalb/holofood/chicken_host_transcriptome_test/genomes/chicken.fna"
+#qual_filt options
+adapter1:
+  AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA
+adapter2:
+  GAACGACATGGCTACGATCCGACTT
+maxns:
+  5
+minquality:
+  30
+threads:
+  24
+        
+#dup_rem_paired options
+separator:
+  ^
+
+#map_host options
+refgenome:
+  /home/projects/ku-cbd/people/antalb/holofood/chicken_host_transcriptome_test/genomes/chicken.fna
