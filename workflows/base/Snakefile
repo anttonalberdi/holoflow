@@ -139,10 +139,7 @@ rule map_host_split:
 
 rule assembly:
     input:
-        read1="{projectpath}/03-MappedToHost/{sample}_1.fastq",
-        read2="{projectpath}/03-MappedToHost/{sample}_2.fastq",
-        refgenome=expand("{refgenome}", refgenome=config['refgenome'])
+        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
+        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq",
     output:
-        "{projectpath}/03-MappedToHost/{sample}_all.bam"
     run:
-      shell("module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t 28 -R '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample' {input.refgenome} {input.read1} {input.read2} | samtools view -T {input.refgenome} -b - > {output}")
