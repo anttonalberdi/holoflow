@@ -1,8 +1,12 @@
+#General options
 inputdir:
   /home/projects/ku-cbd/people/antalb/anvio_test2/RawData
 
 removeintermediate:
   TRUE
+
+threads:
+  24
 
 #qual_filt options
 adapter1:
@@ -13,8 +17,7 @@ maxns:
   5
 minquality:
   30
-threads:
-  24
+
 
 #dup_rem_paired options
 separator:
@@ -27,3 +30,7 @@ refgenomehost:
 #map_human options
 refgenomehuman:
   /home/projects/ku-cbd/people/antalb/reference_genomes/Homo_sapiens.fasta
+
+#assembly options
+klist:
+  "21,29,39,59,79,99,119,141"
