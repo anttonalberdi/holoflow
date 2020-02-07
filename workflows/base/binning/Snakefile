@@ -41,7 +41,7 @@ rule assembly_mapping:
 
 
 ##
-# Binning
+# Binning with metabat
 ##
 
 rule binning_metabat:
@@ -71,6 +71,10 @@ rule binning_metabat:
                         bintable.write("{0}\t{1}\r\n".format(contig,binname))
         bintable.close()
 
+
+##
+# Binning with maxbin
+##
 
 rule binning_maxbin:
 
@@ -103,53 +107,31 @@ rule binning_maxbin:
 
 
 
+##
+# Bin refinement with DASTool
+##
 
+rule bin_refinement:
+    input:
+        assembly_idx="{projectpath}/05-Assembly/{sample}.fa"
+        metabat_bintable="{projectpath}/07-Binning/bins_metabat.txt"
+        maxbin_bintable="{projectpath}/07-Binning/bins_maxbin.txt"
+        bincontig_tables = (",".join({input.metabat_bintable},{input.maxbin_bintable}))
+    output:
+        main_dir=directory("{projectpath}/07-Binning/Dastool_refinement")
+        bin_dir=directory("{projectpath}/07-Binning/Dastool_refinement/Dastool_bins")
 
+    params:
+        threads=expand("{threads}", threads=config['threads'])
+        dastoolDependencies=expand("{dastoolDependencies}", dastoolDependencies=config['dastoolDependencies'])
+        search_eng=expand("{search_eng}", search_eng=config['search_eng'])
+        dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db'])
+    run:
+        shell("{params.dastoolDependencies} && DAS_Tool -i {input.bincontig_tables} -c {input.assembly_idx} -o {output.main_dir} -l maxbin,metabat --search_engine {params.search_eng} -t {params.threads} --db_directory {params.dastool_db} --write_bins 1")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def bin_refinement(outpath,name,logfilepath,threads,memory):
-    #              (projectname,projectpath,threads,memory,logfilepath)
-#/home/projects/ku-cbd/people/nurher/chick_metafunk2_test/CA16_13F1b.binning/metabat
-    print("Start bin refinement") #added
-
-    bincontig_tables = ",".join(glob.glob(os.path.join(outpath,name+'.binning','bins_*.txt'))) #CHANGED
-    #Input
-    assemblypath = os.path.join(outpath, name + '.fna') #CHANGED
-    dastoolpath = os.path.join(outpath,name+'.binning','refinement_dastool') #CHANGED
-    if not os.path.exists(dastoolpath):
-        os.makedirs(dastoolpath)
-    dastoolbase = os.path.join(dastoolpath, 'dastool')
-
-    logfile=open(logfilepath,"a+")
-    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-    logfile.write("{0} |    Refinning bins using DAS_Tool \r\n".format(current_time))
-    logfile.close()
-
-    #Refinement using DAS_Tool
-    dastooldb = '/home/projects/ku-cbd/people/antalb/databases/dastool_db'
-    dastoolDependencies = 'module load tools gcc/5.4.0 intel/perflibs/2018 R/3.6.1 ruby/2.6.3 pullseq/1.0.2 perl/5.24.0 ncbi-blast/2.6.0+ prodigal/2.6.3 das_tool/1.1.1 diamond/0.9.24 usearch/11.0.667'
-    dastoolCmd = ''+dastoolDependencies+' && DAS_Tool -i '+bincontig_tables+' -c '+assemblypath+' -o '+dastoolbase+' -l maxbin,metabat --search_engine diamond -t '+threads+' --db_directory '+dastooldb+' --write_bins 1'
-    subprocess.check_call(dastoolCmd, shell=True)
-
-    #Refinement using Binning_refiner (problems with R dependencies)
-    #module unload gcc gcc/5.1.0 && module load anaconda3/4.0.0 && Binning_refiner -i metafunk2_test2/merged/binning/refiner/ -p refined -plot
-
-    #Move definitive bins to binning directory
-    binsource = os.path.join(dastoolpath)   # dastoolpath,'dastool_DASTool_bins')
-    bindestination = os.path.join(outpath,name+'.binning') #CHANGED
-    binfiles = glob.glob(os.path.join(binsource,'*.fa'))
-    for b in binfiles:
-        shutil.move(b, bindestination)
+        import os
+        import glob
+        binsource=output.main_dir
+        binfiles = glob.glob(os.path.join(binsource,'*.fa'))
+        for b in binfiles:
+            shutil.move(b, output.bin_dir)
