@@ -1,0 +1,55 @@
+configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/base/binning/config.yaml"
+
+
+##
+# Read mapping to assembly
+##
+
+rule qual_filt:
+    input:
+      read1=expand("{inputdir}/{{sample}}_1.fastq.gz", inputdir=config['inputdir']),
+      read2=expand("{inputdir}/{{sample}}_2.fastq.gz", inputdir=config['inputdir'])
+    output:
+      read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
+      read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq"
+    params:
+        adapter1=expand("{adapter1}", adapter1=config['adapter1']),
+        adapter2=expand("{adapter2}", adapter2=config['adapter2']),
+        maxns=expand("{maxns}", maxns=config['maxns']),
+        minquality=expand("{minquality}", minquality=config['minquality']),
+        threads=expand("{threads}", threads=config['threads'])
+    shell:
+        "module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.1.3 && AdapterRemoval --file1 {input.read1} --file2 {input.read2} --output1 {output.read1} --output2 {output.read2} --trimqualities --trimns --maxns {params.maxns} --minquality {params.minquality} --threads {params.threads} --adapter1 {params.adapter1} --adapter2 {params.adapter2}"
+
+
+rule map_to_assembly:
+    input:
+        "{projectpath}/05-Assembly/final.contigs.fa"
+    output: 
+
+    assemblyfai = os.path.join(assemblypath + '.fai')
+
+        samtoolsindexCmd = 'module load tools samtools/1.9 && samtools faidx '+assemblypath+''
+        bwaindexCmd = 'module load tools bwa/0.7.15 && bwa index '+assemblypath+''
+
+
+# 2) CHECK WHETHER THE ASSEMBLY IS INDEXED AND OTHERWISE INDEX IT
+    ###########
+    # The assembly needs to be indexed in order the reads to be mapped to it.
+
+    #Run the indexing only if the .fai file does not exist
+
+
+    ###########
+    # 3) MAP THE READS TO THE ASSEMBLY
+    ###########
+
+    ## Print to log
+    logfile=open(logfilepath,"a+")
+    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
+    logfile.write("{0} |    Mapping reads to {1} assembly \r\n".format(current_time,name))
+    logfile.close()
+    ##
+
+    mapCmd = 'module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" '+assemblypath+' '+read1in+' '+read2in+' | samtools view -T '+assemblypath+' -b - | samtools sort -T '+assemblypath+' - > '+assemblybampath+''
+    subprocess.check_call(mapCmd, shell=True

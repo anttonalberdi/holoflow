@@ -1,6 +1,6 @@
 #General options
 inputdir:
-  /home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test
+  /home/projects/ku-cbd/people/antalb/anvio_test2/RawData
 
 removeintermediate:
   TRUE
@@ -25,7 +25,7 @@ separator:
 
 #map_host options
 refgenomehost:
-  /home/projects/ku-cbd/people/antalb/databases/GCF_000002315.6_GRCg6a_genomic.fna.gz,human=/home/projects/ku-cbd/people/antalb/databases/GCF_000001405.39_GRCh38.p13_genomic.fna.gz
+  /home/projects/ku-cbd/people/antalb/reference_genomes/Gallus_gallus.Gallus_gallus-5.0.dna.toplevel.fa
 
 #map_human options
 refgenomehuman:
@@ -34,7 +34,6 @@ refgenomehuman:
 #assembly options
 memory:
   100gb
-  
 assembler:
   megahit
 
