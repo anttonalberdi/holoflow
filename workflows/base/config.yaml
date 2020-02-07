@@ -32,5 +32,10 @@ refgenomehuman:
   /home/projects/ku-cbd/people/antalb/reference_genomes/Homo_sapiens.fasta
 
 #assembly options
+memory:
+  100gb
+assembler:
+  megahit
+
 klist:
   "21,29,39,59,79,99,119,141"

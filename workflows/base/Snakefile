@@ -139,12 +139,15 @@ rule assembly:
     output:
         dir=directory("{projectpath}/05-Assembly/{sample}")
     params:
+        assembler=expand("{assembler}", assembler=config['assembler']),
+        memory=expand("{memory}", memory=config['memory']),
         klist=expand("{klist}", klist=config['klist']),
         threads=expand("{threads}", threads=config['threads'])
-    shell:
-        """
-        module load tools megahit/1.1.1 && rm -rf {output.dir} && megahit -1 {input.read1} -2 {input.read2} -t {params.threads} --k-list {params.klist} -o {output.dir}
-        """
+    run:
+        if params.assembler == "megahit":
+            shell("module load tools megahit/1.1.1 && rm -rf {output.dir} && megahit -1 {input.read1} -2 {input.read2} -t {params.threads} --k-list {params.klist} -o {output.dir}")
+        else:
+            shell("module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && rm -rf {output.dir} && metaspades.py -1 {input.read1} -2 {input.read2} -t {params.threads} -m {params.memory} -k {params.klist} --only-assembler -o {output.dir}")
 
 rule assembly_move:
     input:
