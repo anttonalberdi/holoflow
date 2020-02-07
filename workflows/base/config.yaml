@@ -25,7 +25,7 @@ separator:
 
 #map_host options
 refgenomehost:
-  /home/projects/ku-cbd/people/antalb/databases/GCF_000002315.6_GRCg6a_genomic.fna.gz,human=/home/projects/ku-cbd/people/antalb/databases/GCF_000001405.39_GRCh38.p13_genomic.fna.gz
+  /home/projects/ku-cbd/people/antalb/databases/GCF_000002315.6_GRCg6a_genomic.fna.gz
 
 #map_human options
 refgenomehuman:
@@ -34,7 +34,7 @@ refgenomehuman:
 #assembly options
 memory:
   100gb
-  
+
 assembler:
   megahit
 

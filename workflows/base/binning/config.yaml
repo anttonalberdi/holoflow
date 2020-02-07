@@ -1,6 +1,6 @@
 #General options
 inputdir:
-  /home/projects/ku-cbd/people/antalb/anvio_test2/RawData
+  /home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembly_test
 
 removeintermediate:
   TRUE
@@ -39,3 +39,5 @@ assembler:
 
 klist:
   "21,29,39,59,79,99,119,141"
+
+# assembly mapping options
