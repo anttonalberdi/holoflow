@@ -86,7 +86,6 @@ rule binning_maxbin:
         dir=directory("{projectpath}/07-Binning/{sample}.maxbin")
         bin_table="{projectpath}/07-Binning/bins_maxbin.txt"
     run:
-
         shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} --noIntraDepthVariance {input.assemblybam}")
         shell("module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig {input.assembly_idx} -abund {output.depth_file} -out {output.dir} -thread {rules.assembly_mapping.params.threads}")
 
@@ -120,7 +119,6 @@ rule bin_refinement:
     output:
         main_dir=directory("{projectpath}/07-Binning/Dastool_refinement")
         bin_dir=directory("{projectpath}/07-Binning/Dastool_refinement/Dastool_bins")
-
     params:
         threads=expand("{threads}", threads=config['threads'])
         dastoolDependencies=expand("{dastoolDependencies}", dastoolDependencies=config['dastoolDependencies'])
@@ -129,6 +127,7 @@ rule bin_refinement:
     run:
         shell("{params.dastoolDependencies} && DAS_Tool -i {input.bincontig_tables} -c {input.assembly_idx} -o {output.main_dir} -l maxbin,metabat --search_engine {params.search_eng} -t {params.threads} --db_directory {params.dastool_db} --write_bins 1")
 
+        #Move definitive bins to bin_dir
         import os
         import glob
         binsource=output.main_dir
