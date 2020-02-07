@@ -34,7 +34,6 @@ rule assembly_mapping:
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     params:
         threads=expand("{threads}", threads=config['threads'])
-
     shell:
         """
         module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t {params.threads} -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" {input.assembly} {input.read1} {input.read2} | samtools view -T {input.assembly} -b - | samtools sort -T {input.assembly} - > {output.assemblybam}
@@ -45,114 +44,79 @@ rule assembly_mapping:
 # Binning
 ##
 
-rule binning:
+rule binning_metabat:
+    input:
+        assembly_idx="{projectpath}/05-Assembly/{sample}.fa"
+        assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
+    output:
+        depth_file="{projectpath}/07-Binning/{sample}.metabat/{sample}.depth.txt"
+        dir=directory("{projectpath}/07-Binning/{sample}.metabat")
+        bin_table="{projectpath}/07-Binning/bins_metabat.txt"
+    run:
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} {input.assemblybam}")
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.depth_file} -o {output.dir} -m 1500 -t {rules.assembly_mapping.params.threads} --unbinned ')
+
+        #Generate bin table
+        import os
+        import glob
+        bintable=open(output.bin_table,"a+")
+        binlist = glob.glob(output.dir)
+        for bin in binlist:
+            binname = os.path.splitext(os.path.basename(bin))[0]+''
+            with open(bin, 'r') as binfile:
+               for line in binfile:
+                    if line.startswith('>'):
+                        contig = line.strip()
+                        contig = contig.replace(">", "")
+                        bintable.write("{0}\t{1}\r\n".format(contig,binname))
+        bintable.close()
+
+
+rule binning_maxbin:
 
     input:
-        fai file
-        mapped bam
-
+        assembly_idx="{projectpath}/05-Assembly/{sample}.fa"
+        assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
+        depth_file="{projectpath}/07-Binning/{sample}.maxbin/{sample}.depth.txt"
+        dir=directory("{projectpath}/07-Binning/{sample}.maxbin")
+        bin_table="{projectpath}/07-Binning/bins_maxbin.txt"
+    run:
 
-    shell:
-    
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} --noIntraDepthVariance {input.assemblybam}")
+        shell("module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig {input.assembly_idx} -abund {output.depth_file} -out {output.dir} -thread {rules.assembly_mapping.params.threads}")
 
-    #########################
-    ######## Metabat ########x
-    #########################
-
-    metabatdir = os.path.join(absnewdir, 'metabat')
-    if not os.path.exists(metabatdir):
-        os.makedirs(metabatdir)
-    metabatdepthfile = os.path.join(metabatdir, name + '.depth.txt')
-    metabatbinbase = os.path.join(metabatdir, name + '.bin')
-
-    #Generate depth file
-    logfile=open(logfilepath,"a+")
-    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-    logfile.write("{0} |    Generating metabat depth file from the reads mapped to the assembly \r\n".format(current_time))
-    logfile.close()
-    metabatdepthfileCmd = 'module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth '+metabatdepthfile+' '+assemblybampath+''
-    subprocess.check_call(metabatdepthfileCmd, shell=True)
-
-    #Run metabat
-    logfile=open(logfilepath,"a+")
-    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-    logfile.write("{0} |    Running metabat binning\r\n".format(current_time))
-    logfile.close()
-    metabatCmd = 'module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i '+assemblypath+' -a '+metabatdepthfile+' -o '+metabatbinbase+' -m 1500 -t '+threads+' --unbinned '
-    subprocess.check_call(metabatCmd, shell=True)
-
-    #Create contig to bin table
-    logfile=open(logfilepath,"a+")
-    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-    logfile.write("{0} |    Writing bin table for metabat \r\n".format(current_time))
-    logfile.close()
-    bintablefile = os.path.join(absnewdir, 'bins_metabat.txt')
-    bintable=open(bintablefile,"a+")
-    metabatdir = os.path.join(metabatbinbase + '.*.fa')
-    binlist = glob.glob(metabatdir)
-    for bin in binlist:
-        binname = os.path.splitext(os.path.basename(bin))[0]+''
-        with open(bin, 'r') as binfile:
-           for line in binfile:
-                if line.startswith('>'):
-                    contig = line.strip()
-                    contig = contig.replace(">", "")
-                    bintable.write("{0}\t{1}\r\n".format(contig,binname))
-    bintable.close()
+        #Generate bin table
+        import os
+        import glob
+        bintable=open(output.bin_table,"a+")
+        binlist = glob.glob(output.dir)
+        for bin in binlist:
+            binname = os.path.splitext(os.path.basename(bin))[0]+''
+            with open(bin, 'r') as binfile:
+               for line in binfile:
+                    if line.startswith('>'):
+                        contig = line.strip()
+                        contig = contig.replace(">", "")
+                        bintable.write("{0}\t{1}\r\n".format(contig,binname))
+        bintable.close()
 
 
 
-    #########################
-    ######## Maxbin #########
-    #########################
-
-    maxbindir = os.path.join(absnewdir, 'maxbin')
-    if not os.path.exists(maxbindir):
-        os.makedirs(maxbindir)
-    maxbindepthfile = os.path.join(maxbindir, name + '.depth.txt')
-    maxbinbase = os.path.join(maxbindir, name + '.bin')
-
-    #Generate depth file
-    logfile=open(logfilepath,"a+")
-    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-    logfile.write("{0} |    Generating maxbin depth file from the reads mapped to the assembly \r\n".format(current_time))
-    logfile.close()
-    maxbindepthfileCmd = 'module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth '+maxbindepthfile+' --noIntraDepthVariance '+assemblybampath+''
-    subprocess.check_call(maxbindepthfileCmd, shell=True)
-
-    #Run maxbin
-    logfile=open(logfilepath,"a+")
-    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-    logfile.write("{0} |    Running maxbin \r\n".format(current_time))
-    logfile.close()
-    maxbinCmd = 'module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig '+assemblypath+' -abund '+maxbindepthfile+' -out '+maxbinbase+' -thread '+threads+''
-    subprocess.check_call(maxbinCmd, shell=True)
-
-    #Create contig to bin table
-    logfile=open(logfilepath,"a+")
-    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-    logfile.write("{0} |    Writing bin table for maxbin \r\n".format(current_time))
-    logfile.close()
-    bintablefile = os.path.join(absnewdir, 'bins_maxbin.txt')
-    bintable=open(bintablefile,"a+")
-    maxbindir = os.path.join(maxbinbase + '.*.fasta')
-    binlist = glob.glob(maxbindir)
-    for bin in binlist:
-        binname = os.path.splitext(os.path.basename(bin))[0]+''
-        with open(bin, 'r') as binfile:
-           for line in binfile:
-                if line.startswith('>'):
-                    contig = line.strip()
-                    contig = contig.replace(">", "")
-                    bintable.write("{0}\t{1}\r\n".format(contig,binname))
-    bintable.close()
 
 
 
-###################### ADD BIN TABLES TO EACH ONE, MAKE THAT IT IS SAVED if __name__ == '__main__':
-## name.binning, not inside name.binning/metabat or maxbin!!!
-# The input for das_tool has to be a bin table, not paths!
+
+
+
+
+
+
+
+
+
+
+
 
 
 
