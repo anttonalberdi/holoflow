@@ -33,7 +33,7 @@ refgenomehuman:
 
 #assembly options
 memory:
-  100gb
+  100
 assembler:
   megahit
 

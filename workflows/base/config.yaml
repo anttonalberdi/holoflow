@@ -33,10 +33,13 @@ refgenomehuman:
 
 #assembly options
 memory:
-  100gb
+  100
 
 assembler:
   megahit
 
-klist:
+klist_megahit:
   "21,29,39,59,79,99,119,141"
+
+klist_spades:
+  "21,29,39,59,79,99,119"
