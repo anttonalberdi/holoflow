@@ -102,11 +102,12 @@ rule dup_rem_paired:
       read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq"
     output:
       dir="{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq",
-      stats_file="{projectpath}/{sample}.stats"
     params:
         separator=expand("{separator}", separator=config['separator'])
-    run:
-      shell("module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d {params.separator} {input.read1} {input.read2} | seqkit rmdup -s -j 28 -o {output.dir} ")
+    shell:
+      "module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d {params.separator} {input.read1} {input.read2} | seqkit rmdup -s -j 28 -o {output.dir} "
+
+
 
 rule dup_rem_paired_repair:
     input:
@@ -122,6 +123,24 @@ rule dup_rem_paired_repair:
       shell("cut --delimiter={params.separator} -f2 {input} > {output.read2}")
       shell("rm {input}")
 
+      #Get stats after duplicate removal
+      reads = 0
+      bases = 0
+      with open(output.read1, 'rb') as read:
+        for id in read:
+            seq = next(read)
+            reads += 1
+            bases += len(seq.strip())*2
+            next(read)
+            next(read)
+
+        #Print stats to stats file
+        statsfile=open(output.stats_file,"a+")
+        statsfile.write("Dereplicated reads\t{0} ({1} bases)\r\n".format(reads,bases))
+        statsfile.close()
+
+
+
 ##
 # Mapping to host
 ##
@@ -133,9 +152,9 @@ rule map_host:
         refgenome=expand("{refgenome}", refgenome=config['refgenomehost'])
     output:
         "{projectpath}/03-MappedToHost/{sample}_all.bam"
-        stats_file="{projectpath}/{sample}.stats"
     run:
       shell("module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t 28 -R '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample' {input.refgenome} {input.read1} {input.read2} | samtools view -T {input.refgenome} -b - > {output}")
+
 
 rule map_host_split:
     input:
@@ -144,8 +163,7 @@ rule map_host_split:
     output:
         host="{projectpath}/03-MappedToHost/{sample}_host.bam",
         read1="{projectpath}/03-MappedToHost/{sample}_1.fastq",
-        read2="{projectpath}/03-MappedToHost/{sample}_2.fastq",
-        stats_file="{projectpath}/{sample}.stats"
+        read2="{projectpath}/03-MappedToHost/{sample}_2.fastq"
     shell:
         """
         module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -F12 {input.all_bam} > {output.host}
@@ -162,10 +180,10 @@ rule map_human:
         read2="{projectpath}/03-MappedToHost/{sample}_2.fastq",
         refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman'])
     output:
-        dir="{projectpath}/04-MappedToHuman/{sample}_all.bam",
-        stats_file="{projectpath}/{sample}.stats"
+        "{projectpath}/04-MappedToHuman/{sample}_all.bam"
     run:
-      shell("module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t 28 -R '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample' {input.refgenome} {input.read1} {input.read2} | samtools view -T {input.refgenome} -b - > {output.dir}")
+      shell("module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t 28 -R '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample' {input.refgenome} {input.read1} {input.read2} | samtools view -T {input.refgenome} -b - > {output}")
+
 
 rule map_human_split:
     input:
@@ -175,11 +193,29 @@ rule map_human_split:
         read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
         read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq",
         stats_file="{projectpath}/{sample}.stats"
-    shell:
-        """
-        module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -
-        rm {input.all_bam}
-        """
+    run:
+        shell(module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -)
+        shell(rm {input.all_bam})
+
+
+        #Get stats
+        reads = 0
+        bases = 0
+        with open(output.read1, 'rb') as read:
+            for id in read:
+                seq = next(read)
+                reads += 1
+                bases += len(seq.strip())*2
+                next(read)
+                next(read)
+        #Print stats to statsfile
+        statsfile=open(output.stats_file,"a+")
+        statsfile.write("Reads after mapping to reference genome \t{0} ({1} bases)\r\n".format(reads,bases))
+        statsfile.close()
+
+
+
+
 
 ##
 # Assembly
@@ -190,8 +226,7 @@ rule assembly:
         read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
         read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
     output:
-        dir=directory("{projectpath}/05-Assembly/{sample}"),
-        stats_file="{projectpath}/{sample}.stats"
+        dir=directory("{projectpath}/05-Assembly/{sample}")
     params:
         memory=expand("{memory}", memory=config['memory']),
         klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
@@ -204,13 +239,20 @@ rule assembly:
         else:
             shell("module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && rm -rf {output.dir} && metaspades.py -1 {input.read1} -2 {input.read2} -t {params.threads} -m {params.memory} -k {params.klist_spades} --only-assembler -o {output.dir}")
 
+
 rule assembly_move:
     input:
         dir = rules.assembly.output.dir
     output:
         final_file="{projectpath}/05-Assembly/{sample}.fa",
         stats_file="{projectpath}/{sample}.stats"
-    shell:
-        """
-        mv {input.dir}/final.contigs.fa {output.final_file}
-        """
+    run:
+        shell("mv {input.dir}/final.contigs.fa {output.final_file}")
+
+        #Get stats after assembly
+        contigs = len([1 for line in open(output.final_file) if line.startswith(">")])
+
+        #Print stats to stats file
+        statsfile=open(output.stats_file,"a+")
+        statsfile.write("Assembly contigs\t{0} \r\n".format(contigs))
+        statsfile.close()
