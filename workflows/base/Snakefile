@@ -128,6 +128,8 @@ rule map_human_split:
         rm {input.all_bam}
         """
 
+configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/base/config.yaml"
+
 ##
 # Assembly
 ##
@@ -139,15 +141,16 @@ rule assembly:
     output:
         dir=directory("{projectpath}/05-Assembly/{sample}")
     params:
-        assembler=expand("{assembler}", assembler=config['assembler']),
         memory=expand("{memory}", memory=config['memory']),
-        klist=expand("{klist}", klist=config['klist']),
-        threads=expand("{threads}", threads=config['threads'])
+        klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
+        klist_spades=expand("{klist_spades}", klist_spades=config['klist_spades']),
+        threads=expand("{threads}", threads=config['threads']),
+        assembler=expand("{assembler}", assembler=config['assembler'])
     run:
         if params.assembler == "megahit":
-            shell("module load tools megahit/1.1.1 && rm -rf {output.dir} && megahit -1 {input.read1} -2 {input.read2} -t {params.threads} --k-list {params.klist} -o {output.dir}")
+            shell("module load tools megahit/1.1.1 && megahit -1 {input.read1} -2 {input.read2} -t {params.threads} --k-list {params.klist_megahit} -o {output.dir}")
         else:
-            shell("module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && rm -rf {output.dir} && metaspades.py -1 {input.read1} -2 {input.read2} -t {params.threads} -m {params.memory} -k {params.klist} --only-assembler -o {output.dir}")
+            shell("module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && rm -rf {output.dir} && metaspades.py -1 {input.read1} -2 {input.read2} -t {params.threads} -m {params.memory} -k {params.klist_spades} --only-assembler -o {output.dir}")
 
 rule assembly_move:
     input:
