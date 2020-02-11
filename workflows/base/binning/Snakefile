@@ -15,7 +15,8 @@ configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/base/binning
             bwa_amb="{projectpath}/05-Assembly/{sample}.fa.amb"
             bwa_sa="{projectpath}/05-Assembly/{sample}.fa.sa"
         run:
-            if not "projectpath/05-Assembly/sample.fa.fai":
+            import os
+            if not os.path.exists("projectpath/05-Assembly/sample.fa.fai"):
                 shell("module load tools samtools/1.9 && samtools faidx {input}")
                 shell("module load tools bwa/0.7.15 && bwa index {input}")
             else:
