@@ -1,6 +1,9 @@
 #General options
 inputdir:
-  /home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test
+  specified_in_command
+
+projectpath:
+  /home/projects/ku-cbd/people/nurher/test_py_launch
 
 removeintermediate:
   TRUE

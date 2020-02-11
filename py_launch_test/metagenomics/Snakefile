@@ -1,4 +1,4 @@
-configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/base/config.yaml"
+configfile: "config.yaml"
 
 ##
 # Quality-filtering
