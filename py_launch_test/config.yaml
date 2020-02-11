@@ -1,0 +1,45 @@
+#General options
+inputdir:
+  /home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test
+
+removeintermediate:
+  TRUE
+
+threads:
+  24
+
+#qual_filt options
+adapter1:
+  AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA
+adapter2:
+  GAACGACATGGCTACGATCCGACTT
+maxns:
+  5
+minquality:
+  30
+
+
+#dup_rem_paired options
+separator:
+  ^
+
+#map_host options
+refgenomehost:
+  /home/projects/ku-cbd/people/antalb/reference_genomes/Gallus_gallus.Gallus_gallus-5.0.dna.toplevel.fa
+
+#map_human options
+refgenomehuman:
+  /home/projects/ku-cbd/people/antalb/reference_genomes/Homo_sapiens.fasta
+
+#assembly options
+memory:
+  100
+
+assembler:
+  megahit
+
+klist_megahit:
+  "21,29,39,59,79,99,119,141"
+
+klist_spades:
+  "21,29,39,59,79,99,119"

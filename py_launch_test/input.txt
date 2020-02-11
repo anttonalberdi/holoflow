@@ -1,0 +1,2 @@
+CA16_13F1b  CA16_13F1b_1.fastq.gz 04-MappedToHuman
+CA16_13F1b  CA16_13F1b_2.fastq.gz 04-MappedToHuman

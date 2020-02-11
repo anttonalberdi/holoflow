@@ -4,23 +4,23 @@ configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/base/binning
 ##
 # Index assembly
 ##
-    rule index_assembly:
-        input:
-            "{projectpath}/05-Assembly/final.contigs.fa"
-        output:
-            samtools="{projectpath}/05-Assembly/{sample}.fa.fai"
-            bwa_bwt="{projectpath}/05-Assembly/{sample}.fa.bwt"
-            bwa_pac="{projectpath}/05-Assembly/{sample}.fa.pac"
-            bwa_ann="{projectpath}/05-Assembly/{sample}.fa.ann"
-            bwa_amb="{projectpath}/05-Assembly/{sample}.fa.amb"
-            bwa_sa="{projectpath}/05-Assembly/{sample}.fa.sa"
-        run:
-            import os
-            if not os.path.exists("projectpath/05-Assembly/sample.fa.fai"):
-                shell("module load tools samtools/1.9 && samtools faidx {input}")
-                shell("module load tools bwa/0.7.15 && bwa index {input}")
-            else:
-                pass
+rule index_assembly:
+    input:
+        "{projectpath}/05-Assembly/final.contigs.fa"
+    output:
+        samtools="{projectpath}/05-Assembly/{sample}.fa.fai"
+        bwa_bwt="{projectpath}/05-Assembly/{sample}.fa.bwt"
+        bwa_pac="{projectpath}/05-Assembly/{sample}.fa.pac"
+        bwa_ann="{projectpath}/05-Assembly/{sample}.fa.ann"
+        bwa_amb="{projectpath}/05-Assembly/{sample}.fa.amb"
+        bwa_sa="{projectpath}/05-Assembly/{sample}.fa.sa"
+    run:
+        import os
+        if not os.path.exists("projectpath/05-Assembly/sample.fa.fai"):
+            shell("module load tools samtools/1.9 && samtools faidx {input}")
+            shell("module load tools bwa/0.7.15 && bwa index {input}")
+        else:
+            pass
 
 ##
 # Assembly mapping
