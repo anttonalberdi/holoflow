@@ -8,11 +8,11 @@ rule index_assembly:
     input:
         "{projectpath}/05-Assembly/final.contigs.fa"
     output:
-        samtools="{projectpath}/05-Assembly/{sample}.fa.fai"
-        bwa_bwt="{projectpath}/05-Assembly/{sample}.fa.bwt"
-        bwa_pac="{projectpath}/05-Assembly/{sample}.fa.pac"
-        bwa_ann="{projectpath}/05-Assembly/{sample}.fa.ann"
-        bwa_amb="{projectpath}/05-Assembly/{sample}.fa.amb"
+        samtools="{projectpath}/05-Assembly/{sample}.fa.fai",
+        bwa_bwt="{projectpath}/05-Assembly/{sample}.fa.bwt",
+        bwa_pac="{projectpath}/05-Assembly/{sample}.fa.pac",
+        bwa_ann="{projectpath}/05-Assembly/{sample}.fa.ann",
+        bwa_amb="{projectpath}/05-Assembly/{sample}.fa.amb",
         bwa_sa="{projectpath}/05-Assembly/{sample}.fa.sa"
     run:
         import os
@@ -28,7 +28,7 @@ rule index_assembly:
 
 rule assembly_mapping:
     input:
-        assembly="{projectpath}/05-Assembly/final.contigs.fa"
+        assembly="{projectpath}/05-Assembly/final.contigs.fa",
         read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
         read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
     output:
@@ -47,15 +47,15 @@ rule assembly_mapping:
 
 rule binning_metabat:
     input:
-        assembly_idx="{projectpath}/05-Assembly/{sample}.fa"
+        assembly_idx="{projectpath}/05-Assembly/{sample}.fa",
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
-        depth_file="{projectpath}/07-Binning/{sample}.metabat/{sample}.depth.txt"
-        dir=directory("{projectpath}/07-Binning/{sample}.metabat")
+        depth_file="{projectpath}/07-Binning/{sample}.metabat/{sample}.depth.txt",
+        dir=directory("{projectpath}/07-Binning/{sample}.metabat"),
         bin_table="{projectpath}/07-Binning/bins_metabat.txt"
     run:
         shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} {input.assemblybam}")
-        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.depth_file} -o {output.dir} -m 1500 -t {rules.assembly_mapping.params.threads} --unbinned ')
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.depth_file} -o {output.dir} -m 1500 -t {rules.assembly_mapping.params.threads} --unbinned")
 
         #Generate bin table
         import os
@@ -78,13 +78,12 @@ rule binning_metabat:
 ##
 
 rule binning_maxbin:
-
     input:
-        assembly_idx="{projectpath}/05-Assembly/{sample}.fa"
+        assembly_idx="{projectpath}/05-Assembly/{sample}.fa",
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
-        depth_file="{projectpath}/07-Binning/{sample}.maxbin/{sample}.depth.txt"
-        dir=directory("{projectpath}/07-Binning/{sample}.maxbin")
+        depth_file="{projectpath}/07-Binning/{sample}.maxbin/{sample}.depth.txt",
+        dir=directory("{projectpath}/07-Binning/{sample}.maxbin"),
         bin_table="{projectpath}/07-Binning/bins_maxbin.txt"
     run:
         shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} --noIntraDepthVariance {input.assemblybam}")
@@ -113,17 +112,17 @@ rule binning_maxbin:
 
 rule bin_refinement:
     input:
-        assembly_idx="{projectpath}/05-Assembly/{sample}.fa"
-        metabat_bintable="{projectpath}/07-Binning/bins_metabat.txt"
-        maxbin_bintable="{projectpath}/07-Binning/bins_maxbin.txt"
+        assembly_idx="{projectpath}/05-Assembly/{sample}.fa",
+        metabat_bintable="{projectpath}/07-Binning/bins_metabat.txt",
+        maxbin_bintable="{projectpath}/07-Binning/bins_maxbin.txt",
         bincontig_tables = (",".join({input.metabat_bintable},{input.maxbin_bintable}))
     output:
-        main_dir=directory("{projectpath}/07-Binning/Dastool_refinement")
+        main_dir=directory("{projectpath}/07-Binning/Dastool_refinement"),
         bin_dir=directory("{projectpath}/07-Binning/Dastool_refinement/Dastool_bins")
     params:
-        threads=expand("{threads}", threads=config['threads'])
-        dastoolDependencies=expand("{dastoolDependencies}", dastoolDependencies=config['dastoolDependencies'])
-        search_eng=expand("{search_eng}", search_eng=config['search_eng'])
+        threads=expand("{threads}", threads=config['threads']),
+        dastoolDependencies=expand("{dastoolDependencies}", dastoolDependencies=config['dastoolDependencies']),
+        search_eng=expand("{search_eng}", search_eng=config['search_eng']),
         dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db'])
     run:
         shell("{params.dastoolDependencies} && DAS_Tool -i {input.bincontig_tables} -c {input.assembly_idx} -o {output.main_dir} -l maxbin,metabat --search_engine {params.search_eng} -t {params.threads} --db_directory {params.dastool_db} --write_bins 1")

@@ -11,10 +11,13 @@ threads:
 #qual_filt options
 adapter1:
   AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA
+
 adapter2:
   GAACGACATGGCTACGATCCGACTT
+
 maxns:
   5
+  
 minquality:
   30
 
@@ -34,6 +37,7 @@ refgenomehuman:
 #assembly options
 memory:
   100
+
 assembler:
   megahit
 
