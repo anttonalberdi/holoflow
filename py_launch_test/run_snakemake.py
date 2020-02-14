@@ -30,7 +30,7 @@ import os
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-f', help="Input file", dest="inputfile", required=True)
+parser.add_argument('-f', help="W, dest="inputfile", required=True)
 parser.add_argument('-d', help="Project directory path", dest="projectpath", required=True)  ##### ADDED IS NECESSARY PROJECT PATH AT LEAST
 parser.add_argument('-w', help="Chosen Workflow", dest="workflow", required=True)
 parser.add_argument('-c', help="Config file", dest="configfile", required=True)
@@ -77,6 +77,5 @@ subprocess.check_call(load_modulesCmd, shell=True)
 
     # Metagenomics workflow
 if workflow == "metagenomics":
-    snakemakeCmd = 'snakemake -s metagenomics/Snakefile -n -r  '+output_files+' --configfile '+configfile+''
-    #snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s metagenomics/Snakefile '+projectpath+'/output_files.txt'
+    snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake snakemake -s metagenomics/Snakefile '+output_files+' --configfile '+configfile+''
     subprocess.check_call(snakemakeCmd, shell=True)
