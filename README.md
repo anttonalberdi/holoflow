@@ -39,7 +39,7 @@ In case the python script is runned from the directory which contains it:
 ```
 python run_snakemake.py -f input.txt -d ${workdir} -w metagenomics -c ${configfile}
 ```
-workdir and configfile are shell variables which where previously defined in the terminal, but the corresponding path to the file can also be directly specified in the python command. 
+*workdir* and *configfile* are shell variables which where previously defined in the terminal, but the corresponding path to the file can also be directly specified in the python command. 
 
 ############
 module unload gcc/5.1.0
