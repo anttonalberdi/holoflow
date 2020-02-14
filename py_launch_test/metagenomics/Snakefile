@@ -6,12 +6,12 @@ configfile: "config.yaml"
 
 rule qual_filt:
     input:
-        read1=expand("{inputdir}/{{sample}}_1.fastq.gz", inputdir=config['inputdir']),
-        read2=expand("{inputdir}/{{sample}}_2.fastq.gz", inputdir=config['inputdir'])
+        read1="{projectpath}/00-RawData/{{sample}}_1.fastq.gz",
+        read2="{projectpath}/00-RawData/{{sample}}_2.fastq.gz"
     output:
         read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
         read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq",
-        stats_file="{projectpath}/{sample}.stats"
+        stats_file="{projectpath}/01-QualityFiltered/{sample}.stats"
     params:
         adapter1=expand("{adapter1}", adapter1=config['adapter1']),
         adapter2=expand("{adapter2}", adapter2=config['adapter2']),
@@ -29,8 +29,9 @@ rule qual_filt:
         reads = 0
         bases = 0
         #If gzipped
-        if input.read1.endswith('.gz'):
-            with gzip.open(input.read1, 'rb') as read:
+        import os
+        if str(input.read1).endswith('.gz'):
+            with gzip.open(str(input.read1), 'rb') as read:
                 for id in read:
                     seq = next(read)
                     reads += 1
@@ -54,7 +55,7 @@ rule qual_filt:
         #Get stats after quality filtering
         reads = 0
         bases = 0
-        with open(output.read1, 'rb') as read:
+        with open(str(output.read1), 'rb') as read:
             for id in read:
                 seq = next(read)
                 reads += 1
@@ -63,7 +64,7 @@ rule qual_filt:
                 next(read)
 
         #Print stats to stats file
-        statsfile=open(output.stats_file,"a+")
+        statsfile=open(str(output.stats_file),"a+")
         statsfile.write("Quality filtered reads\t{0} ({1} bases)\r\n".format(reads,bases))
         statsfile.close()
 
@@ -111,22 +112,24 @@ rule dup_rem_paired:
 
 rule dup_rem_paired_repair:
     input:
-      "{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq"
+      in_file="{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq",
+      in_stats="{projectpath}/01-QualityFiltered/{sample}.stats"
     output:
       read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
       read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq",
-      stats_file="{projectpath}/{sample}.stats"
+      stats_file="{projectpath}/02-DuplicatesRemoved/{sample}.stats"
     params:
         separator=expand("{separator}", separator=config['separator'])
     run:
-      shell("cut --delimiter={params.separator} -f1 {input} > {output.read1}")
-      shell("cut --delimiter={params.separator} -f2 {input} > {output.read2}")
-      shell("rm {input}")
+      shell("cut --delimiter={params.separator} -f1 {input.in_file} > {output.read1}")
+      shell("cut --delimiter={params.separator} -f2 {input.in_file} > {output.read2}")
+      shell("rm {input.in_file}")
+      shell("mv {input.in_stats} {output.stats_file}")
 
       #Get stats after duplicate removal
       reads = 0
       bases = 0
-      with open(output.read1, 'rb') as read:
+      with open(str(output.read1), 'rb') as read:
         for id in read:
             seq = next(read)
             reads += 1
@@ -135,7 +138,7 @@ rule dup_rem_paired_repair:
             next(read)
 
         #Print stats to stats file
-        statsfile=open(output.stats_file,"a+")
+        statsfile=open(str(output.stats_file),"a+")
         statsfile.write("Dereplicated reads\t{0} ({1} bases)\r\n".format(reads,bases))
         statsfile.close()
 
@@ -188,20 +191,22 @@ rule map_human:
 rule map_human_split:
     input:
         refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman']),
-        all_bam="{projectpath}/04-MappedToHuman/{sample}_all.bam"
+        all_bam="{projectpath}/04-MappedToHuman/{sample}_all.bam",
+        in_stats="{projectpath}/02-DuplicatesRemoved/{sample}.stats"
     output:
-        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
-        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq",
-        stats_file="{projectpath}/{sample}.stats"
+        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq", ## mapped
+        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq", ## mapped
+        stats_file="{projectpath}/04-MappedToHuman/{sample}.stats"
     run:
-        shell(module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -)
-        shell(rm {input.all_bam})
+        shell("module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -")
+        shell("rm {input.all_bam}")
+        shell("mv {input.in_stats} {output.stats_file}")
 
 
         #Get stats
         reads = 0
         bases = 0
-        with open(output.read1, 'rb') as read:
+        with open(str(output.read1), 'rb') as read:
             for id in read:
                 seq = next(read)
                 reads += 1
@@ -209,50 +214,6 @@ rule map_human_split:
                 next(read)
                 next(read)
         #Print stats to statsfile
-        statsfile=open(output.stats_file,"a+")
+        statsfile=open(str(output.stats_file),"a+")
         statsfile.write("Reads after mapping to reference genome \t{0} ({1} bases)\r\n".format(reads,bases))
-        statsfile.close()
-
-
-
-
-
-##
-# Assembly
-##
-
-rule assembly:
-    input:
-        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
-        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
-    output:
-        dir=directory("{projectpath}/05-Assembly/{sample}")
-    params:
-        memory=expand("{memory}", memory=config['memory']),
-        klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
-        klist_spades=expand("{klist_spades}", klist_spades=config['klist_spades']),
-        threads=expand("{threads}", threads=config['threads']),
-        assembler=expand("{assembler}", assembler=config['assembler'])
-    run:
-        if params.assembler == "megahit":
-            shell("module load tools megahit/1.1.1 && megahit -1 {input.read1} -2 {input.read2} -t {params.threads} --k-list {params.klist_megahit} -o {output.dir}")
-        else:
-            shell("module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && rm -rf {output.dir} && metaspades.py -1 {input.read1} -2 {input.read2} -t {params.threads} -m {params.memory} -k {params.klist_spades} --only-assembler -o {output.dir}")
-
-
-rule assembly_move:
-    input:
-        dir = rules.assembly.output.dir
-    output:
-        final_file="{projectpath}/05-Assembly/{sample}.fa",
-        stats_file="{projectpath}/{sample}.stats"
-    run:
-        shell("mv {input.dir}/final.contigs.fa {output.final_file}")
-
-        #Get stats after assembly
-        contigs = len([1 for line in open(output.final_file) if line.startswith(">")])
-
-        #Print stats to stats file
-        statsfile=open(output.stats_file,"a+")
-        statsfile.write("Assembly contigs\t{0} \r\n".format(contigs))
         statsfile.close()

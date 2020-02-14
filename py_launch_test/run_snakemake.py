@@ -31,7 +31,7 @@ import os
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="Input file", dest="inputfile", required=True)
-parser.add_argument('-d', help="Project directory", dest="projectpath", required=True)  ##### ADDED IS NECESSARY PROJECT PATH AT LEAST
+parser.add_argument('-d', help="Project directory path", dest="projectpath", required=True)  ##### ADDED IS NECESSARY PROJECT PATH AT LEAST
 parser.add_argument('-w', help="Chosen Workflow", dest="workflow", required=True)
 parser.add_argument('-c', help="Config file", dest="configfile", required=True)
 
@@ -57,7 +57,7 @@ with open(input_file,'r') as input_file:
     output_files=[]
     for i in range(len(input_file)):
         read+=1
-        output_files.append(input_file[i][2]+"/"+input_file[i][0]+"_"+str(read)+".fastq")   ####### IS THIS CORRECT? SPECIFY .fastq TRY UNTIL 04 MAP HUMAN
+        output_files.append(projectpath+"/"+input_file[i][2]+"/"+input_file[i][0]+"_"+str(read)+".fastq")   ####### IS THIS CORRECT? SPECIFY .fastq TRY UNTIL 04 MAP HUMAN
         if read == 2:
             read=0
 
@@ -66,10 +66,12 @@ with open(input_file,'r') as input_file:
         copyfilesCmd='cp '+filename+' '+input_dir+''
         subprocess.check_call(copyfilesCmd, shell=True)
 
-
         new_name=input_file[i][0]
         renamefilesCmd='cd '+input_dir+' && mv '+filename+' '+new_name+''
 
+with open('output_files.txt', 'w') as f:
+    for file in output_files:
+        f.write("%s\n" % file)
 
 
 # Snakemake pipeline run
@@ -78,5 +80,5 @@ subprocess.check_call(load_modulesCmd, shell=True)
 
     # Metagenomics workflow
 if workflow == "metagenomics":
-    snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s metagenomics/Snakefile '+output_files+''
+    snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s metagenomics/Snakefile '+projectpath+'/output_files.txt'
     subprocess.check_call(snakemakeCmd, shell=True)
