@@ -194,8 +194,8 @@ rule map_human_split:
         read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq",
         stats_file="{projectpath}/{sample}.stats"
     run:
-        shell(module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -)
-        shell(rm {input.all_bam})
+        shell("module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -")
+        shell("rm {input.all_bam}")
 
 
         #Get stats

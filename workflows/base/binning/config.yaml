@@ -1,6 +1,6 @@
 #General options
 inputdir:
-  /home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembly_test
+  /home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test
 
 removeintermediate:
   TRUE
@@ -11,13 +11,10 @@ threads:
 #qual_filt options
 adapter1:
   AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA
-
 adapter2:
   GAACGACATGGCTACGATCCGACTT
-
 maxns:
   5
-  
 minquality:
   30
 
@@ -41,11 +38,12 @@ memory:
 assembler:
   megahit
 
-klist:
+klist_megahit:
   "21,29,39,59,79,99,119,141"
 
-# assembly mapping options
-
+klist_spades:
+  "21,29,39,59,79,99,119"
+  
 # binning options
 
 dastool_db:
