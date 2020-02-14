@@ -34,7 +34,7 @@ This is designed to be called from the command line, and requires the next argum
   
   ...among others. 
   
-# Run *run_snakemake.py*
+## Exectute *run_snakemake.py*
 In case the python script is runned from the directory which contains it:
 ```
 python run_snakemake.py -f input.txt -d ${workdir} -w metagenomics -c ${configfile}
