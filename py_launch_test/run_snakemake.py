@@ -34,11 +34,12 @@ parser.add_argument('-f', help="Input file", dest="inputfile", required=True)
 parser.add_argument('-d', help="Project directory path", dest="projectpath", required=True)  ##### ADDED IS NECESSARY PROJECT PATH AT LEAST
 parser.add_argument('-w', help="Chosen Workflow", dest="workflow", required=True)
 parser.add_argument('-c', help="Config file", dest="configfile", required=True)
+args = parser.parse_args()
 
 input_file=args.inputfile
 projectpath=args.projectpath
 workflow=args.workflow
-config_file=args.configfile
+configfile=args.configfile
 
 # A folder 00-RAWDATA is created in .py and the input files specified in input.txt are moved there
   # and their name changed to the one specified in input.txt's first column.
@@ -46,32 +47,32 @@ config_file=args.configfile
 
 
 # Create "00-RawData/" directory if not exists
-input_dir=os.join(projectpath,"00-RawData")
+input_dir=os.path.join(projectpath,"00-RawData")
 if not os.path.exists(input_dir):
     os.makedirs(input_dir)
 
+    with open(str(input_file),'r') as input_file:
+        # Paste desired output file names from input.txt
+        read = 0
+        output_files=[]
+        for file in input_file:
+            file = file.split()
+            read+=1
+            output_files.append(projectpath+"/"+file[2]+"/"+file[0]+"_"+str(read)+".fastq")   ####### should be independent from.fastq (TRY UNTIL 04 MAP HUMAN)
+            if read == 2:
+                read=0
 
-with open(input_file,'r') as input_file:
-    # Paste desired output file names from input.txt
-    read = 0
-    output_files=[]
-    for i in range(len(input_file)):
-        read+=1
-        output_files.append(projectpath+"/"+input_file[i][2]+"/"+input_file[i][0]+"_"+str(read)+".fastq")   ####### IS THIS CORRECT? SPECIFY .fastq TRY UNTIL 04 MAP HUMAN
-        if read == 2:
-            read=0
+            #Move files to new dir "00-RawData/" and change file names for 1st column in input.txt
+            filename=file[1]
+            copyfilesCmd='cp '+filename+' '+input_dir+''
+            subprocess.check_call(copyfilesCmd, shell=True)
 
-        #Move files to new dir "00-RawData/" and change file names for 1st column in input.txt
-        filename=input_file[i][1]
-        copyfilesCmd='cp '+filename+' '+input_dir+''
-        subprocess.check_call(copyfilesCmd, shell=True)
+            new_name=file[0]
+            renamefilesCmd='cd '+input_dir+' && mv '+filename+' '+new_name+''
 
-        new_name=input_file[i][0]
-        renamefilesCmd='cd '+input_dir+' && mv '+filename+' '+new_name+''
-
-with open('output_files.txt', 'w') as f:
-    for file in output_files:
-        f.write("%s\n" % file)
+    with open('output_files.txt', 'w') as f:
+        for file in output_files:
+            f.write("%s\n" % file)
 
 
 # Snakemake pipeline run
@@ -80,5 +81,6 @@ subprocess.check_call(load_modulesCmd, shell=True)
 
     # Metagenomics workflow
 if workflow == "metagenomics":
-    snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s metagenomics/Snakefile '+projectpath+'/output_files.txt'
+    snakemakeCmd = 'snakemake -s metagenomics/Snakefile -n -r  '+projectpath+'/output_files.txt --configfile '+configfile+''
+    #snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s metagenomics/Snakefile '+projectpath+'/output_files.txt'
     subprocess.check_call(snakemakeCmd, shell=True)

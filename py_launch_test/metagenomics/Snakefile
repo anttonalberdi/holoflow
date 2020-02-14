@@ -1,4 +1,4 @@
-configfile: "config.yaml"
+# configfile specified in command line
 
 ##
 # Quality-filtering
@@ -6,8 +6,8 @@ configfile: "config.yaml"
 
 rule qual_filt:
     input:
-        read1="{projectpath}/00-RawData/{{sample}}_1.fastq.gz",
-        read2="{projectpath}/00-RawData/{{sample}}_2.fastq.gz"
+        read1="{projectpath}/00-RawData/{sample}_1.fastq.gz",
+        read2="{projectpath}/00-RawData/{sample}_2.fastq.gz"
     output:
         read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
         read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq",
