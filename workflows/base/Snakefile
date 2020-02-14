@@ -112,7 +112,8 @@ rule dup_rem_paired:
 
 rule dup_rem_paired_repair:
     input:
-      "{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq"
+      in_file="{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq",
+      in_stats="{projectpath}/01-QualityFiltered/{sample}.stats"
     output:
       read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
       read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq",
@@ -120,10 +121,10 @@ rule dup_rem_paired_repair:
     params:
         separator=expand("{separator}", separator=config['separator'])
     run:
-      shell("cut --delimiter={params.separator} -f1 {input} > {output.read1}")
-      shell("cut --delimiter={params.separator} -f2 {input} > {output.read2}")
-      shell("rm {input}")
-      shell("mv {projectpath}/01-QualityFiltered/{sample}.stats {output.stats_file}")
+      shell("cut --delimiter={params.separator} -f1 {input.in_file} > {output.read1}")
+      shell("cut --delimiter={params.separator} -f2 {input.in_file} > {output.read2}")
+      shell("rm {input.in_file}")
+      shell("mv {input.in_stats} {output.stats_file}")
 
       #Get stats after duplicate removal
       reads = 0
@@ -190,7 +191,8 @@ rule map_human:
 rule map_human_split:
     input:
         refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman']),
-        all_bam="{projectpath}/04-MappedToHuman/{sample}_all.bam"
+        all_bam="{projectpath}/04-MappedToHuman/{sample}_all.bam",
+        in_stats="{projectpath}/02-DuplicatesRemoved/{sample}.stats"
     output:
         read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq", ## mapped
         read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq", ## mapped
@@ -198,7 +200,7 @@ rule map_human_split:
     run:
         shell("module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -")
         shell("rm {input.all_bam}")
-        shell("mv {projectpath}/02-DuplicatesRemoved/{sample}.stats {output.stats_file}")
+        shell("mv {input.in_stats} {output.stats_file}")
 
 
         #Get stats

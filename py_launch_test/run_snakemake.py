@@ -31,11 +31,11 @@ import os
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="Input file", dest="inputfile", required=True)
-parser.add_argument('-d', help="Project directory", dest="projectpath", required=True)  ##### ADDED IS NECESSARY PROJECT PATH AT LEAST 
+parser.add_argument('-d', help="Project directory", dest="projectpath", required=True)  ##### ADDED IS NECESSARY PROJECT PATH AT LEAST
 parser.add_argument('-w', help="Chosen Workflow", dest="workflow", required=True)
 parser.add_argument('-c', help="Config file", dest="configfile", required=True)
 
-input=args.inputfile
+input_file=args.inputfile
 projectpath=args.projectpath
 workflow=args.workflow
 config_file=args.configfile
@@ -50,26 +50,25 @@ input_dir=os.join(projectpath,"00-RawData")
 if not os.path.exists(input_dir):
     os.makedirs(input_dir)
 
-#Move files to new dir "00-RawData/" and change names of files for 1st column name
-for filename in os.listdir('.'):
-    copyfilesCmd='cp '+filename+' '+input_dir+''
-    subprocess.check_call(copyfilesCmd, shell=True)
 
-
-# Paste new name to rename files
-    renamefilesCmd='mv '+filename+' '+NEW NAME TO BE PASTED YET+' '
-
-
-
-# Paste desired output files from input.txt
-with open("input.txt",'r') as input_file:
+with open(input_file,'r') as input_file:
+    # Paste desired output file names from input.txt
     read = 0
     output_files=[]
     for i in range(len(input_file)):
         read+=1
-        output_files.append(input_file[i][2]+"/"+input_file[i][0]+"_"+str(read)+".fastq")   ####### IS THIS CORRECT? SPECIFY .fastq
+        output_files.append(input_file[i][2]+"/"+input_file[i][0]+"_"+str(read)+".fastq")   ####### IS THIS CORRECT? SPECIFY .fastq TRY UNTIL 04 MAP HUMAN
         if read == 2:
             read=0
+
+        #Move files to new dir "00-RawData/" and change file names for 1st column in input.txt
+        filename=input_file[i][1]
+        copyfilesCmd='cp '+filename+' '+input_dir+''
+        subprocess.check_call(copyfilesCmd, shell=True)
+
+
+        new_name=input_file[i][0]
+        renamefilesCmd='cd '+input_dir+' && mv '+filename+' '+new_name+''
 
 
 
@@ -77,10 +76,7 @@ with open("input.txt",'r') as input_file:
 load_modulesCmd='module unload gcc/5.1.0 && module load anaconda3/4.4.0'
 subprocess.check_call(load_modulesCmd, shell=True)
 
-
     # Metagenomics workflow
 if workflow == "metagenomics":
-    snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` ####-e ${workdir}/snakemake.log#### -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_test -de snakemake -s metagenomics/Snakefile '+output_files+''
+    snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s metagenomics/Snakefile '+output_files+''
     subprocess.check_call(snakemakeCmd, shell=True)
-
- ## WHAT TO DO WITH -e PATH/blabla.log PATH?
