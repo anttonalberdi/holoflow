@@ -54,11 +54,11 @@ if not os.path.exists(input_dir):
     with open(str(input_file),'r') as input_file:
         # Paste desired output file names from input.txt
         read = 0
-        output_files=[]
+        output_files=''
         for file in input_file:
             file = file.split()
             read+=1
-            output_files.append(projectpath+"/"+file[2]+"/"+file[0]+"_"+str(read)+".fastq")   ####### should be independent from.fastq (TRY UNTIL 04 MAP HUMAN)
+            output_files+=(projectpath+"/"+file[2]+"/"+file[0]+"_"+str(read)+".fastq ")   ####### should be independent from.fastq (TRY UNTIL 04 MAP HUMAN)
             if read == 2:
                 read=0
 
@@ -70,10 +70,6 @@ if not os.path.exists(input_dir):
             new_name=file[0]
             renamefilesCmd='cd '+input_dir+' && mv '+filename+' '+new_name+''
 
-    with open('output_files.txt', 'w') as f:
-        for file in output_files:
-            f.write("%s\n" % file)
-
 
 # Snakemake pipeline run
 load_modulesCmd='module unload gcc/5.1.0 && module load anaconda3/4.4.0'
@@ -81,6 +77,6 @@ subprocess.check_call(load_modulesCmd, shell=True)
 
     # Metagenomics workflow
 if workflow == "metagenomics":
-    snakemakeCmd = 'snakemake -s metagenomics/Snakefile -n -r  '+projectpath+'/output_files.txt --configfile '+configfile+''
+    snakemakeCmd = 'snakemake -s metagenomics/Snakefile -n -r  '+output_files+' --configfile '+configfile+''
     #snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s metagenomics/Snakefile '+projectpath+'/output_files.txt'
     subprocess.check_call(snakemakeCmd, shell=True)
