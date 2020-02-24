@@ -195,7 +195,7 @@ rule map_human_split:
         in_stats="{projectpath}/02-DuplicatesRemoved/{sample}.stats"
     output:
         read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
-        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq", 
+        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq",
         stats_file="{projectpath}/04-MappedToHuman/{sample}.stats"
     run:
         shell("module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -")
@@ -241,20 +241,25 @@ rule assembly:
     run:
         if params.assembler == "megahit":
             shell("module load tools megahit/1.1.1 && megahit -1 {input.read1} -2 {input.read2} -t {params.threads} --k-list {params.klist_megahit} -o {output.dir}")
-        else:
+        if params.assembler == "spades":
             shell("module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && rm -rf {output.dir} && metaspades.py -1 {input.read1} -2 {input.read2} -t {params.threads} -m {params.memory} -k {params.klist_spades} --only-assembler -o {output.dir}")
 
 
-rule assembly_move:
+rule assembly_move: ################ IT DOESN'T WORK
     input:
-        dir = rules.assembly.output.dir
+        dir = "{projectpath}/05-Assembly/{sample}"
     output:
-        final_file="{projectpath}/05-Assembly/{sample}.fa",
+        final_file="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa",
         stats_file="{projectpath}/05-Assembly/{sample}.stats"
+    params:
+        assembler=expand("{assembler}", assembler=config['assembler'])
     run:
-        shell("mv {input.dir}/final.contigs.fa {output.final_file}")
-        shell("mv {projectpath}/04-MappedToHuman/{sample}.stats {output.stats_file}")
+        if params.assembler == "megahit":
+            shell("mv {input.dir}/final.contigs.fa {output.final_file}")
+        if params.assembler == "spades":
+            shell("mv {input.dir}/scaffolds.fasta {output.final_file}")
 
+        shell("mv {projectpath}/04-MappedToHuman/{sample}.stats {output.stats_file}")
 
         #Get stats after assembly
         contigs = len([1 for line in open(str(output.final_file)) if line.startswith(">")])
@@ -263,3 +268,56 @@ rule assembly_move:
         statsfile=open(str(output.stats_file),"a+")
         statsfile.write("Assembly contigs\t{0} \r\n".format(contigs))
         statsfile.close()
+
+################
+
+rule assembly_reformat:
+    input:
+        "{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa"
+    output:
+        "{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa"
+    run:
+        with open(str(input)) as f_input, open(str(output), 'w') as f_output:
+            seq = ''
+            contig_n = 0
+            contig_len_dict = {}
+
+            for line in f_input:
+                if line.startswith('>'):
+
+                    if seq:
+                        seq += ('\n')
+                        f_output.write(seq)
+                        contig_len_dict[contig_id] = len(seq)
+                        seq = ''
+
+                    contig_n += 1
+                    contig_id = ("C_"+str(contig_n))
+                    f_output.write(contig_id + '\n')
+
+
+                else:
+                    seq += line.strip()
+
+
+            if seq:
+                seq += (line.strip() + '\n')
+                f_output.write(seq)
+
+
+
+# ######################################################################################################
+# configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/base/config.yaml"
+#
+# rule assembly_move:
+#     input:
+#         dir = "{projectpath}/05-Assembly/{sample}"
+#     output:
+#         final_file="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa"
+#     params:
+#         assembler=expand("{assembler}", assembler=config['assembler'])
+#     run:
+#         if params.assembler == "megahit":
+#             shell("mv {input.dir}/final.contigs.fa {output.final_file}")
+#         if params.assembler == "spades":
+#             shell("mv {input.dir}/scaffolds.fasta {output.final_file}")

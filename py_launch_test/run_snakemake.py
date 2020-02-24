@@ -43,7 +43,7 @@ configfile=args.configfile
 
 # A folder 00-RAWDATA is created in .py and the input files specified in input.txt are moved there
   # and their name changed to the one specified in input.txt's first column.
-# Paste output and give it to snakemake command
+# Paste desired output and give it to snakemake command
 
 
 # Create "00-RawData/" directory if not exists

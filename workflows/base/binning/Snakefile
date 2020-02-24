@@ -3,6 +3,11 @@ import os
 import glob
 import shutil
 
+################### change final.contigs.fa before index assembly and binning_maxbin
+    ########### use anvio py script to modify file: remove bad assemblies + weird headers
+                ## ---> for this we need to create a conda environment, try to create one for all department
+    ########### remove previous files, too heavy
+
 ##
 # Index assembly
 ##
