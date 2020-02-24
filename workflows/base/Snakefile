@@ -245,7 +245,7 @@ rule assembly:
             shell("module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && rm -rf {output.dir} && metaspades.py -1 {input.read1} -2 {input.read2} -t {params.threads} -m {params.memory} -k {params.klist_spades} --only-assembler -o {output.dir}")
 
 
-rule assembly_move: ################ IT DOESN'T WORK
+rule assembly_move: ################ IT DOESN'T WORK - try to see if 
     input:
         dir = "{projectpath}/05-Assembly/{sample}"
     output:
@@ -280,44 +280,30 @@ rule assembly_reformat:
         with open(str(input)) as f_input, open(str(output), 'w') as f_output:
             seq = ''
             contig_n = 0
-            contig_len_dict = {}
 
             for line in f_input:
                 if line.startswith('>'):
 
                     if seq:
-                        seq += ('\n')
-                        f_output.write(seq)
-                        contig_len_dict[contig_id] = len(seq)
-                        seq = ''
+                        if len(seq) > 1000:
+                            contig_n += 1
+                            contig_id = ("C_"+str(contig_n))
+                            seq += ('\n')
 
-                    contig_n += 1
-                    contig_id = ("C_"+str(contig_n))
-                    f_output.write(contig_id + '\n')
+                            f_output.write('>'+contig_id + '\n' + seq)
+                            seq = ''
 
-
+                        else:
+                            seq = ''
                 else:
                     seq += line.strip()
 
-
             if seq:
-                seq += (line.strip() + '\n')
-                f_output.write(seq)
+                if len(seq) > 1000:
+                    contig_n += 1
+                    contig_id = ("C_"+str(contig_n))
+                    seq += ('\n')
+                    f_output.write('>'+contig_id + '\n' + seq)
 
-
-
-# ######################################################################################################
-# configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/base/config.yaml"
-#
-# rule assembly_move:
-#     input:
-#         dir = "{projectpath}/05-Assembly/{sample}"
-#     output:
-#         final_file="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa"
-#     params:
-#         assembler=expand("{assembler}", assembler=config['assembler'])
-#     run:
-#         if params.assembler == "megahit":
-#             shell("mv {input.dir}/final.contigs.fa {output.final_file}")
-#         if params.assembler == "spades":
-#             shell("mv {input.dir}/scaffolds.fasta {output.final_file}")
+                else:
+                    pass

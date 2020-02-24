@@ -11,14 +11,18 @@ with open(str(input)) as f_input, open(str(output), 'w') as f_output:
         if line.startswith('>'):
 
             if seq:
-                seq += ('\n')
-                f_output.write(seq)
-                contig_len_dict[contig_id] = len(seq)
-                seq = ''
+                if len(seq) > 1000:
+                    contig_n += 1
+                    contig_id = ("C_"+str(contig_n))
+                    seq += ('\n')
 
-            contig_n += 1
-            contig_id = ("C_"+str(contig_n))
-            f_output.write(contig_id + '\n')
+                    f_output.write(contig_id + '\n' + seq)
+                    contig_len_dict[contig_id] = len(seq)
+
+                    seq = ''
+
+                else:
+                    seq = ''
 
 
         else:
@@ -26,7 +30,17 @@ with open(str(input)) as f_input, open(str(output), 'w') as f_output:
 
 
     if seq:
-        seq += (line.strip() + '\n')
-        f_output.write(seq)
+        if len(seq) > 1000:
+            contig_n += 1
+            contig_id = ("C_"+str(contig_n))
+            seq += ('\n')
+            f_output.write(contig_id + '\n' + seq)
+            contig_len_dict[contig_id] = len(seq)
 
-print(contig_len_dict["C_1"])
+        else:
+            pass
+
+
+
+
+print(contig_len_dict)
