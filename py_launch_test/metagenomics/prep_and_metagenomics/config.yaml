@@ -1,6 +1,8 @@
 #General options
-inputdir:
-  /home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test
+# inputdir:  NOT NECESSARY BC INPUT FILES ARE ALREADY IN PROJECTPATH/00-InputData !
+
+#projectpath:
+#This information is taken from output files
 
 removeintermediate:
   TRUE
@@ -36,7 +38,7 @@ memory:
   100
 
 assembler:
-  spades
+  megahit
 
 klist_megahit:
   "21,29,39,59,79,99,119,141"
@@ -44,8 +46,7 @@ klist_megahit:
 klist_spades:
   "21,29,39,59,79,99,119"
 
-# binning options
-
+#binning options
 dastool_db:
   /home/projects/ku-cbd/people/antalb/databases/dastool_db
 

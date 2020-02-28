@@ -3,26 +3,21 @@ import os
 import glob
 import shutil
 
-################### change final.contigs.fa before index assembly and binning_maxbin
-    ########### use anvio py script to modify file: remove bad assemblies + weird headers
-                ## ---> for this we need to create a conda environment, try to create one for all department
-    ########### remove previous files, too heavy
-
 ##
 # Index assembly
 ##
 rule index_assembly:
     input:
-        "{projectpath}/05-Assembly/final.contigs.fa"
-    output:
-        samtools="{projectpath}/05-Assembly/{sample}.fa.fai",
-        bwa_bwt="{projectpath}/05-Assembly/{sample}.fa.bwt",
-        bwa_pac="{projectpath}/05-Assembly/{sample}.fa.pac",
-        bwa_ann="{projectpath}/05-Assembly/{sample}.fa.ann",
-        bwa_amb="{projectpath}/05-Assembly/{sample}.fa.amb",
-        bwa_sa="{projectpath}/05-Assembly/{sample}.fa.sa"
+        "{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa"
+    output: # FUTURE: ADD OPTION TO REMOVE ALL BUT FA.FAI
+        samtools="{projectpath}/05-Assembly/{sample}/{sample}.fa.fai",
+        bwa_bwt="{projectpath}/05-Assembly/{sample}/{sample}.fa.bwt",
+        bwa_pac="{projectpath}/05-Assembly/{sample}/{sample}.fa.pac",
+        bwa_ann="{projectpath}/05-Assembly/{sample}/{sample}.fa.ann",
+        bwa_amb="{projectpath}/05-Assembly/{sample}/{sample}.fa.amb",
+        bwa_sa="{projectpath}/05-Assembly/{sample}/{sample}.fa.sa"
     run:
-        if not os.path.exists("projectpath/05-Assembly/sample.fa.fai"):
+        if not os.path.exists("projectpath/05-Assembly/sample/sample.fa.fai"):
             shell("module load tools samtools/1.9 && samtools faidx {input}")
             shell("module load tools bwa/0.7.15 && bwa index {input}")
         else:
@@ -34,7 +29,7 @@ rule index_assembly:
 
 rule assembly_mapping:
     input:
-        assembly="{projectpath}/05-Assembly/final.contigs.fa",
+        assembly="{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa",
         read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
         read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
     output:
@@ -53,17 +48,17 @@ rule assembly_mapping:
 
 rule binning_metabat:
     input:
-        assembly_idx="{projectpath}/05-Assembly/{sample}.fa",
+        assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa",
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
-        depth_file_mtb="{projectpath}/07-Binning/{sample}.metabat/{sample}.depth.txt",
+        #depth_file_mtb="{projectpath}/07-Binning/{sample}.metabat/{sample}.depth.txt",
         dir_mtb=directory("{projectpath}/07-Binning/{sample}.metabat"),
-        bin_table_mtb="{projectpath}/07-Binning/bins_metabat.txt"
+        bin_table_mtb="{projectpath}/07-Binning/{sample}.bins_metabat.txt"
     params:
         threads=expand("{threads}", threads=config['threads'])
     run:
-        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file_mtb} {input.assemblybam}")
-        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.depth_file_mtb} -o {output.dir_mtb} -m 1500 -t {params.threads} --unbinned")
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.dir_mtb}/{sample}.depth.txt {input.assemblybam}")
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.dir_mtb}/{sample}.depth.txt -o {output.dir_mtb} -m 1500 -t {params.threads} --unbinned")
 
         #Generate bin table
         bintable=open(output.bin_table_mtb,"a+")
@@ -85,17 +80,17 @@ rule binning_metabat:
 
 rule binning_maxbin:
     input:
-        assembly_idx="{projectpath}/05-Assembly/{sample}.fa",
+        assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa",
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
-        depth_file_mxb="{projectpath}/07-Binning/{sample}.maxbin/{sample}.depth.txt",
         dir_mxb=directory("{projectpath}/07-Binning/{sample}.maxbin"),
-        bin_table_mxb="{projectpath}/07-Binning/bins_maxbin.txt"
+        #depth_file_mxb="{projectpath}/07-Binning/{sample}.maxbin/{sample}.depth.txt",
+        bin_table_mxb="{projectpath}/07-Binning/{sample}.bins_maxbin.txt"
     params:
         threads=expand("{threads}", threads=config['threads'])
     run:
-        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file_mxb} --noIntraDepthVariance {input.assemblybam}")
-        shell("module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig {input.assembly_idx} -abund {output.depth_file_mxb} -out {output.dir_mxb} -thread {params.threads}")
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.dir_mxb}/{sample}.depth.txt --noIntraDepthVariance {input.assemblybam}")
+        shell("module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig {input.assembly_idx} -abund {output.dir_mxb}/{sample}.depth.txt -out {output.dir_mxb} -thread {params.threads}")
 
         #Generate bin table
         bintable=open(output.bin_table_mxb,"a+")
@@ -118,25 +113,25 @@ rule binning_maxbin:
 
 rule bin_refinement:
     input:
-        assembly_idx="{projectpath}/05-Assembly/{sample}.fa",
-        metabat_bintable="{projectpath}/07-Binning/bins_metabat.txt",
-        maxbin_bintable="{projectpath}/07-Binning/bins_maxbin.txt",
-        bincontig_tables = (",".join({input.metabat_bintable},{input.maxbin_bintable}))
+        assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa",
+        metabat_bintable="{projectpath}/07-Binning/{sample}.bins_metabat.txt",
+        maxbin_bintable="{projectpath}/07-Binning/{sample}.bins_maxbin.txt",
     output:
-        main_dir=directory("{projectpath}/07-Binning/Dastool_refinement"),
-        bin_dir=directory("{projectpath}/07-Binning/Dastool_refinement/Dastool_bins")
+        main_dir=directory("{projectpath}/07-Binning/{sample}_BinRefinement")
+        #bin_dir=directory("{projectpath}/07-Binning/{sample}_BinRefinement/Dastool_bins")
     params:
         threads=expand("{threads}", threads=config['threads']),
         dastoolDependencies=expand("{dastoolDependencies}", dastoolDependencies=config['dastoolDependencies']),
         search_eng=expand("{search_eng}", search_eng=config['search_eng']),
         dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db'])
     run:
-        shell("{params.dastoolDependencies} && DAS_Tool -i {input.bincontig_tables} -c {input.assembly_idx} -o {output.main_dir} -l maxbin,metabat --search_engine {params.search_eng} -t {params.threads} --db_directory {params.dastool_db} --write_bins 1")
+        bincontig_tables=",".join(glob.glob({input.metabat_bintable},{input.maxbin_bintable}))
+        shell("{params.dastoolDependencies} && DAS_Tool -i bincontig_tables -c {input.assembly_idx} -o {output.main_dir} -l maxbin,metabat --search_engine {params.search_eng} -t {params.threads} --db_directory {params.dastool_db} --write_bins 1")
 
-        #Move definitive bins to bin_dir
+        #Move definitive bins to a new directory /Dastool_bins
         import os
         import glob
         binsource=output.main_dir
         binfiles = glob.glob(os.path.join(binsource,'*.fa'))
         for b in binfiles:
-            shutil.move(b, output.bin_dir)
+            shutil.move(b, os.path.join(output.main_dir,Dastool_bins))

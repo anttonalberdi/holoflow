@@ -18,15 +18,11 @@
       # - desired FINAL output dir (the one to be specified in snakemake command!)
         # ------- In python script open this file and paste (outputdir/newname and give it to Snakemake as output files)
 
-# 2. CONFIG.yaml
-  #Change in config.yaml inputdir for path_dir !!!!!!!!!!!!!!!!!
-
-# 3. SNAKEFILE
-  # Modify first rule's input for 00-RAWDATA/file (check output info)
 
 import argparse
 import subprocess
 import os
+import sys
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
@@ -41,13 +37,13 @@ projectpath=args.projectpath
 workflow=args.workflow
 configfile=args.configfile
 
-# A folder 00-RAWDATA is created in .py and the input files specified in input.txt are moved there
+# A folder 00-InputData is created in .py and the input files specified in input.txt are moved there
   # and their name changed to the one specified in input.txt's first column.
 # Paste desired output and give it to snakemake command
 
 
 # Create "00-RawData/" directory if not exists
-input_dir=os.path.join(projectpath,"00-RawData")
+input_dir=os.path.join(projectpath,"00-InputData")
 if not os.path.exists(input_dir):
     os.makedirs(input_dir)
 
@@ -75,7 +71,35 @@ if not os.path.exists(input_dir):
 load_modulesCmd='module unload gcc/5.1.0 && module load anaconda3/4.4.0'
 subprocess.check_call(load_modulesCmd, shell=True)
 
+###########################
+######## WORKFLOWS ########
+###########################
+
+    # Preprocessing workflow
+if workflow == "preprocessing":
+    snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_preprocessing -de snakemake -s preprocessing/Snakefile '+output_files+' --configfile '+configfile+''
+    subprocess.check_call(snakemakeCmd, shell=True)
+
+
+
     # Metagenomics workflow
 if workflow == "metagenomics":
-    snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake snakemake -s metagenomics/Snakefile '+output_files+' --configfile '+configfile+''
-    subprocess.check_call(snakemakeCmd, shell=True)
+
+    prep = input("Input files for holoflow/metagenomics are fastq. Is your data preprocessed? write[y/n]")
+
+    if prep == 'n':
+        prep2 = input("Would you like to process it before running holoflow/metagenomics with holoflow/preprocessing? write[y/n]")
+
+        if prep2 == 'n':
+            print("You should come back when your data is preprocessed. See you soon :)")
+        if prep2 == 'y':
+            snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s metagenomics/prep_and_metagenomics/Snakefile '+output_files+' --configfile '+configfile+''
+            subprocess.check_call(snakemakeCmd, shell=True)
+
+    if prep == 'y':
+        print("Great! Have a nice running!\n\t\tHOLOFOW Metagenomics starting")
+        snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s metagenomics/Snakefile '+output_files+' --configfile '+configfile+''
+        subprocess.check_call(snakemakeCmd, shell=True)
+
+
+    # Genomics workflow

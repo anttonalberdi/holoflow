@@ -1,0 +1,5 @@
+#General options
+# inputdir:  NOT NECESSARY BC INPUT FILES ARE ALREADY IN PROJECTPATH/00-InputData !
+
+#projectpath:
+#This information is taken from output files
