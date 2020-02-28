@@ -221,11 +221,11 @@ rule map_human_split:
 
 
 
+configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/base/config.yaml"
 
 ##
 # Assembly
 ##
-
 rule assembly:
     input:
         read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
@@ -241,25 +241,27 @@ rule assembly:
     run:
         if params.assembler == "megahit":
             shell("module load tools megahit/1.1.1 && megahit -1 {input.read1} -2 {input.read2} -t {params.threads} --k-list {params.klist_megahit} -o {output.dir}")
+
         if params.assembler == "spades":
-            shell("module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && rm -rf {output.dir} && metaspades.py -1 {input.read1} -2 {input.read2} -t {params.threads} -m {params.memory} -k {params.klist_spades} --only-assembler -o {output.dir}")
+            shell("module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 {input.read1} -2 {input.read2} -t {params.threads} -m {params.memory} -k {params.klist_spades} --only-assembler -o {output.dir}")
 
 
-rule assembly_move: ################ IT DOESN'T WORK - try to see if 
+rule assembly_move:
     input:
-        dir = "{projectpath}/05-Assembly/{sample}"
+        dir=directory("{projectpath}/05-Assembly/{sample}"),
+        in_stats="{projectpath}/04-MappedToHuman/{sample}.stats"
     output:
         final_file="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa",
-        stats_file="{projectpath}/05-Assembly/{sample}.stats"
+        stats_file="{projectpath}/05-Assembly/{sample}/{sample}.stats"
     params:
         assembler=expand("{assembler}", assembler=config['assembler'])
     run:
         if params.assembler == "megahit":
             shell("mv {input.dir}/final.contigs.fa {output.final_file}")
-        if params.assembler == "spades":
+        else:
             shell("mv {input.dir}/scaffolds.fasta {output.final_file}")
 
-        shell("mv {projectpath}/04-MappedToHuman/{sample}.stats {output.stats_file}")
+        shell("mv {input.in_stats} {output.stats_file}")
 
         #Get stats after assembly
         contigs = len([1 for line in open(str(output.final_file)) if line.startswith(">")])
@@ -269,15 +271,17 @@ rule assembly_move: ################ IT DOESN'T WORK - try to see if
         statsfile.write("Assembly contigs\t{0} \r\n".format(contigs))
         statsfile.close()
 
-################
 
 rule assembly_reformat:
     input:
-        "{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa"
+        dir="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa",
+        in_stats="{projectpath}/05-Assembly/{sample}/{sample}.stats"
     output:
         "{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa"
+
+
     run:
-        with open(str(input)) as f_input, open(str(output), 'w') as f_output:
+        with open(str(input.dir)) as f_input, open(str(output), 'w') as f_output:
             seq = ''
             contig_n = 0
 
@@ -287,10 +291,10 @@ rule assembly_reformat:
                     if seq:
                         if len(seq) > 1000:
                             contig_n += 1
-                            contig_id = ("C_"+str(contig_n))
+                            contig_id = (">C_"+str(contig_n))
                             seq += ('\n')
 
-                            f_output.write('>'+contig_id + '\n' + seq)
+                            f_output.write(contig_id + '\n' + seq)
                             seq = ''
 
                         else:
@@ -301,9 +305,17 @@ rule assembly_reformat:
             if seq:
                 if len(seq) > 1000:
                     contig_n += 1
-                    contig_id = ("C_"+str(contig_n))
+                    contig_id = (">C_"+str(contig_n))
                     seq += ('\n')
-                    f_output.write('>'+contig_id + '\n' + seq)
+                    f_output.write(contig_id + '\n' + seq)
 
                 else:
                     pass
+
+            #Get stats after assembly reformat
+            contigs = len([1 for line in open(str(output)) if line.startswith(">")])
+
+            #Print stats to stats file
+            statsfile=open(str(input.in_stats),"a+")
+            statsfile.write("Reformated assembly contigs\t{0} \r\n".format(contigs))
+            statsfile.close()
