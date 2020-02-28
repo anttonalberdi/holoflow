@@ -219,10 +219,6 @@ rule map_human_split:
         statsfile.close()
 
 
-
-
-configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/base/config.yaml"
-
 ##
 # Assembly
 ##
