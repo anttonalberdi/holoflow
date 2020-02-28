@@ -26,7 +26,7 @@ import sys
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-f', help="W, dest="inputfile", required=True)
+parser.add_argument('-f', help="W", dest="inputfile", required=True)
 parser.add_argument('-d', help="Project directory path", dest="projectpath", required=True)  ##### ADDED IS NECESSARY PROJECT PATH AT LEAST
 parser.add_argument('-w', help="Chosen Workflow", dest="workflow", required=True)
 parser.add_argument('-c', help="Config file", dest="configfile", required=True)
@@ -85,10 +85,10 @@ if workflow == "preprocessing":
     # Metagenomics workflow
 if workflow == "metagenomics":
 
-    prep = input("Input files for holoflow/metagenomics are fastq. Is your data preprocessed? write[y/n]")
+    prep = input("Input files for holoflow/metagenomics are fastq. Is your data preprocessed? [y/n]")
 
     if prep == 'n':
-        prep2 = input("Would you like to process it before running holoflow/metagenomics with holoflow/preprocessing? write[y/n]")
+        prep2 = input("Would you like to process it before running holoflow/metagenomics with holoflow/preprocessing? [y/n]")
 
         if prep2 == 'n':
             print("You should come back when your data is preprocessed. See you soon :)")
@@ -97,7 +97,7 @@ if workflow == "metagenomics":
             subprocess.check_call(snakemakeCmd, shell=True)
 
     if prep == 'y':
-        print("Great! Have a nice running!\n\t\tHOLOFOW Metagenomics starting")
+        print("Great! Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
         snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+projectpath+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s metagenomics/Snakefile '+output_files+' --configfile '+configfile+''
         subprocess.check_call(snakemakeCmd, shell=True)
 
