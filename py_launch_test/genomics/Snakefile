@@ -2,7 +2,7 @@
 
 ## ADD ALL MODULE LOAD
 ## QUESTIONS:
-    # what about "samtools view ?? where do I put this info? is it a command or module to load?"
+    #DONE# what about "samtools view ?? where do I put this info? is it a command or module to load?"
     # before rule mapping_stats samtools depth and gatk DepthOfCoverage?
     # rule mapping_stats, what about the log file? should I add it in outputs?
 
@@ -44,12 +44,15 @@ rule reads_to_bam:
         group_info=expand("{group_info}", group_info=config['group_info'])
     output:
         sam="{projectpath}/01-MapToReference/aligned_reads.sam"
-        bam="{projectpath}/01-MapToReference/aligned_reads.sorted.bam"
+        fixed_bam="{projectpath}/01-MapToReference/aligned_reads.fixed.bam"
+        sorted_bam="{projectpath}/01-MapToReference/aligned_reads.sorted.bam"
+        final_bam="{projectpath}/01-MapToReference/genomics.bam"
     shell:
         """
         bwa mem -R {params.group_info} -p {input.refgen} {input.reads} > {output}
-        samtools sort -o {output.bam} {output.sam}
-
+        samtools fixmate -0 bam {output.fixed_bam} {output.sam}
+        samtools sort -0 bam {output.sorted_bam} {output.fixed_bam}
+        samtools view -T {input.refgen} -C -o {output.final_bam} {output.sorted_bam}
         """
 
 ########## ???
@@ -58,7 +61,7 @@ rule reads_to_bam:
 ##################
 rule mapping_stats:
     input:
-        bam="{projectpath}/01-MapToReference/aligned_reads.sorted.bam"
+        bam="{projectpath}/01-MapToReference/genomics.bam"
         refgen_idx="{projectpath}/00-InputData/reference.fa.fai"
     params:
         #Combine all positions with a depth >= max into a single bin in the histogram.
@@ -81,7 +84,7 @@ rule mapping_stats:
 ##########
 
 
-#### Option 1
+
 
 rule variant_calling:
 
