@@ -244,7 +244,7 @@ rule assembly:
 
 rule assembly_move:
     input:
-        dir=directory("{projectpath}/05-Assembly/{sample}"),
+        dir="{projectpath}/05-Assembly/{sample}",
         in_stats="{projectpath}/04-MappedToHuman/{sample}.stats"
     output:
         final_file="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa",
@@ -273,7 +273,7 @@ rule assembly_reformat:
         dir="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa",
         in_stats="{projectpath}/05-Assembly/{sample}/{sample}.stats"
     output:
-        "{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa"
+        "{projectpath}/05-Assembly/{sample}/{sample}.fa"
 
 
     run:

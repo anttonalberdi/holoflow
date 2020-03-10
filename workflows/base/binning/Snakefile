@@ -8,7 +8,7 @@ import shutil
 ##
 rule index_assembly:
     input:
-        "{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa"
+        "{projectpath}/05-Assembly/{sample}/{sample}.fa"
     output: # FUTURE: ADD OPTION TO REMOVE ALL BUT FA.FAI
         samtools="{projectpath}/05-Assembly/{sample}/{sample}.fa.fai",
         bwa_bwt="{projectpath}/05-Assembly/{sample}/{sample}.fa.bwt",
@@ -17,9 +17,8 @@ rule index_assembly:
         bwa_amb="{projectpath}/05-Assembly/{sample}/{sample}.fa.amb",
         bwa_sa="{projectpath}/05-Assembly/{sample}/{sample}.fa.sa"
     run:
-        if not os.path.exists("projectpath/05-Assembly/sample/sample.fa.fai"):
-            shell("module load tools samtools/1.9 && samtools faidx {input}")
-            shell("module load tools bwa/0.7.15 && bwa index {input}")
+        if not os.path.exists("projectpath/05-Assembly/{sample}/{sample}.fa.fai"):
+            shell("module load tools samtools/1.9 && samtools faidx {input} && module load tools bwa/0.7.15 && bwa index {input}")
         else:
             pass
 
@@ -29,7 +28,7 @@ rule index_assembly:
 
 rule assembly_mapping:
     input:
-        assembly="{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa",
+        assembly="{projectpath}/05-Assembly/{sample}/{sample}.fa",
         read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
         read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
     output:
@@ -41,6 +40,15 @@ rule assembly_mapping:
         module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t {params.threads} -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" {input.assembly} {input.read1} {input.read2} | samtools view -T {input.assembly} -b - | samtools sort -T {input.assembly} - > {output.assemblybam}
         """
 
+##
+# Prodigal ORF prediction
+##
+#https://github.com/hyattpd/prodigal/wiki/Gene-Prediction-Modes
+#https://github.com/hyattpd/prodigal/wiki/Advice-by-Input-Type#metagenomes
+
+
+
+
 
 ##
 # Binning with metabat
@@ -48,7 +56,7 @@ rule assembly_mapping:
 
 rule binning_metabat:
     input:
-        assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa",
+        assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.fa",
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
         #depth_file_mtb="{projectpath}/07-Binning/{sample}.metabat/{sample}.depth.txt",
@@ -80,7 +88,7 @@ rule binning_metabat:
 
 rule binning_maxbin:
     input:
-        assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa",
+        assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.fa",
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
         dir_mxb=directory("{projectpath}/07-Binning/{sample}.maxbin"),
@@ -105,20 +113,18 @@ rule binning_maxbin:
                         bintable.write("{0}\t{1}\r\n".format(contig,binname))
         bintable.close()
 
-
-
 ##
 # Bin refinement with DASTool
 ##
 
 rule bin_refinement:
     input:
-        assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa",
+        assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.fa",
         metabat_bintable="{projectpath}/07-Binning/{sample}.bins_metabat.txt",
         maxbin_bintable="{projectpath}/07-Binning/{sample}.bins_maxbin.txt",
     output:
-        main_dir=directory("{projectpath}/07-Binning/{sample}_BinRefinement")
-        #bin_dir=directory("{projectpath}/07-Binning/{sample}_BinRefinement/Dastool_bins")
+        main_dir=directory("{projectpath}/07-Binning/{sample}_BinRefinement"),
+        bin_dir=directory("{projectpath}/07-Binning/{sample}_Dastool_bins")
     params:
         threads=expand("{threads}", threads=config['threads']),
         dastoolDependencies=expand("{dastoolDependencies}", dastoolDependencies=config['dastoolDependencies']),
@@ -134,4 +140,4 @@ rule bin_refinement:
         binsource=output.main_dir
         binfiles = glob.glob(os.path.join(binsource,'*.fa'))
         for b in binfiles:
-            shutil.move(b, os.path.join(output.main_dir,Dastool_bins))
+            shutil.move(b, output.bin_dir)

@@ -1,16 +1,13 @@
 ################################################################################################################
 ############################################       METAGENOMICS     ############################################
 ################################################################################################################
-
-
-
 ##
 # Assembly
 ##
 rule assembly:
     input:
-        read1="{projectpath}/00-InputData/{sample}_1.fastq",
-        read2="{projectpath}/00-InputData/{sample}_2.fastq"
+        read1="{projectpath}/04-MapToHuman/{sample}_1.fastq",
+        read2="{projectpath}/04-MapToHuman/{sample}_2.fastq"
     output:
         dir=directory("{projectpath}/05-Assembly/{sample}")
     params:
@@ -29,7 +26,8 @@ rule assembly:
 
 rule assembly_move:
     input:
-        dir=directory("{projectpath}/05-Assembly/{sample}"),
+        megahit="{projectpath}/05-Assembly/{sample}/final.contigs.fa",
+        spades="{projectpath}/05-Assembly/{sample}/scaffolds.fasta",
         in_stats="{projectpath}/04-MappedToHuman/{sample}.stats"
     output:
         final_file="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa",
@@ -38,9 +36,9 @@ rule assembly_move:
         assembler=expand("{assembler}", assembler=config['assembler'])
     run:
         if params.assembler == "megahit":
-            shell("mv {input.dir}/final.contigs.fa {output.final_file}")
+            shell("mv {input.megahit} {output.final_file}")
         else:
-            shell("mv {input.dir}/scaffolds.fasta {output.final_file}")
+            shell("mv {input.spades} {output.final_file}")
 
         shell("mv {input.in_stats} {output.stats_file}")
 
@@ -54,11 +52,11 @@ rule assembly_move:
 
 
 rule assembly_reformat:
-    input:
+    input:  # This doesn't 100% work, "parent direcory"
         dir="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa",
         in_stats="{projectpath}/05-Assembly/{sample}/{sample}.stats"
     output:
-        "{projectpath}/05-Assembly/{sample}/{sample}.reformat.assembly.fa"
+        "{projectpath}/05-Assembly/{sample}/{sample}.fa"
 
 
     run:
