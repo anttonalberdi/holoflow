@@ -43,10 +43,17 @@ rule assembly_mapping:
 ##
 # Prodigal ORF prediction
 ##
-#https://github.com/hyattpd/prodigal/wiki/Gene-Prediction-Modes
-#https://github.com/hyattpd/prodigal/wiki/Advice-by-Input-Type#metagenomes
-
-
+#"Metagenomes - The simplest approach for metagenomes is to put all the sequences in one FASTA file and analyze them in Anonymous Mode."
+rule protein_prediction_prodigal:
+    input:
+        assembly="{projectpath}/05-Assembly/{sample}/{sample}.fa"
+    output:
+        genetic_coords="{projectpath}/06-ProdigalPrediction/{sample}_coords.gbk",
+        protein_translations="{projectpath}/06-ProdigalPrediction/{sample}_protein_translations.faa"
+    shell: # Prodigal is run in "anon", Anonymous workflow
+        """
+        prodigal -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations} -p anon
+        """
 
 
 
@@ -81,7 +88,6 @@ rule binning_metabat:
                         bintable.write("{0}\t{1}\r\n".format(contig,binname))
         bintable.close()
 
-
 ##
 # Binning with maxbin
 ##
@@ -114,14 +120,17 @@ rule binning_maxbin:
         bintable.close()
 
 ##
-# Bin refinement with DASTool
+# Bin refinement with DASTool using binning: metabat, maxbin and proteins from: prodigal
 ##
+ # --proteins                 Predicted proteins in prodigal fasta format (>scaffoldID_geneNo).
+ #                              Gene prediction step will be skipped if given. (optional)
 
 rule bin_refinement:
     input:
         assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.fa",
         metabat_bintable="{projectpath}/07-Binning/{sample}.bins_metabat.txt",
         maxbin_bintable="{projectpath}/07-Binning/{sample}.bins_maxbin.txt",
+        pproteins="{projectpath}/06-ProdigalPrediction/{sample}_protein_translations.faa"
     output:
         main_dir=directory("{projectpath}/07-Binning/{sample}_BinRefinement"),
         bin_dir=directory("{projectpath}/07-Binning/{sample}_Dastool_bins")
@@ -132,7 +141,7 @@ rule bin_refinement:
         dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db'])
     run:
         bincontig_tables=",".join(glob.glob({input.metabat_bintable},{input.maxbin_bintable}))
-        shell("{params.dastoolDependencies} && DAS_Tool -i bincontig_tables -c {input.assembly_idx} -o {output.main_dir} -l maxbin,metabat --search_engine {params.search_eng} -t {params.threads} --db_directory {params.dastool_db} --write_bins 1")
+        shell("{params.dastoolDependencies} && DAS_Tool -i bincontig_tables -c {input.assembly_idx} -o {output.main_dir} --proteins {input.pproteins} -l maxbin,metabat --search_engine {params.search_eng} -t {params.threads} --db_directory {params.dastool_db} --write_bins 1")
 
         #Move definitive bins to a new directory /Dastool_bins
         import os
