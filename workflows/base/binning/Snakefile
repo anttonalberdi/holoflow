@@ -39,8 +39,6 @@ rule assembly_mapping:
         """
         module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t {params.threads} -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" {input.assembly} {input.read1} {input.read2} | samtools view -T {input.assembly} -b - | samtools sort -T {input.assembly} - > {output.assemblybam}
         """
-############### ADD COASSEMBLY
-
 
 ##
 # Prodigal ORF prediction
@@ -48,13 +46,13 @@ rule assembly_mapping:
 #"Metagenomes - The simplest approach for metagenomes is to put all the sequences in one FASTA file and analyze them in Anonymous Mode."
 rule protein_prediction_prodigal:
     input:
-        assembly="{projectpath}/05-Assembly/{sample}/{sample}.fa"
+        assembly="{projectpath}/05-Assembly/{sample}/{sample}.fna"
     output:
-        genetic_coords="{projectpath}/06-ProdigalPrediction/{sample}_coords.gbk",
-        protein_translations="{projectpath}/06-ProdigalPrediction/{sample}_protein_translations.faa"
+        genetic_coords="{projectpath}/06-ProdigalPrediction/{sample}.coords.gbk",
+        protein_translations="{projectpath}/06-ProdigalPrediction/{sample}.protein_translations.faa"
     shell: # Prodigal is run in "anon", Anonymous workflow
         """
-        prodigal -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations} -p anon
+        module unload gcc && module load tools prodigal/2.6.3 && prodigal -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations} -p meta
         """
 
 

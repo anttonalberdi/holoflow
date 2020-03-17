@@ -48,7 +48,7 @@ klist_spades:
 coassembly:
   TRUE
 
-maxbin_threads:
+maxbin_coassembly_threads:
   4
 
 dastool_db:
