@@ -70,20 +70,24 @@ rule binning_metabat:
         assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.fa",
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
-        dir_mtb=directory("{projectpath}/07-Binning/{sample}.metabat"),
+        dir_mtb="{projectpath}/07-Binning/{sample}.metabat",
         depth_file="{projectpath}/07-Binning/{sample}.depth_metabat.txt",
-        bin_table_mtb="{projectpath}/07-Binning/{sample}.bins_metabat.txt"
+        bin_table_mtb="{projectpath}/07-Binning/{sample}.bins_metabat.txt",
+        final_file="{projectpath}/07-Binning/{sample}.bins_metabat.tar.gz"
     params:
         threads=expand("{threads}", threads=config['threads'])
     run:
-
         shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} {input.assemblybam}")
-        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.depth_file} -o {output.dir_mtb}/bin -m 1500 -t {params.threads} --unbinned")
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.depth_file} -o {output.dir_mtb} -m 1500 -t {params.threads} --unbinned")
 
     #Create contig to bin table
-        bintable = open(str(output.bin_table_mtb),"a+")     #CHANGED
-        metabatdir = os.path.join(output.dir_mtb + 'bin*fa*')
-        binlist = glob.glob(metabatdir)
+
+        bintable = open(str(output.bin_table_mtb),"a+")
+
+        binlist=glob.glob(str(dir_mtb+"*"))
+
+        # metabatdir = os.path.join(projectpath,"07-Binning")
+        #binlist = glob.glob(metabatdir)
         for bin in binlist:
             binname = os.path.splitext(os.path.basename(bin))[0]+''
             with open(bin, 'r') as binfile:
@@ -94,6 +98,7 @@ rule binning_metabat:
                         bintable.write("{0}\t{1}\r\n".format(contig,binname))
         bintable.close()
 
+        shell("tar -czvf {output.final_file} {output.dir_mtb}*")
 ##
 # Binning with maxbin
 ##
@@ -104,23 +109,23 @@ rule binning_maxbin:
         assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.fa",
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
-        dir_mxb=directory("{projectpath}/07-Binning/{sample}.maxbin"),
-        depth_file="{projectpath}/07-Binning/{sample}.depth_maxbin.txt*",
-        bin_table_mxb="{projectpath}/07-Binning/{sample}.bins_maxbin.txt"
+        dir_mxb="{projectpath}/07-Binning/{sample}.maxbin",
+        depth_file="{projectpath}/07-Binning/{sample}.depth_maxbin.txt",
+        bin_table_mxb="{projectpath}/07-Binning/{sample}.bins_maxbin.txt",
+        final_file="{projectpath}/07-Binning/{sample}.bins_maxbin.tar.gz"
     params:
         threads=expand("{threads}", threads=config['threads'])
     run:
-        if not os.path.exists(str(output.dir_mxb)): #CHANGED
-            shell("mkdir {output.dir_mxb}")
-
-
         shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file}--noIntraDepthVariance {input.assemblybam}")
-        shell("module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig {input.assembly_idx} -abund {output.depth_file} -out {output.dir_mxb}/bin -thread {params.threads}")
+        shell("module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig {input.assembly_idx} -abund {output.depth_file}* -out {output.dir_mxb} -thread {params.threads}")
 
         #Generate bin table
         bintable = open(str(output.bin_table_mxb),"a+")
-        maxbindir = os.path.join(output.dir_mxb + 'bin*fa*')       #CHANGED
-        binlist = glob.glob(maxbindir)
+
+        binlist=glob.glob(str(dir_mxb+"*"))
+
+        #maxbindir = os.path.join(output.dir_mxb + 'bin*fa*')
+        #binlist = glob.glob(maxbindir)
         for bin in binlist:
             binname = os.path.splitext(os.path.basename(bin))[0]+''
             with open(bin, 'r') as binfile:
@@ -130,6 +135,8 @@ rule binning_maxbin:
                         contig = contig.replace(">", "")
                         bintable.write("{0}\t{1}\r\n".format(contig,binname))
         bintable.close()
+
+        shell("tar -czvf {output.final_file} {output.dir_mxb}*")
 
 ##
 # Bin refinement with DASTool using binning: metabat, maxbin and proteins from: prodigal
