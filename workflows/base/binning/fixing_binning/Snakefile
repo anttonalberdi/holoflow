@@ -78,11 +78,11 @@ rule binning_metabat:
     run:
 
         shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} {input.assemblybam}")
-        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.depth_file} -o {output.dir_mtb} -m 1500 -t {params.threads} --unbinned")
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.depth_file} -o {output.dir_mtb}/bin -m 1500 -t {params.threads} --unbinned")
 
     #Create contig to bin table
         bintable = open(str(output.bin_table_mtb),"a+")     #CHANGED
-        metabatdir = os.path.join(output.dir_mtb + '.*fa')
+        metabatdir = os.path.join(output.dir_mtb + 'bin*fa*')
         binlist = glob.glob(metabatdir)
         for bin in binlist:
             binname = os.path.splitext(os.path.basename(bin))[0]+''
@@ -105,7 +105,7 @@ rule binning_maxbin:
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
         dir_mxb=directory("{projectpath}/07-Binning/{sample}.maxbin"),
-        depth_file="{projectpath}/07-Binning/{sample}.depth_maxbin.txt",
+        depth_file="{projectpath}/07-Binning/{sample}.depth_maxbin.txt*",
         bin_table_mxb="{projectpath}/07-Binning/{sample}.bins_maxbin.txt"
     params:
         threads=expand("{threads}", threads=config['threads'])
@@ -115,11 +115,11 @@ rule binning_maxbin:
 
 
         shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file}--noIntraDepthVariance {input.assemblybam}")
-        shell("module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig {input.assembly_idx} -abund {output.depth_file}* -out {output.dir_mxb} -thread {params.threads}")
+        shell("module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig {input.assembly_idx} -abund {output.depth_file} -out {output.dir_mxb}/bin -thread {params.threads}")
 
         #Generate bin table
         bintable = open(str(output.bin_table_mxb),"a+")
-        maxbindir = os.path.join(output.dir_mxb + '.*fa')       #CHANGED
+        maxbindir = os.path.join(output.dir_mxb + 'bin*fa*')       #CHANGED
         binlist = glob.glob(maxbindir)
         for bin in binlist:
             binname = os.path.splitext(os.path.basename(bin))[0]+''
@@ -141,7 +141,7 @@ rule bin_refinement:
     input:
         assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.fa",
         metabat_bintable="{projectpath}/07-Binning/{sample}.bins_metabat.txt",
-        maxbin_bintable="{projectpath}/07-Binning/{sample}.bins_maxbin.txt",
+        maxbin_bintable="{projectpath}/07-Binning/{sample}.bins_maxbin.txt*",
         pproteins="{projectpath}/06-ProdigalPrediction/{sample}.protein_translations.faa"
     output:
         main_dir=directory("{projectpath}/07-Binning/{sample}_BinRefinement"),
