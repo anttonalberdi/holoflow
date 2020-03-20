@@ -1,4 +1,115 @@
-configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/base/binning/config.yaml"
+configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/base/coassembly/config.yaml"
+################################################################################################################
+######################################### METAGENOMICS  COASSEMBLY   ###########################################
+################################################################################################################
+##
+# Cossembly
+##
+rule assembly:
+    input:
+        read1="{projectpath}/04-MapToHuman/{sample}_1.fastq",
+        read2="{projectpath}/04-MapToHuman/{sample}_2.fastq"
+    output:
+        dir=directory("{projectpath}/05-Assembly/{sample}")
+    params:
+        memory=expand("{memory}", memory=config['memory']),
+        klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
+        klist_spades=expand("{klist_spades}", klist_spades=config['klist_spades']),
+        threads=expand("{threads}", threads=config['threads']),
+        assembler=expand("{assembler}", assembler=config['assembler'])
+    run:
+        if params.assembler == "megahit":
+            shell("module load tools megahit/1.1.1 && megahit -1 {input.read1} -2 {input.read2} -t {params.threads} --k-list {params.klist_megahit} -o {output.dir}")
+
+        if params.assembler == "spades":
+            shell("module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 {input.read1} -2 {input.read2} -t {params.threads} -m {params.memory} -k {params.klist_spades} --only-assembler -o {output.dir}")
+
+
+rule assembly_move:
+    input:
+        megahit="{projectpath}/05-Assembly/{sample}/final.contigs.fa",
+        spades="{projectpath}/05-Assembly/{sample}/scaffolds.fasta",
+        in_stats="{projectpath}/04-MappedToHuman/{sample}.stats"
+    output:
+        final_file="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa",
+        stats_file="{projectpath}/05-Assembly/{sample}/{sample}.stats"
+    params:
+        assembler=expand("{assembler}", assembler=config['assembler'])
+    run:
+        if params.assembler == "megahit":
+            shell("mv {input.megahit} {output.final_file}")
+        else:
+            shell("mv {input.spades} {output.final_file}")
+
+        shell("mv {input.in_stats} {output.stats_file}")
+
+        #Get stats after assembly
+        contigs = len([1 for line in open(str(output.final_file)) if line.startswith(">")])
+
+        #Print stats to stats file
+        statsfile=open(str(output.stats_file),"a+")
+        statsfile.write("Assembly contigs\t{0} \r\n".format(contigs))
+        statsfile.close()
+
+
+rule assembly_reformat:
+    input:  # This doesn't 100% work, "parent direcory"
+        dir="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa",
+        in_stats="{projectpath}/05-Assembly/{sample}/{sample}.stats"
+    output:
+        "{projectpath}/05-Assembly/{sample}/{sample}.fa"
+
+
+    run:
+        with open(str(input.dir)) as f_input, open(str(output), 'w') as f_output:
+            seq = ''
+            contig_n = 0
+
+            for line in f_input:
+                if line.startswith('>'):
+
+                    if seq:
+                        if len(seq) > 1000:
+                            contig_n += 1
+                            contig_id = (">C_"+str(contig_n))
+                            seq += ('\n')
+
+                            f_output.write(contig_id + '\n' + seq)
+                            seq = ''
+
+                        else:
+                            seq = ''
+                else:
+                    seq += line.strip()
+
+            if seq:
+                if len(seq) > 1000:
+                    contig_n += 1
+                    contig_id = (">C_"+str(contig_n))
+                    seq += ('\n')
+                    f_output.write(contig_id + '\n' + seq)
+
+                else:
+                    pass
+
+            #Get stats after assembly reformat
+            contigs = len([1 for line in open(str(output)) if line.startswith(">")])
+
+            #Print stats to stats file
+            statsfile=open(str(input.in_stats),"a+")
+            statsfile.write("Reformated assembly contigs\t{0} \r\n".format(contigs))
+            statsfile.close()
+
+
+##
+# BINNING TO ADD !!!!!!!!!!!!!!!!!!!!
+##
+
+
+
+
+print("############################ Holoflow has finished the METAGENOMICS workflow :) ############################")
+
 import os
 import glob
 import shutil
@@ -70,18 +181,15 @@ rule binning_metabat:
         assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.fa",
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
-        #dir_mtb=directory("{projectpath}/07-Binning/{sample}.metabat"),
-        dir_mtb=directory("{projectpath}/07-Binning/metabat"),
+        dir_mtb=directory("{projectpath}/07-Binning/{sample}.metabat/"),
+        depth_file="{projectpath}/07-Binning/{sample}.depth_metabat.txt",
         bin_table_mtb="{projectpath}/07-Binning/{sample}.bins_metabat.txt"
     params:
         threads=expand("{threads}", threads=config['threads'])
     run:
-        if not os.path.exists(str(output.dir_mtb)): #CHANGED
-            shell("mkdir {output.dir_mtb}")
 
-
-        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.dir_mtb}/depth.txt {input.assemblybam}")
-        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.dir_mtb}/depth.txt -o {output.dir_mtb} -m 1500 -t {params.threads} --unbinned")
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} {input.assemblybam}")
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.depth_file} -o {output.dir_mtb} -m 1500 -t {params.threads} --unbinned")
 
     #Create contig to bin table
         bintable = open(str(output.bin_table_mtb),"a+")     #CHANGED
@@ -107,17 +215,18 @@ rule binning_maxbin:
         assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.fa",
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
-        dir_mxb=directory("{projectpath}/07-Binning/{sample}.maxbin"),
+        dir_mxb=directory("{projectpath}/07-Binning/{sample}.maxbin/"),
+        depth_file="{projectpath}/07-Binning/{sample}.depth_maxbin.txt",
         bin_table_mxb="{projectpath}/07-Binning/{sample}.bins_maxbin.txt"
     params:
-        threads=expand("{threads}", threads=config['threads'])
+        maxbin_threads=expand("{maxbin_threads}", maxbin_threads=config['maxbin_threads'])
     run:
         if not os.path.exists(str(output.dir_mxb)): #CHANGED
             shell("mkdir {output.dir_mxb}")
 
 
-        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.dir_mxb}/depth.txt --noIntraDepthVariance {input.assemblybam}")
-        shell("module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig {input.assembly_idx} -abund {output.dir_mxb}/depth.txt -out {output.dir_mxb} -thread {params.threads}")
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file}--noIntraDepthVariance {input.assemblybam}")
+        shell("module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig {input.assembly_idx} -abund {output.depth_file} -out {output.dir_mxb} -thread {params.maxbin_threads}")
 
         #Generate bin table
         bintable = open(str(output.bin_table_mxb),"a+")

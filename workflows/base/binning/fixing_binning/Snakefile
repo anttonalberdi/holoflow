@@ -70,18 +70,15 @@ rule binning_metabat:
         assembly_idx="{projectpath}/05-Assembly/{sample}/{sample}.fa",
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
-        #dir_mtb=directory("{projectpath}/07-Binning/{sample}.metabat"),
-        dir_mtb=directory("{projectpath}/07-Binning/metabat"),
+        dir_mtb=directory("{projectpath}/07-Binning/{sample}.metabat"),
+        depth_file="{projectpath}/07-Binning/{sample}.depth_metabat.txt",
         bin_table_mtb="{projectpath}/07-Binning/{sample}.bins_metabat.txt"
     params:
         threads=expand("{threads}", threads=config['threads'])
     run:
-        if not os.path.exists(str(output.dir_mtb)): #CHANGED
-            shell("mkdir {output.dir_mtb}")
 
-
-        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.dir_mtb}/depth.txt {input.assemblybam}")
-        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.dir_mtb}/depth.txt -o {output.dir_mtb} -m 1500 -t {params.threads} --unbinned")
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} {input.assemblybam}")
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i {input.assembly_idx} -a {output.depth_file} -o {output.dir_mtb} -m 1500 -t {params.threads} --unbinned")
 
     #Create contig to bin table
         bintable = open(str(output.bin_table_mtb),"a+")     #CHANGED
@@ -108,6 +105,7 @@ rule binning_maxbin:
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
         dir_mxb=directory("{projectpath}/07-Binning/{sample}.maxbin"),
+        depth_file="{projectpath}/07-Binning/{sample}.depth_maxbin.txt",
         bin_table_mxb="{projectpath}/07-Binning/{sample}.bins_maxbin.txt"
     params:
         threads=expand("{threads}", threads=config['threads'])
@@ -116,8 +114,8 @@ rule binning_maxbin:
             shell("mkdir {output.dir_mxb}")
 
 
-        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.dir_mxb}/depth.txt --noIntraDepthVariance {input.assemblybam}")
-        shell("module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig {input.assembly_idx} -abund {output.dir_mxb}/depth.txt -out {output.dir_mxb} -thread {params.threads}")
+        shell("module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file}--noIntraDepthVariance {input.assemblybam}")
+        shell("module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig {input.assembly_idx} -abund {output.depth_file}* -out {output.dir_mxb} -thread {params.threads}")
 
         #Generate bin table
         bintable = open(str(output.bin_table_mxb),"a+")

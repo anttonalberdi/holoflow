@@ -1,0 +1,58 @@
+#General options
+inputdir:
+  /home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test
+
+removeintermediate:
+  TRUE
+
+threads:
+  24
+
+#qual_filt options
+adapter1:
+  AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA
+adapter2:
+  GAACGACATGGCTACGATCCGACTT
+maxns:
+  5
+minquality:
+  30
+
+
+#dup_rem_paired options
+separator:
+  ^
+
+#map_host options
+refgenomehost:
+  /home/projects/ku-cbd/people/antalb/reference_genomes/Gallus_gallus.Gallus_gallus-5.0.dna.toplevel.fa
+
+#map_human options
+refgenomehuman:
+  /home/projects/ku-cbd/people/antalb/reference_genomes/Homo_sapiens.fasta
+
+#assembly options
+memory:
+  100
+
+assembler:
+  spades
+
+klist_megahit:
+  "21,29,39,59,79,99,119,141"
+
+klist_spades:
+  "21,29,39,59,79,99,119"
+
+# binning options
+maxbin_coassembly_threads:
+  4
+
+dastool_db:
+  /home/projects/ku-cbd/people/antalb/databases/dastool_db
+
+dastoolDependencies:
+  'module load tools gcc/5.4.0 intel/perflibs/2018 R/3.6.1 ruby/2.6.3 pullseq/1.0.2 perl/5.24.0 ncbi-blast/2.6.0+ prodigal/2.6.3 das_tool/1.1.1 diamond/0.9.24 usearch/11.0.667'
+
+search_eng:
+  diamond
