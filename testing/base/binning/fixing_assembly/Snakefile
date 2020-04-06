@@ -1,4 +1,5 @@
-# configfile specified in command line
+
+configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/base/config.yaml"
 
 ##
 # Quality-filtering
@@ -6,8 +7,8 @@
 
 rule qual_filt:
     input:
-        read1="{projectpath}/00-InputData/{sample}_1.fastq.gz",
-        read2="{projectpath}/00-00-InputData/{sample}_2.fastq.gz"
+        read1=expand("{inputdir}/{{sample}}_1.fastq.gz", inputdir=config['inputdir']),
+        read2=expand("{inputdir}/{{sample}}_2.fastq.gz", inputdir=config['inputdir'])
     output:
         read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
         read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq",
@@ -194,8 +195,8 @@ rule map_human_split:
         all_bam="{projectpath}/04-MappedToHuman/{sample}_all.bam",
         in_stats="{projectpath}/02-DuplicatesRemoved/{sample}.stats"
     output:
-        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq", ## mapped
-        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq", ## mapped
+        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
+        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq",
         stats_file="{projectpath}/04-MappedToHuman/{sample}.stats"
     run:
         shell("module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -")
@@ -218,4 +219,116 @@ rule map_human_split:
         statsfile.write("Reads after mapping to reference genome \t{0} ({1} bases)\r\n".format(reads,bases))
         statsfile.close()
 
-print("############################ Holoflow has finished PREPROCESSING :) ############################")"
+
+##
+# Assembly
+##
+rule assembly:
+    input:
+        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
+        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
+    output:
+        dir="{projectpath}/05-Assembly/{sample}",
+        stats_file="{projectpath}/05-Assembly/{sample}/{sample}.stats"
+    params:
+        sample="{sample}",
+        memory=expand("{memory}", memory=config['memory']),
+        klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
+        klist_spades=expand("{klist_spades}", klist_spades=config['klist_spades']),
+        threads=expand("{threads}", threads=config['threads']),
+        assembler=expand("{assembler}", assembler=config['assembler'])
+    run:
+        if params.assembler == "megahit":
+            shell("module load tools megahit/1.1.1 && mkdir {output.dir} && megahit -1 {input.read1} -2 {input.read2} -t {params.threads} --k-list {params.klist_megahit} -o {output.dir}")
+            shell("mv {output.dir}/final.contigs.fa {output.dir}/assembly.{params.sample}.fa")
+        if params.assembler == "spades":
+            shell("module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && mkdir {output.dir} && metaspades.py -1 {input.read1} -2 {input.read2} -t {params.threads} -m {params.memory} -k {params.klist_spades} --only-assembler -o {output.dir}")
+            shell("mv {output.dir}/scaffolds.fasta {output.dir}/assembly.{params.sample}.fa")
+
+
+        #Get stats after assembly
+        contigs = len([1 for line in open(str(output.final_file)) if line.startswith(">")])
+
+        #Print stats to stats file
+        statsfile=open(str(output.stats_file),"a+")
+        statsfile.write("Assembly contigs\t{0} \r\n".format(contigs))
+        statsfile.close()
+#
+# rule assembly_move:
+#     params:
+#         assembler=expand("{assembler}", assembler=config['assembler'])
+#     input:
+#         if params.assembler == "megahit":
+#             megahit="{projectpath}/05-Assembly/{sample}/final.contigs.fa",
+#             in_stats="{projectpath}/04-MappedToHuman/{sample}.stats"
+#         else:
+#             spades="{projectpath}/05-Assembly/{sample}/scaffolds.fasta",
+#             in_stats="{projectpath}/04-MappedToHuman/{sample}.stats"
+#     output:
+#         final_file="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa",
+#         stats_file="{projectpath}/05-Assembly/{sample}/{sample}.stats"
+#
+#     run:
+#         if params.assembler == "megahit":
+#             shell("mv {input.dir}/final.contigs.fa {output.final_file}")
+#         else:
+#             shell("mv {input.dir}/scaffolds.fasta {output.final_file}")
+#
+#         shell("mv {input.in_stats} {output.stats_file}")
+#
+#         #Get stats after assembly
+#         contigs = len([1 for line in open(str(output.final_file)) if line.startswith(">")])
+#
+#         #Print stats to stats file
+#         statsfile=open(str(output.stats_file),"a+")
+#         statsfile.write("Assembly contigs\t{0} \r\n".format(contigs))
+#         statsfile.close()
+#
+
+rule assembly_reformat:
+    input:
+        in_stats="{projectpath}/05-Assembly/{sample}/{sample}.stats",
+        assembly="{projectpath}/05-Assembly/{sample}/assembly.{sample}.fa"
+    output:
+        "{projectpath}/05-Assembly/{sample}/{sample}.fna"
+
+
+    run:
+        with open(str(input.assembly)) as f_input, open(str(output), 'w') as f_output:
+            seq = ''
+            contig_n = 0
+
+            for line in f_input:
+                if line.startswith('>'):
+
+                    if seq:
+                        if len(seq) > 1000:
+                            contig_n += 1
+                            contig_id = (">C_"+str(contig_n))
+                            seq += ('\n')
+
+                            f_output.write(contig_id + '\n' + seq)
+                            seq = ''
+
+                        else:
+                            seq = ''
+                else:
+                    seq += line.strip()
+
+            if seq:
+                if len(seq) > 1000:
+                    contig_n += 1
+                    contig_id = (">C_"+str(contig_n))
+                    seq += ('\n')
+                    f_output.write(contig_id + '\n' + seq)
+
+                else:
+                    pass
+
+            #Get stats after assembly reformat
+            contigs = len([1 for line in open(str(output)) if line.startswith(">")])
+
+            #Print stats to stats file
+            statsfile=open(str(input.in_stats),"a+")
+            statsfile.write("Reformated assembly contigs\t{0} \r\n".format(contigs))
+            statsfile.close()
