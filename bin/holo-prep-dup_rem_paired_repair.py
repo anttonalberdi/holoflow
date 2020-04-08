@@ -5,8 +5,8 @@ import argparse
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-o1', help="path1", dest="read1", required=True)
-parser.add_argument('-o2', help="path2", dest="read2", required=True)
+parser.add_argument('-1', help="path1", dest="read1", required=True)
+parser.add_argument('-2', help="path2", dest="read2", required=True)
 parser.add_argument('-i', help="input_all", dest="input", required=True)
 parser.add_argument('-sep', help="sep", dest="separator", required=True)
 args = parser.parse_args()

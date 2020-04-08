@@ -11,7 +11,7 @@ parser.add_argument('-o', help="output directory", dest="output_dir", required=T
 parser.add_argument('-sep', help="sep", dest="separator", required=True)
 args = parser.parse_args()
 
-outpur_dir=args.output_dir
+output_dir=args.output_dir
 read1=args.read1
 read2=args.read2
 separator=args.separator

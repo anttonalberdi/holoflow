@@ -152,7 +152,7 @@ rule map_host:
     input:
         read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
         read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq",
-        refgenome=expand("{refgenome}", refgenome=config['refgenomehost'])
+        refgenome=expand("{refgenomehost}", refgenomehost=config['refgenomehost'])
     output:
         "{projectpath}/03-MappedToHost/{sample}_all.bam"
     run:
