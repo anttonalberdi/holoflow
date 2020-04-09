@@ -5,7 +5,7 @@ import argparse
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-hostrg', help="human reference genome", dest="h_ref_gen", required=True)
+parser.add_argument('-hrg', help="human reference genome", dest="h_ref_gen", required=True)
 parser.add_argument('-ibam', help="all bam file", dest="all_bam", required=True)
 parser.add_argument('-1', help="path1", dest="read1", required=True)
 parser.add_argument('-2', help="path2", dest="read2", required=True)

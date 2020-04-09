@@ -7,8 +7,8 @@ import argparse
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-1', help="path1", dest="read1", required=True)
 parser.add_argument('-2', help="path2", dest="read2", required=True)
-parser.add_argument('-obam', help="all bam file", dest="all_bam", required=True)
 parser.add_argument('-hostrg', help="host reference genome", dest="host_ref_gen", required=True)
+parser.add_argument('-obam', help="all bam file", dest="all_bam", required=True)
 args = parser.parse_args()
 
 all_bam=args.all_bam

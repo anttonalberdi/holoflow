@@ -50,7 +50,7 @@ rule qual_filt:
         statsfile.close()
 
 
-        shell("python ../bin/holo-qual_filt.py -read1i {input.read1} -read2i {input.read2} -read1o {output.read1} -read2o {output.read2} -a1 {params.adapter1} -a2 {params.adapter2} -maxns {params.maxns} -minq {params.minquality} -threads {params.threads}")
+        shell("python ../../bin/holo-qual_filt.py -i1 {input.read1} -i2 {input.read2} -o1 {output.read1} -o2 {output.read2} -a1 {params.adapter1} -a2 {params.adapter2} -maxns {params.maxns} -minq {params.minquality} -t {params.threads}")
 
         #Get stats after quality filtering
         reads = 0
@@ -68,34 +68,6 @@ rule qual_filt:
         statsfile.write("Quality filtered reads\t{0} ({1} bases)\r\n".format(reads,bases))
         statsfile.close()
 
-##
-# Duplicate removal (single-based)
-##
-
-#rule dup_rem_single:
-#    input:
-#      read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
-#      read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq"
-#    output:
-#      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq.tmp",
-#      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq.tmp"
-#    run:
-#      shell("module load tools pigz/2.3.4 seqkit/0.7.1 && cat {input.read1} | seqkit rmdup -s -o {output.read1}")
-#      shell("module load tools pigz/2.3.4 seqkit/0.7.1 && cat {input.read2} | seqkit rmdup -s -o {output.read2}")
-#
-#rule dup_rem_single_repair:
-#    input:
-#      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq.tmp",
-#      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq.tmp"
-#    output:
-#      read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
-#      read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq"
-#    shell:
-#      "module load tools jre/1.8.0 bbmap/36.49 && repair.sh in={input.read1} in2={input.read2} out={output.read1} out2={output.read2} overwrite=t && rm {input.read1} {input.read2}"
-
-##
-# Duplicate removal (pair-based)
-##
 
 rule dup_rem_paired:
     input:
@@ -106,7 +78,7 @@ rule dup_rem_paired:
     params:
         separator=expand("{separator}", separator=config['separator'])
     shell:
-      "module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d {params.separator} {input.read1} {input.read2} | seqkit rmdup -s -j 28 -o {output.dir} "
+        "python ../../bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator}"
 
 
 
@@ -121,10 +93,9 @@ rule dup_rem_paired_repair:
     params:
         separator=expand("{separator}", separator=config['separator'])
     run:
-      shell("cut --delimiter={params.separator} -f1 {input.in_file} > {output.read1}")
-      shell("cut --delimiter={params.separator} -f2 {input.in_file} > {output.read2}")
-      shell("rm {input.in_file}")
+      shell("python ../../bin/holo-dup_rem_paired_repair.py -i {input.in_file} -1 {output.read1} -2 {output.read2} -sep {params.separator}")
       shell("mv {input.in_stats} {output.stats_file}")
+
 
       #Get stats after duplicate removal
       reads = 0
@@ -156,7 +127,7 @@ rule map_host:
     output:
         "{projectpath}/03-MappedToHost/{sample}_all.bam"
     run:
-      shell("module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t 28 -R '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample' {input.refgenome} {input.read1} {input.read2} | samtools view -T {input.refgenome} -b - > {output}")
+      shell("python ../../bin/holo-map_host.py -1 {input.read1} -2 {input.read2} -hostrg {input.refgenome} -obam {output}")
 
 
 rule map_host_split:
@@ -169,9 +140,7 @@ rule map_host_split:
         read2="{projectpath}/03-MappedToHost/{sample}_2.fastq"
     shell:
         """
-        module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -F12 {input.all_bam} > {output.host}
-        module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -
-        rm {input.all_bam}
+        python ../../bin/holo-map_host_split.py -hostrg {input.refgenome} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output.host}
         """
 
 ##
@@ -184,9 +153,10 @@ rule map_human:
         refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman'])
     output:
         "{projectpath}/04-MappedToHuman/{sample}_all.bam"
-    run:
-      shell("module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t 28 -R '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample' {input.refgenome} {input.read1} {input.read2} | samtools view -T {input.refgenome} -b - > {output}")
-
+    shell:
+        """
+        python ../../bin/holo-map_human.py -1 {input.read1} -2 {input.read2} -hrg {input.refgenome} -obam {output}
+        """
 
 rule map_human_split:
     input:
@@ -198,10 +168,8 @@ rule map_human_split:
         read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq", ## mapped
         stats_file="{projectpath}/04-MappedToHuman/{sample}.stats"
     run:
-        shell("module load tools samtools/1.9 && samtools view -T {input.refgenome} -b -f12 {input.all_bam} | samtools fastq -1 {output.read1} -2 {output.read2} -")
-        shell("rm {input.all_bam}")
+        shell("python ../../bin/holo-map_human_split.py -hrg {input.refgenome} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2}")
         shell("mv {input.in_stats} {output.stats_file}")
-
 
         #Get stats
         reads = 0
