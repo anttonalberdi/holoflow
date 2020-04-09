@@ -1,4 +1,6 @@
 # configfile specified in command line
+# threads info - Sen Li:
+    # /home/projects/ku-cbd/data/HoloFood/SnakeMake_Scripts/holofood_snakemake_bwa
 
 ##
 # Quality-filtering
@@ -12,6 +14,7 @@ rule qual_filt:
         read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
         read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq",
         stats_file="{projectpath}/01-QualityFiltered/{sample}.stats"
+    threads: 4
     params:
         adapter1=expand("{adapter1}", adapter1=config['adapter1']),
         adapter2=expand("{adapter2}", adapter2=config['adapter2']),
@@ -74,7 +77,8 @@ rule dup_rem_paired:
       read1="{projectpath}/01-QualityFiltered/{sample}_1.fastq",
       read2="{projectpath}/01-QualityFiltered/{sample}_2.fastq"
     output:
-      dir="{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq",
+      dir="{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq"
+    threads: 4
     params:
         separator=expand("{separator}", separator=config['separator'])
     shell:
@@ -90,6 +94,7 @@ rule dup_rem_paired_repair:
       read1="{projectpath}/02-DuplicatesRemoved/{sample}_1.fastq",
       read2="{projectpath}/02-DuplicatesRemoved/{sample}_2.fastq",
       stats_file="{projectpath}/02-DuplicatesRemoved/{sample}.stats"
+    threads: 4
     params:
         separator=expand("{separator}", separator=config['separator'])
     run:
@@ -126,6 +131,7 @@ rule map_host:
         refgenome=expand("{refgenomehost}", refgenomehost=config['refgenomehost'])
     output:
         "{projectpath}/03-MappedToHost/{sample}_all.bam"
+    threads: 8
     run:
       shell("python ../../bin/holo-map_host.py -1 {input.read1} -2 {input.read2} -hostrg {input.refgenome} -obam {output}")
 
@@ -153,6 +159,7 @@ rule map_human:
         refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman'])
     output:
         "{projectpath}/04-MappedToHuman/{sample}_all.bam"
+    threads: 8
     shell:
         """
         python ../../bin/holo-map_human.py -1 {input.read1} -2 {input.read2} -hrg {input.refgenome} -obam {output}

@@ -15,7 +15,6 @@ rule assembly:
         klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
         klist_spades=expand("{klist_spades}", klist_spades=config['klist_spades'])
         assembler=expand("{assembler}", assembler=config['assembler'])
-    ## ADD threads: - SEN
     shell:
         """
         python ../../bin/holo-assembly.py -1 {input.read1} -2 {input.read2} -o {output.dir} -m {params.memory} -k_megahit {params.klist_megahit} -k_spades {params.klist_spades} -a {params.assembler}
