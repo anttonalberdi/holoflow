@@ -50,7 +50,7 @@ rule qual_filt:
         statsfile.close()
 
 
-        shell("module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.1.3 && AdapterRemoval --file1 {input.read1} --file2 {input.read2} --output1 {output.read1} --output2 {output.read2} --trimqualities --trimns --maxns {params.maxns} --minquality {params.minquality} --threads {params.threads} --adapter1 {params.adapter1} --adapter2 {params.adapter2}")
+        shell("python ../bin/holo-qual_filt.py -read1i {input.read1} -read2i {input.read2} -read1o {output.read1} -read2o {output.read2} -a1 {params.adapter1} -a2 {params.adapter2} -maxns {params.maxns} -minq {params.minquality} -threads {params.threads}")
 
         #Get stats after quality filtering
         reads = 0
