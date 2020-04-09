@@ -1,0 +1,75 @@
+################################################################################################################
+############################################       METAGENOMICS     ############################################
+################################################################################################################
+##
+# Assembly
+##
+rule assembly:
+    input:
+        read1="{projectpath}/04-MapToHuman/{sample}_1.fastq",
+        read2="{projectpath}/04-MapToHuman/{sample}_2.fastq"
+    output:
+        dir=directory("{projectpath}/05-Assembly/{sample}")
+    params:
+        memory=expand("{memory}", memory=config['memory']),
+        klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
+        klist_spades=expand("{klist_spades}", klist_spades=config['klist_spades'])
+        assembler=expand("{assembler}", assembler=config['assembler'])
+    ## ADD threads: - SEN
+    shell:
+        """
+        python ../../bin/holo-assembly.py -1 {input.read1} -2 {input.read2} -o {output.dir} -m {params.memory} -k_megahit {params.klist_megahit} -k_spades {params.klist_spades} -a {params.assembler}
+        """
+
+
+rule assembly_move:
+    input:
+        megahit="{projectpath}/05-Assembly/{sample}/final.contigs.fa",
+        spades="{projectpath}/05-Assembly/{sample}/scaffolds.fasta",
+        in_stats="{projectpath}/04-MappedToHuman/{sample}.stats"
+    output:
+        final_file="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa",
+        stats_file="{projectpath}/05-Assembly/{sample}/{sample}.stats"
+    params:
+        assembler=expand("{assembler}", assembler=config['assembler'])
+    run:
+        shell("python ../../bin/holo-assembly_move.py -megahit {input.megahit} -spades {input.spades} -o {output.final_file} -a {params.assembler}")
+        shell("mv {input.in_stats} {output.stats_file}")
+
+        #Get stats after assembly
+        contigs = len([1 for line in open(str(output.final_file)) if line.startswith(">")])
+
+        #Print stats to stats file
+        statsfile=open(str(output.stats_file),"a+")
+        statsfile.write("Assembly contigs\t{0} \r\n".format(contigs))
+        statsfile.close()
+
+
+rule assembly_reformat:
+    input:  # This doesn't 100% work, "parent direcory"
+        assembly="{projectpath}/05-Assembly/{sample}/{sample}.assembly.fa",
+        in_stats="{projectpath}/05-Assembly/{sample}/{sample}.stats"
+    output:
+        "{projectpath}/05-Assembly/{sample}/{sample}.fa"
+
+
+    run:
+        shell("python ../../bin/holo-assembly_reformat.py -a {input.assembly} -o {output}")
+
+        #Get stats after assembly reformat
+        contigs = len([1 for line in open(str(output)) if line.startswith(">")])
+
+        #Print stats to stats file
+        statsfile=open(str(input.in_stats),"a+")
+        statsfile.write("Reformated assembly contigs\t{0} \r\n".format(contigs))
+        statsfile.close()
+
+
+##
+# BINNING TO ADD !!!!!!!!!!!!!!!!!!!!
+##
+
+
+
+
+print("############################ Holoflow has finished the METAGENOMICS workflow :) ############################")

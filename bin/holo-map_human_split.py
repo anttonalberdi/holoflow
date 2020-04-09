@@ -19,5 +19,5 @@ read2=args.read2
 # Run
 bamCmd = 'module load tools samtools/1.9 && samtools view -T '+h_ref_gen+' -b -f12 '+all_bam+' | samtools fastq -1 '+read1+' -2 '+read2+' -'
 subprocess.check_call(bamCmd, shell=True)
-rmAllbamCmd = 'rm'+all_bam'
+rmAllbamCmd = 'rm'+all_bam+''
 subprocess.check_call(rmAllbamCmd, shell=True)

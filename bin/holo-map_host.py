@@ -17,5 +17,5 @@ read2=args.read2
 host_ref_gen=args.host_ref_gen
 
 # Run
-mapCmd = 'module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t 28 -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" '+host_ref_gen+' '+read1+' '+read2+' | samtools view -T '+host_ref_gen+' -b - > '+all_bam'
+mapCmd = 'module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t 28 -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" '+host_ref_gen+' '+read1+' '+read2+' | samtools view -T '+host_ref_gen+' -b - > '+all_bam+''
 subprocess.check_call(mapCmd, shell=True)

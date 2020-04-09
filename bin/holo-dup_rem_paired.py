@@ -17,5 +17,5 @@ read2=args.read2
 separator=args.separator
 
 # Run
-seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -s -j 28 -o'+ output_dir'
+seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -s -j 28 -o'+ output_dir+''
 subprocess.check_call(seqkitCmd, shell=True)
