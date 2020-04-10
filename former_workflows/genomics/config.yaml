@@ -1,0 +1,25 @@
+#General options
+# inputdir:  NOT NECESSARY BC INPUT FILES ARE ALREADY IN PROJECTPATH/00-InputData !
+
+#projectpath:
+#This information is taken from output files
+
+
+#align params
+refgen:
+  "path to reference genome"
+
+#mapping params
+group_info:
+  @RG\tID:group1\tSM:sample1\tPL:illumina\tLB:lib1\tPU:unit1
+
+max_depth:
+  20
+
+#variant calling params
+genotyping_mode:
+
+L:
+
+output_mode:
+  

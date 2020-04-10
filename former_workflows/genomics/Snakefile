@@ -1,0 +1,91 @@
+# From Sofia's
+
+## ADD ALL MODULE LOAD
+## QUESTIONS:
+    #DONE# what about "samtools view ?? where do I put this info? is it a command or module to load?"
+    # before rule mapping_stats samtools depth and gatk DepthOfCoverage?
+    # rule mapping_stats, what about the log file? should I add it in outputs?
+
+##
+# 0- Reference genome
+##
+
+# Index reference
+if #refgenome .fa.fai does not exist:
+    rule index_refgen:
+        input:
+            refgen=expand("{refgen}", refgen=config['refgen'])
+        output:
+            "{projectpath}/00-InputData/reference.fa.fai"
+        shell:
+            """
+            samtools faid {input.refgen}
+            """
+
+# Generate sequence dictionary
+rule seq_dict:
+    input:
+        refgen=expand("{refgen}", refgen=config['refgen'])
+    output:
+        "{projectpath}/00-InputData/reference.dict"
+    shell:
+        """
+        picard CreateSequenceDictionary REFERENCE={input.refgen} OUTPUT={output}
+        """
+
+##
+# 1- Mapping to reference genome
+##
+rule reads_to_bam:
+    input:
+        refgen=expand("{refgen}", refgen=config['refgen'])
+        reads="{projectpath}/00-InputData/raw_reads.fq"
+    params:
+        group_info=expand("{group_info}", group_info=config['group_info'])
+    output:
+        sam="{projectpath}/01-MapToReference/aligned_reads.sam"
+        fixed_bam="{projectpath}/01-MapToReference/aligned_reads.fixed.bam"
+        sorted_bam="{projectpath}/01-MapToReference/aligned_reads.sorted.bam"
+        final_bam="{projectpath}/01-MapToReference/genomics.bam"
+    shell:
+        """
+        bwa mem -R {params.group_info} -p {input.refgen} {input.reads} > {output}
+        samtools fixmate -0 bam {output.fixed_bam} {output.sam}
+        samtools sort -0 bam {output.sorted_bam} {output.fixed_bam}
+        samtools view -T {input.refgen} -C -o {output.final_bam} {output.sorted_bam}
+        """
+
+########## ???
+##samtools depth
+##gatk DepthOfCoverage
+##################
+rule mapping_stats:
+    input:
+        bam="{projectpath}/01-MapToReference/genomics.bam"
+        refgen_idx="{projectpath}/00-InputData/reference.fa.fai"
+    params:
+        #Combine all positions with a depth >= max into a single bin in the histogram.
+        max_depth=expand("{max_depth}", max_depth=config['max_depth'])
+
+    output:
+        stats_cov="{projectpath}/01-MapToReference/sample_metrics.dcov"
+        #log=
+        sam_stats="{projectpath}/01-MapToReference/sample_metrics.stats"
+        sam_flagstats="{projectpath}/01-MapToReference/sample_metrics.flagstat"
+    shell:
+        """
+        bedtools genomecov -ibam {input.bam} -g {input.refgen_idx} -max 20 > {output.stats_cov} ######## 2> >(tee $logfile) #########OUTPUT?
+        samtools stats {input.bam} > {output.sam_stats}
+        samtools flagstat {input.bam} > {output.sam_flagstats}
+        """
+
+########## ???
+## gatk CallableLoci ---- in the middle of bedtools genomecov and two samtools...
+##########
+
+
+
+
+rule variant_calling:
+
+    # GenomeAnalysisTK.jar -T HaplotypeCaller -R reference.fa -I reduced_reads.bam -L 20 -- (specify parameters) -O raw_variants.vcf
