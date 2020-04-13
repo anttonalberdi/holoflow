@@ -10,7 +10,7 @@ parser.add_argument('-o', help="output directory", dest="output", required=True)
 args = parser.parse_args()
 
 
-out=args.out
+output=args.output
 assembly=args.assembly
 
 
