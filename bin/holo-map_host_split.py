@@ -19,7 +19,7 @@ read1=args.read1
 read2=args.read2
 
 # Run
-hostbam1Cmd = 'module load tools samtools/1.9 && samtools view -T'+host_ref_gen+' -b -F12 '+all_bam+' > '+host_bam+''
+hostbam1Cmd = 'module load tools samtools/1.9 && samtools view -T '+host_ref_gen+' -b -F12 '+all_bam+' > '+host_bam+''
 subprocess.check_call(hostbam1Cmd, shell=True)
 hostbam2Cmd = 'module load tools samtools/1.9 && samtools view -T '+host_ref_gen+' -b -f12 '+all_bam+' | samtools fastq -1 '+read1+' -2 '+read2+' -'
 subprocess.check_call(hostbam2Cmd, shell=True)
