@@ -24,7 +24,7 @@ a1=args.a1
 a2=args.a2
 maxns=args.maxns
 minq=args.minq
-threads=args.threds
+threads=args.threads
 
 # Run
 qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.1.3 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2'+a2+''
