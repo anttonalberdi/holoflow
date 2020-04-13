@@ -17,5 +17,9 @@ read2=args.read2
 separator=args.separator
 
 # Run
-cutCmd = 'cut --delimiter='+separator+' -f1 '+input_file+' > '+read1+' && cut --delimiter='+separator+' -f2 '+input+' > '+read2+' && rm '+input+''
-subprocess.check_call(cutCmd, shell=True)
+cut1Cmd = 'cut --delimiter='+str(separator)+' -f1 '+input_file+' > '+read1+''
+subprocess.check_call(cut1Cmd, shell=True)
+cut2Cmd = 'cut --delimiter='+str(separator)+' -f2 '+input_file+' > '+read2+''
+subprocess.check_call(cut2Cmd, shell=True)
+rmCmd = 'rm '+input_file+''
+subprocess.check_call(rmCmd, shell=True)
