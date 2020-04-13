@@ -76,7 +76,6 @@ if workflow == "preprocessing":
     print(out_files)
 
     # Create preprocessing.sh for later job submission
-
     with open('./workflows/preprocessing/preprocessing.sh','w+') as sh:
         curr_dir = os.getcwd()
         path_snkf = os.path.join(curr_dir,'workflows/preprocessing/Snakefile')
