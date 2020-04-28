@@ -6,7 +6,7 @@ removeintermediate:
   TRUE
 
 threads:
-  24
+  40
 
 #qual_filt options
 adapter1:
