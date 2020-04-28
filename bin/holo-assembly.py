@@ -10,6 +10,7 @@ parser.add_argument('-2', help="path2", dest="read2", required=True)
 parser.add_argument('-o', help="output directory", dest="out", required=True)
 parser.add_argument('-empty_o', help="empty touched file", dest="empty_o", required=True)
 parser.add_argument('-m', help="memory", dest="memory", required=True)
+parser.add_argument('-t', help="threads", dest="threads", required=True)
 parser.add_argument('-k_megahit', help="k-mer size list megahit", dest="k_megahit", required=True)
 parser.add_argument('-k_spades', help="k-mer size list spades", dest="k_spades", required=True)
 parser.add_argument('-a', help="assembler", dest="assembler", required=True)
@@ -31,21 +32,21 @@ temp_a=args.temp_a
 
 # Run
 #if not os.path.exists(str(out)):
-if assembler == "megahit":
-    if not os.path.exists(str(out)):
-        megahitCmd = shell('module load tools megahit/1.1.1 && mkdir '+out+' && megahit -1 '+read1+' -2 '+read2+' -t '+threads+' --k-list '+k_megahit+' -o '+out+'')
-        subprocess.check_call(megahitCmd, shell=True)
+emptytouchCmd='touch '+empty_o+''
+subprocess.check_call(emptytouchCmd, shell=True)
 
-    mv_megahitCmd = shell('mv '+out+'/final.contigs.fa '+temp_a+'')
+if assembler == "megahit":
+
+    megahitCmd = 'module load tools megahit/1.1.1 && mkdir '+out+' && megahit -1 '+read1+' -2 '+read2+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
+    subprocess.check_call(megahitCmd, shell=True)
+
+    mv_megahitCmd = 'cd '+out+' && final.contigs.fa temp_assembly.fa'
     subprocess.check_call(mv_megahitCmd, shell=True)
 
 if assembler == "spades":
-    if not os.path.exists(str(out)):
-        spadesCmd = shell('module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+memory+' -k '+k_spades+' --only-assembler -o '+out+'')
-        subprocess.check_call(spadesCmd, shell=True)
-    mv_spadesCmd = shell('mv '+out+'/scaffolds.fasta '+temp_a+'')
+
+    spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+memory+' -k '+k_spades+' --only-assembler -o '+out+''
+    subprocess.check_call(spadesCmd, shell=True)
+
+    mv_spadesCmd = 'cd '+out+' && scaffolds.fasta temp_assembly.fa'
     subprocess.check_call(mv_spadesCmd, shell=True)
-
-
-emptytouchCmd=shell('touch '+empty_o+'')
-subprocess.check_call(emptytouchCmd, shell=True)

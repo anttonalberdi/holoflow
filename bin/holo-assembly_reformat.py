@@ -55,13 +55,15 @@ with open(str(in_a)) as f_input, open(str(out_a), 'w') as f_output:
     contigs1 = len([1 for line in open(str(in_a)) if line.startswith(">")])
 
     #Print stats to stats file
-    shell('mv '+stats_in+' '+stats_out+'')
+    statsCmd='mv '+stats_in+' '+stats_out+''
+    subprocess.check_call(statsCmd, shell=True)
+
     statsfile=open(str(stats_out),"a+")
-    statsfile.write("Assembly contigs\t{0} \r\n".format(contigs1))
+    statsfile.write("Assembly contigs\t"+contigs1+" \r\n")
 
     #Get stats after assembly reformat
     contigs2 = len([1 for line in open(str(out_a)) if line.startswith(">")])
 
     #Print stats to stats file
-    statsfile.write("Reformated assembly contigs\t{0} \r\n".format(contigs2))
+    statsfile.write("Reformated assembly contigs\t"+contigs2+" \r\n")
     statsfile.close()
