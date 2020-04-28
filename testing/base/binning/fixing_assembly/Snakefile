@@ -10,7 +10,7 @@ rule assembly:
         read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
 
     output:
-        "{projectpath}/05-Assembly/{sample}_assembly/empty_file_to_remove"
+        "{projectpath}/05-Assembly/{sample}_file_to_remove"
 
     params:
         memory=expand("{memory}", memory=config['memory']),
@@ -23,7 +23,7 @@ rule assembly:
 
     shell:
         """
-        python b/holo-assembly.py -1 {input.read1} -2 {input.read2} -m {params.memory} -k_megahit {params.klist_megahit} -k_spades {params.klist_spades} -a {params.assembler} -empty_o {output} -temp_a {params.temp_assembly}
+        python ./holoflow/bin/holo-assembly.py -1 {input.read1} -2 {input.read2} -m {params.memory} -k_megahit {params.klist_megahit} -k_spades {params.klist_spades} -a {params.assembler} -empty_o {output} -temp_a {params.temp_assembly}
         """
 
 
@@ -31,7 +31,8 @@ rule assembly:
 
 rule assembly_reformat:
     input:
-        "{projectpath}/04-MappedToHuman/{sample}.stats"
+        empt_file="{projectpath}/05-Assembly/{sample}_file_to_remove",
+        stats_in="{projectpath}/04-MappedToHuman/{sample}.stats"
     output:
         "{projectpath}/05-Assembly/{sample}.stats"
     params:
@@ -40,5 +41,5 @@ rule assembly_reformat:
 
     shell:
         """
-        python b/holo-assembly_reformat.py -in_a {params.in_assembly} -out_a {params.out_assembly} -st_in {input} -st_out {output}
+        rm {input.empt_file && python .holoflow/bin/holo-assembly_reformat.py -in_a {params.in_assembly} -out_a {params.out_assembly} -st_in {input.stats_in} -st_out {output}
         """

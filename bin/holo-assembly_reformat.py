@@ -5,17 +5,21 @@ import argparse
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-a', help="assembly file", dest="assembly", required=True)
-parser.add_argument('-o', help="output directory", dest="output", required=True)
+parser.add_argument('-in_a', help="assembly input", dest="in_assembly", required=True)
+parser.add_argument('-out_a', help="assembly output", dest="out_assembly", required=True)
+parser.add_argument('-st_in', help="stats file input", dest="stats_in", required=True)
+parser.add_argument('-st_out', help="stats file output", dest="stats_out", required=True)
 args = parser.parse_args()
 
 
-output=args.output
-assembly=args.assembly
+in_a=args.in_assembly
+out_a=args.out_assembly
+stats_in=args.stats_in
+stats_out=args.stats_out
 
 
-# Reformat contig names and filter by contig length
-with open(str(assembly)) as f_input, open(str(output), 'w') as f_output:
+
+with open(str(in_a)) as f_input, open(str(out_a), 'w') as f_output:
     seq = ''
     contig_n = 0
 
@@ -45,3 +49,19 @@ with open(str(assembly)) as f_input, open(str(output), 'w') as f_output:
 
         else:
             pass
+
+
+    #Get stats after assembly
+    contigs1 = len([1 for line in open(str(in_a)) if line.startswith(">")])
+
+    #Print stats to stats file
+    shell('mv '+stats_in+' '+stats_out+'')
+    statsfile=open(str(stats_out),"a+")
+    statsfile.write("Assembly contigs\t{0} \r\n".format(contigs1))
+
+    #Get stats after assembly reformat
+    contigs2 = len([1 for line in open(str(out_a)) if line.startswith(">")])
+
+    #Print stats to stats file
+    statsfile.write("Reformated assembly contigs\t{0} \r\n".format(contigs2))
+    statsfile.close()
