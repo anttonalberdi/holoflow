@@ -1,5 +1,5 @@
-import shutil
-# 24.04.20
+
+# 29.04.20
 configfile: "/home/projects/ku-cbd/people/nurher/holoflow/testing/base/config.yaml"
 ##
 # Assembly
@@ -28,6 +28,7 @@ rule assembly:
 
 
 
+configfile: "/home/projects/ku-cbd/people/nurher/holoflow/testing/base/config.yaml"
 
 rule assembly_reformat:
     input:
@@ -37,9 +38,10 @@ rule assembly_reformat:
         "{projectpath}/05-Assembly/{sample}.stats"
     params:
         in_assembly="{projectpath}/05-Assembly/{sample}_assembly/temp_assembly.fa",
-        out_assembly="{projectpath}/05-Assembly/{sample}.fa"
+        out_assembly="{projectpath}/05-Assembly/{sample}_assembly/{sample}.fa",
+        out_dir="{projectpath}/05-Assembly/{sample}_assembly"
 
     shell:
         """
-        rm {input.empt_file && python .holoflow/bin/holo-assembly_reformat.py -in_a {params.in_assembly} -out_a {params.out_assembly} -st_in {input.stats_in} -st_out {output}
+        rm {input.empt_file} && python ./holoflow/bin/holo-assembly_reformat.py -in_a {params.in_assembly} -out_a {params.out_assembly} -st_in {input.stats_in} -st_out {params.out_dir}
         """

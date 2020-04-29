@@ -2,6 +2,7 @@
 
 import subprocess
 import argparse
+import os
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
@@ -31,22 +32,22 @@ temp_a=args.temp_a
 
 
 # Run
-#if not os.path.exists(str(out)):
-emptytouchCmd='touch '+empty_o+''
-subprocess.check_call(emptytouchCmd, shell=True)
+if not os.path.exists(str(out)):
 
-if assembler == "megahit":
+    emptytouchCmd='touch '+empty_o+''
+    subprocess.check_call(emptytouchCmd, shell=True)
 
-    megahitCmd = 'module load tools megahit/1.1.1 && mkdir '+out+' && megahit -1 '+read1+' -2 '+read2+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
-    subprocess.check_call(megahitCmd, shell=True)
+    if assembler == "megahit":
+        megahitCmd = 'module load tools megahit/1.1.1 && mkdir '+out+' && megahit -1 '+read1+' -2 '+read2+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
+        subprocess.check_call(megahitCmd, shell=True)
 
-    mv_megahitCmd = 'cd '+out+' && final.contigs.fa temp_assembly.fa'
-    subprocess.check_call(mv_megahitCmd, shell=True)
 
-if assembler == "spades":
+        mv_megahitCmd = 'mv '+out+'/final.contigs.fa '+out+'/temp_assembly.fa'
+        subprocess.check_call(mv_megahitCmd, shell=True)
 
-    spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+memory+' -k '+k_spades+' --only-assembler -o '+out+''
-    subprocess.check_call(spadesCmd, shell=True)
+    if assembler == "spades":
+        spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+memory+' -k '+k_spades+' --only-assembler -o '+out+''
+        subprocess.check_call(spadesCmd, shell=True)
 
-    mv_spadesCmd = 'cd '+out+' && scaffolds.fasta temp_assembly.fa'
-    subprocess.check_call(mv_spadesCmd, shell=True)
+        mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
+        subprocess.check_call(mv_spadesCmd, shell=True)

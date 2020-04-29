@@ -1,6 +1,9 @@
 configfile:"/home/projects/ku-cbd/people/nurher/holoflow/workflows/preprocessing/config.yaml"
 # threads info - Sen Li:
     # /home/projects/ku-cbd/data/HoloFood/SnakeMake_Scripts/holofood_snakemake_bwa
+################################################################################################################
+############################################       PREPROCESSING     ###########################################
+################################################################################################################
 
 ##
 # Quality-filtering
