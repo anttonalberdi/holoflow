@@ -24,7 +24,6 @@ klist_spades:
 min_contig_len:
   1000
 
-
 #binning options
 dastool_db:
   /home/projects/ku-cbd/people/antalb/databases/dastool_db
