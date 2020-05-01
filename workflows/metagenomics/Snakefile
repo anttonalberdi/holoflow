@@ -37,12 +37,12 @@ rule assembly_reformat:
         empt_file="{projectpath}/05-Assembly/{sample}_file_to_remove",
         stats_in="{projectpath}/04-MappedToHuman/{sample}.stats"
     output:
-        "{projectpath}/05-Assembly/{sample}_assembly/{sample}.stats"
+        "{projectpath}/05-Assembly/{sample}.stats"
     params:
         sample="{sample}",
         min_contig_len=expand("{min_contig_len}", min_contig_len=config['min_contig_len']),
         in_assembly="{projectpath}/05-Assembly/{sample}_assembly/temp_assembly.fa",
-        out_assembly="{projectpath}/05-Assembly/{sample}_assembly/{sample}.fa",
+        out_assembly="{projectpath}/05-Assembly/{sample}.fa",
         out_dir="{projectpath}/05-Assembly/{sample}_assembly"
 
     shell:
