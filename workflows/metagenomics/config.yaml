@@ -20,6 +20,11 @@ klist_megahit:
 klist_spades:
   "21,29,39,59,79,99,119"
 
+#reformat assembly options
+min_contig_len:
+  1000
+
+
 #binning options
 dastool_db:
   /home/projects/ku-cbd/people/antalb/databases/dastool_db

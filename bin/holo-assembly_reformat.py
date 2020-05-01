@@ -9,27 +9,32 @@ parser.add_argument('-in_a', help="assembly input", dest="in_assembly", required
 parser.add_argument('-out_a', help="assembly output", dest="out_assembly", required=True)
 parser.add_argument('-st_in', help="stats file input", dest="stats_in", required=True)
 parser.add_argument('-st_out', help="out directory", dest="out", required=True)
+parser.add_argument('-s', help="sample name", dest="sample", required=True)
+parser.add_argument('-min_cl', help="minimum contig length", dest="min_cl", required=True)
 args = parser.parse_args()
 
 
 in_a=args.in_assembly
 out_a=args.out_assembly
 stats_in=args.stats_in
+sample=args.sample
+min_cl=args.min_cl
 out=args.out
 
 
 
 with open(str(in_a)) as f_input, open(str(out_a), 'w') as f_output:
     seq = ''
-    contig_n = 0
+    contig_n = (["%06d" % x for x in range(1000000)])
+    n = 0
 
     for line in f_input:
         if line.startswith('>'):
 
             if seq:
-                if len(seq) > 1000:
-                    contig_n += 1
-                    contig_id = (">C_"+str(contig_n))
+                if len(seq) > min_cl:
+                    n += 1
+                    contig_id = (">"+str(sample)+"_C"+str(contig_n[n]))
                     seq += ('\n')
 
                     f_output.write(contig_id + '\n' + seq)
@@ -41,9 +46,9 @@ with open(str(in_a)) as f_input, open(str(out_a), 'w') as f_output:
             seq += line.strip()
 
     if seq:
-        if len(seq) > 1000:
-            contig_n += 1
-            contig_id = (">C_"+str(contig_n))
+        if len(seq) > min_cl:
+            n += 1
+            contig_id = (">"+str(sample)+"_C"+str(contig_n[n]))
             seq += ('\n')
             f_output.write(contig_id + '\n' + seq)
 
