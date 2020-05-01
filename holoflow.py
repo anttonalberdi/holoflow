@@ -90,24 +90,47 @@ if workflow == "preprocessing":
 
 
 # 2    # Metagenomics workflow
+if workflow == "metagenomics":
 
-# if workflow == "metagenomics":
-#
-#     prep = input("Input files for holoflow/metagenomics are fastq. Is your data preprocessed? [y/n]")
-#
-#     if prep == 'n':
-#         prep2 = input("Would you like to process it before running holoflow/metagenomics with holoflow/preprocessing? [y/n]")
-#
-#         if prep2 == 'n':
-#             print("You should come back when your data is preprocessed. See you soon :)")
-#         if prep2 == 'y':
+     prep = input("Input files for holoflow/metagenomics are fastq. Is your data preprocessed? [y/n]")
+
+     if prep == 'n':
+         prep2 = input("Would you like to process it before running holoflow/metagenomics with holoflow/preprocessing? [y/n]")
+
+         if prep2 == 'n':
+             print("You should come back when your data is preprocessed. See you soon :)")
+         if prep2 == 'y':
+
+            # Define output names
+            # out_files = in_out_preprocessing(path,input)
+            # print(out_files)
+            #
+            # # Create preprocessing.sh for later job submission
+            # with open('./workflows/preprocessing/preprocessing.sh','w+') as sh:
+            #     curr_dir = os.getcwd()
+            #     path_snkf = os.path.join(curr_dir,'workflows/preprocessing/Snakefile')
+            #     prep_snk = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+''
+            #     sh.write(prep_snk)
+
 #             snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+path+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s workflows/metagenomics/prep_and_metagenomics/Snakefile '+output_files+' --config '+config+''
 #             subprocess.check_call(snakemakeCmd, shell=True)
 #
-#     if prep == 'y':
-#         print("Great! Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
-#         snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+path+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s workflows/metagenomics/Snakefile '+output_files+' --config '+config+''
-#         subprocess.check_call(snakemakeCmd, shell=True)
+     if prep == 'y':
+
+        # Define output names
+        # out_files = in_out_preprocessing(path,input)
+        # print(out_files)
+        #
+        # # Create preprocessing.sh for later job submission
+        # with open('./workflows/preprocessing/preprocessing.sh','w+') as sh:
+        #     curr_dir = os.getcwd()
+        #     path_snkf = os.path.join(curr_dir,'workflows/preprocessing/Snakefile')
+        #     prep_snk = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+''
+        #     sh.write(prep_snk)
+
+         print("Great! Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
+         metagenomicsCmd = 'qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e '+path+'/Holo-metagenomics.err -o '+path+'/Holo-metagenomics.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N Holoflow-metagenomics ./workflows/metagenomics/metagenomics.sh'
+         subprocess.check_call(metagenomicsCmd, shell=True)
 
 
     # Genomics workflow
