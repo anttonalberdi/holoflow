@@ -9,41 +9,44 @@ Snakemake is a workflow management system which requires from a *Snakefile* and 
 This is designed to be called from the command line, and requires the next arguments:
   1. **-f** Input file - which will contain three columns delimited by **\t**:
     a. Sample name
-    b. Original full path/name of input file
-    c. Final output directory name (*Note it must match the output directory name in the desired final Snakefile rule*)
-  2. **-d** Project path - where pipeline outputs will be stored
-  2. **-w** Workflow to be run
-  2. **-c** *config* file full path 
+    b. Assembly group (If not coassembly this field will be ignored - but it is important that is not omitted when writing the input file)
+    c. Original full path/name of input file/s
+    d. Final output directory name (*Note it must match the output directory name in the workflow's final Snakefile rule*)
+  2. **-d** Project path - directory where pipeline outputs will be stored
+  3. **-w** Workflow to be run: preprocessing or metagenomics.
+  4. **-config** *config* file full path.
+  5.  **-cores** Number of cores to be used by Snakemake.
 
   
 ### Workflow-specific directories
-
-#### Metagenomics
+#### Preprocessing
 - *Snakefile* - which contains rules for:
   1. Quality filtering using **AdapterRemoval** 
   2. Duplicate read removal using **seqkit rmdup**
   3. Mapping reads against reference genome(s) using **bwa mem**
-  4. Metagenomic assembly using **metaSpades** or **megahit**
-  5. Read mapping to assembly using **bwa mem**
-  6. Contig binning by **Metabat and MaxBin** plus binning refinement by **DasTool**
   
 - Config file *config.yaml*, in which the user may be interested to customise:
-  1. Quality filtering - specific adapter sequences, min quality
-  2. Mapping reads against reference genome(s) - reference host and human genome paths
-  3. Metagenomic assembly - choose between the mentioned options by writing *megahit* or *spades*
+  1. Quality filtering - specific adapter sequences, minimum quality
+  2. Mapping reads against reference genome(s) - reference genome for host and human paths
   
-  ...among others. 
   
-## Exectute *run_snakemake.py*
-In case the python script is runned from the directory which contains it:
-```
-python run_snakemake.py -f input.txt -d ${workdir} -w metagenomics -c ${configfile}
-```
-*workdir* and *configfile* are shell variables which where previously defined in the terminal, but the corresponding path to the file can also be directly specified in the python command. 
+#### Metagenomics
+- *Snakefile* - which contains rules for:
+  1. Metagenomic assembly using **metaSpades** or **megahit**
+  2. Read mapping to assembly using **bwa mem** ##### UNDER CONSTRUCTION
+  3. Contig binning by **Metabat and MaxBin** plus binning refinement by **DasTool** ##### UNDER CONSTRUCTION
+  
+- Config file *config.yaml*, in which the user may be interested to customise:
+  1. Metagenomic assembly - choose between the mentioned options by writing *megahit* or *spades*
+  2. Minimum contig length - minimum bp per contig in final assembly file.
 
-############
-module unload gcc/5.1.0
-module load anaconda3/4.4.0
-
-snakemake -s Snakefile -n -r ${workdir}/02-DuplicatesRemoved/H2A_1.fastq ${workdir}/02-DuplicatesRemoved/H2A_2.fastq
   
+## Exectute *holoflow.py*
+**The python script should be launched from its containing directory:**
+```
+python holoflow.py -f input.txt -d ${workdir} -w metagenomics -config ${configfile} -cores 40
+```
+*workdir* and *configfile* are shell variables which where previously defined in the command line, but the corresponding path to the file can also be directly specified in the python command. 
+
+
+
