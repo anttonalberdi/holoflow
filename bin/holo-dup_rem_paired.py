@@ -13,7 +13,6 @@ parser.add_argument('-D', help="file to save number and list of dup seqs", dest=
 parser.add_argument('-s', help="by seq", dest="by_seq", required=True)
 parser.add_argument('-n', help="by name", dest="by_name", required=True)
 parser.add_argument('-i', help="ignore case", dest="ignore", required=True)
-
 args = parser.parse_args()
 
 output_dir=args.output_dir
@@ -57,6 +56,18 @@ if by_name:
         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -n -j 28 -o'+ output_dir+''
 
 
+if not (by_seq or by_name):
+    if (file_to_dups and ignore):
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -j 28 -o'+ output_dir+' -i -D '+file_to_dups+''
+
+    elif file_to_dups:
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -j 28 -o'+ output_dir+' -D '+file_to_dups+''
+
+    elif ignore:
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -j 28 -o'+ output_dir+' -i '
+
+    else:
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -j 28 -o'+ output_dir+''
 
 
 subprocess.check_call(seqkitCmd, shell=True)
