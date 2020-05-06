@@ -19,8 +19,22 @@ maxns:
 minquality:
   30
 
+# dup_rem_paired options
 
-#dup_rem_paired options
+  # By-name-n and By-seq-s are mutually exclusive !
+by-name-n:
+  False
+  # By-name-n and By-seq-s are mutually exclusive !
+by-seq-s:
+  True
+
+file_to_dups: # if not False, write path instead of True !
+  False
+
+ignore_case:
+  False
+
+#dup_rem_paired_repair options
 separator:
   ^
 
