@@ -5,7 +5,7 @@ Snakemake is a workflow management system which requires from a *Snakefile* and 
 
 ## Files and directories
 ### Main directory
-- *run_snakemake.py* - which contains the script for the pipeline calling.  
+- *holoflow.py* - which contains the script for the pipeline calling.  
 This is designed to be called from the command line, and requires the next arguments:
   1. **-f** Input file - which will contain three columns delimited by **\t**:
     a. Sample name
@@ -18,7 +18,7 @@ This is designed to be called from the command line, and requires the next argum
   5.  **-cores** Number of cores to be used by Snakemake.
 
   
-### Workflow-specific directories
+### Workflows - specific directories
 #### Preprocessing
 - *Snakefile* - which contains rules for:
   1. Quality filtering using **AdapterRemoval** 
