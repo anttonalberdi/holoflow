@@ -7,17 +7,17 @@ import sys
 #Argument parsing
 ###########################
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-f', help="input", dest="input", required=True)
-parser.add_argument('-d', help="project directory path", dest="path", required=True)
+parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True)
+parser.add_argument('-d', help="project directory path", dest="work_dir", required=True)
 parser.add_argument('-w', help="chosen workflow", dest="workflow", required=True)
-parser.add_argument('-config', help="config file", dest="config", required=True)
+parser.add_argument('-config', help="config file", dest="config_file", required=True)
 parser.add_argument('-cores', help="cores", dest="cores", required=True)
 args = parser.parse_args()
 
-input=args.input
-path=args.path
+in_f=args.input_txt
+path=args.work_dir
 workflow=args.workflow
-config=args.config
+config=args.config_file
 cores=args.cores
 
 
@@ -26,62 +26,77 @@ cores=args.cores
 ## Functions for input_output definition
 ###########################
 
-def in_out_preprocessing(path,input):
+def in_out_preprocessing(path,in_f):
     # Create "00-RawData/" directory if not exists
     in_dir = os.path.join(path,"00-InputData")
     if not os.path.exists(in_dir):
         os.makedirs(in_dir)
 
-        with open(input,'r') as in_file:
-            # Paste desired output file names from input.txt
-            read = 0
-            output_files=''
+    with open(in_f,'r') as in_file:
+        # Paste desired output file names from input.txt
+        read = 0
+        output_files=''
 
-            lines = in_file.readlines()
-            for file in lines:
+        lines = in_file.readlines()
+        for file in lines:
 
-                if not (file.startswith('#')):
-                    file = file.strip('\n').split(' ')
+            if not (file.startswith('#')):
+                file = file.strip('\n').split(' ')
 
-                    read+=1
-                    output_files+=(path+"/"+file[3]+"/"+file[0]+"_"+str(read)+".fastq ")
+                read+=1
+                output_files+=(path+"/"+file[3]+"/"+file[0]+"_"+str(read)+".fastq ")
 
-                    #Move files to new dir "00-RawData/" and change file names for 1st column in input.txt
-                    filename=file[2]
-                    copyfilesCmd='cp '+filename+' '+in_dir+'/'+file[0]+'_'+str(read)+'.fastq.gz'
+                #Move files to new dir "00-InputData" and change file names for 1st column in input.txt
+                filename=file[2]
+                desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq.gz"'
+                if not (filename == desired_filename):
+                    copyfilesCmd='cp '+filename+' '+desired_filename+''
                     subprocess.check_call(copyfilesCmd, shell=True)
 
-                    if read == 2:
-                        read=0
-                        # Add stats output only once per sample
-                        output_files+=(path+"/"+file[3]+"/"+file[0]+".stats ")
+                if read == 2:
+                    read=0
+                    # Add stats output only once per sample
+                    output_files+=(path+"/"+file[3]+"/"+file[0]+".stats ")
 
-            return output_files
+        return output_files
 
 
 
-def in_out_metagenomics(path,input):
+def in_out_metagenomics(path,in_f):
+    in_dir = os.path.join(path,"04-MappedToHuman")
+    if not os.path.exists(in_dir):
+        os.makedirs(in_dir)
 
-        with open(input,'r') as in_file:
-            # Paste desired output file names from input.txt
-            output_files=''
-            sample = file[0]
+    with open(in_f,'r') as in_file:
+        # Paste desired output file names from input.txt
+        read = 0
+        output_files=''
 
-            lines = in_file.readlines()
-            for file in lines:
+        lines = in_file.readlines()
+        for file in lines:
 
-                if not (file.startswith('#')):
-                    file = file.strip('\n').split(' ')
+            if not (file.startswith('#')):
+                file = file.strip('\n').split(' ')
 
-                    if not(file[0] == sample):
-                        # Add stats output file
-                        output_files+=(path+"/"+file[3]+"/"+sample+".stats ")
-                        sample = file[0]
-
+                read+=1
                 # Binning still missing in Snakefile, so far, stats is the only needed output
-                #    output_files+=(path+"/"+file[3]+"/"+sample+".BINNING OUTPUTS TO DEFINE ")
+                #    output_files+=(path+"/"+file[3]+"/"+file[0]+".BINNING OUTPUTS TO DEFINE ")
 
-            return output_files
+
+                #Move files to input dir "04-MappedToHuman/" and change file names for column 1 in input.txt
+                filename=file[2]
+                desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq.gz"'
+
+                if not (filename == desired_filename):
+                    copyfilesCmd='cp '+filename+' '+desired_filename+''
+                    subprocess.check_call(copyfilesCmd, shell=True)
+
+                if read == 2:
+                    read=0
+                    # Add stats output only once per sample
+                    output_files+=(path+"/"+file[3]+"/"+file[0]+".stats ")
+
+        return output_files
 
 
 
@@ -101,7 +116,7 @@ subprocess.check_call(load_modulesCmd, shell=True)
 if workflow == "preprocessing":
 
     # Define output names
-    out_files = in_out_preprocessing(path,input)
+    out_files = in_out_preprocessing(path,in_f)
 
     # Create preprocessing.sh for later job submission
     with open('./workflows/preprocessing/preprocessing.sh','w+') as sh:
@@ -118,17 +133,18 @@ if workflow == "preprocessing":
 
 
 # 2    # Metagenomics workflow
+
 if workflow == "metagenomics":
 
-     prep = input("Input files for holoflow/metagenomics are fastq. Is your data preprocessed? [y/n]")
+    prepdata = input("Is your data preprocessed into fastq files? [y/n]")
 
-     if prep == 'n':
-        prep2 = input("Would you like to process it before running holoflow/metagenomics with holoflow/preprocessing? [y/n]")
+    if prepdata == 'n':
+        prepdata2 = input("Would you like to process it before running holoflow/metagenomics with holoflow/preprocessing? [y/n]")
 
-        if prep2 == 'n':
+        if prepdata2 == 'n':
             print("You should come back when your data is preprocessed. See you soon :)")
-        if prep2 == 'y':
-            pass
+        if prepdata2 == 'y':
+            pass # IN THE FUTURE - PREP + METAGENOMICS?
 
             # Define output names
             #out_files = in_out_metagenomics(path,input)
@@ -145,28 +161,23 @@ if workflow == "metagenomics":
 #             subprocess.check_call(snakemakeCmd, shell=True)
 #
 
-
-    if prep == 'y':
+    if prepdata == 'y':
         # Define output names
-        out_files = in_out_metagenomics(path,input)
-        #print(out_files)
+        out_files = in_out_metagenomics(path,in_f)
+
 
         # # Create preprocessing.sh for later job submission
-        with open('./workflows/preprocessing/metagenomics.sh','w+') as sh:
+        with open('./workflows/metagenomics/metagenomics.sh','w+') as sh:
             curr_dir = os.getcwd()
             path_snkf = os.path.join(curr_dir,'workflows/metagenomics/Snakefile')
-            prep_snk = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+'--cores '+cores+''
+            prep_snk = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
             sh.write(prep_snk)
 
 
-         print("Great! Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
-         metagenomicsCmd = 'qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e '+path+'/Holo-metagenomics.err -o '+path+'/Holo-metagenomics.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N Holoflow-metagenomics ./workflows/metagenomics/metagenomics.sh'
-         subprocess.check_call(metagenomicsCmd, shell=True)
+        metagenomicsCmd = 'qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e '+path+'/Holo-metagenomics.err -o '+path+'/Holo-metagenomics.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N Holoflow-metagenomics ./workflows/metagenomics/metagenomics.sh'
+        subprocess.check_call(metagenomicsCmd, shell=True)
+        print("Great! Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
 
-
--INPUT FILE
--METAG+PREP CAL?
--CHECK RUNNING WITH NEW FLAGS REFORMAT
 
 
     # Genomics workflow
