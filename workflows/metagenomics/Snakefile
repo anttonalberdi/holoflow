@@ -38,14 +38,14 @@ rule assembly_reformat:
     output:
         "{projectpath}/05-Assembly/{sample}.stats"
     params:
+        sample="{sample}",
         min_contig_len=expand("{min_contig_len}", min_contig_len=config['min_contig_len']),
         in_assembly="{projectpath}/05-Assembly/{sample}_assembly/temp_assembly.fa",
-        out_assembly="{projectpath}/05-Assembly/{sample}.fa",
-        out_dir="{projectpath}/05-Assembly/{sample}_assembly"
+        out_assembly="{projectpath}/05-Assembly/{sample}.fa"
 
     shell:
         """
-        rm {input.empt_file} && python ./holoflow/bin/holo-assembly_reformat.py -s {sample} -min_cl {params.min_contig_len} -in_a {params.in_assembly} -out_a {params.out_assembly} -st_in {input.stats_in} -st_out {params.out_dir}
+        rm {input.empt_file} && python ./holoflow/bin/holo-assembly_reformat.py -s {params.sample} -min_cl {params.min_contig_len} -in_a {params.in_assembly} -out_a {params.out_assembly} -st_in {input.stats_in} -st_out {output}
         """
 
 

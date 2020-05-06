@@ -128,9 +128,10 @@ if workflow == "metagenomics":
         if prep2 == 'n':
             print("You should come back when your data is preprocessed. See you soon :)")
         if prep2 == 'y':
+            pass
 
             # Define output names
-            out_files = in_out_metagenomics(path,input)
+            #out_files = in_out_metagenomics(path,input)
             #print(out_files)
 
             # # Create metagenomics_andprep.sh for later job submission
@@ -161,6 +162,11 @@ if workflow == "metagenomics":
          print("Great! Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
          metagenomicsCmd = 'qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e '+path+'/Holo-metagenomics.err -o '+path+'/Holo-metagenomics.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N Holoflow-metagenomics ./workflows/metagenomics/metagenomics.sh'
          subprocess.check_call(metagenomicsCmd, shell=True)
+
+
+-INPUT FILE
+-METAG+PREP CAL?
+-CHECK RUNNING WITH NEW FLAGS REFORMAT
 
 
     # Genomics workflow

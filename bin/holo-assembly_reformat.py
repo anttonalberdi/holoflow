@@ -32,9 +32,9 @@ with open(str(in_a)) as f_input, open(str(out_a), 'w') as f_output:
         if line.startswith('>'):
 
             if seq:
-                if len(seq) > min_cl:
+                if len(seq) > int(min_cl):
                     n += 1
-                    contig_id = (">"+str(sample)+"_C"+str(contig_n[n]))
+                    contig_id = (">"+str(sample)+"_"+str(contig_n[n]))
                     seq += ('\n')
 
                     f_output.write(contig_id + '\n' + seq)
@@ -46,9 +46,9 @@ with open(str(in_a)) as f_input, open(str(out_a), 'w') as f_output:
             seq += line.strip()
 
     if seq:
-        if len(seq) > min_cl:
+        if len(seq) > int(min_cl):
             n += 1
-            contig_id = (">"+str(sample)+"_C"+str(contig_n[n]))
+            contig_id = (">"+str(sample)+"_"+str(contig_n[n]))
             seq += ('\n')
             f_output.write(contig_id + '\n' + seq)
 
