@@ -23,10 +23,15 @@ cores=args.cores
 
 
 ###########################
-## Functions for input_output definition
+## Functions
 ###########################
 
+    ###########################
+    ###### PREPROCESSING FUNCTIONS
+
 def in_out_preprocessing(path,in_f):
+    """Generate output names files from input.txt. Rename and move
+    input files where snakemake expects to find them if necessary."""
     # Create "00-RawData/" directory if not exists
     in_dir = os.path.join(path,"00-InputData")
     if not os.path.exists(in_dir):
@@ -61,8 +66,32 @@ def in_out_preprocessing(path,in_f):
         return output_files
 
 
+def run_preprocessing(in_f, path, config, cores):
+    """Create preprocessing.sh file and run snakemake on shell"""
+    # Define output names
+    out_files = in_out_preprocessing(path,in_f)
+
+    # Create preprocessing.sh for later job submission
+    with open('./workflows/preprocessing/preprocessing.sh','w+') as sh:
+        curr_dir = os.getcwd()
+        path_snkf = os.path.join(curr_dir,'workflows/preprocessing/Snakefile')
+        prep_snk = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
+        sh.write(prep_snk)
+
+
+    # Submit snakemake job
+    preprocessingCmd = 'qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e '+path+'/Holo-preprocessing.err -o '+path+'/Holo-preprocessing.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N Holoflow-preprocessing ./workflows/preprocessing/preprocessing.sh'
+    subprocess.check_call(preprocessingCmd, shell=True)
+    print("Preprocessing with Holoflow was successfully submited")
+
+
+
+    ###########################
+    ###### METAGENOMICS FUNCTIONS
 
 def in_out_metagenomics(path,in_f):
+    """Generate output names files from input.txt. Rename and move
+    input files where snakemake expects to find them if necessary."""
     in_dir = os.path.join(path,"04-MappedToHuman")
     if not os.path.exists(in_dir):
         os.makedirs(in_dir)
@@ -100,8 +129,40 @@ def in_out_metagenomics(path,in_f):
 
 
 
+def run_metagenomics(in_f, path, config, cores):
+    """Create metagenomics.sh file and run snakemake on shell"""
+
+    # Define output names
+    out_files = in_out_metagenomics(path,in_f)
+
+
+    # # Create preprocessing.sh for later job submission
+    with open('./workflows/metagenomics/metagenomics.sh','w+') as sh:
+        curr_dir = os.getcwd()
+        path_snkf = os.path.join(curr_dir,'workflows/metagenomics/Snakefile')
+        prep_snk = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
+        sh.write(prep_snk)
+
+
+    metagenomicsCmd = 'qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e '+path+'/Holo-metagenomics.err -o '+path+'/Holo-metagenomics.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N Holoflow-metagenomics ./workflows/metagenomics/metagenomics.sh'
+    subprocess.check_call(metagenomicsCmd, shell=True)
+    print("Great! Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
+
+
+
+    ###########################
+    ###### PREPROCESSING AND METAGENOMICS FUNCTIONS
+
+# def run_prepandmet(prepin_f, metin_f, path, prepconfig, metconfig, cores):
+#     """Run both preprocessing and metagenomics Snakefiles on shell"""
+#
+#     # Define output names
+#     out_files = in_out_metagenomics(path,in_f)
+#
+
+
 ###########################
-#### Snakemake pipeline run
+#### Snakemake pipeline run - load required modules
 ###########################
 load_modulesCmd='module unload gcc/5.1.0 && module load anaconda3/4.4.0'
 subprocess.check_call(load_modulesCmd, shell=True)
@@ -114,22 +175,7 @@ subprocess.check_call(load_modulesCmd, shell=True)
 
 # 1    # Preprocessing workflow
 if workflow == "preprocessing":
-
-    # Define output names
-    out_files = in_out_preprocessing(path,in_f)
-
-    # Create preprocessing.sh for later job submission
-    with open('./workflows/preprocessing/preprocessing.sh','w+') as sh:
-        curr_dir = os.getcwd()
-        path_snkf = os.path.join(curr_dir,'workflows/preprocessing/Snakefile')
-        prep_snk = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
-        sh.write(prep_snk)
-
-
-    # Submit snakemake job
-    preprocessingCmd = 'qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e '+path+'/Holo-preprocessing.err -o '+path+'/Holo-preprocessing.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N Holoflow-preprocessing ./workflows/preprocessing/preprocessing.sh'
-    subprocess.check_call(preprocessingCmd, shell=True)
-    print("Preprocessing with Holoflow was successfully submited")
+    run_preprocessing(in_f, path, config, cores)
 
 
 # 2    # Metagenomics workflow
@@ -143,41 +189,20 @@ if workflow == "metagenomics":
 
         if prepdata2 == 'n':
             print("You should come back when your data is preprocessed. See you soon :)")
-        if prepdata2 == 'y':
-            pass # IN THE FUTURE - PREP + METAGENOMICS?
 
-            # Define output names
-            #out_files = in_out_metagenomics(path,input)
-            #print(out_files)
+        if prepdata2 == 'y':    # It would be much easier to concatenate Snakefiles and new functions - DO IT
+            prep_in_f = input("Could you please state the path for the preprocessing input file? - No quoting needed\n")
+            prep_config = input("Could you please state the path for the preprocessing config file? - No quoting needed\n")
+            run_preprocessing(prep_in_f, path, prep_config, cores)
 
-            # # Create metagenomics_andprep.sh for later job submission
-            # with open('./workflows/preprocessing/metagenomics.sh','w+') as sh:
-            #     curr_dir = os.getcwd()
-            #     path_snkf = os.path.join(curr_dir,'workflows/metagenomics/Snakefile')
-            #     prep_snk = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+'--cores '+cores+''
-            #     sh.write(prep_snk)
-
-#             snakemakeCmd = 'xqsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` '+path+'/snakemake.log -l nodes=1:ppn=28,mem=100gb,walltime=0:06:00:00 -N holoflow_metagenomics -de snakemake -s workflows/metagenomics/prep_and_metagenomics/Snakefile '+output_files+' --config '+config+''
-#             subprocess.check_call(snakemakeCmd, shell=True)
-#
+            prep_out_dir = os.path.join(path,"04-MappedToHuman")
+            if os.path.exists(prep_out_dir):
+                run_metagenomics(in_f, path, config, cores)
 
     if prepdata == 'y':
-        # Define output names
-        out_files = in_out_metagenomics(path,in_f)
-
-
-        # # Create preprocessing.sh for later job submission
-        with open('./workflows/metagenomics/metagenomics.sh','w+') as sh:
-            curr_dir = os.getcwd()
-            path_snkf = os.path.join(curr_dir,'workflows/metagenomics/Snakefile')
-            prep_snk = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
-            sh.write(prep_snk)
-
-
-        metagenomicsCmd = 'qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e '+path+'/Holo-metagenomics.err -o '+path+'/Holo-metagenomics.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N Holoflow-metagenomics ./workflows/metagenomics/metagenomics.sh'
-        subprocess.check_call(metagenomicsCmd, shell=True)
-        print("Great! Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
+        run_metagenomics(in_f, path, config, cores)
 
 
 
-    # Genomics workflow
+
+# 3    # Genomics workflow
