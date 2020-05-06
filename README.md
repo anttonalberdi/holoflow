@@ -46,7 +46,7 @@ This is designed to be called from the command line, and requires the next argum
 ```
 python holoflow.py -f ${input} -d ${workdir} -w metagenomics -config ${configfile} -cores 40
 ```
-*input* *workdir* and *configfile* are shell variables which where previously defined in the command line, but the corresponding path to the file can also be directly specified in the python command. 
+*input*, *workdir* and *configfile* are shell variables which where previously defined in the command line, but the corresponding path to the file can also be directly specified in the python command. 
 
 
 
