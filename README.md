@@ -15,7 +15,7 @@ This is designed to be called from the command line, and requires the next argum
   2. **-d** Project path - directory where pipeline outputs will be stored
   3. **-w** Workflow to be run: preprocessing or metagenomics.
   4. **-config** *config* file full path.
-  5.  **-cores** Number of cores to be used by Snakemake.
+  5.  **-cores** Maximum number of cores to be used by Snakemake.
 
   
 ### Workflows - specific directories
