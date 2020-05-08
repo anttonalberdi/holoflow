@@ -41,7 +41,13 @@ This is designed to be called from the command line, and requires the next argum
 - *Snakefile* - which contains rules for:
   1. Metagenomic assembly using **metaSpades** or **megahit**
   2. Read mapping to assembly using **bwa mem** ##### UNDER CONSTRUCTION
-  3. Contig binning by **Metabat and MaxBin** plus binning refinement by **DasTool** ##### UNDER CONSTRUCTION
+  3. Contig binning using **Metabat**, **MaxBin** and **Concoct** ##### UNDER CONSTRUCTION
+  4. Binner result integration using **DasTool** ##### UNDER CONSTRUCTION
+  5. Complementess improvement ##### UNDER CONSTRUCTION
+  5. Taxonomic refinement using CAT ##### UNDER CONSTRUCTION
+  6. Redundancy refinement ##### UNDER CONSTRUCTION
+  7. Dereplication using dRep ##### UNDER CONSTRUCTION
+  7. Bin assembly improvement (contig elongation and scaffolding) using SSPACE. ##### UNDER CONSTRUCTION
   
 - Config file *config.yaml*, in which the user may be interested to customise:
   1. Metagenomic assembly - choose between the mentioned options by writing *megahit* or *spades*
