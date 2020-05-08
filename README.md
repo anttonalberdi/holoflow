@@ -15,15 +15,15 @@ This is designed to be called from the command line, and requires the next argum
   2. **-d** Project path - directory where pipeline outputs will be stored
   3. **-w** Workflow to be run: preprocessing or metagenomics.
   4. **-config** *config* file full path.
-  5.  **-cores** Maximum number of cores to be used by Snakemake.
+  5. **-cores** Maximum number of cores to be used by Snakemake.
 
 #### Example of input file
 |   |   |   |   |
 | --- | --- | --- | --- |
-| Sample1 | Group1 | /home/Sample1_1.fq;/home/Sample1_2.fq | /home/projectdir |
-| Sample2 | Group1 | /home/Sample2_1.fq;/home/Sample1_2.fq | /home/projectdir |
-| Sample3 | Group2 | /home/Sample3_1.fq;/home/Sample3_2.fq | /home/projectdir |
-| Samplen | Groupn | /home/Samplen_1.fq;/home/Samplen_2.fq | /home/projectdir |
+| Sample1 | Group1 | /home/Sample1_1.fq;/home/Sample1_2.fq | /home/results/sample1 |
+| Sample2 | Group1 | /home/Sample2_1.fq;/home/Sample1_2.fq | /home/results/sample2 |
+| Sample3 | Group2 | /home/Sample3_1.fq;/home/Sample3_2.fq | /home/results/sample3 |
+| Samplen | Groupn | /home/Samplen_1.fq;/home/Samplen_2.fq | /home/results/samplen |
   
 ### Workflows - specific directories
 #### Preprocessing
