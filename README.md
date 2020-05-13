@@ -12,10 +12,10 @@ This is designed to be called from the command line, and requires the next argum
     b. Assembly group (If not coassembly this field will be ignored - but it is important that is not omitted when writing the input file).  
     c. Original full path/name of input file/s.  
     d. Final output directory name (*Note it must match the output directory name in the workflow's final Snakefile rule*).    
-  2. **-d** Project path - directory where pipeline outputs will be stored
+  2. **-d** Directory where the pipeline temporary files and directories will be.
   3. **-w** Workflow to be run: preprocessing or metagenomics.
-  4. **-config** *config* file full path.
-  5. **-cores** Maximum number of cores to be used by Snakemake.
+  4. **-c** *config* file full path.
+  5. **-threads** Maximum number of threads to be used by Snakemake.
 
 #### Example of input file
 |   |   |   |   |
