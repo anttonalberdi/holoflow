@@ -83,10 +83,14 @@ rule dup_rem_paired:
       dir="{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq"
     threads: 4
     params:
-    ### ADD ALL THE NEW PARAMS IN HOLO- AND CONFIG FILE!!
-        separator=expand("{separator}", separator=config['separator'])
+        separator=expand("{separator}", separator=config['separator']),
+        by_n=expand("{by_n}", by_n=config['by_n']),
+        by_s=expand("{by_s}", by_s=config['by_s']),
+        file_to_dups=expand("{file_to_dups}", file_to_dups=config['file_to_dups']),
+        ignore_case=expand("{ignore_case}", ignore_case=config['ignore_case'])
+
     shell:
-        "python ./holoflow/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator}"
+        "python ./holoflow/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -i {params.ignore_case} "
 
 
 
@@ -135,9 +139,19 @@ rule map_host:
         refgenome=expand("{refgenomehost}", refgenomehost=config['refgenomehost'])
     output:
         "{projectpath}/03-MappedToHost/{sample}_all.bam"
-    threads: 8
+    params:
+        host_t=expand("{host_t}", host_t=config['host_t']),
+        host_k=expand("{host_k}", host_k=config['host_k']),
+        host_w=expand("{host_w}", host_w=config['host_w']),
+        host_d=expand("{host_d}", host_d=config['host_d']),
+        host_A=expand("{host_A}", host_A=config['host_A']),
+        host_B=expand("{host_B}", host_B=config['host_B']),
+        host_O=expand("{host_O}", host_O=config['host_O']),
+        host_E=expand("{host_E}", host_E=config['host_E']),
+        host_L=expand("{host_L}", host_L=config['host_L']),
+        host_R=expand("{host_R}", host_R=config['host_R']),
     run:
-      shell("python ./holoflow/bin/holo-map_host.py -1 {input.read1} -2 {input.read2} -hostrg {input.refgenome} -obam {output}")
+      shell("python ./holoflow/bin/holo-map_host.py -1 {input.read1} -2 {input.read2} -hostrg {input.refgenome} -obam {output} -t {params.host_t} -k {params.host_k} -w {params.host_w} -d {params.host_d} -A {params.host_A} -B {params.host_B} -O {params.host_O} -E {params.host_E} -L {params.host_L} -R {params.host_R}")
 
 
 rule map_host_split:

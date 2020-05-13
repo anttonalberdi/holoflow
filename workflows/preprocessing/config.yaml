@@ -22,10 +22,10 @@ minquality:
 # dup_rem_paired options
 
   # By-name-n and By-seq-s are mutually exclusive !
-by-name-n:
+by_n:
   False
   # By-name-n and By-seq-s are mutually exclusive !
-by-seq-s:
+by_s:
   True
 
 file_to_dups: # if not False, write path instead of True !
@@ -41,6 +41,28 @@ separator:
 #map_host options
 refgenomehost:
   /home/projects/ku-cbd/people/antalb/reference_genomes/Gallus_gallus.Gallus_gallus-5.0.dna.toplevel.fa
+
+    # These values correspond to the default options for bwa mem, customise if desired
+host_t:
+  40
+host_k:
+  19
+host_w:
+  100
+host_d:
+  100
+host_A:
+  1
+host_B:
+  4
+host_O:
+  6
+host_E:
+  1
+host_L:
+  5
+host_R:
+  "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample"
 
 #map_human options
 refgenomehuman:
