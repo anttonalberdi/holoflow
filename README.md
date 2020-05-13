@@ -6,7 +6,7 @@ Snakemake is a workflow management system which requires from a *Snakefile* and 
 ## Files and directories
 ### Main directory
 - *holoflow.py* - which contains the script for the pipeline calling.  
-This is designed to be called from the command line, and requires the next arguments:  
+This is designed to be called from the command line, and requires the following arguments:  
   1. **-f** Input.txt file to holoflow.py, which will be used to retrieve fundamental information for the pipeline run. It must contain three columns delimited by a simple space:  
     a. Sample name.  
     b. Assembly group (If not coassembly this field will be ignored - but it is important that is not omitted when writing the input file).  
