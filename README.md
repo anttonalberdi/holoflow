@@ -15,7 +15,7 @@ This is designed to be called from the command line, and requires the following 
   2. **-d** Directory where the pipeline temporary files and directories will be.
   3. **-w** Workflow to be run: preprocessing or metagenomics.
   4. **-c** *config* file full path.
-  5. **-threads** Maximum number of threads to be used by Snakemake.
+  5. **-t** Maximum number of threads to be used by Snakemake.
 
 #### Example of input file
 |   |   |   |   |
