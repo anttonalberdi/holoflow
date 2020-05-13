@@ -67,3 +67,25 @@ host_R:
 #map_human options
 refgenomehuman:
   /home/projects/ku-cbd/people/antalb/reference_genomes/Homo_sapiens.fasta
+
+    # These values correspond to the default options for bwa mem, customise if desired
+human_t:
+  40
+human_k:
+  19
+human_w:
+  100
+human_d:
+  100
+human_A:
+  1
+human_B:
+  4
+human_O:
+  6
+human_E:
+  1
+human_L:
+  5
+human_R:
+  "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample"

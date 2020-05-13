@@ -149,10 +149,11 @@ rule map_host:
         host_O=expand("{host_O}", host_O=config['host_O']),
         host_E=expand("{host_E}", host_E=config['host_E']),
         host_L=expand("{host_L}", host_L=config['host_L']),
-        host_R=expand("{host_R}", host_R=config['host_R']),
-    run:
-      shell("python ./holoflow/bin/holo-map_host.py -1 {input.read1} -2 {input.read2} -hostrg {input.refgenome} -obam {output} -t {params.host_t} -k {params.host_k} -w {params.host_w} -d {params.host_d} -A {params.host_A} -B {params.host_B} -O {params.host_O} -E {params.host_E} -L {params.host_L} -R {params.host_R}")
-
+        host_R=expand("{host_R}", host_R=config['host_R'])
+    shell:
+        """
+        python ./holoflow/bin/holo-map_host.py -1 {input.read1} -2 {input.read2} -hostrg {input.refgenome} -obam {output} -t {params.host_t} -k {params.host_k} -w {params.host_w} -d {params.host_d} -A {params.host_A} -B {params.host_B} -O {params.host_O} -E {params.host_E} -L {params.host_L} -R {params.host_R}
+        """
 
 rule map_host_split:
     input:
@@ -177,10 +178,20 @@ rule map_human:
         refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman'])
     output:
         "{projectpath}/04-MappedToHuman/{sample}_all.bam"
-    threads: 8
+    params:
+        human_t=expand("{human_t}", human_t=config['human_t']),
+        human_k=expand("{human_k}", human_k=config['human_k']),
+        human_w=expand("{human_w}", human_w=config['human_w']),
+        human_d=expand("{human_d}", human_d=config['human_d']),
+        human_A=expand("{human_A}", human_A=config['human_A']),
+        human_B=expand("{human_B}", human_B=config['human_B']),
+        human_O=expand("{human_O}", human_O=config['human_O']),
+        human_E=expand("{human_E}", human_E=config['human_E']),
+        human_L=expand("{human_L}", human_L=config['human_L']),
+        human_R=expand("{human_R}", human_R=config['human_R'])
     shell:
         """
-        python ./holoflow/bin/holo-map_human.py -1 {input.read1} -2 {input.read2} -hrg {input.refgenome} -obam {output}
+        python ./holoflow/bin/holo-map_human.py -1 {input.read1} -2 {input.read2} -hrg {input.refgenome} -obam {output} -t {params.human_t} -k {params.human_k} -w {params.human_w} -d {params.human_d} -A {params.human_A} -B {params.human_B} -O {params.human_O} -E {params.human_E} -L {params.human_L} -R {params.human_R}
         """
 
 rule map_human_split:
