@@ -50,5 +50,57 @@ rule assembly_reformat:
 
 
 ##
+# Index assembly
+##
+rule assembly_index:
+    input:
+        "{projectpath}/05-Assembly/{sample}.fa"
+    output: # FUTURE: ADD OPTION TO REMOVE ALL BUT FA.FAI
+        samtools="{projectpath}/05-Assembly/{sample}.fa.fai",
+        bwa_bwt="{projectpath}/05-Assembly/{sample}.fa.bwt",
+        bwa_pac="{projectpath}/05-Assembly/{sample}.fa.pac",
+        bwa_ann="{projectpath}/05-Assembly/{sample}.fa.ann",
+        bwa_amb="{projectpath}/05-Assembly/{sample}.fa.amb",
+        bwa_sa="{projectpath}/05-Assembly/{sample}.fa.sa"
+    shell:
+        """
+        python ./holoflow/bin/holo-assembly_index.py -a {input} -ia {output.samtools}
+        """
+
+##
+# Assembly mapping
+##
+
+rule assembly_mapping:
+    input:
+        assembly="{projectpath}/05-Assembly/{sample}.fa",
+        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
+        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
+    output:
+        "{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
+    params:
+        threads=expand("{threads}", threads=config['threads'])
+    shell:
+        """
+        python ./holoflow/bin/holo-assembly_mapping.py -a {input.assembly} -1 {input.read1} -2 {input.read2} -t {params.threads} -obam {output}
+        """
+
+
+##
+# Prodigal ORF prediction
+##
+#"Metagenomes - The simplest approach for metagenomes is to put all the sequences in one FASTA file and analyze them in Anonymous Mode."
+rule protein_prediction_prodigal:
+    input:
+        assembly="{projectpath}/05-Assembly/{sample}.fa"
+    output:
+        genetic_coords="{projectpath}/06-ProdigalPrediction/{sample}.coords.gbk",
+        protein_translations="{projectpath}/06-ProdigalPrediction/{sample}.protein_translations.faa"
+    shell: # Prodigal is run in "anon", Anonymous workflow
+        """
+        python ./holoflow/bin/holo-pp_prodigal.py -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations}
+        """
+
+##
 # BINNING TO ADD !!!!!!!!!!!!!!!!!!!!
 ##
