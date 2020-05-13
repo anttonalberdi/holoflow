@@ -83,6 +83,7 @@ rule dup_rem_paired:
       dir="{projectpath}/02-DuplicatesRemoved/{sample}.merged.fastq"
     threads: 4
     params:
+    ### ADD ALL THE NEW PARAMS IN HOLO- AND CONFIG FILE!!
         separator=expand("{separator}", separator=config['separator'])
     shell:
         "python ./holoflow/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator}"
