@@ -57,7 +57,7 @@ This is designed to be called from the command line, and requires the following 
 ## Exectute *holoflow.py*
 **The python script should be launched from its containing directory:**
 ```
-python holoflow.py -f ${input} -d ${workdir} -w metagenomics -config ${configfile} -cores 40
+python holoflow.py -f ${input} -d ${workdir} -w metagenomics -config ${configfile} -threads 40
 ```
 *input*, *workdir* and *configfile* are shell variables which where previously defined in the command line, but the corresponding path to the file can also be directly specified in the python command. 
 
