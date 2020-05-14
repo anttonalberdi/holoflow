@@ -104,3 +104,20 @@ rule protein_prediction_prodigal:
 ##
 # BINNING TO ADD !!!!!!!!!!!!!!!!!!!!
 ##
+
+##
+# Create depth table
+##
+
+rule depth_table:
+    input:
+        "{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
+    output:
+        metabat_depth_file="{projectpath}/07-Binning/{sample}_metabat/{sample}.depth.txt",
+        maxbin_depth_file="{projectpath}/07-Binning/{sample}_maxbin/{sample}.depth.txt",
+        concoct_depth_file="{projectpath}/07-Binning/{sample}_concoct/{sample}.depth.txt"
+
+    shell:
+        """
+        python ./holoflow/bin/holo-depth_file.py -a {input} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -cct {output.concoct_depth_file}
+        """

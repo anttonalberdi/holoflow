@@ -70,12 +70,20 @@ rule depth_table:
     input:
         assemblybam="{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
-        depth_file="{projectpath}/07-Binning/{sample}.depth.txt"
+        metabat_depth_file="{projectpath}/07-Binning/{sample}_metabat/{sample}.depth.txt",
+        maxbin_depth_file="{projectpath}/07-Binning/{sample}_maxbin/{sample}.depth.txt",
+        concoct_depth_file="{projectpath}/07-Binning/{sample}_concoct/{sample}.depth.txt"
+
     shell:
         """
         module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} {input.assemblybam}
 
         """
+
+
+
+
+
 
 
 ##
@@ -117,7 +125,7 @@ rule binning_metabat:
                         bintable.write("{0}\t{1}\r\n".format(contig,binname))
         bintable.close()
 
-        shell("ls | grep -a -E '.*.fa$' | gzip ") # DOES NOT WORK 
+        shell("ls | grep -a -E '.*.fa$' | gzip ") # DOES NOT WORK
 
 ##
 # Binning with maxbin
@@ -255,3 +263,4 @@ rm -rf ${workdir}/${sp}.binning/refiner/input/
 
 
 rule drep_MAGs:
+    Hola Núria, he estado pensando un poco sobre cómo estructurar el refinamiento de bins, y creo que lo mejor sería incluir 4 steps: 1) completeness improvement, 2) taxonomic refinement, 3) redundancy reduction y 4) assembly improvement
