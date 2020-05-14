@@ -6,7 +6,7 @@ import os
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-i', help="input assembly file", dest="a", required=True)
+parser.add_argument('-i', help="input assembly file", dest="i", required=True)
 parser.add_argument('-o', help="output genetic coordinates", dest="o", required=True)
 parser.add_argument('-a', help="protein translations", dest="a", required=True)
 args = parser.parse_args()
