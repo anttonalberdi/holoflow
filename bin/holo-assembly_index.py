@@ -16,8 +16,9 @@ idx_a=args.idx_a
 
 
 # Run
-if not os.path.exists(str(idx_a)):
-    idxCmd='module load tools samtools/1.9 && samtools faidx '+a+' && module load tools bwa/0.7.15 && bwa index '+a+''
-    subprocess.check_call(idxCmd, shell=True)
-else:
-    pass
+if not (os.path.exists(str(idx_a))):
+    idxsamCmd='module load tools samtools/1.9 && samtools faidx '+a+''
+    idxbwaCmd='module load bwa/0.7.15 && bwa index '+a+''
+
+    subprocess.check_call(idxbwaCmd, shell=True)
+    subprocess.check_call(idxsamCmd, shell=True)

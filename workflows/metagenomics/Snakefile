@@ -74,6 +74,7 @@ rule assembly_index:
 rule assembly_mapping:
     input:
         assembly="{projectpath}/05-Assembly/{sample}.fa",
+        samtools="{projectpath}/05-Assembly/{sample}.fa.fai",
         read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
         read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
     output:
@@ -84,7 +85,6 @@ rule assembly_mapping:
         """
         python ./holoflow/bin/holo-assembly_mapping.py -a {input.assembly} -1 {input.read1} -2 {input.read2} -t {params.threads} -obam {output}
         """
-
 
 ##
 # Prodigal ORF prediction
@@ -102,10 +102,6 @@ rule protein_prediction_prodigal:
         """
 
 ##
-# BINNING TO ADD !!!!!!!!!!!!!!!!!!!!
-##
-
-##
 # Create depth table
 ##
 
@@ -119,5 +115,9 @@ rule depth_table:
 
     shell:
         """
-        python ./holoflow/bin/holo-depth_file.py -a {input} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -cct {output.concoct_depth_file}
+        python ./holoflow/bin/holo-depth_files.py -a {input} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -cct {output.concoct_depth_file}
         """
+
+##
+# BINNING TO ADD #####################
+##
