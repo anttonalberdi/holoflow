@@ -131,10 +131,10 @@ rule binning_metabat:
         assembly="{projectpath}/05-Assembly/{sample}.fa",
         depth_table="{projectpath}/07-Binning/{sample}_metabat/{sample}.depth.txt"
     output:
-        bin_table_mtb="{projectpath}/07-Binning/{sample}.metabat/{sample}.bins_metabat.txt"#,
+        bin_table_mtb="{projectpath}/07-Binning/{sample}_metabat/{sample}.bins_metabat.txt"#,
         #final_file="{projectpath}/07-Binning/{sample}.metabat/{sample}.bins_metabat.gz"
     params:
-        base_mtb="{projectpath}/07-Binning/{sample}.metabat/{sample}.mtb.bin",
+        base_mtb="{projectpath}/07-Binning/{sample}_metabat/{sample}.mtb.bin",
         threads=expand("{threads}", threads=config['threads'])
     shell:
         """
@@ -152,9 +152,9 @@ rule binning_maxbin:
         assembly="{projectpath}/05-Assembly/{sample}.fa",
         depth_table="{projectpath}/07-Binning/{sample}_maxbin/{sample}.depth.txt"
     output:
-        bin_table_mxb="{projectpath}/07-Binning/{sample}.maxbin/{sample}.bins_maxbin.txt"#,
+        bin_table_mxb="{projectpath}/07-Binning/{sample}_maxbin/{sample}.bins_maxbin.txt"#,
     params:
-        base_mxb="{projectpath}/07-Binning/{sample}.maxbin/{sample}.mxb.bin",
+        base_mxb="{projectpath}/07-Binning/{sample}_maxbin/{sample}.mxb.bin",
         threads=expand("{threads}", threads=config['threads'])
     shell:
         """
