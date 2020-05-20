@@ -25,10 +25,11 @@ cct=args.cct
 metabatCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth '+mtb+' '+a+''
 subprocess.check_call(metabatCmd, shell=True)
 
+
 # Maxbin
 maxbinCmd='cp '+mtb+' '+mxb+''
 subprocess.check_call(maxbinCmd, shell=True)
 
 #Concoct
-concoctCmd="cat '+mxb+' | awk -v OFS='\t' '{print $1,$4,$6,$8}' > '+cct+'"
+concoctCmd='cat '+mtb+' | cut -f-1,4,6,8- > '+cct+''
 subprocess.check_call(concoctCmd, shell=True)
