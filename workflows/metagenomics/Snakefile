@@ -121,3 +121,60 @@ rule depth_table:
 ##
 # BINNING TO ADD #####################
 ##
+
+##
+# Binning with metabat
+##
+
+rule binning_metabat:
+    input:
+        assembly="{projectpath}/05-Assembly/{sample}.fa",
+        depth_table="{projectpath}/07-Binning/{sample}_metabat/{sample}.depth.txt"
+    output:
+        bin_table_mtb="{projectpath}/07-Binning/{sample}.metabat/{sample}.bins_metabat.txt"#,
+        #final_file="{projectpath}/07-Binning/{sample}.metabat/{sample}.bins_metabat.gz"
+    params:
+        base_mtb="{projectpath}/07-Binning/{sample}.metabat/{sample}.mtb.bin",
+        threads=expand("{threads}", threads=config['threads'])
+    shell:
+        """
+        python ./holoflow/bin/holo-binning_metabat.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mtb}  -bb {params.base_mtb} -t {params.threads}
+        """
+
+
+
+##
+# Binning with maxbin
+##
+
+rule binning_maxbin:
+    input:
+        assembly="{projectpath}/05-Assembly/{sample}.fa",
+        depth_table="{projectpath}/07-Binning/{sample}_maxbin/{sample}.depth.txt"
+    output:
+        bin_table_mxb="{projectpath}/07-Binning/{sample}.maxbin/{sample}.bins_maxbin.txt"#,
+    params:
+        base_mxb="{projectpath}/07-Binning/{sample}.maxbin/{sample}.mxb.bin",
+        threads=expand("{threads}", threads=config['threads'])
+    shell:
+        """
+        python ./holoflow/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb}  -bb {params.base_mxb} -t {params.threads}
+        """
+
+
+##
+# Binning with concoct - ONLY CO-ASSEMBLY - default set to FALSE
+##
+
+rule binning_concoct:
+    input:
+        assembly="{projectpath}/05-Assembly/{sample}.fa",
+        depth_table="{projectpath}/07-Binning/{sample}_concoct/{sample}.depth.txt"
+    output:
+    params:
+        coassembly=expand("{coassembly}", coassembly=config['coassembly']),
+        base_cct="{projectpath}/07-Binning/{sample}.concoct/{sample}.cct.bin",
+        threads=expand("{threads}", threads=config['threads'])
+    shell:
+        """
+        python ./holoflow/bin/holo-binning_concoct.py

@@ -4,7 +4,7 @@
 #projectpath:
 #This information is taken from output files
 
-#assembly options
+# assembly options
 threads:
   40
 
@@ -20,11 +20,16 @@ klist_megahit:
 klist_spades:
   "21,29,39,59,79,99,119"
 
-#reformat assembly options
+# reformat assembly options
 min_contig_len:
   1000
 
-# #binning options
+# binning options
+coassembly:
+  FALSE
+
+
+#
 # dastool_db:
 #   /home/projects/ku-cbd/people/antalb/databases/dastool_db
 #
