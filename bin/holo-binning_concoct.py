@@ -12,6 +12,7 @@ parser.add_argument('-d', help="depth file", dest="d", required=True)
 parser.add_argument('-bb', help="bin base ID", dest="bb", required=True)
 parser.add_argument('-bt', help="bin table output", dest="bt", required=True)
 parser.add_argument('-t', help="threads", dest="t", required=True)
+parser.add_argument('-l', help="minimum contig length", dest="l", required=True)
 args = parser.parse_args()
 
 coa=args.coa
@@ -20,12 +21,13 @@ d=args.d
 bb=args.bb
 bt=args.bt
 t=args.t
+l=args.l
 
 
 
 if coa: # default set to FALSE in configfile
     if not glob.glob(str(bb)+"*.fa"):
-        concoctCmd='concoct --coverage_file '+d+' --composition_file '+a+' -b '+bb+''
+        concoctCmd='concoct --coverage_file '+d+' --composition_file '+a+' -b '+bb+' -l '+int(l)+''
         subprocess.check_call(concoctCmd, shell=True)
 
             #Create contig to bin table

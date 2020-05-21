@@ -174,9 +174,10 @@ rule binning_concoct:
         bin_table_cct="{projectpath}/07-Binning/{sample}_concoct/{sample}.bins_concoct.txt"
     params:
         coassembly=expand("{coassembly}", coassembly=config['coassembly']),
+        min_contig_len=expand("{min_contig_len}", min_contig_len=config['min_contig_len']),
         base_cct="{projectpath}/07-Binning/{sample}.concoct/{sample}.cct.bin",
         threads=expand("{threads}", threads=config['threads'])
     shell:
         """
-        python ./holoflow/bin/holo-binning_concoct.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_cct} -coa {params.coassembly} -bb {params.base_mxb} -t {params.threads}
+        python ./holoflow/bin/holo-binning_concoct.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_cct} -coa {params.coassembly} -bb {params.base_mxb} -t {params.threads} -l {params.min_contig_len}
         """
