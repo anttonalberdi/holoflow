@@ -18,12 +18,12 @@ This is designed to be called from the command line, and requires the following 
   5. **-t** Maximum number of threads to be used by Snakemake.
 
 #### Example of input file
-|   |   |   |   |
-| --- | --- | --- | --- |
-| Sample1 | Group1 | /home/Sample1_1.fq;/home/Sample1_2.fq | /home/results/sample1 |
-| Sample2 | Group1 | /home/Sample2_1.fq;/home/Sample1_2.fq | /home/results/sample2 |
-| Sample3 | Group2 | /home/Sample3_1.fq;/home/Sample3_2.fq | /home/results/sample3 |
-| Samplen | Groupn | /home/Samplen_1.fq;/home/Samplen_2.fq | /home/results/samplen |
+|   |   |   |
+| --- | --- | --- |
+| Sample1 | Group1 | /home/Sample1_1.fq;/home/Sample1_2.fq |
+| Sample2 | Group1 | /home/Sample2_1.fq;/home/Sample1_2.fq |
+| Sample3 | Group2 | /home/Sample3_1.fq;/home/Sample3_2.fq |
+| Samplen | Groupn | /home/Samplen_1.fq;/home/Samplen_2.fq |
   
 ### Workflows - specific directories
 #### Preprocessing
