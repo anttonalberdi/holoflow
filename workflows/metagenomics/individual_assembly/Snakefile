@@ -14,7 +14,6 @@ rule assembly:
 
     output:
         "{projectpath}/05-Assembly/{sample}_file_to_remove"
-
     params:
         memory=expand("{memory}", memory=config['memory']),
         klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
@@ -110,12 +109,11 @@ rule depth_table:
         "{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
     output:
         metabat_depth_file="{projectpath}/07-Binning/{sample}_metabat/{sample}.depth.txt",
-        maxbin_depth_file="{projectpath}/07-Binning/{sample}_maxbin/{sample}.depth.txt",
-        concoct_depth_file="{projectpath}/07-Binning/{sample}_concoct/{sample}.depth.txt"
+        maxbin_depth_file="{projectpath}/07-Binning/{sample}_maxbin/{sample}.depth.txt"
 
     shell:
         """
-        python ./holoflow/bin/holo-depth_files.py -a {input} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -cct {output.concoct_depth_file}
+        python ./holoflow/bin/holo-depth_files_IA.py -a {input} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file}
         """
 
 ##
@@ -131,7 +129,7 @@ rule binning_metabat:
         assembly="{projectpath}/05-Assembly/{sample}.fa",
         depth_table="{projectpath}/07-Binning/{sample}_metabat/{sample}.depth.txt"
     output:
-        bin_table_mtb="{projectpath}/07-Binning/{sample}_metabat/{sample}.bins_metabat.txt"#,
+        bin_table_mtb="{projectpath}/07-Binning/{sample}.bins_metabat.txt"#,
         #final_file="{projectpath}/07-Binning/{sample}.metabat/{sample}.bins_metabat.gz"
     params:
         base_mtb="{projectpath}/07-Binning/{sample}_metabat/{sample}.mtb.bin",
@@ -152,7 +150,7 @@ rule binning_maxbin:
         assembly="{projectpath}/05-Assembly/{sample}.fa",
         depth_table="{projectpath}/07-Binning/{sample}_maxbin/{sample}.depth.txt"
     output:
-        bin_table_mxb="{projectpath}/07-Binning/{sample}_maxbin/{sample}.bins_maxbin.txt"
+        bin_table_mxb="{projectpath}/07-Binning/{sample}.bins_maxbin.txt"
     params:
         base_mxb="{projectpath}/07-Binning/{sample}_maxbin/{sample}.mxb.bin",
         threads=expand("{threads}", threads=config['threads'])
@@ -162,22 +160,39 @@ rule binning_maxbin:
         """
 
 
-##
-# Binning with concoct - ONLY CO-ASSEMBLY - default set to FALSE
-##
 
-rule binning_concoct:
+##
+# Bin refinement with DASTool using binning: metabat, maxbin and proteins from: prodigal
+##
+ # --proteins                 Predicted proteins in prodigal fasta format (>scaffoldID_geneNo).
+ #                              Gene prediction step will be skipped if given. (optional)
+rule das_tool:
     input:
         assembly="{projectpath}/05-Assembly/{sample}.fa",
-        depth_table="{projectpath}/07-Binning/{sample}_concoct/{sample}.depth.txt"
+        bin_table_mxb="{projectpath}/07-Binning/{sample}.bins_maxbin.txt",
+        bin_table_mtb="{projectpath}/07-Binning/{sample}.bins_metabat.txt",
+        pproteins="{projectpath}/06-ProdigalPrediction/{sample}.protein_translations.faa"
     output:
-        bin_table_cct="{projectpath}/07-Binning/{sample}_concoct/{sample}.bins_concoct.txt"
+        "{projectpath}/07-Binning/{sample}_dastool"
     params:
-        coassembly=expand("{coassembly}", coassembly=config['coassembly']),
-        min_contig_len=expand("{min_contig_len}", min_contig_len=config['min_contig_len']),
-        base_cct="{projectpath}/07-Binning/{sample}.concoct/{sample}.cct.bin",
-        threads=expand("{threads}", threads=config['threads'])
+        threads=expand("{threads}", threads=config['threads']),
+        bin_dir="{projectpath}/07-Binning/{sample}_dastool/{sample}.bins_dastool",
+        dastoolDependencies=expand("{dastoolDependencies}", dastoolDependencies=config['dastoolDependencies']),
+        search_eng=expand("{search_eng}", search_eng=config['search_eng']),
+        dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db'])
     shell:
         """
-        python ./holoflow/bin/holo-binning_concoct.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_cct} -coa {params.coassembly} -bb {params.base_mxb} -t {params.threads} -l {params.min_contig_len}
+        python ./holoflow/bin/holo-binning_dastool.py -dep {params.dastoolDependencies} -a {input.assembly} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {output} -bin_o {params.bin_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db}
         """
+
+
+##
+# CheckM
+##
+
+
+##
+# RefineM bin refinement 
+##
+
+# /home/projects/ku-cbd/people/antalb/software/RefineM/
