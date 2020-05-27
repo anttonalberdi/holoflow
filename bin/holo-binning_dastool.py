@@ -7,7 +7,6 @@ import glob
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-dep', help="dastool dependencies", dest="dep", required=True)
 parser.add_argument('-a', help="assembly file", dest="a", required=True)
 parser.add_argument('-bt_mtb', help="metabat bin table", dest="bt_mtb", required=True)
 parser.add_argument('-bt_mxb', help="maxbin bin table", dest="bt_mxb", required=True)
@@ -20,7 +19,6 @@ parser.add_argument('-db', help="dastool database directory", dest="db", require
 args = parser.parse_args()
 
 
-dep=args.dep
 a=args.a
 bt_mtb=args.bt_mtb
 bt_mxb=args.bt_mxb
@@ -35,8 +33,12 @@ db=args.db
 
 # Run
 
+
+dastooldependenciesCmd='module load tools gcc/5.4.0 intel/perflibs/2018 R/3.6.1 ruby/2.6.3 pullseq/1.0.2 perl/5.24.0 ncbi-blast/2.6.0+ prodigal/2.6.3 das_tool/1.1.1 diamond/0.9.24 usearch/11.0.667'
+subprocess.check_call(dastooldependenciesCmd, shell=True)
+
 bincontig_tables=",".join(glob.glob(str(bt_mxb),str(bt_mtb)))
-dastoolCmd=''+de+' && DAS_Tool -i '+bincontig_tables+' -c '+a+' -o '+o+' --proteins '+p+' -l maxbin,metabat --search_engine '+se+' -t '+t+' --db_directory '+db+' --write_bins 1'
+dastoolCmd='DAS_Tool -i '+bincontig_tables+' -c '+a+' -o '+o+' --proteins '+p+' -l maxbin,metabat --search_engine '+se+' -t '+t+' --db_directory '+db+' --write_bins 1'
 subprocess.check_call(dastoolCmd, shell=True)
 
 

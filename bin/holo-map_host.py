@@ -37,5 +37,20 @@ L=args.L
 R=args.R
 
 # Run
-mapCmd = 'module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -k '+k+' -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R '+R+' '+host_ref_gen+' '+read1+' '+read2+' | samtools view -T '+host_ref_gen+' -b - > '+all_bam+''
-subprocess.check_call(mapCmd, shell=True)
+
+if (k == "loose"):
+    mapCmd = 'module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -k 19 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R '+R+' '+host_ref_gen+' '+read1+' '+read2+' | samtools view -T '+host_ref_gen+' -b - > '+all_bam+''
+    subprocess.check_call(mapCmd, shell=True)
+
+
+if (k == "semistringent"):
+    mapCmd = 'module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -k 30 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R '+R+' '+host_ref_gen+' '+read1+' '+read2+' | samtools view -T '+host_ref_gen+' -b - > '+all_bam+''
+    subprocess.check_call(mapCmd, shell=True)
+
+
+if (k == "superstringent"):
+    mapCmd = 'module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -k 50 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R '+R+' '+host_ref_gen+' '+read1+' '+read2+' | samtools view -T '+host_ref_gen+' -b - > '+all_bam+''
+    subprocess.check_call(mapCmd, shell=True)
+
+else:
+    raise Exception('k is either loose/semistringent/stringent - See config.yaml')

@@ -45,8 +45,10 @@ refgenomehost:
     # These values correspond to the default options for bwa mem, customise if desired
 host_t:
   40
-host_k:
-  19
+  # Either: loose / semistringent / superstringent
+  # Correspond to 19, 30, 50 respectively.
+host_k: # Default semistringent{30}
+  semistringent
 host_w:
   100
 host_d:
@@ -71,8 +73,10 @@ refgenomehuman:
     # These values correspond to the default options for bwa mem, customise if desired
 human_t:
   40
-human_k:
-  19
+  # Either: loose / semistringent / superstringent
+  # Correspond to 19, 30, 50 respectively.
+human_k: # Default semistringent{30}
+  semistringent
 human_w:
   100
 human_d:
