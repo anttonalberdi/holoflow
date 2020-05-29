@@ -48,7 +48,7 @@ host_t:
   # Either: loose / semistringent / superstringent
   # Correspond to 19, 30, 50 respectively.
 host_k: # Default semistringent{30}
-  semistringent
+  "semistringent"
 host_w:
   100
 host_d:
@@ -64,7 +64,7 @@ host_E:
 host_L:
   5
 host_R:
-  '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample'
+  @RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample
 
 #map_human options
 refgenomehuman:
@@ -76,7 +76,7 @@ human_t:
   # Either: loose / semistringent / superstringent
   # Correspond to 19, 30, 50 respectively.
 human_k: # Default semistringent{30}
-  semistringent
+  "semistringent"
 human_w:
   100
 human_d:
@@ -92,4 +92,4 @@ human_E:
 human_L:
   5
 human_R:
-  '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample'
+  @RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample

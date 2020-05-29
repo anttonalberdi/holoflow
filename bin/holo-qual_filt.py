@@ -52,13 +52,16 @@ if str(read1i).endswith('.gz'):
             next(read)
             next(read)
 else:
-    with open(read1i, 'rb') as read:
+    with open(str(read1i), 'rb') as read:
         for id in read:
-            seq = next(read)
-            reads += 1
-            bases += len(seq.strip())*2
-            next(read)
-            next(read)
+            try:
+                seq = next(read)
+                reads += 1
+                bases += len(seq.strip())*2
+                next(read)
+                next(read)
+            except:
+                break
 statsfile.write("Input reads\t{0} ({1} bases)\r\n".format(reads,bases))
 statsfile.close()
 
@@ -80,11 +83,14 @@ reads = 0
 bases = 0
 with open(str(read1o), 'rb') as read:
     for id in read:
-        seq = next(read)
-        reads += 1
-        bases += len(seq.strip())
-        next(read)
-        next(read)
+        try:
+            seq = next(read)
+            reads += 1
+            bases += len(seq.strip())
+            next(read)
+            next(read)
+        except:
+            break
 
 #Print stats to stats file
 statsfile=open(str(str(stats)),"a+")

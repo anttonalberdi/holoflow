@@ -11,8 +11,8 @@ configfile:"/home/projects/ku-cbd/people/nurher/holoflow/workflows/preprocessing
 
 rule qual_filt:
     input:
-        read1="{projectpath}/PPR_00-InputData/{sample}_1.fastq.gz",
-        read2="{projectpath}/PPR_00-InputData/{sample}_2.fastq.gz"
+        read1="{projectpath}/PPR_00-InputData/{sample}_1.fastq",
+        read2="{projectpath}/PPR_00-InputData/{sample}_2.fastq"
     output:
         read1="{projectpath}/PPR_01-QualityFiltered/{sample}_1.fastq",
         read2="{projectpath}/PPR_01-QualityFiltered/{sample}_2.fastq",
@@ -87,11 +87,11 @@ rule map_host:
         host_B=expand("{host_B}", host_B=config['host_B']),
         host_O=expand("{host_O}", host_O=config['host_O']),
         host_E=expand("{host_E}", host_E=config['host_E']),
-        host_L=expand("{host_L}", host_L=config['host_L']),
-        host_R=expand("{host_R}", host_R=config['host_R'])
-    shell:
+        host_L=expand("{host_L}", host_L=config['host_L'])#,
+        #host_R=expand("{host_R}", host_R=config['host_R'])
+    shell: #-R {params.host_R}
         """
-        python ./holoflow/bin/holo-map_host.py -1 {input.read1} -2 {input.read2} -hostrg {input.refgenome} -obam {output} -t {params.host_t} -k {params.host_k} -w {params.host_w} -d {params.host_d} -A {params.host_A} -B {params.host_B} -O {params.host_O} -E {params.host_E} -L {params.host_L} -R {params.host_R}
+        python ./holoflow/bin/holo-map_host.py -1 {input.read1} -2 {input.read2} -hostrg {input.refgenome} -obam {output} -t {params.host_t} -k {params.host_k} -w {params.host_w} -d {params.host_d} -A {params.host_A} -B {params.host_B} -O {params.host_O} -E {params.host_E} -L {params.host_L}
         """
 
 rule map_host_split:
@@ -126,11 +126,11 @@ rule map_human:
         human_B=expand("{human_B}", human_B=config['human_B']),
         human_O=expand("{human_O}", human_O=config['human_O']),
         human_E=expand("{human_E}", human_E=config['human_E']),
-        human_L=expand("{human_L}", human_L=config['human_L']),
-        human_R=expand("{human_R}", human_R=config['human_R'])
-    shell:
+        human_L=expand("{human_L}", human_L=config['human_L'])#,
+        #human_R=expand("{human_R}", human_R=config['human_R'])
+    shell: # -R {params.human_R}
         """
-        python ./holoflow/bin/holo-map_human.py -1 {input.read1} -2 {input.read2} -hrg {input.refgenome} -obam {output} -t {params.human_t} -k {params.human_k} -w {params.human_w} -d {params.human_d} -A {params.human_A} -B {params.human_B} -O {params.human_O} -E {params.human_E} -L {params.human_L} -R {params.human_R}
+        python ./holoflow/bin/holo-map_human.py -1 {input.read1} -2 {input.read2} -hrg {input.refgenome} -obam {output} -t {params.human_t} -k {params.human_k} -w {params.human_w} -d {params.human_d} -A {params.human_A} -B {params.human_B} -O {params.human_O} -E {params.human_E} -L {params.human_L}
         """
 
 rule map_human_split:

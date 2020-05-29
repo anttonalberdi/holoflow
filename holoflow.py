@@ -56,7 +56,7 @@ def in_out_preprocessing(path,in_f):
                 filename=file[2]
                 desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq"'
 
-                if not (filename == desired_filename):
+                if not ((filename == desired_filename) and (os.path.exists(str(desired_filename)))):
                     if filename.endswith('.gz'):
                         uncompressCmd='gunzip -c '+filename+' > '+desired_filename+''
                         subprocess.check_call(uncompressCmd, shell=True)
@@ -127,7 +127,7 @@ def in_out_metagenomics(path,in_f):
                 filename=file[2]
                 desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq"'
 
-                if not (filename == desired_filename):
+                if not ((filename == desired_filename) and (os.path.exists(str(desired_filename)))):
                     if filename.endswith('.gz'):
                         uncompressCmd='gunzip -c '+filename+' > '+desired_filename+''
                         subprocess.check_call(uncompressCmd, shell=True)
