@@ -139,14 +139,14 @@ def run_metagenomics(in_f, path, config, cores):
 
 
     # # Create preprocessing.sh for later job submission
-    with open('./workflows/metagenomics/metagenomics.sh','w+') as sh:
+    with open('./workflows/metagenomics/individual_assembly/metagenomics.sh','w+') as sh:
         curr_dir = os.getcwd()
-        path_snkf = os.path.join(curr_dir,'workflows/metagenomics/Snakefile')
+        path_snkf = os.path.join(curr_dir,'workflows/metagenomics/individual_assembly/Snakefile')
         prep_snk = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
         sh.write(prep_snk)
 
 
-    metagenomicsCmd = 'qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e '+path+'/Holo-metagenomics.err -o '+path+'/Holo-metagenomics.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N Holoflow-metagenomics ./workflows/metagenomics/metagenomics.sh'
+    metagenomicsCmd = 'qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e '+path+'/Holo-metagenomics.err -o '+path+'/Holo-metagenomics.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N Holoflow-metagenomics ./workflows/metagenomics/individual_assembly/metagenomics.sh'
     subprocess.check_call(metagenomicsCmd, shell=True)
     print("Great! Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
 
