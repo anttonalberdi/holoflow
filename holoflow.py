@@ -41,6 +41,7 @@ def in_out_preprocessing(path,in_f):
         # Paste desired output file names from input.txt
         read = 0
         output_files=''
+        final_temp_dir="PPR04-MappedToHuman"
 
         lines = in_file.readlines()
         for file in lines:
@@ -49,7 +50,7 @@ def in_out_preprocessing(path,in_f):
                 file = file.strip('\n').split(' ')
 
                 read+=1
-                output_files+=(path+"/"+file[3]+"/"+file[0]+"_"+str(read)+".fastq ")
+                output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"_"+str(read)+".fastq ")
 
                 #Move files to new dir "00-InputData" and change file names for 1st column in input.txt
                 filename=file[2]
@@ -61,7 +62,7 @@ def in_out_preprocessing(path,in_f):
                 if read == 2:
                     read=0
                     # Add stats output only once per sample
-                    output_files+=(path+"/"+file[3]+"/"+file[0]+".stats ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+".stats ")
 
         return output_files
 
@@ -100,6 +101,7 @@ def in_out_metagenomics(path,in_f):
         # Paste desired output file names from input.txt
         read = 0
         output_files=''
+        final_temp_dir="MIA04-Binning"
 
         lines = in_file.readlines()
         for file in lines:
@@ -108,8 +110,8 @@ def in_out_metagenomics(path,in_f):
                 file = file.strip('\n').split(' ')
 
                 read+=1
-                # Binning still missing in Snakefile, so far, stats is the only needed output
-                #    output_files+=(path+"/"+file[3]+"/"+file[0]+".BINNING OUTPUTS TO DEFINE ")
+
+                output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"_dastool")
 
 
                 #Move files to input dir "04-MappedToHuman/" and change file names for column 1 in input.txt
@@ -123,7 +125,7 @@ def in_out_metagenomics(path,in_f):
                 if read == 2:
                     read=0
                     # Add stats output only once per sample
-                    output_files+=(path+"/"+file[3]+"/"+file[0]+".stats ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+".stats ")
 
         return output_files
 
@@ -190,14 +192,14 @@ if workflow == "metagenomics":
         if prepdata2 == 'n':
             print("You should come back when your data is preprocessed. See you soon :)")
 
-        if prepdata2 == 'y':    # It would be much easier to concatenate Snakefiles and new functions - DO IT
-            prep_in_f = input("Could you please state the path for the preprocessing input file? - No quoting needed\n")
-            prep_config = input("Could you please state the path for the preprocessing config file? - No quoting needed\n")
-            run_preprocessing(prep_in_f, path, prep_config, cores)
-
-            prep_out_dir = os.path.join(path,"04-MappedToHuman")
-            if os.path.exists(prep_out_dir):
-                run_metagenomics(in_f, path, config, cores)
+        # if prepdata2 == 'y':    # It would be much easier to concatenate Snakefiles and new functions - DO IT
+        #     prep_in_f = input("Could you please state the path for the preprocessing input file? - No quoting needed\n")
+        #     prep_config = input("Could you please state the path for the preprocessing config file? - No quoting needed\n")
+        #     run_preprocessing(prep_in_f, path, prep_config, cores)
+        #
+        #     prep_out_dir = os.path.join(path,"04-MappedToHuman")
+        #     if os.path.exists(prep_out_dir):
+        #         run_metagenomics(in_f, path, config, cores)
 
     if prepdata == 'y':
         run_metagenomics(in_f, path, config, cores)

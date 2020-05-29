@@ -178,10 +178,11 @@ rule das_tool:
         threads=expand("{threads}", threads=config['threads']),
         bin_dir="{projectpath}/MIA04-Binning/{sample}_dastool/{sample}.bins_dastool",
         search_eng=expand("{search_eng}", search_eng=config['search_eng']),
-        dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db'])
+        dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db']),
+        bin_tables_find="{projectpath}/MIA04-Binning/{sample}.bins"
     shell:
         """
-        python ./holoflow/bin/holo-binning_dastool.py -a {input.assembly} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {output} -bin_o {params.bin_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db}
+        python ./holoflow/bin/holo-binning_dastool.py -a {input.assembly} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -fbt {params.bin_tables_find} -p {input.pproteins} -o {output} -bin_o {params.bin_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db}
         """
 
 
