@@ -33,7 +33,7 @@ def in_out_preprocessing(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
     # Create "00-RawData/" directory if not exists
-    in_dir = os.path.join(path,"PPR00-InputData")
+    in_dir = os.path.join(path,"PPR_00-InputData")
     if not os.path.exists(in_dir):
         os.makedirs(in_dir)
 
@@ -41,7 +41,7 @@ def in_out_preprocessing(path,in_f):
         # Paste desired output file names from input.txt
         read = 0
         output_files=''
-        final_temp_dir="PPR04-MappedToHuman"
+        final_temp_dir="PPR_04-MappedToHuman"
 
         lines = in_file.readlines()
         for file in lines:
@@ -54,10 +54,16 @@ def in_out_preprocessing(path,in_f):
 
                 #Move files to new dir "00-InputData" and change file names for 1st column in input.txt
                 filename=file[2]
-                desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq.gz"'
+                desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq"'
+
                 if not (filename == desired_filename):
-                    copyfilesCmd='cp '+filename+' '+desired_filename+''
-                    subprocess.check_call(copyfilesCmd, shell=True)
+                    if filename.endswith('.gz'):
+                        uncompressCmd='gunzip -c '+filename+' > '+desired_filename+''
+                        subprocess.check_call(uncompressCmd, shell=True)
+                    else:
+                        copyfilesCmd='cp '+filename+' '+desired_filename+''
+                        subprocess.check_call(copyfilesCmd, shell=True)
+
 
                 if read == 2:
                     read=0
@@ -65,6 +71,9 @@ def in_out_preprocessing(path,in_f):
                     output_files+=(path+"/"+final_temp_dir+"/"+file[0]+".stats ")
 
         return output_files
+
+
+
 
 
 def run_preprocessing(in_f, path, config, cores):
@@ -93,7 +102,7 @@ def run_preprocessing(in_f, path, config, cores):
 def in_out_metagenomics(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
-    in_dir = os.path.join(path,"PPR04-MappedToHuman")
+    in_dir = os.path.join(path,"PPR_04-MappedToHuman")
     if not os.path.exists(in_dir):
         os.makedirs(in_dir)
 
@@ -101,7 +110,7 @@ def in_out_metagenomics(path,in_f):
         # Paste desired output file names from input.txt
         read = 0
         output_files=''
-        final_temp_dir="MIA03-Binning"
+        final_temp_dir="MIA_03-Binning"
 
         lines = in_file.readlines()
         for file in lines:
@@ -114,13 +123,19 @@ def in_out_metagenomics(path,in_f):
                 output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"_dastool/"+file[0])
 
 
-                #Move files to input dir "PPR04-MappedToHuman/" and change file names for column 1 in input.txt
+                #Move files to input dir "PPR_04-MappedToHuman/" and change file names for column 1 in input.txt
                 filename=file[2]
-                desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq.gz"'
+                desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq"'
 
                 if not (filename == desired_filename):
-                    copyfilesCmd='cp '+filename+' '+desired_filename+''
-                    subprocess.check_call(copyfilesCmd, shell=True)
+                    if filename.endswith('.gz'):
+                        uncompressCmd='gunzip -c '+filename+' > '+desired_filename+''
+                        subprocess.check_call(uncompressCmd, shell=True)
+
+                    else:
+                        copyfilesCmd='cp '+filename+' '+desired_filename+''
+                        subprocess.check_call(copyfilesCmd, shell=True)
+
 
                 if read == 2:
                     read=0

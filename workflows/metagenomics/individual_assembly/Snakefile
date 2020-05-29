@@ -13,15 +13,15 @@ rule assembly:
         read2="{projectpath}/PPR04-MappedToHuman/{sample}_2.fastq"
 
     output:
-        "{projectpath}/MIA01-Assembly/{sample}_file_to_remove"
+        "{projectpath}/MIA_01-Assembly/{sample}_file_to_remove"
     params:
         memory=expand("{memory}", memory=config['memory']),
         klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
         klist_spades=expand("{klist_spades}", klist_spades=config['klist_spades']),
         threads=expand("{threads}", threads=config['threads']),
         assembler=expand("{assembler}", assembler=config['assembler']),
-        out_dir="{projectpath}/MIA01-Assembly/{sample}_assembly",
-        temp_assembly="{projectpath}/MIA01-Assembly/{sample}_assembly/temp_assembly.fa"
+        out_dir="{projectpath}/MIA_01-Assembly/{sample}_assembly",
+        temp_assembly="{projectpath}/MIA_01-Assembly/{sample}_assembly/temp_assembly.fa"
 
     shell:
         """
@@ -32,15 +32,15 @@ rule assembly:
 
 rule assembly_reformat:
     input:
-        empt_file="{projectpath}/MIA01-Assembly/{sample}_file_to_remove",
+        empt_file="{projectpath}/MIA_01-Assembly/{sample}_file_to_remove",
         stats_in="{projectpath}/PPR04-MappedToHuman/{sample}.stats"
     output:
-        "{projectpath}/MIA01-Assembly/{sample}.stats"
+        "{projectpath}/MIA_01-Assembly/{sample}.stats"
     params:
         sample="{sample}",
         min_contig_len=expand("{min_contig_len}", min_contig_len=config['min_contig_len']),
-        in_assembly="{projectpath}/MIA01-Assembly/{sample}_assembly/temp_assembly.fa",
-        out_assembly="{projectpath}/MIA01-Assembly/{sample}.fa"
+        in_assembly="{projectpath}/MIA_01-Assembly/{sample}_assembly/temp_assembly.fa",
+        out_assembly="{projectpath}/MIA_01-Assembly/{sample}.fa"
 
     shell:
         """
@@ -53,14 +53,14 @@ rule assembly_reformat:
 ##
 rule assembly_index:
     input:
-        "{projectpath}/MIA01-Assembly/{sample}.fa"
+        "{projectpath}/MIA_01-Assembly/{sample}.fa"
     output: # FUTURE: ADD OPTION TO REMOVE ALL BUT FA.FAI
-        samtools="{projectpath}/MIA01-Assembly/{sample}.fa.fai",
-        bwa_bwt="{projectpath}/MIA01-Assembly/{sample}.fa.bwt",
-        bwa_pac="{projectpath}/MIA01-Assembly/{sample}.fa.pac",
-        bwa_ann="{projectpath}/MIA01-Assembly/{sample}.fa.ann",
-        bwa_amb="{projectpath}/MIA01-Assembly/{sample}.fa.amb",
-        bwa_sa="{projectpath}/MIA01-Assembly/{sample}.fa.sa"
+        samtools="{projectpath}/MIA_01-Assembly/{sample}.fa.fai",
+        bwa_bwt="{projectpath}/MIA_01-Assembly/{sample}.fa.bwt",
+        bwa_pac="{projectpath}/MIA_01-Assembly/{sample}.fa.pac",
+        bwa_ann="{projectpath}/MIA_01-Assembly/{sample}.fa.ann",
+        bwa_amb="{projectpath}/MIA_01-Assembly/{sample}.fa.amb",
+        bwa_sa="{projectpath}/MIA_01-Assembly/{sample}.fa.sa"
     shell:
         """
         python ./holoflow/bin/holo-assembly_index.py -a {input} -ia {output.samtools}
@@ -72,12 +72,12 @@ rule assembly_index:
 
 rule assembly_mapping:
     input:
-        assembly="{projectpath}/MIA01-Assembly/{sample}.fa",
-        samtools="{projectpath}/MIA01-Assembly/{sample}.fa.fai",
+        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+        samtools="{projectpath}/MIA_01-Assembly/{sample}.fa.fai",
         read1="{projectpath}/PPR04-MappedToHuman/{sample}_1.fastq",
         read2="{projectpath}/PPR04-MappedToHuman/{sample}_2.fastq"
     output:
-        "{projectpath}/MIA02-Assembly_mapping/{sample}.mapped.bam"
+        "{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam"
     params:
         threads=expand("{threads}", threads=config['threads'])
     shell:
@@ -91,10 +91,10 @@ rule assembly_mapping:
 #"Metagenomes - The simplest approach for metagenomes is to put all the sequences in one FASTA file and analyze them in Anonymous Mode."
 rule protein_prediction_prodigal:
     input:
-        assembly="{projectpath}/MIA01-Assembly/{sample}.fa"
+        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa"
     output:
-        genetic_coords="{projectpath}/MIA02-ProdigalPrediction/{sample}.coords.gbk",
-        protein_translations="{projectpath}/MIA02-ProdigalPrediction/{sample}.protein_translations.faa"
+        genetic_coords="{projectpath}/MIA_02-ProdigalPrediction/{sample}.coords.gbk",
+        protein_translations="{projectpath}/MIA_02-ProdigalPrediction/{sample}.protein_translations.faa"
     shell: # Prodigal is run in "anon", Anonymous workflow
         """
         python ./holoflow/bin/holo-pp_prodigal.py -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations}
@@ -106,10 +106,10 @@ rule protein_prediction_prodigal:
 
 rule depth_table:
     input:
-        "{projectpath}/MIA02-Assembly_mapping/{sample}.mapped.bam"
+        "{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam"
     output:
-        metabat_depth_file="{projectpath}/MIA03-Binning/{sample}_metabat/{sample}.depth.txt",
-        maxbin_depth_file="{projectpath}/MIA03-Binning/{sample}_maxbin/{sample}.depth.txt"
+        metabat_depth_file="{projectpath}/MIA_03-Binning/{sample}_metabat/{sample}.depth.txt",
+        maxbin_depth_file="{projectpath}/MIA_03-Binning/{sample}_maxbin/{sample}.depth.txt"
 
     shell:
         """
@@ -126,13 +126,13 @@ rule depth_table:
 
 rule binning_metabat:
     input:
-        assembly="{projectpath}/MIA01-Assembly/{sample}.fa",
-        depth_table="{projectpath}/MIA03-Binning/{sample}_metabat/{sample}.depth.txt"
+        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+        depth_table="{projectpath}/MIA_03-Binning/{sample}_metabat/{sample}.depth.txt"
     output:
-        bin_table_mtb="{projectpath}/MIA03-Binning/{sample}.bins_metabat.txt"#,
-        #final_file="{projectpath}/MIA03-Binning/{sample}.metabat/{sample}.bins_metabat.gz"
+        bin_table_mtb="{projectpath}/MIA_03-Binning/{sample}.bins_metabat.txt"#,
+        #final_file="{projectpath}/MIA_03-Binning/{sample}.metabat/{sample}.bins_metabat.gz"
     params:
-        base_mtb="{projectpath}/MIA03-Binning/{sample}_metabat/{sample}.mtb.bin",
+        base_mtb="{projectpath}/MIA_03-Binning/{sample}_metabat/{sample}.mtb.bin",
         threads=expand("{threads}", threads=config['threads'])
     shell:
         """
@@ -147,12 +147,12 @@ rule binning_metabat:
 
 rule binning_maxbin:
     input:
-        assembly="{projectpath}/MIA01-Assembly/{sample}.fa",
-        depth_table="{projectpath}/MIA03-Binning/{sample}_maxbin/{sample}.depth.txt"
+        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+        depth_table="{projectpath}/MIA_03-Binning/{sample}_maxbin/{sample}.depth.txt"
     output:
-        bin_table_mxb="{projectpath}/MIA03-Binning/{sample}.bins_maxbin.txt"
+        bin_table_mxb="{projectpath}/MIA_03-Binning/{sample}.bins_maxbin.txt"
     params:
-        base_mxb="{projectpath}/MIA03-Binning/{sample}_maxbin/{sample}.mxb.bin",
+        base_mxb="{projectpath}/MIA_03-Binning/{sample}_maxbin/{sample}.mxb.bin",
         threads=expand("{threads}", threads=config['threads'])
     shell:
         """
@@ -168,15 +168,15 @@ rule binning_maxbin:
  #                              Gene prediction step will be skipped if given. (optional)
 rule das_tool:
     input:
-        assembly="{projectpath}/MIA01-Assembly/{sample}.fa",
-        bin_table_mxb="{projectpath}/MIA03-Binning/{sample}.bins_maxbin.txt",
-        bin_table_mtb="{projectpath}/MIA03-Binning/{sample}.bins_metabat.txt",
-        pproteins="{projectpath}/MIA02-ProdigalPrediction/{sample}.protein_translations.faa"
+        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+        bin_table_mxb="{projectpath}/MIA_03-Binning/{sample}.bins_maxbin.txt",
+        bin_table_mtb="{projectpath}/MIA_03-Binning/{sample}.bins_metabat.txt",
+        pproteins="{projectpath}/MIA_02-ProdigalPrediction/{sample}.protein_translations.faa"
     output:
-        "{projectpath}/MIA03-Binning/{sample}_dastool/{sample}"
+        "{projectpath}/MIA_03-Binning/{sample}_dastool/{sample}"
     params:
         threads=expand("{threads}", threads=config['threads']),
-        bin_dir="{projectpath}/MIA03-Binning/{sample}_dastool/{sample}.bins_dastool",
+        bin_dir="{projectpath}/MIA_03-Binning/{sample}_dastool/{sample}.bins_dastool",
         search_eng=expand("{search_eng}", search_eng=config['search_eng']),
         dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db'])
     shell:

@@ -11,12 +11,12 @@ configfile:"/home/projects/ku-cbd/people/nurher/holoflow/workflows/preprocessing
 
 rule qual_filt:
     input:
-        read1="{projectpath}/PPR00-InputData/{sample}_1.fastq.gz",
-        read2="{projectpath}/PPR00-InputData/{sample}_2.fastq.gz"
+        read1="{projectpath}/PPR_00-InputData/{sample}_1.fastq.gz",
+        read2="{projectpath}/PPR_00-InputData/{sample}_2.fastq.gz"
     output:
-        read1="{projectpath}/PPR01-QualityFiltered/{sample}_1.fastq",
-        read2="{projectpath}/PPR01-QualityFiltered/{sample}_2.fastq",
-        stats_file="{projectpath}/PPR01-QualityFiltered/{sample}.stats"
+        read1="{projectpath}/PPR_01-QualityFiltered/{sample}_1.fastq",
+        read2="{projectpath}/PPR_01-QualityFiltered/{sample}_2.fastq",
+        stats_file="{projectpath}/PPR_01-QualityFiltered/{sample}.stats"
     threads: 4
     params:
         adapter1=expand("{adapter1}", adapter1=config['adapter1']),
@@ -33,10 +33,10 @@ rule qual_filt:
 
 rule dup_rem_paired:
     input:
-      read1="{projectpath}/PPR01-QualityFiltered/{sample}_1.fastq",
-      read2="{projectpath}/PPR01-QualityFiltered/{sample}_2.fastq"
+      read1="{projectpath}/PPR_01-QualityFiltered/{sample}_1.fastq",
+      read2="{projectpath}/PPR_01-QualityFiltered/{sample}_2.fastq"
     output:
-      dir="{projectpath}/PPR02-DuplicatesRemoved/{sample}.merged.fastq"
+      dir="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.merged.fastq"
     threads: 4
     params:
         separator=expand("{separator}", separator=config['separator']),
@@ -52,12 +52,12 @@ rule dup_rem_paired:
 
 rule dup_rem_paired_repair:
     input:
-      in_file="{projectpath}/PPR02-DuplicatesRemoved/{sample}.merged.fastq",
-      in_stats="{projectpath}/PPR01-QualityFiltered/{sample}.stats"
+      in_file="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.merged.fastq",
+      in_stats="{projectpath}/PPR_01-QualityFiltered/{sample}.stats"
     output:
-      read1="{projectpath}/PPR02-DuplicatesRemoved/{sample}_1.fastq",
-      read2="{projectpath}/PPR02-DuplicatesRemoved/{sample}_2.fastq",
-      out_stats="{projectpath}/PPR02-DuplicatesRemoved/{sample}.stats"
+      read1="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_1.fastq",
+      read2="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_2.fastq",
+      out_stats="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.stats"
     threads: 4
     params:
         separator=expand("{separator}", separator=config['separator'])
@@ -73,11 +73,11 @@ rule dup_rem_paired_repair:
 
 rule map_host:
     input:
-        read1="{projectpath}/PPR02-DuplicatesRemoved/{sample}_1.fastq",
-        read2="{projectpath}/PPR02-DuplicatesRemoved/{sample}_2.fastq",
+        read1="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_1.fastq",
+        read2="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_2.fastq",
         refgenome=expand("{refgenomehost}", refgenomehost=config['refgenomehost'])
     output:
-        "{projectpath}/PPR03-MappedToHost/{sample}_all.bam"
+        "{projectpath}/PPR_03-MappedToHost/{sample}_all.bam"
     params:
         host_t=expand("{host_t}", host_t=config['host_t']),
         host_k=expand("{host_k}", host_k=config['host_k']),
@@ -97,11 +97,11 @@ rule map_host:
 rule map_host_split:
     input:
         refgenome=expand("{refgenomehost}", refgenomehost=config['refgenomehost']),
-        all_bam="{projectpath}/PPR03-MappedToHost/{sample}_all.bam"
+        all_bam="{projectpath}/PPR_03-MappedToHost/{sample}_all.bam"
     output:
-        host="{projectpath}/PPR03-MappedToHost/{sample}_host.bam",
-        read1="{projectpath}/PPR03-MappedToHost/{sample}_1.fastq",
-        read2="{projectpath}/PPR03-MappedToHost/{sample}_2.fastq"
+        host="{projectpath}/PPR_03-MappedToHost/{sample}_host.bam",
+        read1="{projectpath}/PPR_03-MappedToHost/{sample}_1.fastq",
+        read2="{projectpath}/PPR_03-MappedToHost/{sample}_2.fastq"
     shell:
         """
         python ./holoflow/bin/holo-map_host_split.py -hostrg {input.refgenome} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output.host}
@@ -112,11 +112,11 @@ rule map_host_split:
 ##
 rule map_human:
     input:
-        read1="{projectpath}/PPR03-MappedToHost/{sample}_1.fastq",
-        read2="{projectpath}/PPR03-MappedToHost/{sample}_2.fastq",
+        read1="{projectpath}/PPR_03-MappedToHost/{sample}_1.fastq",
+        read2="{projectpath}/PPR_03-MappedToHost/{sample}_2.fastq",
         refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman'])
     output:
-        "{projectpath}/PPR04-MappedToHuman/{sample}_all.bam"
+        "{projectpath}/PPR_04-MappedToHuman/{sample}_all.bam"
     params:
         human_t=expand("{human_t}", human_t=config['human_t']),
         human_k=expand("{human_k}", human_k=config['human_k']),
@@ -136,12 +136,12 @@ rule map_human:
 rule map_human_split:
     input:
         refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman']),
-        all_bam="{projectpath}/PPR04-MappedToHuman/{sample}_all.bam",
-        in_stats="{projectpath}/PPR02-DuplicatesRemoved/{sample}.stats"
+        all_bam="{projectpath}/PPR_04-MappedToHuman/{sample}_all.bam",
+        in_stats="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.stats"
     output:
-        read1="{projectpath}/PPR04-MappedToHuman/{sample}_1.fastq", ## mapped
-        read2="{projectpath}/PPR04-MappedToHuman/{sample}_2.fastq", ## mapped
-        out_stats="{projectpath}/PPR04-MappedToHuman/{sample}.stats"
+        read1="{projectpath}/PPR_04-MappedToHuman/{sample}_1.fastq", ## mapped
+        read2="{projectpath}/PPR_04-MappedToHuman/{sample}_2.fastq", ## mapped
+        out_stats="{projectpath}/PPR_04-MappedToHuman/{sample}.stats"
     shell:
         """
         python ./holoflow/bin/holo-map_human_split.py -hrg {input.refgenome} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -si {input.in_stats} -so {output.out_stats}
