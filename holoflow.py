@@ -21,7 +21,6 @@ config=args.config_file
 cores=args.threads
 
 
-
 ###########################
 ## Functions
 ###########################

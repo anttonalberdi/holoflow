@@ -45,10 +45,10 @@ refgenomehost:
     # These values correspond to the default options for bwa mem, customise if desired
 host_t:
   40
-  # Either: loose / semistringent / superstringent
-  # Correspond to 19, 30, 50 respectively.
-host_k: # Default semistringent{30}
-  "semistringent"
+  # Either: loose / semistringent / superstringent. Correspond to 19, 30, 50 respectively.
+  # Default semistringent{30}
+host_k:
+  'semistringent'
 host_w:
   100
 host_d:
@@ -64,7 +64,7 @@ host_E:
 host_L:
   5
 host_R:
-  @RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample
+  '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample'
 
 #map_human options
 refgenomehuman:
@@ -73,10 +73,10 @@ refgenomehuman:
     # These values correspond to the default options for bwa mem, customise if desired
 human_t:
   40
-  # Either: loose / semistringent / superstringent
-  # Correspond to 19, 30, 50 respectively.
-human_k: # Default semistringent{30}
-  "semistringent"
+  # Either: loose / semistringent / superstringent. Correspond to 19, 30, 50 respectively.
+  # Default semistringent{30}
+human_k:
+  'semistringent'
 human_w:
   100
 human_d:
@@ -92,4 +92,4 @@ human_E:
 human_L:
   5
 human_R:
-  @RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample
+  '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample'

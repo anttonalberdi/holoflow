@@ -49,5 +49,5 @@ if (k == "superstringent"):
     mapCmd = 'module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -k 50 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" '+h_ref_gen+' '+read1+' '+read2+' | samtools view -T '+h_ref_gen+' -b - > '+all_bam+''
     subprocess.check_call(mapCmd, shell=True)
 
-else:
-    raise Exception('k = loose/semistringent/stringent - See config.yaml')
+if not ((k == "loose") or (k == "semistringent") or (k == "superstringent")):
+    print(''+k+' is not a valid value, k = loose/semistringent/stringent - See config.yaml')
