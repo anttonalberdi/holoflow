@@ -1,5 +1,5 @@
 #SAMPLE, SAMPLE_GROUP, INPUT_PATH
-#CA19_07F1b A "/home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test/04-MappedToHuman/CA19_07F1b_1.fastq"
-#CA19_07F1b A "/home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test/04-MappedToHuman/CA19_07F1b_2.fastq"
-CA22_07F1b B "/home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test/04-MappedToHuman/CA22_07F1b_1.fastq"
-CA22_07F1b B "/home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test/04-MappedToHuman/CA22_07F1b_2.fastq"
+CB13_13F1b A "/home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test/PPR_04-MappedToHuman/CB13_13F1b_1.fastq"
+CB13_13F1b A "/home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test/PPR_04-MappedToHuman/CB13_13F1b_2.fastq"
+CA22_07F1b A "/home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test/PPR_04-MappedToHuman/CA22_07F1b_1.fastq"
+CA22_07F1b A "/home/projects/ku-cbd/people/nurher/chick_holoflow_test/assembler_test/PPR_04-MappedToHuman/CA22_07F1b_2.fastq"
