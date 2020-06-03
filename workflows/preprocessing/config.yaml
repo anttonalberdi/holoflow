@@ -9,7 +9,7 @@ removeintermediate:
 threads:
   40
 
-#qual_filt options
+#qual_filt options # If Illumina adapters, set to 'default'
 adapter1:
   AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA
 adapter2:

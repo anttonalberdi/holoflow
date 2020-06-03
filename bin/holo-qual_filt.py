@@ -70,7 +70,7 @@ statsfile.close()
 
 # Run AdapterRemoval
 if not os.path.exists(str(read1o)):
-    if (a1 and a2):
+    if not ((a1 == "default") and (a2 == "default")):
         qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.1.3 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
         subprocess.check_call(qualfiltCmd, shell=True)
 
