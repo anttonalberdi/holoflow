@@ -57,7 +57,7 @@ def in_out_preprocessing(path,in_f):
         # Generate desired output file names from input.txt
         read = 0
         output_files=''
-        final_temp_dir="PPR_04-MappedToHuman"
+        final_temp_dir="PPR_03-MappedToReference"
 
         lines = in_file.readlines() # Read input.txt lines
         for file in lines:
@@ -118,7 +118,7 @@ def run_preprocessing(in_f, path, config, cores):
 def in_out_metagenomics(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
-    in_dir = os.path.join(path,"PPR_04-MappedToHuman")
+    in_dir = os.path.join(path,"PPR_03-MappedToReference")
     if not os.path.exists(in_dir):
         os.makedirs(in_dir)
 
@@ -140,7 +140,7 @@ def in_out_metagenomics(path,in_f):
                 output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"_dastool/"+file[0])
 
 
-                # Move files to new dir "PPR_04-MappedToHuman/" and change file names for 1st column in input.txt
+                # Move files to new dir "PPR_03-MappedToReference/" and change file names for 1st column in input.txt
                 #   if the current input file names do not match the designed ones in input.txt
                 filename=file[2]       # current input file path and name
                 desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq"' # desired input file path and name specified in input.txt
