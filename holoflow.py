@@ -21,6 +21,14 @@ config=args.config_file
 cores=args.threads
 
 
+# # Add current directory to config file for standalone calling
+# curr_dir = os.path.dirname(sys.argv[0])
+# holopath = os.path.abspath(curr_dir)
+#
+#     # APPEND TO .YAML https://stackoverflow.com/questions/54627042/how-do-i-append-to-a-yaml-file-with-python
+#     #     curr_dir = os.getcwd()
+
+
 ###########################
 ## Functions
 ###########################
@@ -90,8 +98,9 @@ def run_preprocessing(in_f, path, config, cores):
 
     # Define output names
     out_files = in_out_preprocessing(path,in_f)
-    curr_dir = os.getcwd()
-    path_snkf = os.path.join(curr_dir,'workflows/preprocessing/Snakefile')
+    curr_dir = os.path.dirname(sys.argv[0])
+    holopath = os.path.abspath(curr_dir)
+    path_snkf = os.path.join(holopath,'workflows/preprocessing/Snakefile')
 
     # Run snakemake
     prep_snk_Cmd = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
@@ -161,8 +170,9 @@ def run_metagenomics(in_f, path, config, cores):
 
     # Define output names
     out_files = in_out_metagenomics(path,in_f)
-    curr_dir = os.getcwd()
-    path_snkf = os.path.join(curr_dir,'workflows/metagenomics/individual_assembly/Snakefile')
+    curr_dir = os.path.dirname(sys.argv[0])
+    holopath = os.path.abspath(curr_dir)
+    path_snkf = os.path.join(holopath,'workflows/metagenomics/individual_assembly/Snakefile')
 
     # Run snakemake
     mtg_snk_Cmd = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''

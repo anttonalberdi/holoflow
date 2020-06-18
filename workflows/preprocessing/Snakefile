@@ -71,80 +71,40 @@ rule dup_rem_paired_repair:
 # Mapping to host
 ##
 
-rule map_host:
+rule map_ref:
     input:
         read1="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_1.fastq",
         read2="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_2.fastq",
-        refgenome=expand("{refgenomehost}", refgenomehost=config['refgenomehost'])
+        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes'])
     output:
-        "{projectpath}/PPR_03-MappedToHost/{sample}_all.bam"
+        "{projectpath}/PPR_03-MappedToReference/{sample}_all.bam"
     params:
-        host_t=expand("{host_t}", host_t=config['host_t']),
-        host_k=expand("{host_k}", host_k=config['host_k']),
-        host_w=expand("{host_w}", host_w=config['host_w']),
-        host_d=expand("{host_d}", host_d=config['host_d']),
-        host_A=expand("{host_A}", host_A=config['host_A']),
-        host_B=expand("{host_B}", host_B=config['host_B']),
-        host_O=expand("{host_O}", host_O=config['host_O']),
-        host_E=expand("{host_E}", host_E=config['host_E']),
-        host_L=expand("{host_L}", host_L=config['host_L'])#,
-        #host_R=expand("{host_R}", host_R=config['host_R'])
-    shell: #-R {params.host_R}
+        t=expand("{t}", t=config['t']),
+        k=expand("{k}", k=config['k']),
+        w=expand("{w}", w=config['w']),
+        d=expand("{d}", d=config['d']),
+        A=expand("{A}", A=config['A']),
+        B=expand("{B}", B=config['B']),
+        O=expand("{O}", O=config['O']),
+        E=expand("{E}", E=config['E']),
+        L=expand("{L}", L=config['L'])#,
+        #R=expand("{R}", R=config['R'])
+    shell: #-R {params.R}
         """
-        python ./holoflow/bin/holo-map_host.py -1 {input.read1} -2 {input.read2} -hostrg {input.refgenome} -obam {output} -t {params.host_t} -k {params.host_k} -w {params.host_w} -d {params.host_d} -A {params.host_A} -B {params.host_B} -O {params.host_O} -E {params.host_E} -L {params.host_L}
+        python ./holoflow/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {input.refgenomes} -obam {output} -t {params.t} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L}
         """
 
-rule map_host_split:
+rule map_ref_split:
     input:
-        refgenome=expand("{refgenomehost}", refgenomehost=config['refgenomehost']),
-        all_bam="{projectpath}/PPR_03-MappedToHost/{sample}_all.bam"
+        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
+        all_bam="{projectpath}/PPR_03-MappedToReference/{sample}_all.bam"
     output:
-        host="{projectpath}/PPR_03-MappedToHost/{sample}_host.bam",
-        read1="{projectpath}/PPR_03-MappedToHost/{sample}_1.fastq",
-        read2="{projectpath}/PPR_03-MappedToHost/{sample}_2.fastq"
+        ref="{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam",
+        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
+        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq"
     shell:
         """
-        python ./holoflow/bin/holo-map_host_split.py -hostrg {input.refgenome} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output.host}
-        """
-
-##
-# Mapping to human
-##
-rule map_human:
-    input:
-        read1="{projectpath}/PPR_03-MappedToHost/{sample}_1.fastq",
-        read2="{projectpath}/PPR_03-MappedToHost/{sample}_2.fastq",
-        refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman'])
-    output:
-        "{projectpath}/PPR_04-MappedToHuman/{sample}_all.bam"
-    params:
-        human_t=expand("{human_t}", human_t=config['human_t']),
-        human_k=expand("{human_k}", human_k=config['human_k']),
-        human_w=expand("{human_w}", human_w=config['human_w']),
-        human_d=expand("{human_d}", human_d=config['human_d']),
-        human_A=expand("{human_A}", human_A=config['human_A']),
-        human_B=expand("{human_B}", human_B=config['human_B']),
-        human_O=expand("{human_O}", human_O=config['human_O']),
-        human_E=expand("{human_E}", human_E=config['human_E']),
-        human_L=expand("{human_L}", human_L=config['human_L'])#,
-        #human_R=expand("{human_R}", human_R=config['human_R'])
-    shell: # -R {params.human_R}
-        """
-        python ./holoflow/bin/holo-map_human.py -1 {input.read1} -2 {input.read2} -hrg {input.refgenome} -obam {output} -t {params.human_t} -k {params.human_k} -w {params.human_w} -d {params.human_d} -A {params.human_A} -B {params.human_B} -O {params.human_O} -E {params.human_E} -L {params.human_L}
-        """
-
-rule map_human_split:
-    input:
-        refgenome=expand("{refgenomehuman}", refgenomehuman=config['refgenomehuman']),
-        all_bam="{projectpath}/PPR_04-MappedToHuman/{sample}_all.bam",
-        in_stats="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.stats"
-    output:
-        read1="{projectpath}/PPR_04-MappedToHuman/{sample}_1.fastq", ## mapped
-        read2="{projectpath}/PPR_04-MappedToHuman/{sample}_2.fastq", ## mapped
-        out_stats="{projectpath}/PPR_04-MappedToHuman/{sample}.stats"
-    shell:
-        """
-        python ./holoflow/bin/holo-map_human_split.py -hrg {input.refgenome} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -si {input.in_stats} -so {output.out_stats}
+        python ./holoflow/bin/holo-map_ref_split.py -refg {input.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output._ref}
         """
 
 #       print("############################ Holoflow has finished PREPROCESSING :) ############################")"

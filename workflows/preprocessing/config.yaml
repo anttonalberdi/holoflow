@@ -39,57 +39,29 @@ separator:
   ^
 
 #map_host options
-refgenomehost:
-  /home/projects/ku-cbd/people/antalb/reference_genomes/Gallus_gallus.Gallus_gallus-5.0.dna.toplevel.fa
+refgenomes:
+  /home/projects/ku-cbd/people/nurher/bats/ref_genomes/all_genomes.fna.bgz
 
     # These values correspond to the default options for bwa mem, customise if desired
-host_t:
+t:
   40
   # Either: loose / semistringent / superstringent. Correspond to 19, 30, 50 respectively.
   # Default semistringent{30}
-host_k:
+k:
   'semistringent'
-host_w:
+w:
   100
-host_d:
+d:
   100
-host_A:
+A:
   1
-host_B:
+B:
   4
-host_O:
+O:
   6
-host_E:
+E:
   1
-host_L:
+L:
   5
-host_R:
-  '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample'
-
-#map_human options
-refgenomehuman:
-  /home/projects/ku-cbd/people/antalb/reference_genomes/Homo_sapiens.fasta
-
-    # These values correspond to the default options for bwa mem, customise if desired
-human_t:
-  40
-  # Either: loose / semistringent / superstringent. Correspond to 19, 30, 50 respectively.
-  # Default semistringent{30}
-human_k:
-  'semistringent'
-human_w:
-  100
-human_d:
-  100
-human_A:
-  1
-human_B:
-  4
-human_O:
-  6
-human_E:
-  1
-human_L:
-  5
-human_R:
+R:
   '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample'
