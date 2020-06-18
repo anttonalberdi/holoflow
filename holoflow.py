@@ -90,6 +90,7 @@ def run_preprocessing(in_f, path, config, cores):
 
     # Define output names
     out_files = in_out_preprocessing(path,in_f)
+    curr_dir = os.getcwd()
     path_snkf = os.path.join(curr_dir,'workflows/preprocessing/Snakefile')
 
     # Run snakemake
@@ -160,6 +161,7 @@ def run_metagenomics(in_f, path, config, cores):
 
     # Define output names
     out_files = in_out_metagenomics(path,in_f)
+    curr_dir = os.getcwd()
     path_snkf = os.path.join(curr_dir,'workflows/metagenomics/individual_assembly/Snakefile')
 
     # Run snakemake
