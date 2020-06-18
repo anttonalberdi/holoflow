@@ -26,6 +26,15 @@ cores=args.threads
 ###########################
 
     ###########################
+    ###### PREPARE GENOMES FUNCTIONS
+
+
+
+
+
+
+
+    ###########################
     ###### PREPROCESSING FUNCTIONS
 
 def in_out_preprocessing(path,in_f):
@@ -78,7 +87,7 @@ def in_out_preprocessing(path,in_f):
 
 def run_preprocessing(in_f, path, config, cores):
     """Run snakemake on shell"""
-    
+
     # Define output names
     out_files = in_out_preprocessing(path,in_f)
     path_snkf = os.path.join(curr_dir,'workflows/preprocessing/Snakefile')
@@ -163,16 +172,13 @@ def run_metagenomics(in_f, path, config, cores):
 
 
 
-
     ###########################
-    ###### PREPROCESSING AND METAGENOMICS FUNCTIONS
+    ###### GENOMICS FUNCTIONS
 
-# def run_prepandmet(prepin_f, metin_f, path, prepconfig, metconfig, cores):
-#     """Run both preprocessing and metagenomics Snakefiles on shell"""
-#
-#     # Define output names
-#     out_files = in_out_metagenomics(path,in_f)
-#
+
+
+
+
 
 
 ###########################
@@ -184,7 +190,7 @@ subprocess.check_call(load_modulesCmd, shell=True)
 
 
 ###########################
-#### Workflows
+#### Workflows running
 ###########################
 
 # 0    # Prepare genomes workflow
