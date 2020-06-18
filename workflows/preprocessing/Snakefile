@@ -97,14 +97,16 @@ rule map_ref:
 rule map_ref_split:
     input:
         refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
-        all_bam="{projectpath}/PPR_03-MappedToReference/{sample}_all.bam"
+        all_bam="{projectpath}/PPR_03-MappedToReference/{sample}_all.bam",
+        stats_in="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.stats"
     output:
         ref="{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam",
         read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
-        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq"
+        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq",
+        stats_out="{projectpath}/PPR_03-MappedToReference/{sample}.stats"
     shell:
         """
-        python ./holoflow/bin/holo-map_ref_split.py -refg {input.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output._ref}
+        python ./holoflow/bin/holo-map_ref_split.py -refg {input.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output._ref} -si {input.stats_in} -so {output.stats_out}
         """
 
 #       print("############################ Holoflow has finished PREPROCESSING :) ############################")"
