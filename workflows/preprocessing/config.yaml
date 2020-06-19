@@ -28,7 +28,8 @@ by_n:
 by_s:
   True
 
-file_to_dups: # if not False, write path instead of True !
+# if not False, write path instead of True !
+file_to_dups:
   False
 
 ignore_case:
@@ -40,7 +41,7 @@ separator:
 
 #map_host options   # SOON - get from preparegenomes.py
 refgenomes:
-  /home/projects/ku-cbd/people/nurher/bats/ref_genomes/all_genomes.fna.bgz
+  /home/projects/ku-cbd/people/nurher/bats/ref_genomes/all_genomes.fna
 
     # These values correspond to the default options for bwa mem, customise if desired
 t:
@@ -65,3 +66,6 @@ L:
   5
 R:
   '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample'
+
+holopath:
+  /home/projects/ku-cbd/people/nurher

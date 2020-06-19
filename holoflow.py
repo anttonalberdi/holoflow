@@ -2,6 +2,7 @@ import argparse
 import subprocess
 import os
 import sys
+import ruamel.yaml
 
 ###########################
 #Argument parsing
@@ -21,12 +22,21 @@ config=args.config_file
 cores=args.threads
 
 
-# # Add current directory to config file for standalone calling
-# curr_dir = os.path.dirname(sys.argv[0])
-# holopath = os.path.abspath(curr_dir)
-#
-#     # APPEND TO .YAML https://stackoverflow.com/questions/54627042/how-do-i-append-to-a-yaml-file-with-python
-#     #     curr_dir = os.getcwd()
+
+    # retrieve current directory
+file = os.path.dirname(sys.argv[0])
+curr_dir = os.path.abspath(file)
+
+    #Append current directory to .yaml config for standalone calling
+yaml = ruamel.yaml.YAML()
+yaml.explicit_start = True
+with open(str(config), 'r') as config_file:
+  data = yaml.load(config_file)
+
+with open(str(config), 'w') as config_file:
+  data['holopath'] = str(curr_dir)
+  dump = yaml.dump(data, config_file)
+
 
 
 ###########################
