@@ -1,6 +1,9 @@
 configfile:"/home/projects/ku-cbd/people/nurher/holoflow/workflows/preprocessing/config.yaml"
-# threads info - Sen Li:
-    # /home/projects/ku-cbd/data/HoloFood/SnakeMake_Scripts/holofood_snakemake_bwa
+
+rule all:
+  input: expand("{holopath}", holopath=config['holopath'])
+
+
 ################################################################################################################
 ############################################       PREPROCESSING     ###########################################
 ################################################################################################################
@@ -26,7 +29,7 @@ rule qual_filt:
         threads=expand("{threads}", threads=config['threads'])
     shell:
         """
-        python ./holoflow/bin/holo-qual_filt.py -i1 {input.read1} -i2 {input.read2} -o1 {output.read1} -o2 {output.read2} -a1 {params.adapter1} -a2 {params.adapter2} -maxns {params.maxns} -minq {params.minquality} -t {params.threads} -s {output.stats_file}
+        python {wildcards.holopath}/bin/holo-qual_filt.py -i1 {input.read1} -i2 {input.read2} -o1 {output.read1} -o2 {output.read2} -a1 {params.adapter1} -a2 {params.adapter2} -maxns {params.maxns} -minq {params.minquality} -t {params.threads} -s {output.stats_file}
         """
 
 
@@ -46,8 +49,9 @@ rule dup_rem_paired:
         ignore_case=expand("{ignore_case}", ignore_case=config['ignore_case'])
 
     shell:
-        "python ./holoflow/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -i {params.ignore_case} "
-
+        """
+        python {wildcards.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -i {params.ignore_case}
+        """
 
 
 rule dup_rem_paired_repair:
@@ -63,7 +67,7 @@ rule dup_rem_paired_repair:
         separator=expand("{separator}", separator=config['separator'])
     shell:
         """
-        python ./holoflow/bin/holo-dup_rem_paired_repair.py -i {input.in_file} -1 {output.read1} -2 {output.read2} -sep {params.separator} -si {input.in_stats} -so {output.out_stats}
+        python {wildcards.holopath}/bin/holo-dup_rem_paired_repair.py -i {input.in_file} -1 {output.read1} -2 {output.read2} -sep {params.separator} -si {input.in_stats} -so {output.out_stats}
         """
 
 
@@ -91,7 +95,7 @@ rule map_ref:
         #R=expand("{R}", R=config['R'])
     shell: #-R {params.R}
         """
-        python ./holoflow/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {input.refgenomes} -obam {output} -t {params.t} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L}
+        python {wildcards.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {input.refgenomes} -obam {output} -t {params.t} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L}
         """
 
 rule map_ref_split:
@@ -106,7 +110,7 @@ rule map_ref_split:
         stats_out="{projectpath}/PPR_03-MappedToReference/{sample}.stats"
     shell:
         """
-        python ./holoflow/bin/holo-map_ref_split.py -refg {input.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output._ref} -si {input.stats_in} -so {output.stats_out}
+        python {wildcards.holopath}/bin/holo-map_ref_split.py -refg {input.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output._ref} -si {input.stats_in} -so {output.stats_out}
         """
 
 #       print("############################ Holoflow has finished PREPROCESSING :) ############################")"

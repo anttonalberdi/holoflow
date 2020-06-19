@@ -34,3 +34,6 @@ dastool_db:
 
 search_eng:
   diamond
+
+holopath:
+  /home/projects/ku-cbd/people/nurher/holoflow
