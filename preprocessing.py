@@ -10,14 +10,12 @@ import ruamel.yaml
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True)
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
-parser.add_argument('-w', help="chosen workflow", dest="workflow", required=True)
 parser.add_argument('-c', help="config file", dest="config_file", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 args = parser.parse_args()
 
 in_f=args.input_txt
 path=args.work_dir
-workflow=args.workflow
 config=args.config_file
 cores=args.threads
 
@@ -124,5 +122,4 @@ subprocess.check_call(load_modulesCmd, shell=True)
 
 
 # 1    # Preprocessing workflow
-if workflow == "preprocessing":
-    run_preprocessing(in_f, path, config, cores)
+run_preprocessing(in_f, path, config, cores)
