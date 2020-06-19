@@ -1,0 +1,51 @@
+configfile:"/home/projects/ku-cbd/people/nurher/holoflow/workflows/preparegenomes/config.yaml"
+
+rule all:
+  input: expand("{holopath}", holopath=config['holopath'])
+
+
+################################################################################################################
+############################################       PREPROCESSING     ###########################################
+################################################################################################################
+
+##
+# Fasta reformat and merging
+##
+
+rule fasta_merge:
+#   a. header reformat genomeID_originalname
+#   b. join FASTA files in NameOutputDB.fna file
+    input:
+        # expand all genomes paths
+        outputDB=expand("{outputDB}", outputDB=config['outputDB']) ########
+    output:
+        DB= "{projectpath}/PRG/{input.outputDB}.fna"
+    shell:
+        """
+        python {wildcards.holopath}/bin/
+        """
+
+##
+# DB indexing
+##
+
+rule db_index:
+#   c. 2 SNAKEMAKE RULES - Index bwa // Index samtools faidx
+
+    input:
+      db="{projectpath}/PRG/{input.outputDB}.fna"
+    output:
+      dir="{projectpath}/PRG/{input.outputDB}.fna.fai"
+
+    shell:
+        """
+        python {wildcards.holopath}/bin/
+        """
+
+rule check_compress:
+#   d. If all files are FINE, create tiny .txt which says it worked, just x checking, if not:BREAK
+#   e. Compress ALL OUTPUT FILES outputdir (-d)/NameOutputDB.fna.tar.gz
+    input:
+        DB="{projectpath}/PRG/{input.outputDB}.fna"
+    output:
+        compressed_dir=""
