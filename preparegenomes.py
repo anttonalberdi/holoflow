@@ -22,22 +22,6 @@ cores=args.threads
 
 
 
-    # retrieve current directory
-file = os.path.dirname(sys.argv[0])
-curr_dir = os.path.abspath(file)
-
-    #Append current directory to .yaml config for standalone calling
-yaml = ruamel.yaml.YAML()
-yaml.explicit_start = True
-with open(str(config), 'r') as config_file:
-  data = yaml.load(config_file)
-
-with open(str(config), 'w') as config_file:
-  data['holopath'] = str(curr_dir)
-  dump = yaml.dump(data, config_file)
-
-
-
 ###########################
 ## Functions
 ###########################
@@ -75,16 +59,35 @@ def in_out_preparegenomes(path,in_f):
                 if (not (re.match(file[2], db_ID))):
                     db_ID = file[2]
                     # call merging function
-                    merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID)
+                    db_path = merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID)
 
                 # If ending of lines, and no new db name, also
                     # do the merging of the genomes into db
                 if (file == last_file):
                     # call merging function
-                    merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID)
+                    db_path = merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID)
 
 
-> append db path to config ###############################
+        # retrieve current directory
+    file = os.path.dirname(sys.argv[0])
+    curr_dir = os.path.abspath(file)
+
+        # open config.yaml file to write in it
+    yaml = ruamel.yaml.YAML()
+    yaml.explicit_start = True
+    with open(str(config), 'r') as config_file:
+      data = yaml.load(config_file)
+
+    # Append current directory to .yaml config for standalone calling
+    # Append db_path for indexing and further analysis
+    with open(str(config), 'w') as config_file:
+      data['holopath'] = str(curr_dir)
+      data['DB_path'] = str(db_path)
+      dump = yaml.dump(data, config_file)
+
+
+
+
 
 
 def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
@@ -95,46 +98,45 @@ def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
         ID = refg_IDs[i]
 
         if genome.endswith('.gz'): # uncompress genome for editing
-            uncompressCmd='gunzip -c '+genome+' > db_dir###############################'
+            uncompressCmd='gunzip -c '+genome+' > '+db_dir+'/'+ID+'.fna'
             subprocess.check_call(uncompressCmd, shell=True)
         else:
             pass
 
         # edit > genome identifiers
-            # find all lines starting with > and add ID_ before all already there
-            > save as temp file in db_dir
+            # find all lines starting with > and add ID_ before all info
+            editgenomeCmd='sed "s/>/>'+ID+'_/g" '+genome+' > '+db_dir+'/'+ID+'.fna'
 
-    # reformat every genome - grep and sed
+    # merge all reference genomes
+    db_path = ''+db_dir+'/'+DB+'.fna'
+    mergeCmd=''+db_dir+'/*.fna > '+db_path+''
+    subprocess.check_call(mergeCmd, shell=True)
 
-    # take work dir path and ID and subprocess merge
-        > merge all temp files > db_dir/ID.fna
-        > remove uncompressed+modified genomes in dir
+    # ? remove uncompressed+modified genomes in dir
 
-    return(db_path)  ###############################
-
-
-
+    return(db_path)
 
 
 
 
 
-
-
-def run_metagenomics(in_f, path, config, cores):
+def run_preparegenomes(in_f, path, config, cores):
     """Run snakemake on shell"""
 
     # Define output names
-    out_files = in_out_metagenomics(path,in_f)
+    out_files = ''+path+'/PRG/ok.txt'
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
-    path_snkf = os.path.join(holopath,'workflows/metagenomics/individual_assembly/Snakefile')
+    path_snkf = os.path.join(holopath,'workflows/preparegenomes/individual_assembly/Snakefile')
 
     # Run snakemake
-    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
-    subprocess.check_call(mtg_snk_Cmd, shell=True)
+    prg_snk_Cmd = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
+    subprocess.check_call(prg_snk_Cmd, shell=True)
 
-    print("Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
+    print("Have a nice run!\n\t\tHOLOFOW Prepare genomes starting")
+
+
+
 
 
 ###########################
@@ -148,5 +150,5 @@ subprocess.check_call(load_modulesCmd, shell=True)
 ###########################
 #### Workflows running
 ###########################
-# 2    # Metagenomics workflow
-run_metagenomics(in_f, path, config, cores)
+# 0    # Preparegenomes workflow
+run_preparegenomes(in_f, path, config, cores)
