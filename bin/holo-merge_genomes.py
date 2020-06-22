@@ -1,11 +1,16 @@
 #19.06.2020 - Holoflow 0.1.
 
-import subprocess
 import argparse
+import subprocess
 import glob
 import os
+import sys
+import ruamel.yaml
 
+
+###########################
 #Argument parsing
+###########################
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-refp', help="path to reference genomes", dest="refp", required=True)
 parser.add_argument('-suff', help="reference genomes common termination", dest="suff", required=True)

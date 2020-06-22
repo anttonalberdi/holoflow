@@ -1,4 +1,4 @@
-configfile:"/home/projects/ku-cbd/people/nurher/holoflow/workflows/preprocessing/config.yaml"
+configfile:"/home/projects/ku-cbd/people/nurher/holoflow/workflows/preparegenomes/config.yaml"
 
 rule get_holopath:
     input:
@@ -7,112 +7,34 @@ rule get_holopath:
 
 
 ################################################################################################################
-############################################       PREPROCESSING     ###########################################
+############################################       PREPAREGENOMES     ###########################################
 ################################################################################################################
 
 ##
-# Quality-filtering
+# DB indexing
 ##
 
-rule qual_filt:
+rule db_index:
     input:
-        read1="{projectpath}/PPR_00-InputData/{sample}_1.fastq",
-        read2="{projectpath}/PPR_00-InputData/{sample}_2.fastq"
-    output:
-        read1="{projectpath}/PPR_01-QualityFiltered/{sample}_1.fastq",
-        read2="{projectpath}/PPR_01-QualityFiltered/{sample}_2.fastq",
-        stats_file="{projectpath}/PPR_01-QualityFiltered/{sample}.stats"
-    threads: 4
+        db_ID=expand("{DB}", DB=config['DB'])
     params:
-        adapter1=expand("{adapter1}", adapter1=config['adapter1']),
-        adapter2=expand("{adapter2}", adapter2=config['adapter2']),
-        maxns=expand("{maxns}", maxns=config['maxns']),
-        minquality=expand("{minquality}", minquality=config['minquality']),
-        threads=expand("{threads}", threads=config['threads'])
+        db="{projectpath}/PRG/{input.db_ID}.fna"
+    output:
+        idx_db="{projectpath}/PRG/{input.db_ID}.fna.sa"
     shell:
         """
-        python {rules.get_holopath.input}/bin/holo-qual_filt.py -i1 {input.read1} -i2 {input.read2} -o1 {output.read1} -o2 {output.read2} -a1 {params.adapter1} -a2 {params.adapter2} -maxns {params.maxns} -minq {params.minquality} -t {params.threads} -s {output.stats_file}
+        python {rules.get_holopath.input}/bin/holo-db_index.py -db {params.db} -idb {output.idx_db}
         """
 
 
-
-rule dup_rem_paired:
+rule check_compress:
     input:
-      read1="{projectpath}/PPR_01-QualityFiltered/{sample}_1.fastq",
-      read2="{projectpath}/PPR_01-QualityFiltered/{sample}_2.fastq"
-    output:
-      dir="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.merged.fastq"
-    threads: 4
+        db_ID=expand("{DB}", DB=config['DB'])
     params:
-        separator=expand("{separator}", separator=config['separator']),
-        by_n=expand("{by_n}", by_n=config['by_n']),
-        by_s=expand("{by_s}", by_s=config['by_s']),
-        file_to_dups=expand("{file_to_dups}", file_to_dups=config['file_to_dups']),
-        ignore_case=expand("{ignore_case}", ignore_case=config['ignore_case'])
-
+        db="{projectpath}/PRG/{input.db_ID}.fna"
+    output:
+        check_file="{projectpath}/PRG/ok.txt"
     shell:
         """
-        python {rules.get_holopath.input}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -i {params.ignore_case}
+        python {rules.get_holopath.input}/bin/holo-check_compress.py -db {params.db} -check {output.check_file}
         """
-
-
-rule dup_rem_paired_repair:
-    input:
-      in_file="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.merged.fastq",
-      in_stats="{projectpath}/PPR_01-QualityFiltered/{sample}.stats"
-    output:
-      read1="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_1.fastq",
-      read2="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_2.fastq",
-      out_stats="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.stats"
-    threads: 4
-    params:
-        separator=expand("{separator}", separator=config['separator'])
-    shell:
-        """
-        python {rules.get_holopath.input}/bin/holo-dup_rem_paired_repair.py -i {input.in_file} -1 {output.read1} -2 {output.read2} -sep {params.separator} -si {input.in_stats} -so {output.out_stats}
-        """
-
-
-##
-# Mapping to host
-##
-
-rule map_ref:
-    input:
-        read1="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_1.fastq",
-        read2="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_2.fastq",
-        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes'])
-    output:
-        "{projectpath}/PPR_03-MappedToReference/{sample}_all.bam"
-    params:
-        t=expand("{t}", t=config['t']),
-        k=expand("{k}", k=config['k']),
-        w=expand("{w}", w=config['w']),
-        d=expand("{d}", d=config['d']),
-        A=expand("{A}", A=config['A']),
-        B=expand("{B}", B=config['B']),
-        O=expand("{O}", O=config['O']),
-        E=expand("{E}", E=config['E']),
-        L=expand("{L}", L=config['L'])#,
-        #R=expand("{R}", R=config['R'])
-    shell: #-R {params.R}
-        """
-        python {rules.get_holopath.input}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {input.refgenomes} -obam {output} -t {params.t} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L}
-        """
-
-rule map_ref_split:
-    input:
-        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
-        all_bam="{projectpath}/PPR_03-MappedToReference/{sample}_all.bam",
-        stats_in="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.stats"
-    output:
-        ref="{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam",
-        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
-        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq",
-        stats_out="{projectpath}/PPR_03-MappedToReference/{sample}.stats"
-    shell:
-        """
-        python {rules.get_holopath.input}/bin/holo-map_ref_split.py -refg {input.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output._ref} -si {input.stats_in} -so {output.stats_out}
-        """
-
-#       print("############################ Holoflow has finished PREPROCESSING :) ############################")"

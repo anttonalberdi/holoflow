@@ -2,6 +2,7 @@ import argparse
 import subprocess
 import os
 import sys
+import re
 import ruamel.yaml
 
 ###########################
@@ -42,54 +43,80 @@ with open(str(config), 'w') as config_file:
 ###########################
 
     ###########################
-    ###### METAGENOMICS FUNCTIONS
+    ###### PREPAREGENOMES FUNCTIONS
 
-def in_out_metagenomics(path,in_f):
+def in_out_preparegenomes(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
-    in_dir = os.path.join(path,"PPR_03-MappedToReference")
-    if not os.path.exists(in_dir):
-        os.makedirs(in_dir)
+    db_dir = os.path.join(path,"PRG")
+    if not os.path.exists(db_dir):
+        os.makedirs(db_dir)
 
     with open(in_f,'r') as in_file:
         # Paste desired output file names from input.txt
-        read = 0
-        output_files=''
-        final_temp_dir="MIA_03-Binning"
+        ref_genomes_IDs=list()
+        ref_genomes_paths=list()
+        db_ID=''
+
 
         lines = in_file.readlines() # Read input.txt lines
+        last_file = lines[-1]
         for file in lines:
 
             if not (file.startswith('#')):
                 file = file.strip('\n').split(' ') # Create a list of each line
 
-                read+=1 # every sample will have two reads, keep the name of the file but change the read
+                # Save IDs for reformat and paths for merging
+                ref_genomes_IDs.append(file[0])
+                ref_genomes_paths.append(file[1])
 
-                # Add an output file based on input.txt info to a list for Snakemake command
-                output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"_dastool/"+file[0])
+                # If all previous genomes to same db, only save db name once
+                    # do the merging of the genomes into db
+                if (not (re.match(file[2], db_ID))):
+                    db_ID = file[2]
+                    # call merging function
+                    merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID)
 
-
-                # Move files to new dir "PPR_03-MappedToReference/" and change file names for 1st column in input.txt
-                #   if the current input file names do not match the designed ones in input.txt
-                filename=file[2]       # current input file path and name
-                desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq"' # desired input file path and name specified in input.txt
-
-                if not ((filename == desired_filename) and (os.path.exists(str(desired_filename)))):
-                    if filename.endswith('.gz'): # uncompress input file if necessary
-                        uncompressCmd='gunzip -c '+filename+' > '+desired_filename+''
-                        subprocess.check_call(uncompressCmd, shell=True)
-
-                    else:   # else just move the input file to "00-InputData" with the new name
-                        copyfilesCmd='cp '+filename+' '+desired_filename+''
-                        subprocess.check_call(copyfilesCmd, shell=True)
+                # If ending of lines, and no new db name, also
+                    # do the merging of the genomes into db
+                if (file == last_file):
+                    # call merging function
+                    merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID)
 
 
-                if read == 2: # two read files for one sample finished, new sample
-                    read=0
-                    # Add stats output file only once per sample
-                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+".stats ")
+> append db path to config ###############################
 
-        return output_files
+
+def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
+
+    for (i in range(len(refg_Paths))):
+
+        genome = refg_Paths[i]
+        ID = refg_IDs[i]
+
+        if genome.endswith('.gz'): # uncompress genome for editing
+            uncompressCmd='gunzip -c '+genome+' > db_dir###############################'
+            subprocess.check_call(uncompressCmd, shell=True)
+        else:
+            pass
+
+        # edit > genome identifiers
+            # find all lines starting with > and add ID_ before all already there
+            > save as temp file in db_dir
+
+    # reformat every genome - grep and sed
+
+    # take work dir path and ID and subprocess merge
+        > merge all temp files > db_dir/ID.fna
+        > remove uncompressed+modified genomes in dir
+
+    return(db_path)  ###############################
+
+
+
+
+
+
 
 
 
