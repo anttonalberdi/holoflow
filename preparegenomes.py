@@ -59,13 +59,13 @@ def set_up_preparegenomes(path,in_f):
                 if (not (re.match(file[2], db_ID))):
                     db_ID = file[2]
                     # call merging function
-                    db_path = merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID)
+                    db_path = merge_genomes(db_dir,ref_genomes_IDs,ref_genomes_paths,db_ID)
 
                 # If ending of lines, and no new db name, also
                     # do the merging of the genomes into db
                 if (file == last_file):
                     # call merging function
-                    db_path = merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID)
+                    db_path = merge_genomes(db_dir,ref_genomes_IDs,ref_genomes_paths,db_ID)
 
 
         # retrieve current directory
@@ -92,22 +92,26 @@ def set_up_preparegenomes(path,in_f):
 
 def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
 
-    for (i in range(len(refg_Paths))):
+    for i in range(len(refg_Paths)):
 
         genome = refg_Paths[i]
         ID = refg_IDs[i]
 
         if genome.endswith('.gz'): # uncompress genome for editing
+                                # and save it in db_dir
             uncompressCmd='gunzip -c '+genome+' > '+db_dir+'/'+ID+'.fna'
             subprocess.check_call(uncompressCmd, shell=True)
+            genome = ''+db_dir+'/'+ID+'.fna'
         else:
             pass
 
-        # edit > genome identifiers
+        # edit ">" genome identifiers
             # find all lines starting with > and add ID_ before all info
+            # move to db_dir
             editgenomeCmd='sed "s/>/>'+ID+'_/g" '+genome+' > '+db_dir+'/'+ID+'.fna'
+            subprocess.check_call(editgenomeCmd, shell=True)
 
-    # merge all reference genomes
+    # define full db path and merge all reference genomes in it
     db_path = ''+db_dir+'/'+DB+'.fna'
     mergeCmd=''+db_dir+'/*.fna > '+db_path+''
     subprocess.check_call(mergeCmd, shell=True)
