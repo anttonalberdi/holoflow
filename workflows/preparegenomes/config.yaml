@@ -1,9 +1,1 @@
 #General options
-
-
-#map_host options   # SOON - get from preparegenomes.py
-refgenomes:
-  /home/projects/ku-cbd/people/nurher/bats/ref_genomes/all_genomes.fna
-
-
-THESE SHOULD BE WRITTEN IN INDIVIDUAL LAUNCHER FUNCTION, APPEND TO CONFIG

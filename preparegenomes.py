@@ -29,7 +29,7 @@ cores=args.threads
     ###########################
     ###### PREPAREGENOMES FUNCTIONS
 
-def in_out_preparegenomes(path,in_f):
+def set_up_preparegenomes(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
     db_dir = os.path.join(path,"PRG")
@@ -120,10 +120,12 @@ def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
 
 
 
+
 def run_preparegenomes(in_f, path, config, cores):
     """Run snakemake on shell"""
 
     # Define output names
+    set_up_preparegenomes(path,in_f)
     out_files = ''+path+'/PRG/ok.txt'
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)

@@ -5,7 +5,6 @@ rule get_holopath:
         expand("{holopath}", holopath=config['holopath'])
 
 
-
 ################################################################################################################
 ############################################       PREPAREGENOMES     ###########################################
 ################################################################################################################
@@ -16,25 +15,22 @@ rule get_holopath:
 
 rule db_index:
     input:
-        db_ID=expand("{DB}", DB=config['DB'])
-    params:
-        db="{projectpath}/PRG/{input.db_ID}.fna"
+        db=expand("{DB_path}", DB_path=config['DB_path'])
     output:
         idx_db="{projectpath}/PRG/{input.db_ID}.fna.sa"
     shell:
         """
-        python {rules.get_holopath.input}/bin/holo-db_index.py -db {params.db} -idb {output.idx_db}
+        python {rules.get_holopath.input}/bin/holo-db_index.py -db {input.db} -idb {output.idx_db}
         """
 
 
 rule check_compress:
     input:
-        db_ID=expand("{DB}", DB=config['DB'])
-    params:
-        db="{projectpath}/PRG/{input.db_ID}.fna"
+        db=expand("{DB_path}", DB_path=config['DB_path']),
+        idx_db="{projectpath}/PRG/{input.db_ID}.fna.sa"
     output:
         check_file="{projectpath}/PRG/ok.txt"
     shell:
         """
-        python {rules.get_holopath.input}/bin/holo-check_compress.py -db {params.db} -check {output.check_file}
+        python {rules.get_holopath.input}/bin/holo-check_compress.py -db {input.db} -check {output.check_file}
         """
