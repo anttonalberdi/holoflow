@@ -1,7 +1,9 @@
-configfile:"/home/projects/ku-cbd/people/nurher/holoflow/workflows/preparegenomes/config.yaml"
+configfile:"/home/projects/ku-cbd/people/nurher/holoflow/workflows/preprocessing/config.yaml"
 
-rule all:
-  input: expand("{holopath}", holopath=config['holopath'])
+rule get_holopath:
+    input:
+        expand("{holopath}", holopath=config['holopath'])
+
 
 
 ################################################################################################################
@@ -9,43 +11,108 @@ rule all:
 ################################################################################################################
 
 ##
-# Fasta reformat and merging
+# Quality-filtering
 ##
 
-rule fasta_merge:
-#   a. header reformat genomeID_originalname
-#   b. join FASTA files in NameOutputDB.fna file
+rule qual_filt:
     input:
-        # expand all genomes paths
-        outputDB=expand("{outputDB}", outputDB=config['outputDB']) ########
+        read1="{projectpath}/PPR_00-InputData/{sample}_1.fastq",
+        read2="{projectpath}/PPR_00-InputData/{sample}_2.fastq"
     output:
-        DB= "{projectpath}/PRG/{input.outputDB}.fna"
+        read1="{projectpath}/PPR_01-QualityFiltered/{sample}_1.fastq",
+        read2="{projectpath}/PPR_01-QualityFiltered/{sample}_2.fastq",
+        stats_file="{projectpath}/PPR_01-QualityFiltered/{sample}.stats"
+    threads: 4
+    params:
+        adapter1=expand("{adapter1}", adapter1=config['adapter1']),
+        adapter2=expand("{adapter2}", adapter2=config['adapter2']),
+        maxns=expand("{maxns}", maxns=config['maxns']),
+        minquality=expand("{minquality}", minquality=config['minquality']),
+        threads=expand("{threads}", threads=config['threads'])
     shell:
         """
-        python {wildcards.holopath}/bin/
+        python {rules.get_holopath.input}/bin/holo-qual_filt.py -i1 {input.read1} -i2 {input.read2} -o1 {output.read1} -o2 {output.read2} -a1 {params.adapter1} -a2 {params.adapter2} -maxns {params.maxns} -minq {params.minquality} -t {params.threads} -s {output.stats_file}
         """
 
-##
-# DB indexing
-##
 
-rule db_index:
-#   c. 2 SNAKEMAKE RULES - Index bwa // Index samtools faidx
 
+rule dup_rem_paired:
     input:
-      db="{projectpath}/PRG/{input.outputDB}.fna"
+      read1="{projectpath}/PPR_01-QualityFiltered/{sample}_1.fastq",
+      read2="{projectpath}/PPR_01-QualityFiltered/{sample}_2.fastq"
     output:
-      dir="{projectpath}/PRG/{input.outputDB}.fna.fai"
+      dir="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.merged.fastq"
+    threads: 4
+    params:
+        separator=expand("{separator}", separator=config['separator']),
+        by_n=expand("{by_n}", by_n=config['by_n']),
+        by_s=expand("{by_s}", by_s=config['by_s']),
+        file_to_dups=expand("{file_to_dups}", file_to_dups=config['file_to_dups']),
+        ignore_case=expand("{ignore_case}", ignore_case=config['ignore_case'])
 
     shell:
         """
-        python {wildcards.holopath}/bin/
+        python {rules.get_holopath.input}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -i {params.ignore_case}
         """
 
-rule check_compress:
-#   d. If all files are FINE, create tiny .txt which says it worked, just x checking, if not:BREAK
-#   e. Compress ALL OUTPUT FILES outputdir (-d)/NameOutputDB.fna.tar.gz
+
+rule dup_rem_paired_repair:
     input:
-        DB="{projectpath}/PRG/{input.outputDB}.fna"
+      in_file="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.merged.fastq",
+      in_stats="{projectpath}/PPR_01-QualityFiltered/{sample}.stats"
     output:
-        compressed_dir=""
+      read1="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_1.fastq",
+      read2="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_2.fastq",
+      out_stats="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.stats"
+    threads: 4
+    params:
+        separator=expand("{separator}", separator=config['separator'])
+    shell:
+        """
+        python {rules.get_holopath.input}/bin/holo-dup_rem_paired_repair.py -i {input.in_file} -1 {output.read1} -2 {output.read2} -sep {params.separator} -si {input.in_stats} -so {output.out_stats}
+        """
+
+
+##
+# Mapping to host
+##
+
+rule map_ref:
+    input:
+        read1="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_1.fastq",
+        read2="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_2.fastq",
+        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes'])
+    output:
+        "{projectpath}/PPR_03-MappedToReference/{sample}_all.bam"
+    params:
+        t=expand("{t}", t=config['t']),
+        k=expand("{k}", k=config['k']),
+        w=expand("{w}", w=config['w']),
+        d=expand("{d}", d=config['d']),
+        A=expand("{A}", A=config['A']),
+        B=expand("{B}", B=config['B']),
+        O=expand("{O}", O=config['O']),
+        E=expand("{E}", E=config['E']),
+        L=expand("{L}", L=config['L'])#,
+        #R=expand("{R}", R=config['R'])
+    shell: #-R {params.R}
+        """
+        python {rules.get_holopath.input}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {input.refgenomes} -obam {output} -t {params.t} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L}
+        """
+
+rule map_ref_split:
+    input:
+        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
+        all_bam="{projectpath}/PPR_03-MappedToReference/{sample}_all.bam",
+        stats_in="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.stats"
+    output:
+        ref="{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam",
+        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
+        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq",
+        stats_out="{projectpath}/PPR_03-MappedToReference/{sample}.stats"
+    shell:
+        """
+        python {rules.get_holopath.input}/bin/holo-map_ref_split.py -refg {input.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output._ref} -si {input.stats_in} -so {output.stats_out}
+        """
+
+#       print("############################ Holoflow has finished PREPROCESSING :) ############################")"

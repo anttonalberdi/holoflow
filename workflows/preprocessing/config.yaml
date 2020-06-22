@@ -11,9 +11,9 @@ threads:
 
 #qual_filt options # If Illumina adapters, set to 'default'
 adapter1:
-  AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA
+  'default'
 adapter2:
-  GAACGACATGGCTACGATCCGACTT
+  'default'
 maxns:
   5
 minquality:
@@ -66,3 +66,6 @@ L:
   5
 R:
   '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample'
+
+holopath:
+  /home/projects/ku-cbd/people/nurher/holoflow

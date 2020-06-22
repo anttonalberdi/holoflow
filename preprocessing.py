@@ -87,8 +87,9 @@ def in_out_preprocessing(path,in_f):
                 if read == 2:
                     read=0  # two read files for one sample finished, new sample
 
-                    # Add stats output file only once per sample
+                    # Add stats and bam output files only once per sample
                     output_files+=(path+"/"+final_temp_dir+"/"+file[0]+".stats ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"_ref.bam ")
 
         return output_files
 
