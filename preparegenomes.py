@@ -21,6 +21,21 @@ config=args.config_file
 cores=args.threads
 
 
+# retrieve current directory
+file = os.path.dirname(sys.argv[0])
+curr_dir = os.path.abspath(file)
+
+# open config.yaml file to write in it
+yaml = ruamel.yaml.YAML()
+yaml.explicit_start = True
+with open(str(config), 'r') as config_file:
+    data = yaml.load(config_file)
+
+# Append current directory to .yaml config for standalone calling
+with open(str(config), 'w') as config_file:
+    data['holopath'] = str(curr_dir)
+    dump = yaml.dump(data, config_file)
+
 
 ###########################
 ## Functions
@@ -29,7 +44,7 @@ cores=args.threads
     ###########################
     ###### PREPAREGENOMES FUNCTIONS
 
-def set_up_preparegenomes(path,in_f):
+def set_up_preparegenomes(path,in_f,config):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
     db_dir = os.path.join(path,"PRG")
@@ -53,6 +68,7 @@ def set_up_preparegenomes(path,in_f):
                 # Save IDs for reformat and paths for merging
                 ref_genomes_IDs.append(file[0])
                 ref_genomes_paths.append(file[1])
+                db_ID = file[2]
 
                 # If all previous genomes to same db, only save db name once
                     # do the merging of the genomes into db
@@ -76,14 +92,12 @@ def set_up_preparegenomes(path,in_f):
     yaml = ruamel.yaml.YAML()
     yaml.explicit_start = True
     with open(str(config), 'r') as config_file:
-      data = yaml.load(config_file)
+        data = yaml.load(config_file)
 
-    # Append current directory to .yaml config for standalone calling
     # Append db_path for indexing and further analysis
     with open(str(config), 'w') as config_file:
-      data['holopath'] = str(curr_dir)
-      data['DB_path'] = str(db_path)
-      dump = yaml.dump(data, config_file)
+        data['DB_path'] = str(db_path)
+        dump = yaml.dump(data, config_file)
 
 
 
@@ -112,12 +126,13 @@ def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
             subprocess.check_call(editgenomeCmd, shell=True)
 
     # define full db path and merge all reference genomes in it
-    db_path = ''+db_dir+'/'+db_DB+'.fna'
-    mergeCmd=''+db_dir+'/*.fna > '+db_path+''
+    db_path = ''+db_dir+'/'+db_ID+'.fna'
+        # obtain full paths of all edited genomes to merge
+    all_edited_genomes = (os.path.abspath(x) for x in glob.glob(''+db_dir+''))
+    mergeCmd=''+all_edited_genomes+' > '+db_path+''
     subprocess.check_call(mergeCmd, shell=True)
 
     # ? remove uncompressed+modified genomes in dir
-
     return(db_path)
 
 
@@ -127,7 +142,7 @@ def run_preparegenomes(in_f, path, config, cores):
     """Run snakemake on shell"""
 
     # Define output names
-    set_up_preparegenomes(path,in_f)
+    set_up_preparegenomes(path,in_f,config)
     out_files = ''+path+'/PRG/ok.txt'
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
