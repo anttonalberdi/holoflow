@@ -1,6 +1,7 @@
 import argparse
 import subprocess
 import os
+import glob
 import sys
 import ruamel.yaml
 
@@ -29,11 +30,13 @@ curr_dir = os.path.abspath(file)
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
 with open(str(config), 'r') as config_file:
-  data = yaml.load(config_file)
+    data = yaml.load(config_file)
+    if data == None:
+        data = {}
 
 with open(str(config), 'w') as config_file:
-  data['holopath'] = str(curr_dir)
-  dump = yaml.dump(data, config_file)
+    data['holopath'] = str(curr_dir)
+    dump = yaml.dump(data, config_file)
 
 
 ###########################
@@ -55,6 +58,7 @@ def set_up_preparegenomes(path,in_f):
         ref_genomes_IDs=list()
         ref_genomes_paths=list()
         db_ID=''
+        db_paths=''
 
 
         lines = in_file.readlines() # Read input.txt lines
@@ -62,28 +66,31 @@ def set_up_preparegenomes(path,in_f):
         for file in lines:
 
             if not (file.startswith('#')):
-                file = file.strip('\n').split(' ') # Create a list of each line
-
+                refg = file.strip('\n').split(' ') # Create a list of each line
                 # Save IDs for reformat and paths for merging
-                ref_genomes_IDs.append(file[0])
-                ref_genomes_paths.append(file[1])
-                db_ID = file[2]
+                ref_genomes_IDs.append(refg[0])
+                ref_genomes_paths.append(refg[1])
+                db_ID = refg[2]
 
                 # If all previous genomes to same db, only save db name once
                     # do the merging of the genomes into db
-                if (not (re.match(file[2], db_ID))):
-                    db_ID = file[2]
+                if not (refg[2] == db_ID):
                     # call merging function
-                    db_path = merge_genomes(db_dir,ref_genomes_IDs,ref_genomes_paths,db_ID)
+                    db_paths+=''+merge_genomes(db_dir,ref_genomes_IDs,ref_genomes_paths,db_ID)+' '
+                    db_ID = refg[2]
 
                 # If ending of lines, and no new db name, also
                     # do the merging of the genomes into db
                 if (file == last_file):
-                    db_ID = file[2]
+                    db_ID = refg[2]
                     # call merging function
-                    db_path = merge_genomes(db_dir,ref_genomes_IDs,ref_genomes_paths,db_ID)
+                    db_paths+=''+merge_genomes(db_dir,ref_genomes_IDs,ref_genomes_paths,db_ID)+' '
 
-    return(db_path)
+                else:
+                    pass
+
+        return(db_paths)
+
 
 
 
@@ -98,23 +105,34 @@ def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
 
         if genome.endswith('.gz'): # uncompress genome for editing
                                 # and save it in db_dir
-            uncompressCmd='gunzip -c '+genome+' >'+db_dir+'/'+ID+'.fna'
+            uncompressCmd='gunzip -c '+genome+' > '+db_dir+'/'+ID+'_toedit.fna'
             subprocess.check_call(uncompressCmd, shell=True)
-            genome = ''+db_dir+'/'+ID+'.fna'
+
+            editgenome_path=''+db_dir+'/'+ID+'.fna'
+            editgenomeCmd='sed "s/>/>'+ID+'_/g" '+db_dir+'/'+ID+'_toedit.fna > '+editgenome_path+''
+            subprocess.check_call(editgenomeCmd, shell=True)
+            rmCmd=''+db_dir+'/'+ID+'_toedit.fna'
+            subprocess.check_call(rmCmd, shell=True)
+
         else:
             pass
 
         # edit ">" genome identifiers
-            # find all lines starting with > and add ID_ before all info
-            # move to db_dir
-            editgenomeCmd='sed "s/>/>'+ID+'_/g" '+genome+' > '+db_dir+'/'+ID+'.fna'
-            subprocess.check_call(editgenomeCmd, shell=True)
+        # find all lines starting with > and add ID_ before all info
+        # move to db_dir
+        editgenome_path=''+db_dir+'/'+ID+'.fna'
+        editgenomeCmd='sed "s/>/>'+ID+'_/g" '+genome+' > '+editgenome_path+''
+        subprocess.check_call(editgenomeCmd, shell=True)
 
     # define full db path and merge all reference genomes in it
     db_path = ''+db_dir+'/'+db_ID+'.fna'
+
         # obtain full paths of all edited genomes to merge
-    all_edited_genomes = (os.path.abspath(x) for x in glob.glob(''+db_dir+''))
-    mergeCmd=''+all_edited_genomes+' > '+db_path+''
+    if os.path.exists(db_path):
+        rmCmd='rm '+db_path+''
+        subprocess.check_call(rmCmd, shell=True)
+
+    mergeCmd='cd '+db_dir+' && cat *.fna > '+db_path+''
     subprocess.check_call(mergeCmd, shell=True)
 
     # ? remove uncompressed+modified genomes in dir
@@ -128,17 +146,17 @@ def run_preparegenomes(in_f, path, config, cores):
 
 
         # retrieve db_path
-    db_path = set_up_preparegenomes(path,in_f)
+    db_paths = set_up_preparegenomes(path,in_f)
 
         # Append db_path to config for Snakefile running
     yaml = ruamel.yaml.YAML()
     yaml.explicit_start = True
     with open(str(config), 'r') as config_file:
-      data = yaml.load(config_file)
+        data = yaml.load(config_file)
 
     with open(str(config), 'w') as config_file:
-      data['DB_path'] = str(db_path)
-      dump = yaml.dump(data, config_file)
+        data['DB_path'] = str(db_paths)
+        dump = yaml.dump(data, config_file)
 
 
     # get output files and Snakefile directory

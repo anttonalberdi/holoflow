@@ -19,6 +19,8 @@ ref_gen=args.ref_gen
 bam=args.bam
 read1=args.read1
 read2=args.read2
+in_stats=args.in_stats
+out_stats=args.out_stats
 
 # Run
 refbam1Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+''
