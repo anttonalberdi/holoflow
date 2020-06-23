@@ -44,7 +44,7 @@ with open(str(config), 'w') as config_file:
     ###########################
     ###### PREPAREGENOMES FUNCTIONS
 
-def set_up_preparegenomes(path,in_f,config):
+def set_up_preparegenomes(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
     db_dir = os.path.join(path,"PRG")
@@ -80,25 +80,11 @@ def set_up_preparegenomes(path,in_f,config):
                 # If ending of lines, and no new db name, also
                     # do the merging of the genomes into db
                 if (file == last_file):
+                    db_ID = file[2]
                     # call merging function
                     db_path = merge_genomes(db_dir,ref_genomes_IDs,ref_genomes_paths,db_ID)
 
-
-        # retrieve current directory
-    file = os.path.dirname(sys.argv[0])
-    curr_dir = os.path.abspath(file)
-
-        # open config.yaml file to write in it
-    yaml = ruamel.yaml.YAML()
-    yaml.explicit_start = True
-    with open(str(config), 'r') as config_file:
-        data = yaml.load(config_file)
-
-    # Append db_path for indexing and further analysis
-    with open(str(config), 'w') as config_file:
-        data['DB_path'] = str(db_path)
-        dump = yaml.dump(data, config_file)
-
+    return(db_path)
 
 
 
@@ -141,12 +127,29 @@ def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
 def run_preparegenomes(in_f, path, config, cores):
     """Run snakemake on shell"""
 
-    # Define output names
-    set_up_preparegenomes(path,in_f,config)
+    # Get db_path and append to config
+    db_path = set_up_preparegenomes(path,in_f)
+        # retrieve current directory
+    file = os.path.dirname(sys.argv[0])
+    curr_dir = os.path.abspath(file)
+
+        # open config.yaml file to write in it
+    yaml = ruamel.yaml.YAML()
+    yaml.explicit_start = True
+    with open(str(config), 'r') as config_file:
+        data = yaml.load(config_file)
+
+    # Append db_path for indexing and further analysis
+    with open(str(config), 'w') as config_file:
+        data['DB_path'] = str(db_path)
+        dump = yaml.dump(data, config_file)
+
+
+    # get output files and Snakefile directory
     out_files = ''+path+'/PRG/ok.txt'
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
-    path_snkf = os.path.join(holopath,'workflows/preparegenomes/individual_assembly/Snakefile')
+    path_snkf = os.path.join(holopath,'workflows/preparegenomes/Snakefile')
 
     # Run snakemake
     prg_snk_Cmd = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
