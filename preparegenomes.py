@@ -2,7 +2,6 @@ import argparse
 import subprocess
 import os
 import sys
-import re
 import ruamel.yaml
 
 ###########################
@@ -21,20 +20,20 @@ config=args.config_file
 cores=args.threads
 
 
-# retrieve current directory
+
+    # retrieve current directory
 file = os.path.dirname(sys.argv[0])
 curr_dir = os.path.abspath(file)
 
-# open config.yaml file to write in it
+    #Append current directory to .yaml config for standalone calling
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
 with open(str(config), 'r') as config_file:
-    data = yaml.load(config_file)
+  data = yaml.load(config_file)
 
-# Append current directory to .yaml config for standalone calling
 with open(str(config), 'w') as config_file:
-    data['holopath'] = str(curr_dir)
-    dump = yaml.dump(data, config_file)
+  data['holopath'] = str(curr_dir)
+  dump = yaml.dump(data, config_file)
 
 
 ###########################
@@ -127,22 +126,19 @@ def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
 def run_preparegenomes(in_f, path, config, cores):
     """Run snakemake on shell"""
 
-    # Get db_path and append to config
-    db_path = set_up_preparegenomes(path,in_f)
-        # retrieve current directory
-    file = os.path.dirname(sys.argv[0])
-    curr_dir = os.path.abspath(file)
 
-        # open config.yaml file to write in it
+        # retrieve db_path
+    db_path = set_up_preparegenomes(path,in_f)
+
+        # Append db_path to config for Snakefile running
     yaml = ruamel.yaml.YAML()
     yaml.explicit_start = True
     with open(str(config), 'r') as config_file:
-        data = yaml.load(config_file)
+      data = yaml.load(config_file)
 
-    # Append db_path for indexing and further analysis
     with open(str(config), 'w') as config_file:
-        data['DB_path'] = str(db_path)
-        dump = yaml.dump(data, config_file)
+      data['DB_path'] = str(db_path)
+      dump = yaml.dump(data, config_file)
 
 
     # get output files and Snakefile directory

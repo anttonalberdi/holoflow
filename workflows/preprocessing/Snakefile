@@ -112,7 +112,7 @@ rule map_ref_split:
         stats_out="{projectpath}/PPR_03-MappedToReference/{sample}.stats"
     shell:
         """
-        python {rules.get_holopath.input}/bin/holo-map_ref_split.py -refg {input.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output._ref} -si {input.stats_in} -so {output.stats_out}
+        python {rules.get_holopath.input}/bin/holo-map_ref_split.py -refg {input.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output.ref} -si {input.stats_in} -so {output.stats_out}
         """
 
 #       print("############################ Holoflow has finished PREPROCESSING :) ############################")"
