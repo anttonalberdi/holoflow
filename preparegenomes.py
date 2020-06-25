@@ -152,7 +152,7 @@ def run_preparegenomes(in_f, path, config, cores):
         data = yaml.load(config_file)
 
     with open(str(config), 'w') as config_file:
-        data['DB_path'] = str(db_paths)
+        data['DB_path'] = str(db_paths).strip()
         dump = yaml.dump(data, config_file)
 
 
