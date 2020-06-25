@@ -16,6 +16,7 @@ parser.add_argument('-a1', help="adapter 1 sequence", dest="a1", required=True)
 parser.add_argument('-a2', help="adapter 2 sequence", dest="a2", required=True)
 parser.add_argument('-maxns', help="max number of N's", dest="maxns", required=True)
 parser.add_argument('-minq', help="minimum quality", dest="minq", required=True)
+parser.add_argument('-msep', help="mate separator between 1,2 reads", dest="msep", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 parser.add_argument('-s', help="stats file", dest="stats", required=True)
 args = parser.parse_args()
@@ -28,6 +29,7 @@ a1=args.a1
 a2=args.a2
 maxns=args.maxns
 minq=args.minq
+msep=args.msep
 threads=args.threads
 stats=args.stats
 
@@ -69,14 +71,24 @@ statsfile.close()
 
 
 # Run AdapterRemoval
-if not os.path.exists(str(read1o)):
-    if not ((a1 == "default") and (a2 == "default")):
-        qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.1.3 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
-        subprocess.check_call(qualfiltCmd, shell=True)
+if not (msep == "default"):
+    if not os.path.exists(str(read1o)):
+        if not ((a1 == "default") and (a2 == "default")):
+            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --mate-separator '+msep+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
+            subprocess.check_call(qualfiltCmd, shell=True)
 
-    else: # default Illumina adapters will be used
-        qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.1.3 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+''
-        subprocess.check_call(qualfiltCmd, shell=True)
+        else: # default Illumina adapters will be used
+            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --mate-separator '+msep+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+''
+            subprocess.check_call(qualfiltCmd, shell=True)
+else:
+    if not os.path.exists(str(read1o)):
+        if not ((a1 == "default") and (a2 == "default")):
+            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
+            subprocess.check_call(qualfiltCmd, shell=True)
+
+        else: # default Illumina adapters will be used
+            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+''
+            subprocess.check_call(qualfiltCmd, shell=True)
 
 
 

@@ -19,6 +19,11 @@ maxns:
 minquality:
   30
 
+# Character separating the mate number (1 or 2) from the read name in FASTQ records.
+mate_separator:
+  '.'
+
+
 # dup_rem_paired options
 
   # By-name-n and By-seq-s are mutually exclusive !
