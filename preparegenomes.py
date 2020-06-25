@@ -105,24 +105,22 @@ def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
 
         if genome.endswith('.gz'): # uncompress genome for editing
                                 # and save it in db_dir
-            uncompressCmd='gunzip -c '+genome+' > '+db_dir+'/'+ID+'_toedit.fna'
+            uncompressCmd='gunzip -c '+genome+' > '+db_dir+'/'+ID+'.fna'
             subprocess.check_call(uncompressCmd, shell=True)
 
-            editgenome_path=''+db_dir+'/'+ID+'.fna'
-            editgenomeCmd='sed "s/>/>'+ID+'_/g" '+db_dir+'/'+ID+'_toedit.fna > '+editgenome_path+''
+            # edit ">" genome identifiers
+            # find all lines starting with > and add ID_ before all info
+            editgenomeCmd='sed -i "s/>/>'+str(ID)+'_/g" '+db_dir+'/'+ID+'.fna'
             subprocess.check_call(editgenomeCmd, shell=True)
-            rmCmd=''+db_dir+'/'+ID+'_toedit.fna'
-            subprocess.check_call(rmCmd, shell=True)
+
 
         else:
-            pass
+            # move to project dir and edit ">" genome identifiers
+            mvgenomeCmd='mv '+genome+' '+db_dir+'/'+ID+'.fna'
+            subprocess.check_call(mvgenomeCmd, shell=True)
+            editgenomeCmd='sed -i "s/>/>'+str(ID)+'_/g" '+db_dir+'/'+ID+'.fna'
+            subprocess.check_call(editgenomeCmd, shell=True)
 
-        # edit ">" genome identifiers
-        # find all lines starting with > and add ID_ before all info
-        # move to db_dir
-        editgenome_path=''+db_dir+'/'+ID+'.fna'
-        editgenomeCmd='sed "s/>/>'+ID+'_/g" '+genome+' > '+editgenome_path+''
-        subprocess.check_call(editgenomeCmd, shell=True)
 
     # define full db path and merge all reference genomes in it
     db_path = ''+db_dir+'/'+db_ID+'.fna'
@@ -135,7 +133,6 @@ def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
     mergeCmd='cd '+db_dir+' && cat *.fna > '+db_path+''
     subprocess.check_call(mergeCmd, shell=True)
 
-    # ? remove uncompressed+modified genomes in dir
     return(db_path)
 
 
