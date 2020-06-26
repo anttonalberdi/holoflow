@@ -18,6 +18,7 @@ parser.add_argument('-B', help="mismatch penalty", dest="B", required=True)
 parser.add_argument('-O', help="gap open penalty", dest="O", required=True)
 parser.add_argument('-E', help="gap extension penalty", dest="E", required=True)
 parser.add_argument('-L', help="clipping penalty", dest="L", required=True)
+parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 #parser.add_argument('-R', help="Complete read group header line", dest="R", required=True)
 args = parser.parse_args()
 
@@ -34,9 +35,18 @@ B=args.B
 O=args.O
 E=args.E
 L=args.L
+log=args.log
 #R=args.R
 
+
 # Run
+
+# Write to log
+current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
+with open(str(log),'a+') as log:
+    log.write('\t\t'+current_time+'\tMapping To Reference Genomes step\n')
+    log.write('All the reads are being mapped to the reference genome(s).\nA .bam file is generated containing the mapped reads, and two .fastq files containing \nthe metagenomic ones.\n\n')
+
 
 if (k == "loose"):
     mapCmd = 'module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -k 19 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" '+ref_gen+' '+read1+' '+read2+' | samtools view -T '+ref_gen+' -b - > '+all_bam+''

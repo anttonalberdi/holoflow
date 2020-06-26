@@ -10,6 +10,7 @@ parser.add_argument('-ibam', help="all bam file", dest="all_bam", required=True)
 parser.add_argument('-1', help="path1", dest="read1", required=True)
 parser.add_argument('-2', help="path2", dest="read2", required=True)
 parser.add_argument('-obam', help="bam file", dest="bam", required=True)
+parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-si', help="stats input file", dest="in_stats", required=True)
 parser.add_argument('-so', help="stats output file", dest="out_stats", required=True)
 args = parser.parse_args()
@@ -19,6 +20,7 @@ ref_gen=args.ref_gen
 bam=args.bam
 read1=args.read1
 read2=args.read2
+log=args.log
 in_stats=args.in_stats
 out_stats=args.out_stats
 
@@ -53,3 +55,9 @@ with open(str(read1), 'rb') as read:
 statsfile=open(str(out_stats),"a+")
 statsfile.write("Reads after mapping to reference genome \t{0} ({1} bases)\r\n".format(reads,bases))
 statsfile.close()
+
+
+# Write to log
+current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
+with open(str(log),'a+') as log:
+    log.write('\t\t'+current_time+'\tPreprocessing with Holoflow has finished.\n')

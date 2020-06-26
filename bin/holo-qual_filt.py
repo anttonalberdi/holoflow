@@ -17,6 +17,7 @@ parser.add_argument('-a2', help="adapter 2 sequence", dest="a2", required=True)
 parser.add_argument('-maxns', help="max number of N's", dest="maxns", required=True)
 parser.add_argument('-minq', help="minimum quality", dest="minq", required=True)
 parser.add_argument('-msep', help="mate separator between 1,2 reads", dest="msep", required=True)
+parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 parser.add_argument('-s', help="stats file", dest="stats", required=True)
 args = parser.parse_args()
@@ -30,6 +31,7 @@ a2=args.a2
 maxns=args.maxns
 minq=args.minq
 msep=args.msep
+log=args.log
 threads=args.threads
 stats=args.stats
 
@@ -41,11 +43,11 @@ statsfile=open(str(stats),"w+")
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 statsfile.write("Statistic\tValue \r\n".format(current_time))
 
+
 #Get initial stats
 reads = 0
 bases = 0
 #If gzipped
-import os
 if str(read1i).endswith('.gz'):
     with gzip.open(str(read1i), 'rb') as read:
         for id in read:
@@ -67,6 +69,13 @@ else:
                 break
 statsfile.write("Input reads\t{0} ({1} bases)\r\n".format(reads,bases))
 statsfile.close()
+
+
+# Write to log
+with open(str(log),'w+') as log:
+    log.write('\tHOLOFLOW\tPREPROCESSING\n\t\t'+current_time+'\tQuality Filtering step\n')
+    log.write('Those .fastq files with a minimum quality of '+minq+' are being deleted.\nThe sequencing adapters of all reads as well.\n\n')
+
 
 
 
