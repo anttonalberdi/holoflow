@@ -105,7 +105,7 @@ def run_preprocessing(in_f, path, config, cores):
     out_files = in_out_preprocessing(path,in_f)
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
-    path_snkf = os.path.join(holopath,'workflows/preprocessing/Snakefile')
+    path_snkf = os.path.join(holopath,'/preprocessing/Snakefile')
 
     # Run snakemake
     prep_snk_Cmd = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
