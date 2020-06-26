@@ -7,7 +7,7 @@ import os
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-db', help="data base file", dest="db", required=True)
-parser.add_argument('-idb', help="index data base file", dest="idx_db", required=True)
+parser.add_argument('-idx_db', help="index data base file", dest="idx_db", required=True)
 args = parser.parse_args()
 
 
@@ -23,15 +23,20 @@ if not (os.path.exists(str(idx_db))):
         subprocess.check_call(decompressCmd, shell=True)
         decomp_db= db.replace('.gz','')
 
+        # index
+        idxsamCmd='module load tools samtools/1.9 && samtools faidx '+decomp_db+''
+        idxbwaCmd='module load bwa/0.7.15 && bwa index '+decomp_db+''
+        subprocess.check_call(idxbwaCmd, shell=True)
+        subprocess.check_call(idxsamCmd, shell=True)
+
     else:
-        decomp_db = db
+        # index
+        idxsamCmd='module load tools samtools/1.9 && samtools faidx '+db+''
+        idxbwaCmd='module load bwa/0.7.15 && bwa index '+db+''
+        subprocess.check_call(idxbwaCmd, shell=True)
+        subprocess.check_call(idxsamCmd, shell=True)
 
-    # index
-    idxsamCmd='module load tools samtools/1.9 && samtools faidx '+decomp_db+''
-    idxbwaCmd='module load bwa/0.7.15 && bwa index '+decomp_db+''
 
-    subprocess.check_call(idxbwaCmd, shell=True)
-    subprocess.check_call(idxsamCmd, shell=True)
-    
+
 else:
     pass

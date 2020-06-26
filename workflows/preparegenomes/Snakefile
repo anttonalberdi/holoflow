@@ -20,7 +20,7 @@ rule db_index:
         idx_db="{projectpath}/PRG/{db_ID}.fna.sa"
     shell:
         """
-        python {rules.get_holopath.input}/bin/holo-db_index.py -db {input.db_path} -idb {output.idx_db}
+        python {rules.get_holopath.input}/bin/holo-db_index.py -db {input.db_path} -idx_db {output.idx_db}
         """
 
 
@@ -32,5 +32,5 @@ rule check_compress:
         check_file="{projectpath}/PRG/{db_ID}_ok.txt"
     shell:
         """
-        python {rules.get_holopath.input}/bin/holo-check_compress.py -db {input.db_path} -check {output.check_file}
+        python {rules.get_holopath.input}/bin/holo-check_compress.py -db {input.db_path} -idx_db {input.idx_db} -check {output.check_file}
         """
