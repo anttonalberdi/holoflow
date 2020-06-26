@@ -59,6 +59,7 @@ def set_up_preparegenomes(path,in_f):
         ref_genomes_paths=list()
         db_ID=''
         db_paths=''
+        output_files=''
 
 
         lines = in_file.readlines() # Read input.txt lines
@@ -77,7 +78,9 @@ def set_up_preparegenomes(path,in_f):
                 if not (refg[2] == db_ID):
                     # call merging function
                     db_paths+=''+merge_genomes(db_dir,ref_genomes_IDs,ref_genomes_paths,db_ID)+' '
+                    output_files+=''+path+'/PRG/'+db_ID+'_ok.txt'
                     db_ID = refg[2]
+
 
                 # If ending of lines, and no new db name, also
                     # do the merging of the genomes into db
@@ -85,11 +88,12 @@ def set_up_preparegenomes(path,in_f):
                     db_ID = refg[2]
                     # call merging function
                     db_paths+=''+merge_genomes(db_dir,ref_genomes_IDs,ref_genomes_paths,db_ID)+' '
+                    output_files+=''+path+'/PRG/'+db_ID+'_ok.txt'
 
                 else:
                     pass
 
-        return(db_paths)
+        return[db_paths,output_files]
 
 
 
@@ -105,21 +109,23 @@ def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
 
         if genome.endswith('.gz'): # uncompress genome for editing
                                 # and save it in db_dir
-            uncompressCmd='gunzip -c '+genome+' > '+db_dir+'/'+ID+'.fna'
-            subprocess.check_call(uncompressCmd, shell=True)
+            if not (os.path.exists(str('+db_dir+'/'+ID+'.fna'))):
+                uncompressCmd='gunzip -c '+genome+' > '+db_dir+'/'+ID+'.fna'
+                subprocess.check_call(uncompressCmd, shell=True)
 
-            # edit ">" genome identifiers
-            # find all lines starting with > and add ID_ before all info
-            editgenomeCmd='sed -i "s/>/>'+str(ID)+'_/g" '+db_dir+'/'+ID+'.fna'
-            subprocess.check_call(editgenomeCmd, shell=True)
+                # edit ">" genome identifiers
+                # find all lines starting with > and add ID_ before all info
+                editgenomeCmd='sed -i "s/>/>'+str(ID)+'_/g" '+db_dir+'/'+ID+'.fna'
+                subprocess.check_call(editgenomeCmd, shell=True)
 
 
         else:
-            # move to project dir and edit ">" genome identifiers
-            mvgenomeCmd='mv '+genome+' '+db_dir+'/'+ID+'.fna'
-            subprocess.check_call(mvgenomeCmd, shell=True)
-            editgenomeCmd='sed -i "s/>/>'+str(ID)+'_/g" '+db_dir+'/'+ID+'.fna'
-            subprocess.check_call(editgenomeCmd, shell=True)
+            if not (os.path.exists(str('+db_dir+'/'+ID+'.fna'))):
+                # move to project dir and edit ">" genome identifiers
+                mvgenomeCmd='mv '+genome+' '+db_dir+'/'+ID+'.fna'
+                subprocess.check_call(mvgenomeCmd, shell=True)
+                editgenomeCmd='sed -i "s/>/>'+str(ID)+'_/g" '+db_dir+'/'+ID+'.fna'
+                subprocess.check_call(editgenomeCmd, shell=True)
 
 
     # define full db path and merge all reference genomes in it
@@ -143,7 +149,7 @@ def run_preparegenomes(in_f, path, config, cores):
 
 
         # retrieve db_path
-    db_paths = set_up_preparegenomes(path,in_f)
+    path_out = set_up_preparegenomes(path,in_f)
 
         # Append db_path to config for Snakefile running
     yaml = ruamel.yaml.YAML()
@@ -152,18 +158,17 @@ def run_preparegenomes(in_f, path, config, cores):
         data = yaml.load(config_file)
 
     with open(str(config), 'w') as config_file:
-        data['DB_path'] = str(db_paths).strip()
+        data['DB_path'] = str(path_out[0]).strip()
         dump = yaml.dump(data, config_file)
 
 
     # get output files and Snakefile directory
-    out_files = ''+path+'/PRG/ok.txt'
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
     path_snkf = os.path.join(holopath,'workflows/preparegenomes/Snakefile')
 
     # Run snakemake
-    prg_snk_Cmd = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
+    prg_snk_Cmd = 'snakemake -s '+path_snkf+' '+path_out[1]+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(prg_snk_Cmd, shell=True)
 
     print("Have a nice run!\n\t\tHOLOFOW Prepare genomes starting")

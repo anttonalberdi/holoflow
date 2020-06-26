@@ -32,3 +32,6 @@ if not (os.path.exists(str(idx_db))):
 
     subprocess.check_call(idxbwaCmd, shell=True)
     subprocess.check_call(idxsamCmd, shell=True)
+    
+else:
+    pass
