@@ -31,7 +31,9 @@ rule check_compress:
         idx_db="{projectpath}/PRG/{db_ID}.fna.sa"
     output:
         check_file="{projectpath}/PRG/{db_ID}_ok.txt"
+    params:
+        db_dir="{projectpath}/PRG/"
     shell:
         """
-        python {rules.get_holopath.input}/bin/holo-check_compress.py -db {input.db_path} -idx_db {input.idx_db} -check {output.check_file}
+        python {rules.get_holopath.input}/bin/holo-check_compress.py -db {input.db_path} -idx_db {input.idx_db} -check {output.check_file} -dbdir {params.db_dir}
         """
