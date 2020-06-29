@@ -30,8 +30,6 @@ Those lines starting by # won't be considered.
   
 ##### *preparegenomes.py*
 
-#Genome_ID(nospaces,no-anything) PathGenome NameOutputDB
-
   1. Reference genomes ID. **No spaces or undersquares** between different words in identifier.  
   2. Reference genome full path/name.   
   3. Desired output data base with all genomes name. **No spaces**, undersquares or other separators allowed. *All those reference genomes which should be in the same DB should have the same ID in this field*.  
