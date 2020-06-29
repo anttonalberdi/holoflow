@@ -3,9 +3,6 @@
 #projectpath:
 #This information is taken from output files
 
-removeintermediate:
-  TRUE
-
 threads:
   40
 

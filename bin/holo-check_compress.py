@@ -35,12 +35,15 @@ with open(str(log),'a+') as log:
 
 if (os.path.exists(str(idx_db)) and os.path.exists(str(db))) and (not os.path.exists(str(check))):
 
-    compressCmd=('tar -zcvf '+db+'.tar.gz '+db_dir+'')
+    compressCmd=('tar -zcvf '+db_dir+'/'+db+'.tar.gz '+db_dir+'')
     subprocess.check_call(compressCmd, shell=True)
 
     with open(str(check),'w') as check_file:
         check_file.write('All reference genomes have been merged and indexed successfully.')
 
+if os.path.exists(str(''+db_dir+'/'+db+'.tar.gz')):
+    #rmCmd=('cd '+db_dir+' && ls | grep -v '+db_dir+'/'+db+'.tar.gz | xargs rm')
+    #subprocess.check_call(rmCmd, shell=True)
 
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
