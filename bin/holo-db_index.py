@@ -18,7 +18,10 @@ idx_smt=args.idx_smt
 
 
 # Run
-if not (os.path.exists(str(idx_bwa)) and os.path.exists(str(idx_smt))):
+if (os.path.exists(str(idx_bwa)) and os.path.exists(str(idx_smt))):
+    pass
+
+else:
     # first decompress db
     if str(db).endswith(".gz"):
         decompressCmd=('gunzip '+db+'')
@@ -37,8 +40,3 @@ if not (os.path.exists(str(idx_bwa)) and os.path.exists(str(idx_smt))):
         idxbwaCmd='module load bwa/0.7.15 && bwa index '+db+''
         subprocess.check_call(idxbwaCmd, shell=True)
         subprocess.check_call(idxsamCmd, shell=True)
-
-
-
-else:
-    pass

@@ -72,7 +72,7 @@ rule dup_rem_paired_repair:
         separator=expand("{separator}", separator=config['separator'])
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired_repair.py -i {input.in_file} -1 {output.read1} -2 {output.read2} -sep {params.separator} -si {input.in_stats} -so {output.out_stats} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired_repair.py -i {input.in_file} -1 {output.read1} -2 {output.read2} -sep {params.separator} -si {input.in_stats} -so {output.out_stats}
         """
 
 
@@ -85,6 +85,7 @@ rule map_ref:
         read1="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_1.fastq",
         read2="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_2.fastq",
         refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes'])
+
     output:
         "{projectpath}/PPR_03-MappedToReference/{sample}_all.bam"
     params:
@@ -96,11 +97,12 @@ rule map_ref:
         B=expand("{B}", B=config['B']),
         O=expand("{O}", O=config['O']),
         E=expand("{E}", E=config['E']),
-        L=expand("{L}", L=config['L'])#,
+        L=expand("{L}", L=config['L']),
+        sample="{sample}"#,
         #R=expand("{R}", R=config['R'])
     shell: #-R {params.R}
         """
-        python {rules.get_paths.input.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {input.refgenomes} -obam {output} -t {params.t} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {input.refgenomes} -obam {output} -t {params.t} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 rule map_ref_split:

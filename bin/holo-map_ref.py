@@ -2,6 +2,7 @@
 
 import subprocess
 import argparse
+import time
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
@@ -18,6 +19,7 @@ parser.add_argument('-B', help="mismatch penalty", dest="B", required=True)
 parser.add_argument('-O', help="gap open penalty", dest="O", required=True)
 parser.add_argument('-E', help="gap extension penalty", dest="E", required=True)
 parser.add_argument('-L', help="clipping penalty", dest="L", required=True)
+parser.add_argument('-sample', help="sample", dest="sample", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 #parser.add_argument('-R', help="Complete read group header line", dest="R", required=True)
 args = parser.parse_args()
@@ -35,6 +37,7 @@ B=args.B
 O=args.O
 E=args.E
 L=args.L
+sample=args.sample
 log=args.log
 #R=args.R
 
@@ -44,7 +47,7 @@ log=args.log
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tMapping To Reference Genomes step\n')
+    log.write('\t\t'+current_time+'\tMapping To Reference Genomes step - Sample '+sample+'\n')
     log.write('All the reads are being mapped to the reference genome(s).\nA .bam file is generated containing the mapped reads, and two .fastq files containing \nthe metagenomic ones.\n\n')
 
 

@@ -77,7 +77,7 @@ def set_up_preparegenomes(path,in_f):
                     # do the merging of the genomes into db
                 if not (refg[2] == db_ID):
                     # call merging function
-                    db_paths+=''+merge_genomes(db_dir,ref_genomes_IDs,ref_genomes_paths,db_ID)+' '
+                    db_paths+=''+merge_genomes(ref_genomes_IDs,ref_genomes_paths,db_ID)+' '
                     output_files+=''+path+'/PRG/'+db_ID+'_ok.txt'
                     db_ID = refg[2]
                     ref_genomes_IDs=list()
@@ -89,7 +89,7 @@ def set_up_preparegenomes(path,in_f):
                 if (file == last_file):
                     db_ID = refg[2]
                     # call merging function
-                    db_paths+=''+merge_genomes(db_dir,ref_genomes_IDs,ref_genomes_paths,db_ID)+' '
+                    db_paths+=''+merge_genomes(ref_genomes_IDs,ref_genomes_paths,db_ID)+' '
                     output_files+=''+path+'/PRG/'+db_ID+'_ok.txt'
 
                 else:
@@ -102,48 +102,53 @@ def set_up_preparegenomes(path,in_f):
 
 
 
-def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
+def merge_genomes(refg_IDs,refg_Paths,db_ID):
 
-    for i in range(len(refg_Paths)):
+    db_dir = os.path.join(path,"PRG")
 
-        genome = refg_Paths[i]
-        ID = refg_IDs[i]
+    if not (os.path.exists(str(''+db_dir+'/'+db_ID+'.fna'))):
+        for i in range(len(refg_Paths)):
 
-        if not (os.path.exists(str(''+db_dir+'/'+ID+'.fna'))):
-            if genome.endswith('.gz'): # uncompress genome for editing
-                                    # and save it in db_dir
+            genome = refg_Paths[i]
+            ID = refg_IDs[i]
 
-                uncompressCmd='gunzip -c '+genome+' > '+db_dir+'/'+ID+'.fna'
-                subprocess.check_call(uncompressCmd, shell=True)
+            print(''+db_dir+'/'+db_ID+'.fna')
 
-                # edit ">" genome identifiers
-                # find all lines starting with > and add ID_ before all info
-                editgenomeCmd='sed -i "s/>/>'+str(ID)+'_/g" '+db_dir+'/'+ID+'.fna'
-                subprocess.check_call(editgenomeCmd, shell=True)
+            if not (os.path.exists(str(''+db_dir+'/'+ID+'.fna'))):
+                if genome.endswith('.gz'): # uncompress genome for editing
+                                        # and save it in db_dir
 
+                    uncompressCmd='gunzip -c '+genome+' > '+db_dir+'/'+ID+'.fna'
+                    subprocess.check_call(uncompressCmd, shell=True)
 
-            else:
-                # move to project dir and edit ">" genome identifiers
-                mvgenomeCmd='mv '+genome+' '+db_dir+'/'+ID+'.fna'
-                subprocess.check_call(mvgenomeCmd, shell=True)
-                editgenomeCmd='sed -i "s/>/>'+str(ID)+'_/g" '+db_dir+'/'+ID+'.fna'
-                subprocess.check_call(editgenomeCmd, shell=True)
+                    # edit ">" genome identifiers
+                    # find all lines starting with > and add ID_ before all info
+                    editgenomeCmd='sed -i "s/>/>'+str(ID)+'_/g" '+db_dir+'/'+ID+'.fna'
+                    subprocess.check_call(editgenomeCmd, shell=True)
 
 
-            # define full db path and merge all reference genomes in it
-            db_path = ''+db_dir+'/'+db_ID+'.fna'
-
-            # obtain full paths of all edited genomes to merge
-            mergeCmd='cd '+db_dir+' && cat *.fna > '+db_path+''
-            subprocess.check_call(mergeCmd, shell=True)
-
-            # remove all individual genomes
-            rmCmd='ls | grep -v "'+db_dir+'/'+db_ID+'*" | xargs rm'
-            subprocess.check_call(rmCmd, shell=True)
+                else:
+                    # move to project dir and edit ">" genome identifiers
+                    mvgenomeCmd='mv '+genome+' '+db_dir+'/'+ID+'.fna'
+                    subprocess.check_call(mvgenomeCmd, shell=True)
+                    editgenomeCmd='sed -i "s/>/>'+str(ID)+'_/g" '+db_dir+'/'+ID+'.fna'
+                    subprocess.check_call(editgenomeCmd, shell=True)
 
 
-        else:
-            db_path = ''+db_dir+'/'+db_ID+'.fna'
+        # define full db path and merge all reference genomes in it
+        db_path = ''+db_dir+'/'+db_ID+'.fna'
+
+        # obtain full paths of all edited genomes to merge
+        mergeCmd='cd '+db_dir+' && cat *.fna > '+db_path+''
+        subprocess.check_call(mergeCmd, shell=True)
+
+        # remove all individual genomes
+        rmCmd='cd '+db_dir+' && ls | grep -v "'+db_ID+'*" | xargs rm'
+        subprocess.check_call(rmCmd, shell=True)
+
+    else: # the db file alreadhy exists
+        # define full db path and merge all reference genomes in it
+        db_path = ''+db_dir+'/'+db_ID+'.fna'
 
 
     return(db_path)
