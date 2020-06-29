@@ -66,22 +66,25 @@ Those lines starting by # won't be considered.
  
 ### Workflows - Specific directories
 #### Preprocessing
+
+
+#### Preprocessing
 - *Snakefile* - which contains rules for:
   1. Quality filtering using **AdapterRemoval**
   2. Duplicate read removal using **seqkit rmdup**
   3. Mapping reads against reference genome(s) using **bwa mem**
 
 - Config file *config.yaml*, in which the user may be interested to customise:
-  1. Quality filtering - specific adapter sequences, minimum quality
-  2. Mapping reads against reference genome(s) - reference genome for host and human paths
+  1. Quality filtering - specific adapter sequences, minimum quality, character separating the mate read number
+  2. Mapping reads against reference genome(s) - reference genome(s) path(s), stringent level for mapping and other parameters. 
 
 
-#### Metagenomics
+#### Metagenomics (Individual Assembly so far)
 - *Snakefile* - which contains rules for:
   1. Metagenomic assembly using **metaSpades** or **megahit**
-  2. Read mapping to assembly using **bwa mem** ##### UNDER CONSTRUCTION
-  3. Contig binning using **Metabat**, **MaxBin** and **Concoct** ##### UNDER CONSTRUCTION
-  4. Binner result integration using **DasTool** ##### UNDER CONSTRUCTION
+  2. Read mapping to assembly using **bwa mem** 
+  3. Contig binning using **Metabat**, **MaxBin** (and **Concoct** #### NOT YET)
+  4. Binner result integration using **DasTool** 
   5. Complementess improvement ##### UNDER CONSTRUCTION
   5. Taxonomic refinement using CAT ##### UNDER CONSTRUCTION
   6. Redundancy refinement ##### UNDER CONSTRUCTION
@@ -93,24 +96,20 @@ Those lines starting by # won't be considered.
   2. Minimum contig length - minimum bp per contig in final assembly file.
 
 
-## Exectute *holoflow.py*
-**The python script should be launched from its containing directory:**
+## Exectute Holoflow *.py* workflow launchers
+These should be **executed as jobs**, therefore a *.sh* script should be generated which will contain the job itself:
+
+- *.sh* example script for *preprocessing.py* called ***first_job_preprocessing.sh***:
 ```
-python holoflow.py -f ${input} -d ${workdir} -w metagenomics -c ${configfile} -t 40
+python preprocessing.py -f full/path/input.txt -d full/path/workdir -c full/path/config.yaml -l full/path/log_file.log -t 40
 ```
-*input*, *workdir* and *configfile* are shell variables which where previously defined in the command line, but the corresponding path to the file can also be directly specified in the python command.
 
+- *job execution* example:
+```
+ qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e full/path/job_error_file.err -o full/path/job_out_file.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N JOB_ID full/path/first_job_preprocessing.sh
 
-  
+```
 
-
-  - ***preparegenomes.py*** -
-
-
-  - ***preprocessing.py*** -
-
-
-  - ***metagenomics_IA.py*** -
 
 
 
