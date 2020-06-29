@@ -66,6 +66,9 @@ Those lines starting by # won't be considered.
  
 ### Workflows - Specific directories
 #### Preprocessing
+
+
+#### Preprocessing
 - *Snakefile* - which contains rules for:
   1. Quality filtering using **AdapterRemoval**
   2. Duplicate read removal using **seqkit rmdup**
