@@ -50,11 +50,12 @@ rule dup_rem_paired:
         by_n=expand("{by_n}", by_n=config['by_n']),
         by_s=expand("{by_s}", by_s=config['by_s']),
         file_to_dups=expand("{file_to_dups}", file_to_dups=config['file_to_dups']),
-        ignore_case=expand("{ignore_case}", ignore_case=config['ignore_case'])
+        ignore_case=expand("{ignore_case}", ignore_case=config['ignore_case']),
+        sample="{sample}"
 
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -i {params.ignore_case} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -i {params.ignore_case} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 

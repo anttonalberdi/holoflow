@@ -109,9 +109,10 @@ def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
         genome = refg_Paths[i]
         ID = refg_IDs[i]
 
-        if genome.endswith('.gz'): # uncompress genome for editing
-                                # and save it in db_dir
-            if not (os.path.exists(str(''+db_dir+'/'+ID+'.fna'))):
+        if not (os.path.exists(str(''+db_dir+'/'+ID+'.fna'))):
+            if genome.endswith('.gz'): # uncompress genome for editing
+                                    # and save it in db_dir
+
                 uncompressCmd='gunzip -c '+genome+' > '+db_dir+'/'+ID+'.fna'
                 subprocess.check_call(uncompressCmd, shell=True)
 
@@ -121,8 +122,7 @@ def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
                 subprocess.check_call(editgenomeCmd, shell=True)
 
 
-        else:
-            if not (os.path.exists(str(''+db_dir+'/'+ID+'.fna'))):
+            else:
                 # move to project dir and edit ">" genome identifiers
                 mvgenomeCmd='mv '+genome+' '+db_dir+'/'+ID+'.fna'
                 subprocess.check_call(mvgenomeCmd, shell=True)
@@ -130,16 +130,21 @@ def merge_genomes(db_dir,refg_IDs,refg_Paths,db_ID):
                 subprocess.check_call(editgenomeCmd, shell=True)
 
 
-    # define full db path and merge all reference genomes in it
-    db_path = ''+db_dir+'/'+db_ID+'.fna'
+            # define full db path and merge all reference genomes in it
+            db_path = ''+db_dir+'/'+db_ID+'.fna'
 
-    # obtain full paths of all edited genomes to merge
-    mergeCmd='cd '+db_dir+' && cat *.fna > '+db_path+''
-    subprocess.check_call(mergeCmd, shell=True)
+            # obtain full paths of all edited genomes to merge
+            mergeCmd='cd '+db_dir+' && cat *.fna > '+db_path+''
+            subprocess.check_call(mergeCmd, shell=True)
 
-    # remove all individual genomes
-    rmCmd='ls | grep -v "'+db_dir+'/'+db_ID+'*" | xargs rm'
-    subprocess.check_call(rmCmd, shell=True)
+            # remove all individual genomes
+            rmCmd='ls | grep -v "'+db_dir+'/'+db_ID+'*" | xargs rm'
+            subprocess.check_call(rmCmd, shell=True)
+
+
+        else:
+            db_path = ''+db_dir+'/'+db_ID+'.fna'
+
 
     return(db_path)
 
