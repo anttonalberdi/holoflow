@@ -3,6 +3,8 @@
 import subprocess
 import argparse
 import os
+import time
+
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
@@ -16,6 +18,8 @@ parser.add_argument('-k_megahit', help="k-mer size list megahit", dest="k_megahi
 parser.add_argument('-k_spades', help="k-mer size list spades", dest="k_spades", required=True)
 parser.add_argument('-a', help="assembler", dest="assembler", required=True)
 parser.add_argument('-temp_a', help="temporal assembly file", dest="temp_a", required=True)
+parser.add_argument('-sample', help="sample", dest="sample", required=True)
+parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
 
 
@@ -29,9 +33,19 @@ threads=args.threads
 assembler=args.assembler
 empty_o=args.empty_o
 temp_a=args.temp_a
+sample=args.sample
+log=args.log
 
 
 # Run
+
+# Write to log
+current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
+with open(str(log),'w+') as log:
+    log.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\tMetagenomic Data Assembly step - Sample '+sample+'\n')
+    log.write('The .fastq files coming from Holoflow Preprocessing, are those which could not be mapped to a \nreference genome. These contain the metagenomic reads; as no reference genome exists to them, they have to be assembled\nde novo. This is done by '+assembler+' here, which sorts the reads together into contigs or scaffolds\n giving out one only assembly fasta file.\n\n')
+
+
 if not os.path.exists(str(out)):
 
     emptytouchCmd='touch '+empty_o+''

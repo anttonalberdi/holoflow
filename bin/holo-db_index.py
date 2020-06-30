@@ -24,9 +24,9 @@ idx_smt=args.idx_smt
 
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-with open(str(log),'w+') as log:
+with open(str(log),"w+") as log:
     log.write('\tHOLOFLOW\tPREPARE GENOMES\n\t\t'+current_time+'\tData Base indexing step\n')
-    log.write('The data base needs to be indexed with BWA and SAMTOOLS so it can be mapped during preprocessing.\n\n')
+    log.write('The data base needs to be indexed with BWA and SAMTOOLS so the reads can be mapped to it\nduring preprocessing.\n\n')
 
 
 

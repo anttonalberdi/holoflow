@@ -48,7 +48,7 @@ log=args.log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as log:
     log.write('\t\t'+current_time+'\tMapping To Reference Genomes step - Sample '+sample+'\n')
-    log.write('All the reads are being mapped to the reference genome(s).\nA .bam file is generated containing the mapped reads, and two .fastq files containing \nthe metagenomic ones.\n\n')
+    log.write('All the reads are being mapped to the reference genome(s).\n')
 
 
 if (k == "loose"):

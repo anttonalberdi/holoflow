@@ -38,7 +38,6 @@ stats=args.stats
 
 
 # Run
-
 statsfile=open(str(stats),"w+")
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 statsfile.write("Statistic\tValue \r\n".format(current_time))

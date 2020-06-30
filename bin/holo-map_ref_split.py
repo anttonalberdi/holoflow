@@ -2,7 +2,7 @@
 
 import subprocess
 import argparse
-import time 
+import time
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
@@ -26,6 +26,11 @@ in_stats=args.in_stats
 out_stats=args.out_stats
 
 # Run
+# Write to log
+with open(str(log),'a+') as log:
+    log.write('A .bam file is generated containing the mapped reads, and two .fastq files containing the metagenomic ones.\n\n')
+
+
 refbam1Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+''
 subprocess.check_call(refbam1Cmd, shell=True)
 

@@ -22,7 +22,7 @@ rule db_index:
         idx_db_samtools="{projectpath}/PRG/{db_ID}.fna.fai"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-db_index.py -db {input.db_path} -idx_bwa {output.idx_db_bwa} -idx_smt {output.idx_db_samtools}
+        python {rules.get_paths.input.holopath}/bin/holo-db_index.py -db {input.db_path} -idx_bwa {output.idx_db_bwa} -idx_smt {output.idx_db_samtools} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -36,5 +36,5 @@ rule check_compress:
         db_dir="{projectpath}/PRG/"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-check_compress.py -db {input.db_path} -idx_db {input.idx_db} -check {output.check_file} -dbdir {params.db_dir}
+        python {rules.get_paths.input.holopath}/bin/holo-check_compress.py -db {input.db_path} -idx_db {input.idx_db} -check {output.check_file} -db_dir {params.db_dir} -log {rules.get_paths.input.logpath}
         """

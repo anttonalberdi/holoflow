@@ -11,12 +11,14 @@ parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True)
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
 parser.add_argument('-c', help="config file", dest="config_file", required=True)
+parser.add_argument('-l', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 args = parser.parse_args()
 
 in_f=args.input_txt
 path=args.work_dir
 config=args.config_file
+log=args.log
 cores=args.threads
 
 
@@ -33,6 +35,7 @@ with open(str(config), 'r') as config_file:
 
 with open(str(config), 'w') as config_file:
   data['holopath'] = str(curr_dir)
+  data['logpath'] = str(log)
   dump = yaml.dump(data, config_file)
 
 
