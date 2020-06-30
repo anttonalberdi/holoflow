@@ -16,8 +16,8 @@ rule get_paths:
 ##
 rule assembly:
     input:
-        read1="{projectpath}/PPR04-MappedToHuman/{sample}_1.fastq",
-        read2="{projectpath}/PPR04-MappedToHuman/{sample}_2.fastq"
+        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
+        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq"
 
     output:
         "{projectpath}/MIA_01-Assembly/{sample}_file_to_remove"
@@ -41,7 +41,7 @@ rule assembly:
 rule assembly_reformat:
     input:
         empt_file="{projectpath}/MIA_01-Assembly/{sample}_file_to_remove",
-        stats_in="{projectpath}/PPR04-MappedToHuman/{sample}.stats"
+        stats_in="{projectpath}/PPR_03-MappedToReference/{sample}.stats"
     output:
         "{projectpath}/MIA_01-Assembly/{sample}.stats"
     params:
@@ -84,8 +84,8 @@ rule assembly_mapping:
     input:
         assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
         samtools="{projectpath}/MIA_01-Assembly/{sample}.fa.fai",
-        read1="{projectpath}/PPR04-MappedToHuman/{sample}_1.fastq",
-        read2="{projectpath}/PPR04-MappedToHuman/{sample}_2.fastq"
+        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
+        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq"
     output:
         "{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam"
     params:
