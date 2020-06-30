@@ -52,5 +52,5 @@ if os.path.exists(str(''+db_dir+'/../'+db_ID+'.tar.gz')):
 
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tHoloflow has completed the preparation of the reference genomes.\n\n')
+with open(str(log),'a+') as logf:
+    logf.write('\t\t'+current_time+'\tHoloflow has completed the preparation of the reference genomes.\n\n')

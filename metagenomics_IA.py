@@ -74,10 +74,12 @@ def in_out_metagenomics(path,in_f):
 
                 # Move files to new dir "PPR_03-MappedToReference/" and change file names for 1st column in input.txt
                 #   if the current input file names do not match the designed ones in input.txt
-                filename=file[2]       # current input file path and name
-                desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq"' # desired input file path and name specified in input.txt
+                filename=str(file[2])      # current input file path and name
+                desired_filename=os.path.join(str(in_dir),''+str(file[0])+'_'+str(read)+'.fastq') # desired input file path and name specified in input.txt
 
-                if not ((filename == desired_filename) and (os.path.exists(str(desired_filename)))):
+                if not (os.path.exists(str(desired_filename))):
+                    print(filename == desired_filename)
+                    print(os.path.exists(str(desired_filename)))
                     if filename.endswith('.gz'): # uncompress input file if necessary
                         uncompressCmd='gunzip -c '+filename+' > '+desired_filename+''
                         subprocess.check_call(uncompressCmd, shell=True)
