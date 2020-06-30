@@ -65,7 +65,7 @@ Those lines starting by # won't be considered.
   
  
 ### Workflows - Specific directories
-#### Preprocessing
+#### Preparegenomes
 
 
 #### Preprocessing
@@ -109,6 +109,7 @@ python preprocessing.py -f full/path/input.txt -d full/path/workdir -c full/path
  qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e full/path/job_error_file.err -o full/path/job_out_file.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N JOB_ID full/path/first_job_preprocessing.sh
 
 ```
+  Note that the job parameters: *ppn*, *nodes*, *memory*, *wall time* ... can and ought to be customised optimally for every job type.
 
 
 
