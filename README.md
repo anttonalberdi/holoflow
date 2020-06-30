@@ -65,8 +65,11 @@ Those lines starting by # won't be considered.
   
  
 ### Workflows - Specific directories
-#### Preprocessing
 
+#### Preparegenomes
+- *Snakefile* - Continuing *preparegenomes.py*'s job, which takes as input the full paths of the given reference genomes, reformats its read IDs and merges them into a single *data_base.fna* file, the *Snakefile* contains rules for:  
+  1. Indexing the resulting DB using **bwa** and **samtools**
+  2. Compressing the full set of DB-related files into a *data_base.fna.tar.gz* file.
 
 #### Preprocessing
 - *Snakefile* - which contains rules for:
@@ -75,7 +78,7 @@ Those lines starting by # won't be considered.
   3. Mapping reads against reference genome(s) using **bwa mem**
 
 - Config file *config.yaml*, in which the user may be interested to customise:
-  1. Quality filtering - specific adapter sequences, minimum quality, character separating the mate read number
+  1. Quality filtering - specific adapter sequences, minimum quality, character separating the mate read number.
   2. Mapping reads against reference genome(s) - reference genome(s) path(s), stringent level for mapping and other parameters. 
 
 
@@ -109,6 +112,7 @@ python preprocessing.py -f full/path/input.txt -d full/path/workdir -c full/path
  qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e full/path/job_error_file.err -o full/path/job_out_file.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N JOB_ID full/path/first_job_preprocessing.sh
 
 ```
+  Note that the job parameters: *ppn*, *nodes*, *memory*, *wall time* ... can and ought to be customised optimally for every job type.
 
 
 
