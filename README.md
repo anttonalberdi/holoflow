@@ -67,7 +67,7 @@ Those lines starting by # won't be considered.
 ### Workflows - Specific directories
 
 #### Preparegenomes
-- *Snakefile* - Continuing *preparegenomes.py*'s job, which takes as input the full paths of the given reference genomes, reformats its read IDs and merges them into a single data_base.fna file, the *Snakefile* contains rules for:  
+- *Snakefile* - Continuing *preparegenomes.py*'s job, which takes as input the full paths of the given reference genomes, reformats its read IDs and merges them into a single *data_base.fna* file, the *Snakefile* contains rules for:  
   1. Indexing the resulting DB using **bwa** and **samtools**
   2. Compressing the full set of DB-related files into a *data_base.fna.tar.gz* file.
 
