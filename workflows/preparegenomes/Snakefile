@@ -33,8 +33,9 @@ rule check_compress:
     output:
         check_file="{projectpath}/PRG/{db_ID}_ok.txt"
     params:
-        db_dir="{projectpath}/PRG/"
+        db_dir="{projectpath}/PRG/",
+        db_ID="{db_ID}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-check_compress.py -db {input.db_path} -idx_db {input.idx_db} -check {output.check_file} -db_dir {params.db_dir} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-check_compress.py -db {input.db_path} -idx_db {input.idx_db} -check {output.check_file} -db_dir {params.db_dir} -db_ID {params.db_ID} -log {rules.get_paths.input.logpath}
         """
