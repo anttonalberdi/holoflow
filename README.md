@@ -65,8 +65,11 @@ Those lines starting by # won't be considered.
   
  
 ### Workflows - Specific directories
-#### Preparegenomes
 
+#### Preparegenomes
+- *Snakefile* - Continuing *preparegenomes.py*'s job, which takes as input the full paths of the given reference genomes, reformats its read IDs and merges them into a single data_base.fna file, the *Snakefile* contains rules for:  
+  1. Indexing the resulting DB using **bwa** and **samtools**
+  2. Compressing the full set of DB-related files into a *data_base.fna.tar.gz* file.
 
 #### Preprocessing
 - *Snakefile* - which contains rules for:
@@ -75,7 +78,7 @@ Those lines starting by # won't be considered.
   3. Mapping reads against reference genome(s) using **bwa mem**
 
 - Config file *config.yaml*, in which the user may be interested to customise:
-  1. Quality filtering - specific adapter sequences, minimum quality, character separating the mate read number
+  1. Quality filtering - specific adapter sequences, minimum quality, character separating the mate read number.
   2. Mapping reads against reference genome(s) - reference genome(s) path(s), stringent level for mapping and other parameters. 
 
 
