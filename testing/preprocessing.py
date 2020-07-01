@@ -137,7 +137,7 @@ def prepare_threads(path,config):
             ((5000000001 <= average_file_size <= 12000000000) and (number_file <= 3)):
 
         with open(str(config), 'w') as config_file:
-        data['AdapterRemoval_threads'] = 4 ######## IN SNAKEFILE AND HOLO-QUAL_FILT.PY !!
+        data['AdapterRemoval_threads'] = 4 
         dump = yaml.dump(data, config_file)
 
     # Same corollary
@@ -169,7 +169,6 @@ def prepare_threads(path,config):
 
 
 
-
 def run_preprocessing(in_f, path, config, cores):
     """Run snakemake on shell"""
 
@@ -178,6 +177,9 @@ def run_preprocessing(in_f, path, config, cores):
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
     path_snkf = os.path.join(holopath,'workflows/preprocessing/Snakefile')
+
+    # get threads for AdapterRemoval
+    prepare_threads(path,config)
 
     # Run snakemake
     prep_snk_Cmd = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''

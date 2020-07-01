@@ -19,7 +19,7 @@ rule qual_filt:
     input:
         read1="{projectpath}/PPR_00-InputData/{sample}_1.fastq",
         read2="{projectpath}/PPR_00-InputData/{sample}_2.fastq"
-    threads: 4
+    threads: expand("{AdapterRemoval_threads}", AdapterRemoval_threads=config['AdapterRemoval_threads'])
     output:
         read1="{projectpath}/PPR_01-QualityFiltered/{sample}_1.fastq",
         read2="{projectpath}/PPR_01-QualityFiltered/{sample}_2.fastq",
