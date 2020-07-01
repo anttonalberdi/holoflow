@@ -68,10 +68,6 @@ def in_out_metagenomics(path,in_f):
 
                 read+=1 # every sample will have two reads, keep the name of the file but change the read
 
-                # Add an output file based on input.txt info to a list for Snakemake command
-                output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"_dastool/"+file[0])
-
-
                 # Move files to new dir "PPR_03-MappedToReference/" and change file names for 1st column in input.txt
                 #   if the current input file names do not match the designed ones in input.txt
                 filename=str(file[2])      # current input file path and name
@@ -91,8 +87,13 @@ def in_out_metagenomics(path,in_f):
 
                 if read == 2: # two read files for one sample finished, new sample
                     read=0
+                    # Add an output file based on input.txt info to a list for Snakemake command
+                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"_dastool/"+file[0]+' ')
+
                     # Add stats output file only once per sample
-                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+".stats ")
+                    output_files+=(path+"/MIA_01-Assembly/"+file[0]+".stats ")
+                        # change for
+                    #####output_files+=(path+"/"+final_temp_dir+"/"+file[0]+".stats ")
 
         return output_files
 

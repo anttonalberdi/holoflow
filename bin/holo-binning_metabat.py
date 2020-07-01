@@ -37,20 +37,29 @@ with open(str(log),'a+') as log:
 
 
 if not glob.glob(str(bb)+"*.fa"):
-    metabatCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i '+a+' -a '+d+' -o '+bb+' -m 1500 -t '+t+' --unbinned'
-    subprocess.check_call(metabatCmd, shell=True)
+    try:
+        metabatCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i '+a+' -a '+d+' -o '+bb+' -m 1500 -t '+t+' --unbinned'
+        subprocess.check_call(metabatCmd, shell=True)
 
-    #Create contig to bin table
-bintable = open(str(bt),"a+")
-binlist=glob.glob(str(bb)+"*.fa")
+            #Create contig to bin table
+        bintable = open(str(bt),"a+")
+        binlist=glob.glob(str(bb)+"*.fa")
 
 
-for bin in binlist:
-    binname = os.path.splitext(os.path.basename(bin))[0]+''
-    with open(bin, 'r') as binfile:
-       for line in binfile:
-            if line.startswith('>'):
-                contig = line.strip()
-                contig = contig.replace(">", "")
-                bintable.write("{0}\t{1}\r\n".format(contig,binname))
-bintable.close()
+        for bin in binlist:
+            binname = os.path.splitext(os.path.basename(bin))[0]+''
+            with open(bin, 'r') as binfile:
+               for line in binfile:
+                    if line.startswith('>'):
+                        contig = line.strip()
+                        contig = contig.replace(">", "")
+                        bintable.write("{0}\t{1}\r\n".format(contig,binname))
+        bintable.close()
+
+
+    except:
+        # Write to log
+        current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
+        with open(str(log),'a+') as log:
+            log.write(''+current_time+' - Marker gene search reveals that the dataset cannot be binned (the medium of marker gene number <= 1). Program stop.\n\n')
+        pass

@@ -43,16 +43,17 @@ rule assembly_reformat:
         empt_file="{projectpath}/MIA_01-Assembly/{sample}_file_to_remove",
         stats_in="{projectpath}/PPR_03-MappedToReference/{sample}.stats"
     output:
-        "{projectpath}/MIA_01-Assembly/{sample}.stats"
+        stats="{projectpath}/MIA_01-Assembly/{sample}.stats",
+        out_assembly="{projectpath}/MIA_01-Assembly/{sample}.fa"
     params:
         sample="{sample}",
         min_contig_len=expand("{min_contig_len}", min_contig_len=config['min_contig_len']),
-        in_assembly="{projectpath}/MIA_01-Assembly/{sample}_assembly/temp_assembly.fa",
-        out_assembly="{projectpath}/MIA_01-Assembly/{sample}.fa"
+        in_assembly="{projectpath}/MIA_01-Assembly/{sample}_assembly/temp_assembly.fa"
+
 
     shell:
         """
-        rm {input.empt_file} && python {rules.get_paths.input.holopath}/bin/holo-assembly_reformat.py -sample {params.sample} -min_cl {params.min_contig_len} -in_a {params.in_assembly} -out_a {params.out_assembly} -st_in {input.stats_in} -st_out {output} -log {rules.get_paths.input.logpath}
+        rm {input.empt_file} && python {rules.get_paths.input.holopath}/bin/holo-assembly_reformat.py -sample {params.sample} -min_cl {params.min_contig_len} -in_a {params.in_assembly} -out_a {output.out_assembly} -st_in {input.stats_in} -st_out {output.stats} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -110,7 +111,7 @@ rule protein_prediction_prodigal:
         sample="{sample}"
     shell: # Prodigal is run in "anon", Anonymous workflow
         """
-        python {rules.get_paths.input.holopath}/bin/holo-pp_prodigal.py -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations} -sample {prams.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-pp_prodigal.py -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 ##

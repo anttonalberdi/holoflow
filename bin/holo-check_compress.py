@@ -29,9 +29,9 @@ check=args.check
 # Run
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tCompressing data base and index files step\n\n')
-
+with open(str(log),'a+') as logi:
+    logi.write('\t\t'+current_time+'\tCompressing data base and index files step\n\n')
+    logi.close()
 
 
 if (os.path.exists(str(idx_db)) and os.path.exists(str(db))) and (not os.path.exists(str(check))):
@@ -45,8 +45,8 @@ if (os.path.exists(str(idx_db)) and os.path.exists(str(db))) and (not os.path.ex
 
 
 
-if os.path.exists(str(''+db_dir+'/../'+db_ID+'.tar.gz')):
-    rmCmd=('cd '+db_dir+'/.. && rm -rf db_dir')
+if os.path.exists(str(''+db_dir+'/../'+db_ID+'.fna.tar.gz')):
+    rmCmd=('rm -rf '+db_dir+'')
     subprocess.check_call(rmCmd, shell=True)
 
 
