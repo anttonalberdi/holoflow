@@ -40,7 +40,27 @@ with open(str(log),'a+') as log:
 
 
 
-# Filter assembly file - only those contigs in dastool
+# Filter assembly and bam file - keep data only for those contigs in dastool bins
+    # join all bins in one file
+joinbinsCmd='cat '+dt_bd+'/*.fa > '+dt_bd+'/allcontigs_temp.fna'
+subprocess.check_call(joinbinsCmd, shell=True)
+
+    # convert to one liner fasta
+onelinerCmd='perl -pe '$. > 1 and /^>/ ? print "\n" : chomp' '+dt_bd+'/allcontigs_temp.fna  > '+dt_bd+'/allcontigs_ol_temp.fna'
+subprocess.check_call(onelinerCmd, shell=True)
+
+    # grep
+grepCmd='grep -vFf '+dt_bd+'/allcontigs_ol_temp.fna  '+a+' > '+a+'.filtered && rm '+dt_bd+'/allcontigs_*'
+subprocess.check_call(grepCmd, shell=True)
+
+    #assembly mapping bam / INTERSECT new assembly
+grepheadersCmd='grep ">" '+a+'.filtered > temp_headers.txt'
+subprocess.check_call(grepheadersCmd, shell=True)
+
+filterbamCmd='samtools view -b '+bam+' '+dt_bd+'/temp_headers.txt > '+bam+'.filtered && rm '+dt_bd+'/temp_headers.txt'
+subprocess.check_call(filterbamCmd, shell=True)
+
+bam = os.path.join(bam,".filtered")
 
 
 
@@ -55,7 +75,7 @@ subprocess.check_call(condaenvCmd, shell=True)
 
     ### Refinement based on genome properties
 
-scaffold_statsCmd='refinem scaffold_stats -c '+threads+' --genome_ext fa '+assembly_file+' '+dt_bd+' '+main_out_dir+' '+bam+'' #assembly mapping bam / INTERSECT assembly
+scaffold_statsCmd='refinem scaffold_stats -c '+threads+' --genome_ext fa '+assembly_file+' '+dt_bd+' '+main_out_dir+' '+bam+''
 subprocess.check_call(scaffold_statsCmd, shell=True)
 
 outliersCmd='refinem outliers '+main_out_dir+'/scaffold_stats.tsv '+main_out_dir+''
@@ -79,8 +99,7 @@ subprocess.check_call(txnfilterCmd, shell=True)
 
 
 #Refinement based on 16S genes
-# mkdir ${workdir}/bin_refinement/3_16s
-# mkdir ${workdir}/bin_refinement/4_finalbins
+
 ssuerrCmd='refinem ssu_erroneous -c 40 --genome_ext fa '+main_out_dir+'/2_taxonomy '+main_out_dir+'/2_taxonomy /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_ssu_db.2018-01-18.fna /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_taxonomy.2017-12-15.tsv ${workdir}/bin_refinement/3_16s'
 subprocess.check_call(ssuerrCmd, shell=True)
 
