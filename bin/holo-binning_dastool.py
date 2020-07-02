@@ -68,7 +68,3 @@ with open(str(log),'a+') as log:
 
 mvinfoCmd='mv '+o+'_maxbin.eval '+o+'_metabat.eval '+o+'_DASTool_summary.txt ..'
 subprocess.check_call(mvinfoCmd, shell=True)
-
-
-with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tMetagenomics analysis with Holoflow are completed for sample '+sample+'\n')
