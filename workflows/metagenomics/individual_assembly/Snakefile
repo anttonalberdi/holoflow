@@ -210,5 +210,18 @@ rule das_tool:
 ##
 # RefineM bin refinement
 ##
-
-# /home/projects/ku-cbd/people/antalb/software/RefineM/
+#>refinem filter_bins <bin_dir> <outlier_output_dir>/outliers.tsv <filtered_output_dir>
+rule bin_refinement:
+    input:
+        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+        assembly_map="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam",
+        dastool_bin_dir="{projectpath}/MIA_04-BinMerging/{sample}" ################### MODIFY
+    output:
+        "{projectpath}/MIA_05-BinRefinement/{sample}"
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-bin_refinement.py -a {input.assembly} -bam {input.assembly_map} -dastool_bd {input.dastool_bin_dir} -out_dir {output} -sample {params.sample} -t {params.threads} -log {rules.get_paths.input.logpath}
+        """
