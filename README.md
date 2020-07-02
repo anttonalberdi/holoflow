@@ -107,7 +107,7 @@ These should be **executed as jobs**, therefore a *.sh* script should be generat
 python preprocessing.py -f full/path/input.txt -d full/path/workdir -c full/path/config.yaml -l full/path/log_file.log -t 40
 ```
 
-- *job execution* example:
+- *job execution* in Computerome2 example:
 ```
  qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e full/path/job_error_file.err -o full/path/job_out_file.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N JOB_ID full/path/first_job_preprocessing.sh
 
