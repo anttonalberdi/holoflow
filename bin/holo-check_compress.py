@@ -45,9 +45,9 @@ if (os.path.exists(str(idx_db)) and os.path.exists(str(db))) and (not os.path.ex
 
 
 
-if os.path.exists(str(''+db_dir+'/../'+db_ID+'.fna.tar.gz')):
-    rmCmd=('rm -rf '+db_dir+'')
-    subprocess.check_call(rmCmd, shell=True)
+# if os.path.exists(str(''+db_dir+'/../'+db_ID+'.fna.tar.gz')):
+#     rmCmd=('rm -rf '+db_dir+'')
+#     subprocess.check_call(rmCmd, shell=True)
 
 
 # Write to log

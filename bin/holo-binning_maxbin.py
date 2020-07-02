@@ -42,10 +42,22 @@ if not glob.glob(str(bb)+"*.fasta"):
         maxbinCmd='module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig '+a+' -abund '+d+' -out '+bb+' -thread '+t+''
         subprocess.check_call(maxbinCmd, shell=True)
 
+            # Modify bin names and create contig to bin table
+        binlist=glob.glob(str(bb)+"*.fasta")
+        bin=1
+
+        for bin in binlist:
+            binfile_name = os.path.abspath(bin)
+            new_binfile_name = re.sub('[0-9]{3}.fasta',''+bin+'.fa', binfile_name)
+            bin+=1
+
+            renameBinCmd='mv '+binfile_name+' '+new_binfile_name+''
+            subprocess.check_call(renameBinCmd, shell=True)
+
+
             #Create contig to bin table
         bintable = open(str(bt),"a+")
-        binlist=glob.glob(str(bb)+"*.fasta")
-
+        binlist=glob.glob(str(bb)+"*.fa")
 
         for bin in binlist:
             binname = os.path.splitext(os.path.basename(bin))[0]+''
@@ -56,6 +68,8 @@ if not glob.glob(str(bb)+"*.fasta"):
                         contig = contig.replace(">", "")
                         bintable.write("{0}\t{1}\r\n".format(contig,binname))
         bintable.close()
+
+
 
     except:
         # Write to log

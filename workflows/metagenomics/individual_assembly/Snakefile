@@ -190,16 +190,15 @@ rule das_tool:
         bin_table_mtb="{projectpath}/MIA_03-Binning/{sample}.bins_metabat.txt",
         pproteins="{projectpath}/MIA_02-ProdigalPrediction/{sample}.protein_translations.faa"
     output:
-        "{projectpath}/MIA_03-Binning/{sample}_dastool/{sample}"
+        "{projectpath}/MIA_04-BinMerging/"
     params:
         threads=expand("{threads}", threads=config['threads']),
-        bin_dir="{projectpath}/MIA_03-Binning/{sample}_dastool/{sample}.bins_dastool",
         search_eng=expand("{search_eng}", search_eng=config['search_eng']),
         dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db']),
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -a {input.assembly} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {output} -bin_o {params.bin_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -a {input.assembly} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {output} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 

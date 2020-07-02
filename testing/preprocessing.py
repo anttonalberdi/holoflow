@@ -98,12 +98,12 @@ def in_out_preprocessing(path,in_f):
 
 
 
-
+################## NOT YET ###################
 
 def prepare_threads(path,config):
     """Set a maximum number of used threads by AdapterRemoval during
     the quality filtering step based on the size and number of the
-    input files""""
+    input files"""
 
     # get input files average size:
     in_dir = os.path.join(path,"PPR_00-InputData")
@@ -111,57 +111,51 @@ def prepare_threads(path,config):
     number_file=0
 
     for file in os.listdir(in_dir):
-        count_file_size+=os.path.getsize(os.path.abspath(file))
+        print(file)
+        full_file=(''+in_dir+'/'+file+'')
+        print(full_file)
+        count_file_size+=os.path.getsize(os.path.abspath(full_file))
         number_file+=1
 
     # get average file size
-    average_file_size = count_file_size/num_files
+    average_file_size = count_file_size/number_file
+    number_file = number_file/2 # We count samples
 
     # depending on the average file size and number of files,
     # change number of threads for AdapterRemoval in config
     yaml = ruamel.yaml.YAML()
     yaml.explicit_start = True
-    with open(str(config), 'r') as config_file
+    with open(str(config), 'r') as config_file:
         data = yaml.load(config_file)
 
 
-    # If files smaller then 800MG, then it does not matter the num of files w/4 threads
-        # if files between 800MG and 1G then max 24 files for 4 threads
-        # if files between 1G and 2,5G then max 12 files for 4 threads
-        # if files between 2,5G and 5G then max 6 files for 4 threads
-        # if files between 5G and 10G then max 6 files for 4 threads
-    if (average_file_size < 800000000) or
-            ((800000001 <= average_file_size <= 1000000000) and (number_file <= 24)) or
-            ((1000000001 <= average_file_size <= 2500000000) and (number_file <= 12)) or
-            ((2500000001 <= average_file_size <= 5000000000) and (number_file <= 6)) or
-            ((5000000001 <= average_file_size <= 12000000000) and (number_file <= 3)):
+    # If files smaller then 800MG, then it does not matter the num of samples w/4 threads
+        # if files between 800MG and 1G then max 24 samples for 4 threads
+        # if files between 1G and 2,5G then max 12 samples for 4 threads
+        # if files between 2,5G and 5G then max 6 samples for 4 threads
+        # if files between 5G and 10G then max 6 samples for 4 threads
+    if (average_file_size < 800000000) or ((800000001 <= average_file_size <= 1000000000) and (number_file <= 24)) or ((1000000001 <= average_file_size <= 2500000000) and (number_file <= 12)) or ((2500000001 <= average_file_size <= 5000000000) and (number_file <= 6)) or ((5000000001 <= average_file_size <= 12000000000) and (number_file <= 3)):
 
         with open(str(config), 'w') as config_file:
-        data['AdapterRemoval_threads'] = 4 
-        dump = yaml.dump(data, config_file)
+            data['AdapterRemoval_threads'] = 4
+            dump = yaml.dump(data, config_file)
 
     # Same corollary
-    if ((800000001 <= average_file_size <= 1000000000) and (number_file > 24)) or
-            ((1000000001 <= average_file_size <= 2500000000) and (12 < number_file <= 24)) or
-            ((2500000001 <= average_file_size <= 5000000000) and (6 < number_file <= 12)) or
-            ((5000000001 <= average_file_size <= 12000000000) and (3 < number_file <= 6)):
+    if ((800000001 <= average_file_size <= 1000000000) and (number_file > 24)) or ((1000000001 <= average_file_size <= 2500000000) and (12 < number_file <= 24)) or ((2500000001 <= average_file_size <= 5000000000) and (6 < number_file <= 12)) or ((5000000001 <= average_file_size <= 12000000000) and (3 < number_file <= 6)):
 
         with open(str(config), 'w') as config_file:
-        data['AdapterRemoval_threads'] = 8
-        dump = yaml.dump(data, config_file)
+            data['AdapterRemoval_threads'] = 8
+            dump = yaml.dump(data, config_file)
 
     # Same corollary
-    if ((1000000001 <= average_file_size <= 2500000000) and (number_file > 24)) or
-            ((2500000001 <= average_file_size <= 5000000000) and (12 < number_file <= 20)) or
-            ((5000000001 <= average_file_size <= 12000000000) and (6 < number_file <= 10)):
+    if ((1000000001 <= average_file_size <= 2500000000) and (number_file > 24)) or ((2500000001 <= average_file_size <= 5000000000) and (12 < number_file <= 20)) or ((5000000001 <= average_file_size <= 12000000000) and (6 < number_file <= 10)):
 
         with open(str(config), 'w') as config_file:
-        data['AdapterRemoval_threads'] = 14
-        dump = yaml.dump(data, config_file)
+            data['AdapterRemoval_threads'] = 14
+            dump = yaml.dump(data, config_file)
 
     # Same corollary
-    if ((2500000001 <= average_file_size <= 5000000000) and (number_file > 20)) or
-            ((5000000001 <= average_file_size <= 10000000000) and (number_file > 10)):
+    if ((2500000001 <= average_file_size <= 5000000000) and (number_file > 20)) or ((5000000001 <= average_file_size <= 10000000000) and (number_file > 10)):
 
         with open(str(log), 'w') as log_file:
             log_file.write("Your files are too big to be processed all together.\nIf these are average 12G, process maximum 10 files at a time.\nIf these are average 5G, process maximum 20 files at a time.")

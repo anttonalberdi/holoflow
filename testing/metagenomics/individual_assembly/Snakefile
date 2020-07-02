@@ -200,5 +200,17 @@ rule das_tool:
 ##
 # RefineM bin refinement
 ##
+#>refinem filter_bins <bin_dir> <outlier_output_dir>/outliers.tsv <filtered_output_dir>
+rule bin_refinement:
+    input:
+        bin_dir="{projectpath}/MIA_03-Binning/{sample}_dastool/{sample}_DASTool_bins"
+    output:
+    params:
+        out_dir="{projectpath}/MIA_04-BinRefinement/{sample}",
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-bin_refinement.py
+        """
 
 # /home/projects/ku-cbd/people/antalb/software/RefineM/

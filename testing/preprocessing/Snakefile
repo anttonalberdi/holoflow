@@ -30,7 +30,7 @@ rule qual_filt:
         maxns=expand("{maxns}", maxns=config['maxns']),
         minquality=expand("{minquality}", minquality=config['minquality']),
         mate_separator=expand("{mate_separator}", mate_separator=config['mate_separator']),
-        threads=expand("{threads}", threads=config['threads'])
+        threads=expand("{AdapterRemoval_threads}", AdapterRemoval_threads=config['AdapterRemoval_threads'])
     shell:
         """
         python {rules.get_paths.input.holopath}/bin/holo-qual_filt.py -i1 {input.read1} -i2 {input.read2} -o1 {output.read1} -o2 {output.read2} -a1 {params.adapter1} -a2 {params.adapter2} -maxns {params.maxns} -minq {params.minquality} -t {params.threads} -msep {params.mate_separator} -s {output.stats_file} -log {rules.get_paths.input.logpath}
