@@ -11,22 +11,33 @@ import ruamel.yaml
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True)
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
-parser.add_argument('-c', help="config file", dest="config_file", required=True)
-parser.add_argument('-l', help="pipeline log file", dest="log", required=True)
+parser.add_argument('-c', help="config file", dest="config_file", required=False)
+parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 args = parser.parse_args()
 
 in_f=args.input_txt
 path=args.work_dir
-config=args.config_file
-log=args.log
 cores=args.threads
-
-
 
     # retrieve current directory
 file = os.path.dirname(sys.argv[0])
 curr_dir = os.path.abspath(file)
+
+
+if not (args.config_file):
+    config = os.path.join(os.path.abspath(curr_dir),"workflows/preparegenomes/config.yaml")
+else:
+    config=args.config_file
+
+if not (args.log):
+    log = os.path.join(path,"Holoflow_metagenomics.log")
+else:
+    log=args.log
+
+
+##### CONIF LOG FALSE - SET A DEFAULT
+
 
     #Append current directory to .yaml config for standalone calling
 yaml = ruamel.yaml.YAML()

@@ -41,12 +41,12 @@ with open(str(log),'a+') as log:
 refinemDependenciesCmd='module load tools anaconda3/4.4.0 kronatools/2.7 diamond/0.9.29'
 subprocess.check_call(refinemDependenciesCmd, shell=True)
 
-source activate /home/projects/ku-cbd/data/envs/refinem-0.1.1 # activate conda environment - HOW here?
+conda activate /home/projects/ku-cbd/data/envs/refinem-0.1.1 # sino source
 
 
     ### Refinement based on genome properties
 
-scaffold_statsCmd='refinem scaffold_stats -c '+threads+' --genome_ext fa '+assembly_file+' '+dastool_bins_dir+' '+main_output_dir+' '+bam_output+''
+scaffold_statsCmd='refinem scaffold_stats -c '+threads+' --genome_ext fa '+assembly_file+' '+dastool_bins_dir+' '+main_output_dir+' '+bam_input+'' #assembly mapping bam / INTERSECT assembly
 subprocess.check_call(scaffold_statsCmd, shell=True)
 
 outliersCmd='refinem outliers '+main_output_dir+'/scaffold_stats.tsv '+main_output_dir+''
