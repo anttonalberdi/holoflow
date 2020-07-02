@@ -190,7 +190,7 @@ rule das_tool:
         bin_table_mtb="{projectpath}/MIA_03-Binning/{sample}.bins_metabat.txt",
         pproteins="{projectpath}/MIA_02-ProdigalPrediction/{sample}.protein_translations.faa"
     output:
-        "{projectpath}/MIA_04-BinMerging/"
+        "{projectpath}/MIA_04-BinMerging/{sample}"
     params:
         threads=expand("{threads}", threads=config['threads']),
         search_eng=expand("{search_eng}", search_eng=config['search_eng']),
