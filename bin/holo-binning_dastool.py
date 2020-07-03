@@ -37,9 +37,9 @@ log=args.log
 
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tDASTool Bin Refinement step - Sample '+sample+'\n')
-    log.write('The binning results from MaxBin and Metabat2 are integrated by DASTool to produce one only non-redundant\nset of bins between them.\n\n')
+with open(str(log),'a+') as logi:
+    logi.write('\t\t'+current_time+'\tDASTool Bin Refinement step - Sample '+sample+'\n')
+    logi.write('The binning results from MaxBin and Metabat2 are integrated by DASTool to produce one only non-redundant\nset of bins between them.\n\n')
 
 
 dastoolDependencies='module unload maxbin/2.2.7 fraggenescan/1.31 perl/5.20.2 && module load tools gcc/5.4.0 intel/perflibs/2018 R/3.6.1 ruby/2.6.3 pullseq/1.0.2 perl/5.24.0 ncbi-blast/2.6.0+ prodigal/2.6.3 das_tool/1.1.1 diamond/0.9.24 usearch/11.0.667'
@@ -54,17 +54,17 @@ for b in binfiles:
 
 
 # Add relevant info to log
-with open(str(log),'a+') as log:
-    log.write('\t\tDASTool MaxBin bins evaluation - Sample '+sample+'\n')
+with open(str(log),'a+') as logf:
+    logf.write('\t\tDASTool MaxBin bins evaluation - Sample '+sample+'\n')
     with open(str(''+o+'_maxbin.eval'),'r') as mxb_eval:
-        log.write(''+mxb_eval+'\n')
-    log.write('\t\tDASTool Metabat2 bins evaluation - Sample '+sample+'\n')
+        logf.write(''+mxb_eval.read()+'\n')
+    logf.write('\t\tDASTool Metabat2 bins evaluation - Sample '+sample+'\n')
     with open(str(''+o+'_metabat.eval'),'r') as mtb_eval:
-        log.write(''+mtb_eval+'\n')
-    log.write('\t\tDASTool Bin Merging Summary - Sample '+sample+'\n')
+        logf.write(''+mtb_eval.read()+'\n')
+    logf.write('\t\tDASTool Bin Merging Summary - Sample '+sample+'\n')
     with open(str(''+o+'_DASTool_summary.txt'),'r') as summary:
-        log.write(''+summary+'\n\n')
+        logf.write(''+summary.read()+'\n\n')
 
 
-mvinfoCmd='mv '+o+'_maxbin.eval '+o+'_metabat.eval '+o+'_DASTool_summary.txt ..'
+mvinfoCmd=''+o+'_maxbin.eval '+o+'_metabat.eval '+o+'_DASTool_summary.txt '+o+'_DASTool_bins ..'
 subprocess.check_call(mvinfoCmd, shell=True)

@@ -47,6 +47,15 @@ if not glob.glob(str(bb)+"*.fa"):
         binlist=glob.glob(str(bb)+"*.fa")
 
         for bin in binlist:
+            full_bin=os.path.abspath(bin)
+            new_bin=full_bin.replace("mtb.","mtb")
+
+            renameBinCmd='mv '+full_bin+' '+new_bin+''
+            subprocess.check_call(renameBinCmd, shell=True)
+
+        binlist=glob.glob(str(bb)+"*.fa")
+        for bin in binlist:
+
             binname = os.path.splitext(os.path.basename(bin))[0]+''
             with open(bin, 'r') as binfile:
                for line in binfile:

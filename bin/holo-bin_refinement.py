@@ -46,7 +46,7 @@ joinbinsCmd='cat '+dt_bd+'/*.fa > '+dt_bd+'/allcontigs_temp.fna'
 subprocess.check_call(joinbinsCmd, shell=True)
 
     # convert to one liner fasta
-onelinerCmd='perl -pe '$. > 1 and /^>/ ? print "\n" : chomp' '+dt_bd+'/allcontigs_temp.fna  > '+dt_bd+'/allcontigs_ol_temp.fna'
+onelinerCmd='perl -pe "$. > 1 and /^>/ ? print "\n" : chomp" '+dt_bd+'/allcontigs_temp.fna  > '+dt_bd+'/allcontigs_ol_temp.fna'
 subprocess.check_call(onelinerCmd, shell=True)
 
     # grep

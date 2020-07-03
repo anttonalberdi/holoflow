@@ -44,16 +44,8 @@ if not glob.glob(str(bb)+"*.fasta"):
         subprocess.check_call(maxbinCmd, shell=True)
 
             # Modify bin names and create contig to bin table
-        binlist=glob.glob(str(bb)+"*.fasta")
-        bin=1
-
-        for bin in binlist:
-            binfile_name = os.path.abspath(bin)
-            new_binfile_name = re.sub('[0-9]{3}.fasta',''+bin+'.fa', binfile_name)
-            bin+=1
-
-            renameBinCmd='mv '+binfile_name+' '+new_binfile_name+''
-            subprocess.check_call(renameBinCmd, shell=True)
+        renamebinsCmd='binlist=$(ls '+bb+'*.fasta | sed "s/.*mxb\.//" | sed "s/\.fasta//") && for bin in $binlist; do bin2=$((10#$bin)) ; mv '+bb+'.${bin}.fasta '+bb+'${bin2}.fa; done'
+        subprocess.check_call(renamebinsCmd, shell=True)
 
 
             #Create contig to bin table

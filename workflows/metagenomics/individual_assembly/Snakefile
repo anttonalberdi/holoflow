@@ -147,7 +147,7 @@ rule binning_metabat:
         bin_table_mtb="{projectpath}/MIA_03-Binning/{sample}.bins_metabat.txt"#,
         #final_file="{projectpath}/MIA_03-Binning/{sample}.metabat/{sample}.bins_metabat.gz"
     params:
-        base_mtb="{projectpath}/MIA_03-Binning/{sample}_metabat/{sample}.mtb.bin",
+        base_mtb="{projectpath}/MIA_03-Binning/{sample}_metabat/{sample}.mtb",
         threads=expand("{threads}", threads=config['threads']),
         sample="{sample}"
     shell:
@@ -168,7 +168,7 @@ rule binning_maxbin:
     output:
         bin_table_mxb="{projectpath}/MIA_03-Binning/{sample}.bins_maxbin.txt"
     params:
-        base_mxb="{projectpath}/MIA_03-Binning/{sample}_maxbin/{sample}.mxb.bin",
+        base_mxb="{projectpath}/MIA_03-Binning/{sample}_maxbin/{sample}.mxb",
         threads=expand("{threads}", threads=config['threads']),
         sample="{sample}"
     shell:
@@ -190,7 +190,7 @@ rule das_tool:
         bin_table_mtb="{projectpath}/MIA_03-Binning/{sample}.bins_metabat.txt",
         pproteins="{projectpath}/MIA_02-ProdigalPrediction/{sample}.protein_translations.faa"
     output:
-        "{projectpath}/MIA_04-BinMerging/{sample}"
+        "{projectpath}/MIA_04-BinMerging/{sample}/{sample}"
     params:
         threads=expand("{threads}", threads=config['threads']),
         search_eng=expand("{search_eng}", search_eng=config['search_eng']),
@@ -214,14 +214,14 @@ rule das_tool:
 rule bin_refinement:
     input:
         assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
-        assembly_map="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam",
-        dastool_bin_dir="{projectpath}/MIA_04-BinMerging/{sample}" ################### MODIFY
+        assembly_map="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam"
     output:
         "{projectpath}/MIA_05-BinRefinement/{sample}"
     params:
+        dastool_bin_dir="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins",
         threads=expand("{threads}", threads=config['threads']),
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_refinement.py -a {input.assembly} -bam {input.assembly_map} -dastool_bd {input.dastool_bin_dir} -out_dir {output} -sample {params.sample} -t {params.threads} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_refinement.py -a {input.assembly} -bam {input.assembly_map} -dastool_bd {params.dastool_bin_dir} -out_dir {output} -sample {params.sample} -t {params.threads} -log {rules.get_paths.input.logpath}
         """
