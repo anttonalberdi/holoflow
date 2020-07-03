@@ -37,5 +37,6 @@ with open(str(log),'a+') as log:
     log.write('The original metagenomic reads are being mapped to the indexed assembly so coverage info can be retrieved.\n\n')
 
 
-mappingCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" '+a+' '+read1+' '+read2+' | samtools view -T '+a+' -b - | samtools sort -T '+a+' - > '+obam+''
-subprocess.check_call(mappingCmd, shell=True)
+if not os.path.exists(str(obam)):
+    mappingCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" '+a+' '+read1+' '+read2+' | samtools view -T '+a+' -b - | samtools sort -T '+a+' - > '+obam+''
+    subprocess.check_call(mappingCmd, shell=True)
