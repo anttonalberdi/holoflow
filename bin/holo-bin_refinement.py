@@ -39,73 +39,73 @@ with open(str(log),'a+') as log:
     log.write('Based on genome properties and taxonomy, RefineM will take the Dastool bins merged from Maxbin and Metabat2\nand try to increase its completeness while reducing the redundancy. \n\n')
 
 
+if os.path.exists(str(dt_bd)):
 
-# Filter assembly and bam file - keep data only for those contigs in dastool bins
-    # join all bins in one file
-joinbinsCmd='cat '+dt_bd+'/*.fa > '+dt_bd+'/allcontigs_temp.fna'
-subprocess.check_call(joinbinsCmd, shell=True)
+    # Filter assembly and bam file - keep data only for those contigs in dastool bins
+        # join all bins in one file
+    joinbinsCmd='cat '+dt_bd+'/*.fa > '+dt_bd+'/allcontigs_temp.fna'
+    subprocess.check_call(joinbinsCmd, shell=True)
 
-    # convert to one liner fasta
-onelinerCmd='perl -pe "$. > 1 and /^>/ ? print "\n" : chomp" '+dt_bd+'/allcontigs_temp.fna  > '+dt_bd+'/allcontigs_ol_temp.fna'
-subprocess.check_call(onelinerCmd, shell=True)
+        # convert to one liner fasta
+    onelinerCmd='perl -pe "$. > 1 and /^>/ ? print "\n" : chomp" '+dt_bd+'/allcontigs_temp.fna  > '+dt_bd+'/allcontigs_ol_temp.fna'
+    subprocess.check_call(onelinerCmd, shell=True)
 
-    # grep
-grepCmd='grep -vFf '+dt_bd+'/allcontigs_ol_temp.fna  '+a+' > '+a+'.filtered && rm '+dt_bd+'/allcontigs_*'
-subprocess.check_call(grepCmd, shell=True)
+        # grep
+    grepCmd='grep -vFf '+dt_bd+'/allcontigs_ol_temp.fna  '+a+' > '+a+'.filtered && rm '+dt_bd+'/allcontigs_*'
+    subprocess.check_call(grepCmd, shell=True)
 
-    #assembly mapping bam / INTERSECT new assembly
-grepheadersCmd='grep ">" '+a+'.filtered > temp_headers.txt'
-subprocess.check_call(grepheadersCmd, shell=True)
+        #assembly mapping bam / INTERSECT new assembly
+    grepheadersCmd='grep ">" '+a+'.filtered > temp_headers.txt'
+    subprocess.check_call(grepheadersCmd, shell=True)
 
-filterbamCmd='samtools view -b '+bam+' '+dt_bd+'/temp_headers.txt > '+bam+'.filtered && rm '+dt_bd+'/temp_headers.txt'
-subprocess.check_call(filterbamCmd, shell=True)
+    filterbamCmd='samtools view -b '+bam+' '+dt_bd+'/temp_headers.txt > '+bam+'.filtered && rm '+dt_bd+'/temp_headers.txt'
+    subprocess.check_call(filterbamCmd, shell=True)
 
-bam = os.path.join(bam,".filtered")
-
-
-
-
-# RefineM
-refinemDependenciesCmd='module load tools anaconda3/4.4.0 kronatools/2.7 diamond/0.9.29'
-subprocess.check_call(refinemDependenciesCmd, shell=True)
-
-condaenvCmd='conda activate /home/projects/ku-cbd/data/envs/refinem-0.1.1' # if doesn't work, source
-subprocess.check_call(condaenvCmd, shell=True)
-
-
-    ### Refinement based on genome properties
-
-scaffold_statsCmd='refinem scaffold_stats -c '+threads+' --genome_ext fa '+assembly_file+' '+dt_bd+' '+main_out_dir+' '+bam+''
-subprocess.check_call(scaffold_statsCmd, shell=True)
-
-outliersCmd='refinem outliers '+main_out_dir+'/scaffold_stats.tsv '+main_out_dir+''
-subprocess.check_call(outliersCmd, shell=True)
-
-filter_binsCmd='refinem filter_bins --genome_ext fa  '+dt_bd+' '+main_out_dir+'/outliers.tsv '+main_out_dir+'/1_genomeproperties/'
-subprocess.check_call(filter_binsCmd, shell=True)
+    bam = os.path.join(bam,".filtered")
 
 
 
-    ### Refinement based on taxonomy
+    # RefineM
+    refinemDependenciesCmd='module load tools anaconda3/4.4.0 kronatools/2.7 diamond/0.9.29'
+    subprocess.check_call(refinemDependenciesCmd, shell=True)
 
-callgenesCmd='refinem call_genes -c 40 --genome_ext fa '+dt_bd+' '+main_out_dir+'/2_taxonomy/genes'
-subprocess.check_call(callgenesCmd, shell=True)
-
-txnprofileCmd='refinem taxon_profile -c 40 --tmpdir '+main_out_dir+'/2_taxonomy/tmp '+main_out_dir+'/2_taxonomy/genes '+main_out_dir+'/scaffold_stats.tsv /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r89_protein_db.2019-09-27.faa.dmnd /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r89_taxonomy.2019-09-27.tsv '+main_out_dir+'/2_taxonomy/'
-subprocess.check_call(txnprofileCmd, shell=True)
-
-txnfilterCmd='refinem taxon_filter -c 40 '+main_out_dir+'/2_taxonomy/ '+main_out_dir+'/2_taxonomy/taxon_filter.tsv'
-subprocess.check_call(txnfilterCmd, shell=True)
+    condaenvCmd='conda activate /home/projects/ku-cbd/data/envs/refinem-0.1.1' # if doesn't work, source
+    subprocess.check_call(condaenvCmd, shell=True)
 
 
-#Refinement based on 16S genes
+        ### Refinement based on genome properties
 
-ssuerrCmd='refinem ssu_erroneous -c 40 --genome_ext fa '+main_out_dir+'/2_taxonomy '+main_out_dir+'/2_taxonomy /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_ssu_db.2018-01-18.fna /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_taxonomy.2017-12-15.tsv ${workdir}/bin_refinement/3_16s'
-subprocess.check_call(ssuerrCmd, shell=True)
+    scaffold_statsCmd='refinem scaffold_stats -c '+threads+' --genome_ext fa '+assembly_file+' '+dt_bd+' '+main_out_dir+' '+bam+''
+    subprocess.check_call(scaffold_statsCmd, shell=True)
 
-ssfilterCmd='refinem filter_bins --genome_ext fa '+main_out_dir+'/2_taxonomy '+main_out_dir+'/3_16s/ssu_erroneous.tsv '+main_out_dir+'/4_finalbins && rm '+main_out_dir+'/4_finalbins/refinem.log'
-subprocess.check_call(ssfilterCmd, shell=True)
+    outliersCmd='refinem outliers '+main_out_dir+'/scaffold_stats.tsv '+main_out_dir+''
+    subprocess.check_call(outliersCmd, shell=True)
+
+    filter_binsCmd='refinem filter_bins --genome_ext fa  '+dt_bd+' '+main_out_dir+'/outliers.tsv '+main_out_dir+'/1_genomeproperties/'
+    subprocess.check_call(filter_binsCmd, shell=True)
 
 
-with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tMetagenomics analysis with Holoflow are completed for sample '+sample+'\n')
+
+        ### Refinement based on taxonomy
+
+    callgenesCmd='refinem call_genes -c 40 --genome_ext fa '+dt_bd+' '+main_out_dir+'/2_taxonomy/genes'
+    subprocess.check_call(callgenesCmd, shell=True)
+
+    txnprofileCmd='refinem taxon_profile -c 40 --tmpdir '+main_out_dir+'/2_taxonomy/tmp '+main_out_dir+'/2_taxonomy/genes '+main_out_dir+'/scaffold_stats.tsv /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r89_protein_db.2019-09-27.faa.dmnd /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r89_taxonomy.2019-09-27.tsv '+main_out_dir+'/2_taxonomy/'
+    subprocess.check_call(txnprofileCmd, shell=True)
+
+    txnfilterCmd='refinem taxon_filter -c 40 '+main_out_dir+'/2_taxonomy/ '+main_out_dir+'/2_taxonomy/taxon_filter.tsv'
+    subprocess.check_call(txnfilterCmd, shell=True)
+
+
+    #Refinement based on 16S genes
+
+    ssuerrCmd='refinem ssu_erroneous -c 40 --genome_ext fa '+main_out_dir+'/2_taxonomy '+main_out_dir+'/2_taxonomy /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_ssu_db.2018-01-18.fna /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_taxonomy.2017-12-15.tsv ${workdir}/bin_refinement/3_16s'
+    subprocess.check_call(ssuerrCmd, shell=True)
+
+    ssfilterCmd='refinem filter_bins --genome_ext fa '+main_out_dir+'/2_taxonomy '+main_out_dir+'/3_16s/ssu_erroneous.tsv '+main_out_dir+'/4_finalbins && rm '+main_out_dir+'/4_finalbins/refinem.log'
+    subprocess.check_call(ssfilterCmd, shell=True)
+
+
+    with open(str(log),'a+') as log:
+        log.write('\t\t'+current_time+'\tMetagenomics analysis with Holoflow are completed for sample '+sample+'\n')
