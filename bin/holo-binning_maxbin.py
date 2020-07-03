@@ -5,6 +5,7 @@ import argparse
 import os
 import glob
 import time
+import re
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
@@ -30,9 +31,9 @@ log=args.log
 
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tMaxbin Binning step - Sample '+sample+'\n')
-    log.write('Individual assembly binning is being done by MAXBIN. This will sort the contigs into groups,\ncalled bins, which ideally will belong to taxonomically close organisms. This is mainly done\nbased on coverage and tetranucleotide frequencies.\n\n')
+with open(str(log),'a+') as logi:
+    logi.write('\t\t'+current_time+'\tMaxbin Binning step - Sample '+sample+'\n')
+    logi.write('Individual assembly binning is being done by MAXBIN. This will sort the contigs into groups,\ncalled bins, which ideally will belong to taxonomically close organisms. This is mainly done\nbased on coverage and tetranucleotide frequencies.\n\n')
 
 
 
@@ -74,6 +75,6 @@ if not glob.glob(str(bb)+"*.fasta"):
     except:
         # Write to log
         current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-        with open(str(log),'a+') as log:
-            log.write(''+current_time+' - Marker gene search reveals that the dataset cannot be binned (the medium of marker gene number <= 1). Program stop.\n\n')
+        with open(str(log),'a+') as logf:
+            logf.write(''+current_time+' - Marker gene search reveals that the dataset cannot be binned (the medium of marker gene number <= 1). Program stop.\n\n')
         pass

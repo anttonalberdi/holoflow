@@ -68,7 +68,7 @@ def in_out_metagenomics(path,in_f):
         # Paste desired output file names from input.txt
         read = 0
         output_files=''
-        final_temp_dir="MIA_04-BinMerging"
+        final_temp_dir="MIA_05-BinRefinement"
 
         lines = in_file.readlines() # Read input.txt lines
         for file in lines:
