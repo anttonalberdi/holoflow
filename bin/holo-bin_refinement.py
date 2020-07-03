@@ -34,9 +34,9 @@ threads=args.threads
 
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tRefineM Bin Refinement step - Sample '+sample+'\n')
-    log.write('Based on genome properties and taxonomy, RefineM will take the Dastool bins merged from Maxbin and Metabat2\nand try to increase its completeness while reducing the redundancy. \n\n')
+with open(str(log),'a+') as logi:
+    logi.write('\t\t'+current_time+'\tRefineM Bin Refinement step - Sample '+sample+'\n')
+    logi.write('Based on genome properties and taxonomy, RefineM will take the Dastool bins merged from Maxbin and Metabat2\nand try to increase its completeness while reducing the redundancy. \n\n')
 
 
 if os.path.exists(str(dt_bd)):
@@ -107,5 +107,5 @@ if os.path.exists(str(dt_bd)):
     subprocess.check_call(ssfilterCmd, shell=True)
 
 
-    with open(str(log),'a+') as log:
-        log.write('\t\t'+current_time+'\tMetagenomics analysis with Holoflow are completed for sample '+sample+'\n')
+    with open(str(log),'a+') as logf:
+        logf.write('\t\t'+current_time+'\tMetagenomics analysis with Holoflow are completed for sample '+sample+'\n')

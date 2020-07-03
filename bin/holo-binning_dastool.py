@@ -64,7 +64,3 @@ with open(str(log),'a+') as logf:
     logf.write('\t\tDASTool Bin Merging Summary - Sample '+sample+'\n\n')
     with open(str(''+o+'_DASTool_summary.txt'),'r') as summary:
         logf.write(''+summary.read()+'\n\n\n\n')
-
-
-mvinfoCmd='mv '+o+'_maxbin.eval '+o+'_metabat.eval '+o+'_DASTool_summary.txt '+o+'_DASTool_bins '+o+'/..'
-subprocess.check_call(mvinfoCmd, shell=True)
