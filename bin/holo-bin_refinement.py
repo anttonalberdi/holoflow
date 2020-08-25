@@ -58,18 +58,23 @@ if os.path.exists(str(dt_bd)):
     subprocess.check_call(grepheadersCmd, shell=True)
 
         #index bam before filtering
-    idx_bam = os.path.join(bam,".bai")
+    idx_bam = ''+bam+'.bai'
     if not (os.path.exists(str(idx_bam))):
-        idxbamCmd='module load tools samtools/1.9 && samtools index -bc '+bam+''
+        idxbamCmd='module load tools samtools/1.9 && samtools index -b '+bam+''
         subprocess.check_call(idxbamCmd, shell=True)
 
         # filter bam
     filterbamCmd='module load tools samtools/1.9 && samtools view -b '+bam+' '+dt_bd+'/temp_headers.txt > '+bam+'.filtered && rm '+dt_bd+'/temp_headers.txt'
     subprocess.check_call(filterbamCmd, shell=True)
 
-    bam = os.path.join(bam,".filtered")
+    bam = ''+bam+'.filtered'
 
 
+        #index bam before refineM
+    idx_bam_f = ''+bam+'.bai'
+    if not (os.path.exists(str(idx_bam_f))):
+        idxbamCmd='module load tools samtools/1.9 && samtools index -b '+bam+''
+        subprocess.check_call(idxbamCmd, shell=True)
 
     # RefineM
     refinemDependenciesCmd='module load tools anaconda3/4.4.0 kronatools/2.7 diamond/0.9.29'
