@@ -16,7 +16,6 @@ parser.add_argument('-out_dir', help="main output directory", dest="main_out_dir
 parser.add_argument('-sample', help="sample", dest="sample", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
-
 args = parser.parse_args()
 
 
@@ -36,7 +35,7 @@ threads=args.threads
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
     logi.write('\t\t'+current_time+'\tRefineM Bin Refinement step - Sample '+sample+'\n')
-    logi.write('Based on genome properties and taxonomy, RefineM will take the Dastool bins merged from Maxbin and Metabat2\nand try to increase its completeness while reducing the redundancy. \n\n')
+    logi.write('Based on genome properties and taxonomy, RefineM takes as input all Dastool bins merged from Maxbin and Metabat2\nand try to increase its completeness while reducing the redundancy. \n\n')
 
 
 if os.path.exists(str(dt_bd)):
@@ -47,7 +46,7 @@ if os.path.exists(str(dt_bd)):
     subprocess.check_call(joinbinsCmd, shell=True)
 
         # convert to one liner fasta
-    onelinerCmd='perl -pe "$. > 1 and /^>/ ? print "\n" : chomp" '+dt_bd+'/allcontigs_temp.fna  > '+dt_bd+'/allcontigs_ol_temp.fna'
+    onelinerCmd='module unload perl/5.20.1 && module load perl/5.30.2 && perl -pe "$. > 1 and /^>/ ? print \n : chomp" '+dt_bd+'/allcontigs_temp.fna  > '+dt_bd+'/allcontigs_ol_temp.fna'
     subprocess.check_call(onelinerCmd, shell=True)
 
         # grep
@@ -55,10 +54,17 @@ if os.path.exists(str(dt_bd)):
     subprocess.check_call(grepCmd, shell=True)
 
         #assembly mapping bam / INTERSECT new assembly
-    grepheadersCmd='grep ">" '+a+'.filtered > temp_headers.txt'
+    grepheadersCmd='grep ">" '+a+'.filtered > '+dt_bd+'/temp_headers.txt'
     subprocess.check_call(grepheadersCmd, shell=True)
 
-    filterbamCmd='samtools view -b '+bam+' '+dt_bd+'/temp_headers.txt > '+bam+'.filtered && rm '+dt_bd+'/temp_headers.txt'
+        #index bam before filtering
+    idx_bam = os.path.join(bam,".bai")
+    if not (os.path.exists(str(idx_bam))):
+        idxbamCmd='module load tools samtools/1.9 && samtools index -bc '+bam+''
+        subprocess.check_call(idxbamCmd, shell=True)
+
+        # filter bam
+    filterbamCmd='module load tools samtools/1.9 && samtools view -b '+bam+' '+dt_bd+'/temp_headers.txt > '+bam+'.filtered && rm '+dt_bd+'/temp_headers.txt'
     subprocess.check_call(filterbamCmd, shell=True)
 
     bam = os.path.join(bam,".filtered")
@@ -69,13 +75,13 @@ if os.path.exists(str(dt_bd)):
     refinemDependenciesCmd='module load tools anaconda3/4.4.0 kronatools/2.7 diamond/0.9.29'
     subprocess.check_call(refinemDependenciesCmd, shell=True)
 
-    condaenvCmd='conda activate /home/projects/ku-cbd/data/envs/refinem-0.1.1' # if doesn't work, source
+    condaenvCmd='source activate /home/projects/ku-cbd/data/envs/refinem-0.1.1' # if doesn't work, source
     subprocess.check_call(condaenvCmd, shell=True)
 
 
         ### Refinement based on genome properties
 
-    scaffold_statsCmd='refinem scaffold_stats -c '+threads+' --genome_ext fa '+assembly_file+' '+dt_bd+' '+main_out_dir+' '+bam+''
+    scaffold_statsCmd='refinem scaffold_stats -c '+threads+' --genome_ext fa '+a+' '+dt_bd+' '+main_out_dir+' '+bam+''
     subprocess.check_call(scaffold_statsCmd, shell=True)
 
     outliersCmd='refinem outliers '+main_out_dir+'/scaffold_stats.tsv '+main_out_dir+''
