@@ -103,7 +103,8 @@ rule assembly_mapping:
 #"Metagenomes - The simplest approach for metagenomes is to put all the sequences in one FASTA file and analyze them in Anonymous Mode."
 rule protein_prediction_prodigal:
     input:
-        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa"
+        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+        mapped_bam="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam" # not necessary
     output:
         genetic_coords="{projectpath}/MIA_02-ProdigalPrediction/{sample}.coords.gbk",
         protein_translations="{projectpath}/MIA_02-ProdigalPrediction/{sample}.protein_translations.faa"
@@ -191,15 +192,16 @@ rule das_tool:
         bin_table_mtb="{projectpath}/MIA_03-Binning/{sample}.bins_metabat.txt",
         pproteins="{projectpath}/MIA_02-ProdigalPrediction/{sample}.protein_translations.faa"
     output:
-        "{projectpath}/MIA_04-BinMerging/{sample}"
+        directory("{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins")
     params:
         threads=expand("{threads}", threads=config['threads']),
         search_eng=expand("{search_eng}", search_eng=config['search_eng']),
         dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db']),
+        dastool_dir="{projectpath}/MIA_04-BinMerging/{sample}",
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -a {input.assembly} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {output} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -a {input.assembly} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -210,7 +212,8 @@ rule das_tool:
 rule bin_refinement:
     input:
         assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
-        assembly_map="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam"
+        assembly_map="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam",
+        check_dastool="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins"
     output:
         directory("{projectpath}/MIA_05-BinRefinement/{sample}")
     params:
