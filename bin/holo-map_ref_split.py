@@ -27,8 +27,8 @@ out_stats=args.out_stats
 
 # Run
 # Write to log
-with open(str(log),'a+') as log:
-    log.write('A .bam file is generated containing the mapped reads, and two .fastq files containing the metagenomic ones.\n\n')
+with open(str(log),'a+') as logi:
+    logi.write('A .bam file is generated containing the mapped reads, and two .fastq files containing the metagenomic ones.\n\n')
 
 
 refbam1Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+''
@@ -65,5 +65,5 @@ statsfile.close()
 
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tPreprocessing with Holoflow has finished.\n')
+with open(str(log),'a+') as logo:
+    logo.write('\t\t'+current_time+'\tPreprocessing with Holoflow has finished.\n')
