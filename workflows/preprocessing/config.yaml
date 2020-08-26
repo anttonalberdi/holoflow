@@ -43,7 +43,7 @@ separator:
 
 #map_host options   # - get from preparegenomes.py
 refgenomes:
-  /home/projects/ku-cbd/people/nurher/bats/ref_genomes/all_genomes.fna
+  /home/projects/ku-cbd/people/nurher/bats/prepa_holoflow_test/all_genomes.fna
 
     # These values correspond to the default options for bwa mem, customise if desired
 t:

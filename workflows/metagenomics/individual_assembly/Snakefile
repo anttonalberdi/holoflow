@@ -120,7 +120,8 @@ rule protein_prediction_prodigal:
 
 rule depth_table:
     input:
-        "{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam"
+        genetic_coords="{projectpath}/MIA_02-ProdigalPrediction/{sample}.coords.gbk",  #not actually necessary here, but used to keep order
+        mapped_bam="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam"
     output:
         metabat_depth_file="{projectpath}/MIA_03-Binning/{sample}_metabat/{sample}.depth.txt",
         maxbin_depth_file="{projectpath}/MIA_03-Binning/{sample}_maxbin/{sample}.depth.txt"
@@ -128,7 +129,7 @@ rule depth_table:
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-depth_files_IA.py -a {input} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-depth_files_IA.py -a {input.mapped_bam} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 ##
@@ -211,7 +212,7 @@ rule bin_refinement:
         assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
         assembly_map="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam"
     output:
-        "{projectpath}/MIA_05-BinRefinement/{sample}"
+        directory("{projectpath}/MIA_05-BinRefinement/{sample}")
     params:
         dastool_bin_dir="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins",
         threads=expand("{threads}", threads=config['threads']),

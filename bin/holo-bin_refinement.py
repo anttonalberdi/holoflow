@@ -102,6 +102,7 @@ if os.path.exists(str(dt_bd)):
     callgenesCmd='refinem call_genes -c 40 --genome_ext fa '+dt_bd+' '+main_out_dir+'/2_taxonomy/genes'
     subprocess.check_call(callgenesCmd, shell=True)
 
+    os.mkdir(''+main_out_dir+'/2_taxonomy/tmp')
     txnprofileCmd='refinem taxon_profile -c 40 --tmpdir '+main_out_dir+'/2_taxonomy/tmp '+main_out_dir+'/2_taxonomy/genes '+main_out_dir+'/scaffold_stats.tsv /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r89_protein_db.2019-09-27.faa.dmnd /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r89_taxonomy.2019-09-27.tsv '+main_out_dir+'/2_taxonomy/'
     subprocess.check_call(txnprofileCmd, shell=True)
 
