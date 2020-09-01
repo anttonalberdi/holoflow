@@ -54,7 +54,7 @@ if os.path.exists(str(dt_bd)):
     subprocess.check_call(grepCmd, shell=True)
 
         #assembly mapping bam / INTERSECT new assembly
-    grepheadersCmd='grep ">" '+a+'.filtered > '+dt_bd+'/temp_headers.txt'
+    grepheadersCmd='grep ">" '+a+'.filtered | sed "s/>//g" > '+dt_bd+'/temp_headers.txt'
     subprocess.check_call(grepheadersCmd, shell=True)
 
         #index bam before filtering
@@ -63,8 +63,9 @@ if os.path.exists(str(dt_bd)):
         idxbamCmd='module load tools samtools/1.9 && samtools index -b '+bam+''
         subprocess.check_call(idxbamCmd, shell=True)
 
-        # filter bam
-    filterbamCmd='module load tools samtools/1.9 && samtools view -b '+bam+' '+dt_bd+'/temp_headers.txt > '+bam+'.filtered && rm '+dt_bd+'/temp_headers.txt'
+
+        # filter bam - create a variable with the headers
+    filterbamCmd='module load tools samtools/1.9 && headers=$(<'+dt_bd+'/temp_headers.txt) && samtools view '+bam+' $headers > '+bam+'.filtered' #&& rm '+dt_bd+'/temp_headers.txt'
     subprocess.check_call(filterbamCmd, shell=True)
 
     bam = ''+bam+'.filtered'
@@ -111,8 +112,6 @@ if os.path.exists(str(dt_bd)):
 
 
     #Refinement based on 16S genes
-    >refinem ssu_erroneous <bin_dir> <taxon_profile_dir> <ssu_db> <reference_taxonomy> <ssu_output_dir>
-
     # Previous:
     #ssuerrCmd='refinem ssu_erroneous -c 40 --genome_ext fa '+main_out_dir+'/2_taxonomy '+main_out_dir+'/2_taxonomy /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_ssu_db.2018-01-18.fna /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_taxonomy.2017-12-15.tsv ${workdir}/bin_refinement/3_16s'
     ssuerrCmd='refinem ssu_erroneous -c 40 --genome_ext fa '+dt_bd+' '+main_out_dir+'/2_taxonomy /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_ssu_db.2018-01-18.fna /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_taxonomy.2017-12-15.tsv '+main_out_dir+'/3_16s/'
