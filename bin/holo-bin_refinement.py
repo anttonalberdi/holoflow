@@ -65,7 +65,7 @@ if os.path.exists(str(dt_bd)):
 
 
         # filter bam - create a variable with the headers
-    filterbamCmd='module load tools samtools/1.9 && headers=$(<'+dt_bd+'/temp_headers.txt) && samtools view '+bam+' $headers > '+bam+'.filtered' #&& rm '+dt_bd+'/temp_headers.txt'
+    filterbamCmd='module load tools samtools/1.9 && headers=$(<'+dt_bd+'/temp_headers.txt) && samtools view -h '+bam+' $headers > '+bam+'.filtered.sam && samtools view -S -b '+bam+'.filtered.sam > '+bam+'.filtered && rm '+bam+'.filtered.sam '+dt_bd+'/temp_headers.txt'
     subprocess.check_call(filterbamCmd, shell=True)
 
     bam = ''+bam+'.filtered'
