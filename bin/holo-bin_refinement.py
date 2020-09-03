@@ -73,9 +73,8 @@ if os.path.exists(str(dt_bd)):
 
         #index bam before refineM
     idx_bam_f = ''+bam+'.bai'
-    if not (os.path.exists(str(idx_bam_f))):
-        idxbamCmd='module load tools samtools/1.9 && samtools index -b '+bam+''
-        subprocess.check_call(idxbamCmd, shell=True)
+    idxbamCmd='module load tools samtools/1.9 && samtools index -b '+bam+''
+    subprocess.check_call(idxbamCmd, shell=True)
 
     # RefineM
     refinemDependenciesCmd='module load tools anaconda3/4.4.0 kronatools/2.7 diamond/0.9.29'
