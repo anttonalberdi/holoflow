@@ -209,18 +209,34 @@ rule das_tool:
 # RefineM bin refinement
 ##
 #>refinem filter_bins <bin_dir> <outlier_output_dir>/outliers.tsv <filtered_output_dir>
-rule bin_refinement:
+# rule bin_refinement:
+#     input:
+#         assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+#         assembly_map="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam",
+#         check_dastool="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins"
+#     output:
+#         directory("{projectpath}/MIA_05-BinRefinement/{sample}")
+#     params:
+#         dastool_bin_dir="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins",
+#         threads=expand("{threads}", threads=config['threads']),
+#         sample="{sample}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-bin_refinement.py -a {input.assembly} -bam {input.assembly_map} -dastool_bd {params.dastool_bin_dir} -out_dir {output} -sample {params.sample} -t {params.threads} -log {rules.get_paths.input.logpath}
+#         """
+
+##
+# dRep MAG dereplication
+##
+rule drep_bins:
     input:
-        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
-        assembly_map="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam",
-        check_dastool="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins"
+        dastool_bin_dir="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins"
     output:
-        directory("{projectpath}/MIA_05-BinRefinement/{sample}")
+        directory("{projectpath}/MIA_05-BinDereplication")
     params:
-        dastool_bin_dir="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins",
         threads=expand("{threads}", threads=config['threads']),
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_refinement.py -a {input.assembly} -bam {input.assembly_map} -dastool_bd {params.dastool_bin_dir} -out_dir {output} -sample {params.sample} -t {params.threads} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
