@@ -28,6 +28,8 @@ threads=args.threads
 # Run
 if not (os.path.exists(str(out_dir))):
     os.mkdir(str(out_dir))
+
+if not (os.path.exists(str(out_dir+'/'+sample))):
     os.mkdir(str(out_dir+'/'+sample))
     out_dir = str(out_dir+'/'+sample)
 
@@ -42,26 +44,31 @@ if not (os.path.exists(str(out_dir))):
     # Recover completeness and redundancy from Bin Merging Summary
 
     # Save all bin_path,completeness,redundancy in new .csv file
-    binlist = glob.glob(str(dt_bd)+"*.fa")
+    binlist = glob.glob(str(dt_bd)+"/*.fa")
+
     with open(str(''+out_dir+'/final_bins_Info.csv'),'w+') as bins:
         # open binmergingsummary file
         with open(str(''+dt_bd+'/../'+sample+'_DASTool_summary.txt'),'r') as summary:
-            for i in range(len(summary)):
-                if summary[i].startswith(str(sample)):
-                    line_data = summary[i].split()
-                    completeness = line_data[10]
-                    redundancy = line_data[11]
+            summary_data = summary.readlines()
+            for i in range(len(summary_data)):
+                if summary_data[i].startswith(str(sample)):
+                    line_data = summary_data[i].split()
+                        # store compl and red values in variables
+                    completeness = line_data[11]
+                    redundancy = line_data[12]
+                        # discount the 1st row of the summary file and write the .csv file
+                    i-=1
                     bins.write(os.path.abspath(binlist[i])+','+completeness+','+redundancy+'\n')
                 else:
                     pass
 
 
+    if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))):
+        drepbinsCmd='dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
+        subprocess.check_call(drepbinsCmd, shell=True)
 
-    drepbinsCmd='dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
-    subprocess.check_call(drepbinsCmd, shell=True)
 
-
-    # Write to log
-    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-    with open(str(log),'a+') as logf:
-        logf.write(''+current_time+' - \n\n')
+        # Write to log
+        current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
+        with open(str(log),'a+') as logf:
+            logf.write(''+current_time+' - \n\n')
