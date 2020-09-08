@@ -46,7 +46,7 @@ with open(str(log),'w+') as log:
     log.write('The .fastq files coming from Holoflow Preprocessing, are those which could not be mapped to a \nreference genome. These contain the metagenomic reads; as no reference genome exists to them,\n they have to be assembled de novo. This is done by '+assembler+' here, which sorts the reads together into\ncontigs or scaffolds giving out one only assembly fasta file.\n\n')
 
 
-if not os.path.exists(str(out)):
+if not os.path.exists(str(empty_o)) or os.path.exists(str(temp_a)):
 
     emptytouchCmd='touch '+empty_o+''
     subprocess.check_call(emptytouchCmd, shell=True)
@@ -65,3 +65,5 @@ if not os.path.exists(str(out)):
 
         mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
         subprocess.check_call(mv_spadesCmd, shell=True)
+else:
+    pass

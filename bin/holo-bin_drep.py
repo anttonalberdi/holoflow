@@ -64,6 +64,8 @@ if not (os.path.exists(str(out_dir+'/'+sample))):
 
 
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))):
+        drepDependCmd='module load mash/2.2'
+        subprocess.check_call(drepDependCmd, shell=True)
         drepbinsCmd='dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
         subprocess.check_call(drepbinsCmd, shell=True)
 

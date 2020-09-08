@@ -40,6 +40,9 @@ with open(str(log),'a+') as logi:
 
 if not glob.glob(str(bb)+"*.fasta"):
     try:
+        #Create contig to bin table
+        bintable = open(str(bt),"a+")
+
         maxbinCmd='module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig '+a+' -abund '+d+' -out '+bb+' -thread '+t+''
         subprocess.check_call(maxbinCmd, shell=True)
 
@@ -48,8 +51,7 @@ if not glob.glob(str(bb)+"*.fasta"):
         subprocess.check_call(renamebinsCmd, shell=True)
 
 
-            #Create contig to bin table
-        bintable = open(str(bt),"a+")
+            #Fill contig to bin table
         binlist=glob.glob(str(bb)+"*.fa")
 
         for bin in binlist:

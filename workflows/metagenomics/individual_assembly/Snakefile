@@ -40,20 +40,20 @@ rule assembly:
 
 rule assembly_reformat:
     input:
-        empt_file="{projectpath}/MIA_01-Assembly/{sample}_file_to_remove",
-        stats_in="{projectpath}/PPR_03-MappedToReference/{sample}.stats"
+        empt_file="{projectpath}/MIA_01-Assembly/{sample}_file_to_remove"
     output:
         stats="{projectpath}/MIA_01-Assembly/{sample}.stats",
         out_assembly="{projectpath}/MIA_01-Assembly/{sample}.fa"
     params:
         sample="{sample}",
+        stats_in="{projectpath}/PPR_03-MappedToReference/{sample}.stats",
         min_contig_len=expand("{min_contig_len}", min_contig_len=config['min_contig_len']),
         in_assembly="{projectpath}/MIA_01-Assembly/{sample}_assembly/temp_assembly.fa"
 
 
     shell:
         """
-        rm {input.empt_file} && python {rules.get_paths.input.holopath}/bin/holo-assembly_reformat.py -sample {params.sample} -min_cl {params.min_contig_len} -in_a {params.in_assembly} -out_a {output.out_assembly} -st_in {input.stats_in} -st_out {output.stats} -log {rules.get_paths.input.logpath}
+        rm {input.empt_file} && python {rules.get_paths.input.holopath}/bin/holo-assembly_reformat.py -sample {params.sample} -min_cl {params.min_contig_len} -in_a {params.in_assembly} -out_a {output.out_assembly} -st_in {params.stats_in} -st_out {output.stats} -log {rules.get_paths.input.logpath}
         """
 
 

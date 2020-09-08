@@ -3,6 +3,7 @@
 import subprocess
 import argparse
 import time
+import os
 
 
 #Argument parsing
@@ -27,61 +28,64 @@ log=args.log
 
 
 # Run
-
-# Write to log
-current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tAssembly Reformat step - Sample '+sample+'\n')
-    log.write('The generated assembly file in the previous step is being reformatted: Those contigs less than '+min_cl+'\nbase pairs long are being removed and the IDs of the remaining ones are being modified.\n\n')
-
-
-with open(str(in_a)) as f_input, open(str(out_a), 'w') as f_output:
-    seq = ''
-    contig_n = (["%06d" % x for x in range(1000000)])
-    n = 0
-
-    for line in f_input:
-        if line.startswith('>'):
-
-            if seq:
-                if len(seq) > int(min_cl):
-                    n += 1
-                    contig_id = (">"+str(sample)+"_"+str(contig_n[n]))
-                    seq += ('\n')
-
-                    f_output.write(contig_id + '\n' + seq)
-                    seq = ''
-
-                else:
-                    seq = ''
-        else:
-            seq += line.strip()
-
-    if seq:
-        if len(seq) > int(min_cl):
-            n += 1
-            contig_id = (">"+str(sample)+"_"+str(contig_n[n]))
-            seq += ('\n')
-            f_output.write(contig_id + '\n' + seq)
-
-        else:
-            pass
+if not os.path.exists(str(out_a)):
+    # Write to log
+    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
+    with open(str(log),'a+') as log:
+        log.write('\t\t'+current_time+'\tAssembly Reformat step - Sample '+sample+'\n')
+        log.write('The generated assembly file in the previous step is being reformatted: Those contigs less than '+min_cl+'\nbase pairs long are being removed and the IDs of the remaining ones are being modified.\n\n')
 
 
-#Get stats after assembly
-contigs1 = len([1 for line in open(str(in_a)) if line.startswith(">")])
+    with open(str(in_a)) as f_input, open(str(out_a), 'w') as f_output:
+        seq = ''
+        contig_n = (["%06d" % x for x in range(1000000)])
+        n = 0
 
-#Print stats to stats file
+        for line in f_input:
+            if line.startswith('>'):
 
-statsfile=open(str(stats_in),"a+")
-statsfile.write("Assembly contigs\t"+str(contigs1)+" \r\n")
+                if seq:
+                    if len(seq) > int(min_cl):
+                        n += 1
+                        contig_id = (">"+str(sample)+"_"+str(contig_n[n]))
+                        seq += ('\n')
 
-#Get stats after assembly reformat
-contigs2 = len([1 for line in open(str(out_a)) if line.startswith(">")])
+                        f_output.write(contig_id + '\n' + seq)
+                        seq = ''
 
-#Print stats to stats file
-statsfile.write("Reformated assembly contigs\t"+str(contigs2)+" \r\n")
-statsfile.close()
+                    else:
+                        seq = ''
+            else:
+                seq += line.strip()
 
-statsCmd='mv '+stats_in+' '+out+''
-subprocess.check_call(statsCmd, shell=True)
+        if seq:
+            if len(seq) > int(min_cl):
+                n += 1
+                contig_id = (">"+str(sample)+"_"+str(contig_n[n]))
+                seq += ('\n')
+                f_output.write(contig_id + '\n' + seq)
+
+            else:
+                pass
+
+
+    #Get stats after assembly
+    contigs1 = len([1 for line in open(str(in_a)) if line.startswith(">")])
+
+    #Print stats to stats file
+
+    statsfile=open(str(stats_in),"a+")
+    statsfile.write("Assembly contigs\t"+str(contigs1)+" \r\n")
+
+    #Get stats after assembly reformat
+    contigs2 = len([1 for line in open(str(out_a)) if line.startswith(">")])
+
+    #Print stats to stats file
+    statsfile.write("Reformated assembly contigs\t"+str(contigs2)+" \r\n")
+    statsfile.close()
+
+    statsCmd='mv '+stats_in+' '+out+''
+    subprocess.check_call(statsCmd, shell=True)
+
+else:
+    pass
