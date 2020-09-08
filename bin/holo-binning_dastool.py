@@ -52,7 +52,7 @@ binfiles = glob.glob(os.path.join(str(o),'*.fa'))
 for b in binfiles:
     shutil.move(b, str(''+o+'.bin'))
 
-if os.path.exists(str(o+'/'+sample+'_maxbin.eval'))
+if os.path.exists(str(o+'/'+sample+'_maxbin.eval')):
     # Add relevant info to log
     with open(str(log),'a+') as logf:
         logf.write('\t\tDASTool MaxBin bins evaluation - Sample '+sample+'\n\n')
