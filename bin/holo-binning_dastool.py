@@ -52,15 +52,15 @@ binfiles = glob.glob(os.path.join(str(o),'*.fa'))
 for b in binfiles:
     shutil.move(b, str(''+o+'.bin'))
 
-
-# Add relevant info to log
-with open(str(log),'a+') as logf:
-    logf.write('\t\tDASTool MaxBin bins evaluation - Sample '+sample+'\n\n')
-    with open(str(''+o+'_maxbin.eval'),'r') as mxb_eval:
-        logf.write(''+mxb_eval.read()+'\n\n\n')
-    logf.write('\t\tDASTool Metabat2 bins evaluation - Sample '+sample+'\n\n')
-    with open(str(''+o+'_metabat.eval'),'r') as mtb_eval:
-        logf.write(''+mtb_eval.read()+'\n\n\n')
-    logf.write('\t\tDASTool Bin Merging Summary - Sample '+sample+'\n\n')
-    with open(str(''+o+'_DASTool_summary.txt'),'r') as summary:
-        logf.write(''+summary.read()+'\n\n\n\n')
+if os.path.exists(str(o+'/'+sample+'_maxbin.eval'))
+    # Add relevant info to log
+    with open(str(log),'a+') as logf:
+        logf.write('\t\tDASTool MaxBin bins evaluation - Sample '+sample+'\n\n')
+        with open(str(''+o+'_maxbin.eval'),'r') as mxb_eval:
+            logf.write(''+mxb_eval.read()+'\n\n\n')
+        logf.write('\t\tDASTool Metabat2 bins evaluation - Sample '+sample+'\n\n')
+        with open(str(''+o+'_metabat.eval'),'r') as mtb_eval:
+            logf.write(''+mtb_eval.read()+'\n\n\n')
+        logf.write('\t\tDASTool Bin Merging Summary - Sample '+sample+'\n\n')
+        with open(str(''+o+'_DASTool_summary.txt'),'r') as summary:
+            logf.write(''+summary.read()+'\n\n\n\n')

@@ -50,6 +50,7 @@ if not (os.path.exists(str(out_dir+'/'+sample))):
         # open binmergingsummary file
         with open(str(''+dt_bd+'/../'+sample+'_DASTool_summary.txt'),'r') as summary:
             summary_data = summary.readlines()
+            bins.write('genome,completeness,contamination\n')
             for i in range(len(summary_data)):
                 if summary_data[i].startswith(str(sample)):
                     line_data = summary_data[i].split()
@@ -64,8 +65,6 @@ if not (os.path.exists(str(out_dir+'/'+sample))):
 
 
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))):
-        drepDependCmd='module load mash/2.2'
-        subprocess.check_call(drepDependCmd, shell=True)
         drepbinsCmd='dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
         subprocess.check_call(drepbinsCmd, shell=True)
 
