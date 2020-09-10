@@ -39,14 +39,13 @@ with open(str(log),'a+') as log:
 
 if not glob.glob(str(bb)+"*.fa"):
     try:
-        #Create contig to bin table
-        bintable = open(str(bt),"a+")
 
         metabatCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i '+a+' -a '+d+' -o '+bb+' -m 1500 -t '+t+''
         subprocess.check_call(metabatCmd, shell=True)
 
             #Fill contig to bin table
         binlist=glob.glob(str(bb)+"*.fa")
+        bintable = open(str(bt),"a+")
 
         for bin in binlist:
             full_bin=os.path.abspath(bin)
