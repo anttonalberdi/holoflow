@@ -120,7 +120,7 @@ def run_metagenomics(in_f, path, config, cores):
     path_snkf = os.path.join(holopath,'workflows/metagenomics/individual_assembly/Snakefile')
 
     # Run snakemake
-    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
+    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(mtg_snk_Cmd, shell=True)
 
     print("Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
