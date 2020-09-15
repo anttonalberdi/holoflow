@@ -241,11 +241,11 @@ rule drep_bins:
         python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
 
-rule merge_mags:
-    input:
-    output:
-    params:
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-mag_merging.py 
-        """
+# rule merge_mags:
+#     input:
+#     output:
+#     params:
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-mag_merging.py
+#         """
