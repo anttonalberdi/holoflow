@@ -227,19 +227,19 @@ rule das_tool:
 
 ##
 # dRep MAG dereplication
-##
-rule drep_bins:
-    input:
-        dastool_bin_dir="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins"
-    output:
-        directory("{projectpath}/MIA_05-BinDereplication")
-    params:
-        threads=expand("{threads}", threads=config['threads']),
-        sample="{sample}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
-        """
+# ##
+# rule drep_bins:
+#     input:
+#         dastool_bin_dir="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins"
+#     output:
+#         directory("{projectpath}/MIA_05-BinDereplication")
+#     params:
+#         threads=expand("{threads}", threads=config['threads']),
+#         sample="{sample}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
+#         """
 
 # rule merge_mags:
 #     input:
