@@ -225,15 +225,16 @@ rule das_tool:
 #         python {rules.get_paths.input.holopath}/bin/holo-bin_refinement.py -a {input.assembly} -bam {input.assembly_map} -dastool_bd {params.dastool_bin_dir} -out_dir {output} -sample {params.sample} -t {params.threads} -log {rules.get_paths.input.logpath}
 #         """
 
+
 ##
-# dRep MAG dereplication
-# ##
+# dRep bin dereplication
+##
 rule drep_bins:
     input:
         dastool_bin_dir="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins"
     output:
         directory("{projectpath}/MIA_05-BinDereplication/{sample}")
-            ############### I THINK AN EMPTY FILE WITH SAMPLE NAME ON IT WILL BE NECESSARY
+
     params:
         threads=expand("{threads}", threads=config['threads']),
         sample="{sample}"
@@ -242,11 +243,27 @@ rule drep_bins:
         python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
 
-# rule merge_mags:
-#     input:
-#     output:
-#     params:
-#     shell:
-#         """
-#         python {rules.get_paths.input.holopath}/bin/holo-mag_merging.py
-#         """
+##
+# Bin mapping
+##
+rule bin_mapping:
+    
+
+
+
+##
+# SSPace contigs in bin scaffolding
+##
+rule bin_scaffolding:
+    input:
+        "{projectpath}/MIA_05-BinDereplication/{sample}/dereplicated_genomes"
+    output:
+        directory("{projectpath}/MIA_06-BinScaffolding/{sample}")
+    params:
+        fastq_dir="{projectpath}/PPR_03-MappedToReference",
+        threads=expand("{threads}", threads=config['threads']),
+        sample='{sample}'
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {params.fastq_dir} -bin_dir {input} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        """
