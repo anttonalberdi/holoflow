@@ -88,11 +88,8 @@ Those lines starting by # won't be considered.
   2. Read mapping to assembly using **bwa mem** 
   3. Contig binning using **Metabat**, **MaxBin** (and **Concoct** #### NOT YET)
   4. Binner result integration using **DasTool** 
-  5. Complementess improvement ##### UNDER CONSTRUCTION
-  5. Taxonomic refinement using CAT ##### UNDER CONSTRUCTION
-  6. Redundancy refinement ##### UNDER CONSTRUCTION
-  7. Dereplication using dRep ##### UNDER CONSTRUCTION
-  7. Bin assembly improvement (contig elongation and scaffolding) using SSPACE. ##### UNDER CONSTRUCTION
+  5. Bin Dereplication using **dRep**
+  6. Bin assembly improvement (contig elongation and scaffolding) using SSPACE. ##### UNDER CONSTRUCTION
 
 - Config file *config.yaml*, in which the user may be interested to customise:
   1. Metagenomic assembly - choose between the mentioned options by writing *megahit* or *spades*
