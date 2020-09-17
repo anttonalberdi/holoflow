@@ -68,7 +68,7 @@ def in_out_metagenomics(path,in_f):
         # Paste desired output file names from input.txt
         read = 0
         output_files=''
-        final_temp_dir="MIA_04-BinMerging"
+        final_temp_dir="MIA_05-BinDereplication"
 
         lines = in_file.readlines() # Read input.txt lines
         for file in lines:
@@ -98,10 +98,10 @@ def in_out_metagenomics(path,in_f):
                 if read == 2: # two read files for one sample finished, new sample
                     read=0
                     # Add an output file based on input.txt info to a list for Snakemake command
-                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"_DASTool_bins ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+" ")
 
                     # Add stats output file only once per sample
-                    output_files+=(path+"/MIA_01-Assembly/"+file[0]+".stats ")
+                    #output_files+=(path+"/MIA_01-Assembly/"+file[0]+".stats ")
                         # change for
                     #####output_files+=(path+"/"+final_temp_dir+"/"+file[0]+".stats ")
 
