@@ -2,12 +2,14 @@
 
 import subprocess
 import argparse
+import os
+import glob
 import time
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-i1', help="path1", dest="iread1", required=True)
-parser.add_argument('-i2', help="path2", dest="iread2", required=True)
+parser.add_argument('-i1', help="path1", dest="read1", required=True)
+parser.add_argument('-i2', help="path2", dest="read2", required=True)
 parser.add_argument('-bin_dir', help="input bin directory", dest="bin_dir", required=True)
 parser.add_argument('-out_dir', help="main output directory", dest="out_dir", required=True)
 parser.add_argument('-t', help="threads", dest="t", required=True)
@@ -32,19 +34,29 @@ if not (os.path.exists(str(out_dir))):
 
     binlist = glob.glob(str(bin_dir)+"/*.fa")
     for bin in binlist:
-        full_bin = os.path.abspath(bin)
+        bin_name=os.path.basename(bin)
+        bin_name=bin_name.replace(".fa","")
+
 
             # define output files
-        obam=''+out_dir+'/'+bin+'.bam'
-        oread1=''+out_dir+'/'+bin+'_1.fastq'
-        oread2=''+out_dir+'/'+bin+'_2.fastq'
+        obam=''+out_dir+'/'+bin_name+'.bam'
+        oread1=''+out_dir+'/'+bin_name+'_1.fastq'
+        oread2=''+out_dir+'/'+bin_name+'_2.fastq'
 
     #Map bin to 1,2.fastq
-        mapCmd = 'module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" '+full_bin+' '+iread1+' '+iread2+' | samtools view -T '+full_bin+' -b - > '+obam+''
+
+        idxbwaCmd='module load bwa/0.7.15 && bwa index '+bin+''
+        subprocess.check_call(idxbwaCmd, shell=True)
+
+        idxsamCmd='module load tools samtools/1.9 && samtools faidx '+bin+''
+        subprocess.check_call(idxsamCmd, shell=True)
+
+
+        mapCmd = 'module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" '+bin+' '+read1+' '+read2+' | samtools view -T '+bin+' -b - > '+obam+''
         subprocess.check_call(mapCmd, shell=True)
 
-        fastqCmd = 'module load tools samtools/1.9 && samtools view -T '+full_bin+' -b -f12 '+obam+' | samtools fastq -1 '+oread1+' -2 '+oread2+' -'
-        subprocess.check_call(refbam2Cmd, shell=True)
+        fastqCmd = 'module load tools samtools/1.9 && samtools view -T '+bin+' -b -f12 '+obam+' | samtools fastq -1 '+oread1+' -2 '+oread2+' -'
+        subprocess.check_call(fastqCmd, shell=True)
 
         rmObamCmd = 'rm '+obam+''
-        subprocess.check_call(rmAllbamCmd, shell=True)
+        subprocess.check_call(rm0bamCmd, shell=True)

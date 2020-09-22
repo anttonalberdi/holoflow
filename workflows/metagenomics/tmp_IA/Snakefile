@@ -252,7 +252,7 @@ rule bin_mapping:
         read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq",
         bin_dir="{projectpath}/MIA_05-BinDereplication/{sample}/dereplicated_genomes"
     output:
-        directory("{projectpath}/MIA_06-BinMapping/Mapped_bins")
+        directory("{projectpath}/MIA_06-BinMapping/{sample}/Mapped_bins")
     params:
         threads=expand("{threads}", threads=config['threads']),
         sample='{sample}'
