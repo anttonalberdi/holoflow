@@ -35,7 +35,7 @@ if not (os.path.exists(str(out_dir))):
     binlist = glob.glob(str(bin_dir)+"/*.fa")
     for bin in binlist:
         bin_name=os.path.basename(bin)
-        bin_name=bin_name.replace(".fa","")
+        bin_name=bin_name.replace(".contigs.fa","")
 
 
             # define output files
@@ -58,5 +58,5 @@ if not (os.path.exists(str(out_dir))):
         fastqCmd = 'module load tools samtools/1.9 && samtools view -T '+bin+' -b -f12 '+obam+' | samtools fastq -1 '+oread1+' -2 '+oread2+' -'
         subprocess.check_call(fastqCmd, shell=True)
 
-        rmObamCmd = 'rm '+obam+''
-        subprocess.check_call(rm0bamCmd, shell=True)
+        rmvbamCmd = 'rm '+obam+''
+        subprocess.check_call(rmvbamCmd, shell=True)
