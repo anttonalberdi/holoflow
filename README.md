@@ -13,15 +13,15 @@ The main *holoflow* directory contains a given number of Python scripts which wo
   - *metagenomics_IA.py*  - Individual assembly-based assembly and metagenomics binning. 
   
   
-These are designed to be called from the command line and require  the following arguments:  
-
-  1. **-f** Input.txt file to *.py* files, which will be used to retrieve fundamental information for the pipeline run.   
-  2. **-d** Directory where the pipeline temporary files and directories will be.
-  3. **-l** Desired pipeline *log file* path.
-  4. **-c** *config* file full path.
-  5. **-t** Maximum number of threads to be used by Snakemake.  
+These are designed to be called from the command line and require the following arguments ([optional arguments]):  
+```bash
+  -f INPUT            Input.txt file to *.py* files,which will be used to retrieve fundamental information for the pipeline run.   
+  -d WORK_DIR         Directory where the pipeline temporary files and directories will be.
+  -t THREADS          Maximum number of threads to be used by Snakemake.  
+  [-l LOG]            Desired pipeline *log file* path.
+  [-c CONFIG]         Full path for configuration file.
   
-  
+```  
   
 #### Input files description
 Find *input.txt* file description for every workflow.  
