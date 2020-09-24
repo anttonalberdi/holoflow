@@ -116,7 +116,3 @@ if os.path.exists(str(dt_bd)):
 
     ssfilterCmd='refinem filter_bins --genome_ext fa '+main_out_dir+'/2_taxonomy '+main_out_dir+'/3_16s/ssu_erroneous.tsv '+main_out_dir+'/4_finalbins && rm '+main_out_dir+'/4_finalbins/refinem.log'
     subprocess.check_call(ssfilterCmd, shell=True)
-
-
-    with open(str(log),'a+') as logf:
-        logf.write('\t\t'+current_time+'\tMetagenomics analysis with Holoflow are completed for sample '+sample+'\n')

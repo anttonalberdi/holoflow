@@ -270,12 +270,12 @@ rule bin_scaffolding:
     input:
         "{projectpath}/MIA_05-BinDereplication/{sample}/dereplicated_genomes"
     output:
-        directory("{projectpath}/MIA_07-BinScaffolding/{sample}/Scaffolded_bins")
+        directory("{projectpath}/MIA_06-BinScaffolding/{sample}/Scaffolded_bins")
     params:
-        fastq_dir="{projectpath}/PPR_03-MappedToReference",
+        fq_dir="{projectpath}/MIA_06-BinScaffolding/{sample}/Mapped_bins",
         threads=expand("{threads}", threads=config['threads']),
         sample='{sample}'
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {params.fastq_dir} -bin_dir {input} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {params.fq_dir} -bin_dir {input} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
