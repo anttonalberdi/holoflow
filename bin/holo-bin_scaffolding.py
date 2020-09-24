@@ -51,10 +51,11 @@ for bin in binlist:
 
 #Rearrange outputs
 # for bin in binlist:
-#     bin_name = bin.replace(".contigs.fa","")
-#     faoutpCmd='cp 'out_dir'/'+bin_name+'.final.scaffolds.fasta 'out_dir'/../'+bin_name+'.fa'
+#     bin_name=os.path.basename(bin)
+#     bin_name = bin.replace(".fa","")
+#     faoutpCmd='cp 'out_dir'/'+bin_name+'.final.scaffolds.fasta '+out_dir+'/../'+bin_name+'.fa'
 #     subprocess.check_call(faoutpCmd, shell=True)
-#     infoutCmd='cp 'out_dir'/'+bin_name+'.summaryfile.txt 'out_dir'/../'+bin_name+'.info'
+#     infoutCmd='cp 'out_dir'/'+bin_name+'.summaryfile.txt '+out_dir+'/../'+bin_name+'.info'
 #     subprocess.check_call(infoutCmd, shell=True)
-##  rmCmd='rm 'out_dir''
-##  subprocess.check_call(rmCmd, shell=True)
+# #  rmCmd='rm 'out_dir''
+# #  subprocess.check_call(rmCmd, shell=True)
