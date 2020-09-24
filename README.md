@@ -15,13 +15,11 @@ The main *holoflow* directory contains a given number of Python scripts which wo
   
 These are designed to be called from the command line and require the following arguments ([optional arguments]):  
 ```bash
-  -f INPUT            Input.txt file to .py files,which will be used to retrieve 
-                      fundamental information for the pipeline run.   
-  -d WORK_DIR         Directory where the pipeline temporary files and directories 
-                      will be.
-  -t THREADS          Maximum number of threads to be used by Snakemake.  
+  -f INPUT            File containing input information.
+  -d WORK_DIR         Output directory.
+  -t THREADS          Thread maximum number to be used by Snakemake.  
   [-l LOG]            Desired pipeline log file path.
-  [-c CONFIG]         Full path for configuration file.
+  [-c CONFIG]         Configuration file full path.
   
 ```  
   
