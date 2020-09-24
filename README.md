@@ -15,10 +15,12 @@ The main *holoflow* directory contains a given number of Python scripts which wo
   
 These are designed to be called from the command line and require the following arguments ([optional arguments]):  
 ```bash
-  -f INPUT            Input.txt file to *.py* files,which will be used to retrieve fundamental information for the pipeline run.   
-  -d WORK_DIR         Directory where the pipeline temporary files and directories will be.
+  -f INPUT            Input.txt file to .py files,which will be used to retrieve 
+                      fundamental information for the pipeline run.   
+  -d WORK_DIR         Directory where the pipeline temporary files and directories 
+                      will be.
   -t THREADS          Maximum number of threads to be used by Snakemake.  
-  [-l LOG]            Desired pipeline *log file* path.
+  [-l LOG]            Desired pipeline log file path.
   [-c CONFIG]         Full path for configuration file.
   
 ```  
@@ -100,12 +102,12 @@ Those lines starting by # won't be considered.
 These should be **executed as jobs**, therefore a *.sh* script should be generated which will contain the job itself:
 
 - *.sh* example script for *preprocessing.py* called ***first_job_preprocessing.sh***:
-```
+```bash
 python preprocessing.py -f full/path/input.txt -d full/path/workdir -c full/path/config.yaml -l full/path/log_file.log -t 40
 ```
 
 - *job execution* in Computerome2 example:
-```
+```bash
  qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e full/path/job_error_file.err -o full/path/job_out_file.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N JOB_ID full/path/first_job_preprocessing.sh
 
 ```
