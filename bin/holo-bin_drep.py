@@ -61,5 +61,5 @@ if not (os.path.exists(str(out_dir))):
 
 
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))):
-        drepbinsCmd='module load tools ngs anaconda2/4.4.0 anaconda3/4.4.0 mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 pplacer/1.1.alpha19 && dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
+        drepbinsCmd='module load tools ngs anaconda2/4.4.0 anaconda3/4.4.0 python36 mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 pplacer/1.1.alpha19 && dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
         subprocess.check_call(drepbinsCmd, shell=True)

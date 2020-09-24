@@ -65,5 +65,5 @@ if not (os.path.exists(str(out_dir))):
         fastqCmd = 'module load tools samtools/1.9 && samtools view -T '+bin+' -b -f12 '+obam+' | samtools fastq -1 '+oread1+' -2 '+oread2+' -'
         subprocess.check_call(fastqCmd, shell=True)
 
-        rmvbamCmd = 'rm '+obam+''
+        rmvbamCmd = 'rm '+obam+' '+bin+'.*'
         subprocess.check_call(rmvbamCmd, shell=True)

@@ -1,4 +1,4 @@
-#17.09.2020 - Holoflow 0.1.
+#24.09.2020 - Holoflow 0.1.
 
 import subprocess
 import argparse
@@ -26,6 +26,7 @@ log=args.log
 threads=args.threads
 
 
+bin_dir= (bin_dir+'/dereplicated_genomes')
 # Run
 if not (os.path.exists(str(out_dir))):
     os.mkdir(str(out_dir))

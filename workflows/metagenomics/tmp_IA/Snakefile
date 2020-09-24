@@ -268,7 +268,7 @@ rule bin_mapping:
 ##
 rule bin_scaffolding:
     input:
-        "{projectpath}/MIA_05-BinDereplication/{sample}/dereplicated_genomes"
+        "{projectpath}/MIA_05-BinDereplication/{sample}"
     output:
         directory("{projectpath}/MIA_06-BinScaffolding/{sample}/Scaffolded_bins")
     params:
