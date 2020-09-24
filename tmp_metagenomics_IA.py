@@ -68,7 +68,7 @@ def in_out_metagenomics(path,in_f):
         # Paste desired output file names from input.txt
         read = 0
         output_files=''
-        final_temp_dir="MIA_06-BinMapping"
+        final_temp_dir="MIA_06-BinScaffolding"
 
         lines = in_file.readlines() # Read input.txt lines
         for file in lines:
@@ -98,7 +98,7 @@ def in_out_metagenomics(path,in_f):
                 if read == 2: # two read files for one sample finished, new sample
                     read=0
                     # Add an output file based on input.txt info to a list for Snakemake command
-                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"/Mapped_bins ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"/Scaffolded_bins ")
 
                     # Add stats output file only once per sample
                     #output_files+=(path+"/MIA_01-Assembly/"+file[0]+".stats ")
@@ -120,18 +120,10 @@ def run_metagenomics(in_f, path, config, cores):
     path_snkf = os.path.join(holopath,'workflows/metagenomics/individual_assembly/Snakefile')
 
     # Run snakemake
-    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
+    mtg_snk_Cmd = 'module unload gcc/5.1.0 && module load anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(mtg_snk_Cmd, shell=True)
 
     print("Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
-
-
-###########################
-#### Snakemake pipeline run - load required modules
-###########################
-load_modulesCmd='module unload gcc/5.1.0 && module load anaconda3/4.4.0'
-subprocess.check_call(load_modulesCmd, shell=True)
-
 
 
 ###########################
