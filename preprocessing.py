@@ -116,7 +116,7 @@ def run_preprocessing(in_f, path, config, cores):
     path_snkf = os.path.join(holopath,'workflows/preprocessing/Snakefile')
 
     # Run snakemake
-    prep_snk_Cmd = 'module unload gcc/5.1.0 && module load anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
+    prep_snk_Cmd = 'module unload gcc/5.1.0 && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(prep_snk_Cmd, shell=True)
     print("Have a nice run!\n\t\tHOLOFOW Preprocessing starting")
 

@@ -52,7 +52,7 @@ if not (os.path.exists(str(out_dir))):
 
     #Map bin to 1,2.fastq
 
-        idxbwaCmd='module load bwa/0.7.15 && bwa index '+bin+''
+        idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+bin+''
         subprocess.check_call(idxbwaCmd, shell=True)
 
         idxsamCmd='module load tools samtools/1.9 && samtools faidx '+bin+''

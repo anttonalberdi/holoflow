@@ -46,7 +46,7 @@ if os.path.exists(str(dt_bd)):
     subprocess.check_call(joinbinsCmd, shell=True)
 
         # convert to one liner fasta
-    onelinerCmd='module unload perl/5.20.1 && module load perl/5.30.2 && perl -pe "$. > 1 and /^>/ ? print \n : chomp" '+dt_bd+'/allcontigs_temp.fna  > '+dt_bd+'/allcontigs_ol_temp.fna'
+    onelinerCmd='module unload perl/5.20.1 && module load tools perl/5.30.2 && perl -pe "$. > 1 and /^>/ ? print \n : chomp" '+dt_bd+'/allcontigs_temp.fna  > '+dt_bd+'/allcontigs_ol_temp.fna'
     subprocess.check_call(onelinerCmd, shell=True)
 
         # grep
@@ -99,7 +99,7 @@ if os.path.exists(str(dt_bd)):
 
         ### Refinement based on taxonomy
 
-    callgenesCmd='module load prodigal/2.6.3 && refinem call_genes -c 40 --genome_ext fa '+dt_bd+' '+main_out_dir+'/2_taxonomy/genes'
+    callgenesCmd='module load tools prodigal/2.6.3 && refinem call_genes -c 40 --genome_ext fa '+dt_bd+' '+main_out_dir+'/2_taxonomy/genes'
     subprocess.check_call(callgenesCmd, shell=True)
 
     os.mkdir(''+main_out_dir+'/2_taxonomy/tmp')
@@ -111,7 +111,7 @@ if os.path.exists(str(dt_bd)):
 
 
     #Refinement based on 16S genes
-    ssuerrCmd='module load hmmer/3.2.1 && refinem ssu_erroneous -c 40 --genome_ext fa '+dt_bd+' '+main_out_dir+'/2_taxonomy /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_ssu_db.2018-01-18.fna /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_taxonomy.2017-12-15.tsv '+main_out_dir+'/3_16s/'
+    ssuerrCmd='module load tools hmmer/3.2.1 && refinem ssu_erroneous -c 40 --genome_ext fa '+dt_bd+' '+main_out_dir+'/2_taxonomy /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_ssu_db.2018-01-18.fna /home/projects/ku-cbd/people/antalb/databases/RefineM/gtdb_r80_taxonomy.2017-12-15.tsv '+main_out_dir+'/3_16s/'
     subprocess.check_call(ssuerrCmd, shell=True)
 
     ssfilterCmd='refinem filter_bins --genome_ext fa '+main_out_dir+'/2_taxonomy '+main_out_dir+'/3_16s/ssu_erroneous.tsv '+main_out_dir+'/4_finalbins && rm '+main_out_dir+'/4_finalbins/refinem.log'

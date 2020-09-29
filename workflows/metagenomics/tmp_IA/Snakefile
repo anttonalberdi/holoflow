@@ -243,6 +243,9 @@ rule drep_bins:
         python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
 
+
+OPTIONAL -----
+
 ##
 # Bin mapping
 ##
@@ -279,3 +282,6 @@ rule bin_scaffolding:
         """
         python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {params.fq_dir} -bin_dir {input} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
+-----
+
+CheckM x example 

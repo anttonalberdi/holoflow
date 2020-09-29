@@ -45,7 +45,7 @@ if os.path.exists(str(idx_bwa)):
     pass
 
 else:
-    idxbwaCmd='module load bwa/0.7.15 && bwa index '+decomp_db+''
+    idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+decomp_db+''
     subprocess.check_call(idxbwaCmd, shell=True)
 
 
