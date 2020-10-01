@@ -24,10 +24,7 @@ klist_spades:
 min_contig_len:
   1000
 
-# binning options
-
-
-
+# bin refinement options
 dastool_db:
   /home/projects/ku-cbd/people/antalb/databases/dastool_db
 
@@ -35,5 +32,17 @@ dastool_db:
 search_eng:
   diamond
 
+# bin scaffolding options
 SSPACE:
   True
+
+# phylogeny options
+
+  # low , for species- and strain-level phylogenies
+  # medium, for genus- and family-level phylogenies
+  # high, for tree-of-life and higher-ranked taxonomic levels phylogenies
+diversity: # {low,medium,high}
+  low
+
+pipeline: # {tree, concatenation}
+  tree
