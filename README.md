@@ -99,6 +99,7 @@ Those lines starting by # won't be considered.
 ## Usage
 
 ### Get started: download Holoflow repository
+Clone the repository by running the following command on your command line:
 
 ```bash
 git clone -b nurher --single-branch https://github.com/anttonalberdi/holoflow.git
