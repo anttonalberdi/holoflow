@@ -41,11 +41,13 @@ SSPACE:
   # low , for species- and strain-level phylogenies
   # medium, for genus- and family-level phylogenies
   # high, for tree-of-life and higher-ranked taxonomic levels phylogenies
-diversity: # {low,medium,high}
+# {low,medium,high}
+diversity:
   low
 
 phylo_db:
   phylophlan
 
-pipeline: # {tree, concatenation}
+# {tree, concatenation}
+pipeline:
   tree

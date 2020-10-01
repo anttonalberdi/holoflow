@@ -26,7 +26,7 @@ curr_dir = os.path.abspath(file)
 
 
 if not (args.config_file):
-    config = os.path.join(os.path.abspath(curr_dir),"workflows/preparegenomes/config.yaml")
+    config = os.path.join(os.path.abspath(curr_dir),"workflows/metagenomics/individual_assembly/config.yaml")
 else:
     config=args.config_file
 
@@ -36,18 +36,23 @@ else:
     log=args.log
 
 
-
     #Append current directory to .yaml config for standalone calling
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
 with open(str(config), 'r') as config_file:
-  data = yaml.load(config_file)
+    data = yaml.load(config_file)
+    if data == None:
+        data = {}
 
 with open(str(config), 'w') as config_file:
-  data['holopath'] = str(curr_dir)
-  data['logpath'] = str(log)
-  dump = yaml.dump(data, config_file)
+    data['holopath'] = str(curr_dir)
+    data['logpath'] = str(log)
+    dump = yaml.dump(data, config_file)
 
+    if data['SSPACE']:
+        scaffold=True
+    else:
+        scaffold=False
 
 
 ###########################
@@ -68,7 +73,11 @@ def in_out_metagenomics(path,in_f):
         # Paste desired output file names from input.txt
         read = 0
         output_files=''
-        final_temp_dir="MIA_06-BinScaffolding"
+
+        if scaffold:
+            final_temp_dir="MIA_07-MAGPhylogenetics"
+        if not scaffold:
+            final_temp_dir="MIA_06-MAGPhylogenetics"
 
         lines = in_file.readlines() # Read input.txt lines
         for file in lines:
@@ -98,7 +107,7 @@ def in_out_metagenomics(path,in_f):
                 if read == 2: # two read files for one sample finished, new sample
                     read=0
                     # Add an output file based on input.txt info to a list for Snakemake command
-                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"/Scaffolded_bins ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+" ")
 
                     # Add stats output file only once per sample
                     #output_files+=(path+"/MIA_01-Assembly/"+file[0]+".stats ")
@@ -124,6 +133,7 @@ def run_metagenomics(in_f, path, config, cores):
     subprocess.check_call(mtg_snk_Cmd, shell=True)
 
     print("Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
+
 
 
 ###########################

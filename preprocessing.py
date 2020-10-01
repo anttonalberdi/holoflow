@@ -25,12 +25,12 @@ curr_dir = os.path.abspath(file)
 
 
 if not (args.config_file):
-    config = os.path.join(os.path.abspath(curr_dir),"workflows/preparegenomes/config.yaml")
+    config = os.path.join(os.path.abspath(curr_dir),"workflows/preprocessing/config.yaml")
 else:
     config=args.config_file
 
 if not (args.log):
-    log = os.path.join(path,"Holoflow_metagenomics.log")
+    log = os.path.join(path,"Holoflow_preprocessing.log")
 else:
     log=args.log
 
@@ -39,12 +39,15 @@ else:
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
 with open(str(config), 'r') as config_file:
-  data = yaml.load(config_file)
+    data = yaml.load(config_file)
+    if data == None:
+        data = {}
 
 with open(str(config), 'w') as config_file:
-  data['holopath'] = str(curr_dir)
-  data['logpath'] = str(log)
-  dump = yaml.dump(data, config_file)
+    data['holopath'] = str(curr_dir)
+    data['logpath'] = str(log)
+    dump = yaml.dump(data, config_file)
+
 
 
 
