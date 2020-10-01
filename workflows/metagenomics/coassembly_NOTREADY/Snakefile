@@ -1,0 +1,283 @@
+# 29.04.20
+configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/metagenomics/config.yaml"
+################################################################################################################
+############################################       METAGENOMICS     ############################################
+################################################################################################################
+
+##
+# Assembly
+##
+rule assembly:
+    input:
+        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
+        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
+
+    output:
+        "{projectpath}/05-Assembly/{sample}_file_to_remove"
+    params:
+        memory=expand("{memory}", memory=config['memory']),
+        klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
+        klist_spades=expand("{klist_spades}", klist_spades=config['klist_spades']),
+        threads=expand("{threads}", threads=config['threads']),
+        assembler=expand("{assembler}", assembler=config['assembler']),
+        out_dir="{projectpath}/05-Assembly/{sample}_assembly",
+        temp_assembly="{projectpath}/05-Assembly/{sample}_assembly/temp_assembly.fa"
+
+    shell:
+        """
+        python ./holoflow/bin/holo-assembly.py -1 {input.read1} -2 {input.read2} -m {params.memory} -t {params.threads} -k_megahit {params.klist_megahit} -k_spades {params.klist_spades} -a {params.assembler} -o {params.out_dir} -empty_o {output} -temp_a {params.temp_assembly}
+        """
+
+
+
+rule assembly_reformat:
+    input:
+        empt_file="{projectpath}/05-Assembly/{sample}_file_to_remove",
+        stats_in="{projectpath}/04-MappedToHuman/{sample}.stats"
+    output:
+        "{projectpath}/05-Assembly/{sample}.stats"
+    params:
+        sample="{sample}",
+        min_contig_len=expand("{min_contig_len}", min_contig_len=config['min_contig_len']),
+        in_assembly="{projectpath}/05-Assembly/{sample}_assembly/temp_assembly.fa",
+        out_assembly="{projectpath}/05-Assembly/{sample}.fa"
+
+    shell:
+        """
+        rm {input.empt_file} && python ./holoflow/bin/holo-assembly_reformat.py -s {params.sample} -min_cl {params.min_contig_len} -in_a {params.in_assembly} -out_a {params.out_assembly} -st_in {input.stats_in} -st_out {output}
+        """
+
+
+##
+# Index assembly
+##
+rule assembly_index:
+    input:
+        "{projectpath}/05-Assembly/{sample}.fa"
+    output: # FUTURE: ADD OPTION TO REMOVE ALL BUT FA.FAI
+        samtools="{projectpath}/05-Assembly/{sample}.fa.fai",
+        bwa_bwt="{projectpath}/05-Assembly/{sample}.fa.bwt",
+        bwa_pac="{projectpath}/05-Assembly/{sample}.fa.pac",
+        bwa_ann="{projectpath}/05-Assembly/{sample}.fa.ann",
+        bwa_amb="{projectpath}/05-Assembly/{sample}.fa.amb",
+        bwa_sa="{projectpath}/05-Assembly/{sample}.fa.sa"
+    shell:
+        """
+        python ./holoflow/bin/holo-assembly_index.py -a {input} -ia {output.samtools}
+        """
+
+##
+# Assembly mapping
+##
+
+rule assembly_mapping:
+    input:
+        assembly="{projectpath}/05-Assembly/{sample}.fa",
+        samtools="{projectpath}/05-Assembly/{sample}.fa.fai",
+        read1="{projectpath}/04-MappedToHuman/{sample}_1.fastq",
+        read2="{projectpath}/04-MappedToHuman/{sample}_2.fastq"
+    output:
+        "{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
+    params:
+        threads=expand("{threads}", threads=config['threads'])
+    shell:
+        """
+        python ./holoflow/bin/holo-assembly_mapping.py -a {input.assembly} -1 {input.read1} -2 {input.read2} -t {params.threads} -obam {output}
+        """
+
+##
+# Prodigal ORF prediction
+##
+#"Metagenomes - The simplest approach for metagenomes is to put all the sequences in one FASTA file and analyze them in Anonymous Mode."
+rule protein_prediction_prodigal:
+    input:
+        assembly="{projectpath}/05-Assembly/{sample}.fa"
+    output:
+        genetic_coords="{projectpath}/06-ProdigalPrediction/{sample}.coords.gbk",
+        protein_translations="{projectpath}/06-ProdigalPrediction/{sample}.protein_translations.faa"
+    shell: # Prodigal is run in "anon", Anonymous workflow
+        """
+        python ./holoflow/bin/holo-pp_prodigal.py -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations}
+        """
+
+##
+# Create depth table
+##
+
+rule depth_table:
+    input:
+        "{projectpath}/06-Assembly_mapping/{sample}.mapped.bam"
+    output:
+        metabat_depth_file="{projectpath}/07-Binning/{sample}_metabat/{sample}.depth.txt",
+        maxbin_depth_file="{projectpath}/07-Binning/{sample}_maxbin/{sample}.depth.txt",
+        concoct_depth_file="{projectpath}/07-Binning/{sample}_concoct/{sample}.depth.txt"
+
+    shell:
+        """
+        python ./holoflow/bin/holo-depth_files.py -a {input} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -cct {output.concoct_depth_file}
+        """
+
+##
+# BINNING TO ADD #####################
+##
+
+##
+# Binning with metabat
+##
+
+rule binning_metabat:
+    input:
+        assembly="{projectpath}/05-Assembly/{sample}.fa",
+        depth_table="{projectpath}/07-Binning/{sample}_metabat/{sample}.depth.txt"
+    output:
+        bin_table_mtb="{projectpath}/07-Binning/{sample}.bins_metabat.txt"#,
+        #final_file="{projectpath}/07-Binning/{sample}.metabat/{sample}.bins_metabat.gz"
+    params:
+        base_mtb="{projectpath}/07-Binning/{sample}_metabat/{sample}.mtb.bin",
+        threads=expand("{threads}", threads=config['threads'])
+    shell:
+        """
+        python ./holoflow/bin/holo-binning_metabat.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mtb}  -bb {params.base_mtb} -t {params.threads}
+        """
+
+
+
+##
+# Binning with maxbin
+##
+
+rule binning_maxbin:
+    input:
+        assembly="{projectpath}/05-Assembly/{sample}.fa",
+        depth_table="{projectpath}/07-Binning/{sample}_maxbin/{sample}.depth.txt"
+    output:
+        bin_table_mxb="{projectpath}/07-Binning/{sample}.bins_maxbin.txt"
+    params:
+        base_mxb="{projectpath}/07-Binning/{sample}_maxbin/{sample}.mxb.bin",
+        threads=expand("{threads}", threads=config['threads'])
+    shell:
+        """
+        python ./holoflow/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb} -bb {params.base_mxb} -t {params.threads}
+        """
+
+
+##
+# Binning with concoct - ONLY CO-ASSEMBLY - default set to FALSE
+##
+
+rule binning_concoct:
+    input:
+        assembly="{projectpath}/05-Assembly/{sample}.fa",
+        depth_table="{projectpath}/07-Binning/{sample}_concoct/{sample}.depth.txt"
+    output:
+        bin_table_cct="{projectpath}/07-Binning/{sample}.bins_concoct.txt"
+    params:
+        coassembly=expand("{coassembly}", coassembly=config['coassembly']),
+        min_contig_len=expand("{min_contig_len}", min_contig_len=config['min_contig_len']),
+        base_cct="{projectpath}/07-Binning/{sample}.concoct/{sample}.cct.bin",
+        threads=expand("{threads}", threads=config['threads'])
+    shell:
+        """
+        python ./holoflow/bin/holo-binning_concoct.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_cct} -coa {params.coassembly} -bb {params.base_mxb} -t {params.threads} -l {params.min_contig_len}
+        """
+
+########## ADD rule aggregate:
+    input:
+        expand("{dataset}/a.txt", dataset=DATASETS)
+
+##
+# Bin refinement with DASTool using binning: metabat, maxbin and proteins from: prodigal
+##
+ # --proteins                 Predicted proteins in prodigal fasta format (>scaffoldID_geneNo).
+ #                              Gene prediction step will be skipped if given. (optional)
+rule das_tool:
+    input:
+        assembly="{projectpath}/05-Assembly/{sample}.fa",
+        bin_table_mxb="{projectpath}/07-Binning/{sample}.bins_maxbin.txt",
+        bin_table_mtb="{projectpath}/07-Binning/{sample}.bins_metabat.txt",
+        bin_table_cct="{projectpath}/07-Binning/{sample}.bins_concoct.txt",
+        pproteins="{projectpath}/06-ProdigalPrediction/{sample}.protein_translations.faa"
+    output:
+        main_dir="{projectpath}/07-Binning/{sample}_dastool"
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        bin_dir="{projectpath}/07-Binning/{sample}_dastool/{sample}.bins_dastool",
+        dastoolDependencies=expand("{dastoolDependencies}", dastoolDependencies=config['dastoolDependencies']),
+        search_eng=expand("{search_eng}", search_eng=config['search_eng']),
+        dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db'])
+    run:
+        if coassembly:
+            bincontig_tables=",".join(glob.glob({input.bin_table_mxb},{input.bin_table_mtb},{input.bin_table_cct}))
+            shell("{params.dastoolDependencies} && DAS_Tool -i bincontig_tables -c {input.assembly} -o {output.main_dir} --proteins {input.pproteins} -l maxbin,metabat,concoct --search_engine {params.search_eng} -t {params.threads} --db_directory {params.dastool_db} --write_bins 1")
+        else:
+            bincontig_tables=",".join(glob.glob({input.bin_table_mxb},{input.bin_table_mtb}))
+            shell("{params.dastoolDependencies} && DAS_Tool -i bincontig_tables -c {input.assembly} -o {output.main_dir} --proteins {input.pproteins} -l maxbin,metabat,concoct --search_engine {params.search_eng} -t {params.threads} --db_directory {params.dastool_db} --write_bins 1")
+
+
+
+        #Move definitive bins to a new directory /Dastool_bins
+        import os
+        import glob
+        binsource=output.main_dir
+        binfiles = glob.glob(os.path.join(binsource,'*.fa'))
+        for b in binfiles:
+            shutil.move(b, params.bin_dir)
+
+
+workdir="/home/projects/ku-cbd/people/antalb/cervids2020"
+sp=HJ
+qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e ${workdir}/Binning.DAStool_${sp}.err -o ${workdir}/Binning.DAStool_${sp}.out -l nodes=1:ppn=40,mem=50gb,walltime=1:00:00:00 -N Binning.DAStool_${sp} ${workdir}/dastool.${sp}.sh
+#dastool.HJ.sh
+workdir="/home/projects/ku-cbd/people/antalb/cervids2020"
+sp=HJ
+module load tools gcc/5.4.0 intel/perflibs/2018 R/3.6.1 ruby/2.6.3 pullseq/1.0.2 perl/5.24.0 ncbi-blast/2.6.0+ prodigal/2.6.3 das_tool/1.1.1 diamond/0.9.24 usearch/11.0.667
+mkdir ${workdir}/${sp}.binning/DASTool
+rm ${workdir}/${sp}.binning/metabat/${sp}.bin.unbinned.fa
+sh ${workdir}/Fasta_to_Scaffolds2Bin.sh -e 'fa' -i  ${workdir}/${sp}.binning/metabat > ${workdir}/${sp}.binning/${sp}.bins_metabat.tsv
+sh ${workdir}/Fasta_to_Scaffolds2Bin.sh -e 'fasta' -i  ${workdir}/${sp}.binning/maxbin > ${workdir}/${sp}.binning/${sp}.bins_maxbin.tsv
+sh ${workdir}/Fasta_to_Scaffolds2Bin.sh -e 'fa' -i  ${workdir}/${sp}.binning/concoct > ${workdir}/${sp}.binning/${sp}.bins_concoct.tsv
+sh ${workdir}/Fasta_to_Scaffolds2Bin.sh -e 'fasta' -i  ${workdir}/${sp}.binning/refiner > ${workdir}/${sp}.binning/${sp}.bins_refiner.tsv
+#Relaxed to include more redundant MAGs that will be filtered based on taxonomy later)
+DAS_Tool -i ${workdir}/${sp}.binning/${sp}.bins_metabat.tsv,${workdir}/${sp}.binning/${sp}.bins_maxbin.tsv,${workdir}/${sp}.binning/${sp}.bins_concoct.tsv,${workdir}/${sp}.binning/${sp}.bins_refiner.tsv -c ${workdir}/${sp}.assembly/${sp}.assembly.binning.fa -o ${workdir}/${sp}.binning/DASTool/${sp} -l maxbin,metabat,concoct,refiner --search_engine diamond -t 40 --db_directory /home/projects/ku-cbd/people/antalb/databases/dastool_db --write_bins 1 --duplicate_penalty 0.2 --megabin_penalty 0.2 --score_threshold 0.4
+#Rename (simplify) bins
+#Bin fastas
+while read MAG; do
+MAG2=$(echo $MAG | sed 's/\.bins_/_/' | sed 's/\.tsv\./_/' | sed 's/\.contigs.fa$/\.fa/')
+mv $MAG $MAG2
+done < <(ls ${workdir}/${sp}.binning/DASTool/${sp}_DASTool_bins/*.fa)
+#Bin statistics
+sed -i 's/\.bins_/_/; s/\.tsv\./_/' ${workdir}/${sp}.binning/DASTool/${sp}_DASTool_summary.txt
+
+
+
+
+
+rule bin_refinement:
+
+workdir="/home/projects/ku-cbd/people/antalb/cervids2020"
+sp=HJ
+qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e ${workdir}/Binning.refiner_${sp}.err -o ${workdir}/Binning.refiner_${sp}.out -l nodes=1:ppn=40,mem=128gb,walltime=0:06:00:00 -N Binning.refiner_${sp} ${workdir}/binning-refiner.${sp}.sh
+#binning-refiner.HJ.sh
+module load tools ngs anaconda3/4.4.0
+workdir="/home/projects/ku-cbd/people/antalb/cervids2020"
+sp=HJ
+mkdir ${workdir}/${sp}.binning/refiner
+mkdir ${workdir}/${sp}.binning/refiner/input
+mkdir ${workdir}/${sp}.binning/refiner/input/maxbin
+mkdir ${workdir}/${sp}.binning/refiner/input/metabat
+mkdir ${workdir}/${sp}.binning/refiner/input/concoct
+cp ${workdir}/${sp}.binning/maxbin/*.fasta ${workdir}/${sp}.binning/refiner/input/maxbin/
+cp ${workdir}/${sp}.binning/metabat/*.fa ${workdir}/${sp}.binning/refiner/input/metabat/
+cp ${workdir}/${sp}.binning/concoct/*.fa ${workdir}/${sp}.binning/refiner/input/concoct/
+rm ${workdir}/${sp}.binning/refiner/input/metabat/*unbinned.fa
+cd ${workdir}/${sp}.binning/refiner
+Binning_refiner -i ${workdir}/${sp}.binning/refiner/input/ -p refiner
+mv ${workdir}/${sp}.binning/refiner/refiner_Binning_refiner_outputs/refiner_refined_bins/*.fasta ${workdir}/${sp}.binning/refiner/
+mv ${workdir}/${sp}.binning/refiner/refiner_Binning_refiner_outputs/refiner_sources_and_length.txt ${workdir}/${sp}.binning/refiner/
+rm -rf ${workdir}/${sp}.binning/refiner/refiner_Binning_refiner_outputs/
+rm -rf ${workdir}/${sp}.binning/refiner/input/
+#
+
+
+rule drep_MAGs:
+    Hola Núria, he estado pensando un poco sobre cómo estructurar el refinamiento de bins, y creo que lo mejor sería incluir 4 steps: 1) completeness improvement, 2) taxonomic refinement, 3) redundancy reduction y 4) assembly improvement

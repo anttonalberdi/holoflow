@@ -1,0 +1,3 @@
+#Genome_ID(nospaces,no-anything) PathGenome NameOutputDB
+Desmodusrotundus /home/projects/ku-cbd/people/nurher/bats/ref_genomes/Desmodus_rotundus.fna.gz all_genomes
+Susscrofa /home/projects/ku-cbd/people/nurher/bats/ref_genomes/GCF_000003025.6_Sscrofa11.1_genomic.fna.gz all_genomes

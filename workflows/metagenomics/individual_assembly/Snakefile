@@ -1,0 +1,281 @@
+# 30.06.20
+#configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/metagenomics/individual_assembly/config.yaml"
+
+rule get_paths:
+    input:
+        holopath=expand("{holopath}", holopath=config['holopath']),
+        logpath=expand("{logpath}", logpath=config['logpath'])
+
+
+################################################################################################################
+############################################       METAGENOMICS     ############################################
+################################################################################################################
+
+##
+# Assembly
+##
+rule assembly:
+    input:
+        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
+        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq"
+
+    output:
+        "{projectpath}/MIA_01-Assembly/{sample}_file_to_remove"
+    params:
+        memory=expand("{memory}", memory=config['memory']),
+        klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
+        klist_spades=expand("{klist_spades}", klist_spades=config['klist_spades']),
+        threads=expand("{threads}", threads=config['threads']),
+        assembler=expand("{assembler}", assembler=config['assembler']),
+        out_dir="{projectpath}/MIA_01-Assembly/{sample}_assembly",
+        temp_assembly="{projectpath}/MIA_01-Assembly/{sample}_assembly/temp_assembly.fa",
+        sample="{sample}"
+
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-assembly.py -1 {input.read1} -2 {input.read2} -m {params.memory} -t {params.threads} -k_megahit {params.klist_megahit} -k_spades {params.klist_spades} -a {params.assembler} -o {params.out_dir} -empty_o {output} -temp_a {params.temp_assembly} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+
+
+rule assembly_reformat:
+    input:
+        empt_file="{projectpath}/MIA_01-Assembly/{sample}_file_to_remove"
+    output:
+        stats="{projectpath}/MIA_01-Assembly/{sample}.stats",
+        out_assembly="{projectpath}/MIA_01-Assembly/{sample}.fa"
+    params:
+        sample="{sample}",
+        stats_in="{projectpath}/PPR_03-MappedToReference/{sample}.stats",
+        min_contig_len=expand("{min_contig_len}", min_contig_len=config['min_contig_len']),
+        in_assembly="{projectpath}/MIA_01-Assembly/{sample}_assembly/temp_assembly.fa"
+
+
+    shell:
+        """
+        rm {input.empt_file} && python {rules.get_paths.input.holopath}/bin/holo-assembly_reformat.py -sample {params.sample} -min_cl {params.min_contig_len} -in_a {params.in_assembly} -out_a {output.out_assembly} -st_in {params.stats_in} -st_out {output.stats} -log {rules.get_paths.input.logpath}
+        """
+
+
+##
+# Index assembly
+##
+rule assembly_index:
+    input:
+        "{projectpath}/MIA_01-Assembly/{sample}.fa"
+    output: # FUTURE: ADD OPTION TO REMOVE ALL BUT FA.FAI
+        samtools="{projectpath}/MIA_01-Assembly/{sample}.fa.fai",
+        bwa_bwt="{projectpath}/MIA_01-Assembly/{sample}.fa.bwt",
+        bwa_pac="{projectpath}/MIA_01-Assembly/{sample}.fa.pac",
+        bwa_ann="{projectpath}/MIA_01-Assembly/{sample}.fa.ann",
+        bwa_amb="{projectpath}/MIA_01-Assembly/{sample}.fa.amb",
+        bwa_sa="{projectpath}/MIA_01-Assembly/{sample}.fa.sa"
+    params:
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-assembly_index.py -a {input} -ia {output.samtools} -log {rules.get_paths.input.logpath} -sample {params.sample}
+        """
+
+##
+# Assembly mapping
+##
+
+rule assembly_mapping:
+    input:
+        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+        samtools="{projectpath}/MIA_01-Assembly/{sample}.fa.fai",
+        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
+        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq"
+    output:
+        "{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam"
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-assembly_mapping.py -a {input.assembly} -1 {input.read1} -2 {input.read2} -t {params.threads} -obam {output} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+##
+# Prodigal ORF prediction
+##
+#"Metagenomes - The simplest approach for metagenomes is to put all the sequences in one FASTA file and analyze them in Anonymous Mode."
+rule protein_prediction_prodigal:
+    input:
+        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+        mapped_bam="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam" # not necessary
+    output:
+        genetic_coords="{projectpath}/MIA_02-ProdigalPrediction/{sample}.coords.gbk",
+        protein_translations="{projectpath}/MIA_02-ProdigalPrediction/{sample}.protein_translations.faa"
+    params:
+        sample="{sample}"
+    shell: # Prodigal is run in "anon", Anonymous workflow
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-pp_prodigal.py -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+##
+# Create depth table
+##
+
+rule depth_table:
+    input:
+        genetic_coords="{projectpath}/MIA_02-ProdigalPrediction/{sample}.coords.gbk",  #not actually necessary here, but used to keep order
+        mapped_bam="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam"
+    output:
+        metabat_depth_file="{projectpath}/MIA_03-Binning/{sample}_metabat/{sample}.depth.txt",
+        maxbin_depth_file="{projectpath}/MIA_03-Binning/{sample}_maxbin/{sample}.depth.txt"
+    params:
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-depth_files_IA.py -a {input.mapped_bam} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+##
+# BINNING TO ADD #####################
+##
+
+##
+# Binning with metabat
+##
+
+rule binning_metabat:
+    input:
+        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+        depth_table="{projectpath}/MIA_03-Binning/{sample}_metabat/{sample}.depth.txt"
+    output:
+        bin_table_mtb="{projectpath}/MIA_03-Binning/{sample}.bins_metabat.txt"#,
+        #final_file="{projectpath}/MIA_03-Binning/{sample}.metabat/{sample}.bins_metabat.gz"
+    params:
+        base_mtb="{projectpath}/MIA_03-Binning/{sample}_metabat/{sample}.mtb",
+        threads=expand("{threads}", threads=config['threads']),
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-binning_metabat.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mtb}  -bb {params.base_mtb} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+
+
+##
+# Binning with maxbin
+##
+
+rule binning_maxbin:
+    input:
+        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+        depth_table="{projectpath}/MIA_03-Binning/{sample}_maxbin/{sample}.depth.txt"
+    output:
+        bin_table_mxb="{projectpath}/MIA_03-Binning/{sample}.bins_maxbin.txt"
+    params:
+        base_mxb="{projectpath}/MIA_03-Binning/{sample}_maxbin/{sample}.mxb",
+        threads=expand("{threads}", threads=config['threads']),
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+
+
+##
+# Bin refinement with DASTool using binning: metabat, maxbin and proteins from: prodigal
+##
+ # --proteins                 Predicted proteins in prodigal fasta format (>scaffoldID_geneNo).
+ #                              Gene prediction step will be skipped if given. (optional)
+rule das_tool:
+    input:
+        assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+        bin_table_mxb="{projectpath}/MIA_03-Binning/{sample}.bins_maxbin.txt",
+        bin_table_mtb="{projectpath}/MIA_03-Binning/{sample}.bins_metabat.txt",
+        pproteins="{projectpath}/MIA_02-ProdigalPrediction/{sample}.protein_translations.faa"
+    output:
+        directory("{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins")
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        search_eng=expand("{search_eng}", search_eng=config['search_eng']),
+        dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db']),
+        dastool_dir="{projectpath}/MIA_04-BinMerging/{sample}",
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -a {input.assembly} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+
+##
+# RefineM bin refinement
+##
+#>refinem filter_bins <bin_dir> <outlier_output_dir>/outliers.tsv <filtered_output_dir>
+# rule bin_refinement:
+#     input:
+#         assembly="{projectpath}/MIA_01-Assembly/{sample}.fa",
+#         assembly_map="{projectpath}/MIA_02-Assembly_mapping/{sample}.mapped.bam",
+#         check_dastool="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins"
+#     output:
+#         directory("{projectpath}/MIA_05-BinRefinement/{sample}")
+#     params:
+#         dastool_bin_dir="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins",
+#         threads=expand("{threads}", threads=config['threads']),
+#         sample="{sample}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-bin_refinement.py -a {input.assembly} -bam {input.assembly_map} -dastool_bd {params.dastool_bin_dir} -out_dir {output} -sample {params.sample} -t {params.threads} -log {rules.get_paths.input.logpath}
+#         """
+
+
+##
+# dRep bin dereplication
+##
+rule drep_bins:
+    input:
+        dastool_bin_dir="{projectpath}/MIA_04-BinMerging/{sample}_DASTool_bins"
+    output:
+        directory("{projectpath}/MIA_05-BinDereplication/{sample}")
+
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+##
+# Bin mapping
+##
+rule bin_mapping:
+    input:
+        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
+        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq",
+        bin_dir="{projectpath}/MIA_05-BinDereplication/{sample}/dereplicated_genomes"
+    output:
+        directory("{projectpath}/MIA_06-BinScaffolding/{sample}/Mapped_bins")
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        sample='{sample}'
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-bin_mapping.py -i1 {input.read1} -i2 {input.read2} -bin_dir {input.bin_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+
+##
+# SSPace contigs in bin scaffolding
+##
+rule bin_scaffolding:
+    input:
+        fq_dir="{projectpath}/MIA_06-BinScaffolding/{sample}/Mapped_bins",
+        drep_dir="{projectpath}/MIA_05-BinDereplication/{sample}"
+    output:
+        directory("{projectpath}/MIA_06-BinScaffolding/{sample}/Scaffolded_bins")
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        sample='{sample}'
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {input.fq_dir} -bin_dir {input.drep_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        """
+#-----
