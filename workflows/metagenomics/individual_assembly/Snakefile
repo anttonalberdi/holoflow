@@ -243,39 +243,56 @@ rule drep_bins:
         python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
 
-##
-# Bin mapping
-##
-rule bin_mapping:
-    input:
-        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
-        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq",
-        bin_dir="{projectpath}/MIA_05-BinDereplication/{sample}/dereplicated_genomes"
-    output:
-        directory("{projectpath}/MIA_06-BinScaffolding/{sample}/Mapped_bins")
-    params:
-        threads=expand("{threads}", threads=config['threads']),
-        sample='{sample}'
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_mapping.py -i1 {input.read1} -i2 {input.read2} -bin_dir {input.bin_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
-        """
+
+#OPTIONAL -----
+
+if config['SSPACE']:
+
+    ##
+    # Bin mapping
+    ##
+    rule bin_mapping:
+        input:
+            read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
+            read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq",
+            bin_dir="{projectpath}/MIA_05-BinDereplication/{sample}/dereplicated_genomes"
+        output:
+            directory("{projectpath}/MIA_06-BinScaffolding/{sample}/Mapped_bins")
+        params:
+            threads=expand("{threads}", threads=config['threads']),
+            sample='{sample}'
+        shell:
+            """
+            python {rules.get_paths.input.holopath}/bin/holo-bin_mapping.py -i1 {input.read1} -i2 {input.read2} -bin_dir {input.bin_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
+            """
 
 
-##
-# SSPace contigs in bin scaffolding
-##
-rule bin_scaffolding:
-    input:
-        fq_dir="{projectpath}/MIA_06-BinScaffolding/{sample}/Mapped_bins",
-        drep_dir="{projectpath}/MIA_05-BinDereplication/{sample}"
-    output:
-        directory("{projectpath}/MIA_06-BinScaffolding/{sample}/Scaffolded_bins")
-    params:
-        threads=expand("{threads}", threads=config['threads']),
-        sample='{sample}'
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {input.fq_dir} -bin_dir {input.drep_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
-        """
+    ##
+    # SSPace contigs in bin scaffolding
+    ##
+    rule bin_scaffolding:
+        input:
+            fq_dir="{projectpath}/MIA_06-BinScaffolding/{sample}/Mapped_bins",
+            drep_dir="{projectpath}/MIA_05-BinDereplication/{sample}"
+        output:
+            directory("{projectpath}/MIA_06-BinScaffolding/{sample}/Scaffolded_bins")
+        params:
+            threads=expand("{threads}", threads=config['threads']),
+            sample='{sample}'
+        shell:
+            """
+            python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {input.fq_dir} -bin_dir {input.drep_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
+            """
 #-----
+
+
+else:
+
+    pass
+
+##
+# PhyloPhlAn Rule - drep/SSPACE input
+##
+rule phylophlan:
+    input:
+        bin_dir="{projectpath}/MIA_05-BinDereplication/{sample}/dereplicated_genomes"

@@ -246,7 +246,7 @@ rule drep_bins:
 
 #OPTIONAL -----
 
-if config["SSPACE"]:
+if config['SSPACE']:
 
     ##
     # Bin mapping
@@ -267,22 +267,21 @@ if config["SSPACE"]:
             """
 
 
-
     ##
     # SSPace contigs in bin scaffolding
     ##
     rule bin_scaffolding:
         input:
-            "{projectpath}/MIA_05-BinDereplication/{sample}"
+            fq_dir="{projectpath}/MIA_06-BinScaffolding/{sample}/Mapped_bins",
+            drep_dir="{projectpath}/MIA_05-BinDereplication/{sample}"
         output:
             directory("{projectpath}/MIA_06-BinScaffolding/{sample}/Scaffolded_bins")
         params:
-            fq_dir="{projectpath}/MIA_06-BinScaffolding/{sample}/Mapped_bins",
             threads=expand("{threads}", threads=config['threads']),
             sample='{sample}'
         shell:
             """
-            python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {params.fq_dir} -bin_dir {input} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
+            python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {input.fq_dir} -bin_dir {input.drep_dir} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
             """
 #-----
 

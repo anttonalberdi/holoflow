@@ -36,4 +36,4 @@ search_eng:
   diamond
 
 SSPACE:
-  False
+  True
