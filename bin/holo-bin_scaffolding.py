@@ -42,16 +42,13 @@ if not (os.path.exists(str(out_dir))):
     for bin in binlist:
         bin_name=os.path.basename(bin)
         bin_name = bin_name.replace(".fa","")
-        print(bin)
-        print(bin_name)
         lib_file=str(out_dir+'/'+bin_name+'.lib')
 
         #Create library file
             # Insertion size between paired reads: 150
             # Maximum allowed error: 1
-        libCmd='printf "'+sample+' bwa '+fq_dir+'/'+bin_name+'_1.fastq '+fq_dir+'/'+bin_name+'_2.fastq 150 1 FR" >> '+lib_file+''
+        libCmd='printf "'+sample+' bwa '+fq_dir+'/'+bin_name+'_1.fastq '+fq_dir+'/'+bin_name+'_2.fastq 150 1 FR" >> '+lib_file+' && cat '+lib_file+''
         subprocess.check_call(libCmd, shell=True)
-
         #Run SSPACE
         sspaceCmd ='cd '+out_dir+' && module load tools perl/5.24.0 sspace-standard/3.0 parallel/20190522 && SSPACE_Standard_v3.0.pl -l '+lib_file+' -s '+bin+' -x 1 -T '+threads+' -o 5 -m 16 -k 2 -n 10 -b '+bin_name+''
         subprocess.check_call(sspaceCmd, shell=True)
@@ -67,7 +64,3 @@ if not (os.path.exists(str(out_dir))):
         subprocess.check_call(infoutCmd, shell=True)
     #  rmCmd='rm 'out_dir''
     #  subprocess.check_call(rmCmd, shell=True)
-
-
-    with open(str(log),'a+') as logf:
-        logf.write('\t\t'+current_time+'\tMetagenomics analysis with Holoflow are completed for sample '+sample+'\n')

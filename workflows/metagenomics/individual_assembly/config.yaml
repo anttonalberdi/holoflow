@@ -44,5 +44,8 @@ SSPACE:
 diversity: # {low,medium,high}
   low
 
+phylo_db:
+  phylophlan
+
 pipeline: # {tree, concatenation}
   tree

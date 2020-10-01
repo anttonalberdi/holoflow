@@ -41,7 +41,12 @@ else:
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
 with open(str(config), 'r') as config_file:
-  data = yaml.load(config_file)
+    if config_file['SSPACE']:
+        scaffold=True
+    else:
+        scaffold=False
+
+    data = yaml.load(config_file)
 
 with open(str(config), 'w') as config_file:
   data['holopath'] = str(curr_dir)
@@ -68,7 +73,11 @@ def in_out_metagenomics(path,in_f):
         # Paste desired output file names from input.txt
         read = 0
         output_files=''
-        final_temp_dir="MIA_05-BinDereplication"
+        
+        if scaffold:
+            final_temp_dir="MIA_06-BinScaffolding"
+        if not scaffold:
+            final_temp_dir="MIA_05-BinDereplication"
 
         lines = in_file.readlines() # Read input.txt lines
         for file in lines:
