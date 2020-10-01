@@ -106,7 +106,7 @@ These should be **executed as jobs**, therefore a *.sh* script should be generat
 ```bash
 projectpath=/full/path/project1
 holoflowpath=/full/path/holoflow
-python ${holoflowpath}/preprocessing.py -f ${project1}/input.txt -d ${project1}/workdir -c ${project1}/config.yaml -l ${project1}/log_file.log -t 40
+python ${holoflowpath}/preprocessing.py -f ${projectpath}/input.txt -d ${projectpath}/workdir -c ${projectpath}/config.yaml -l ${projectpath}/log_file.log -t 40
 ```
 
 - *job execution* in Computerome2 example:
