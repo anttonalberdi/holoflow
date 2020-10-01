@@ -101,7 +101,7 @@ These should be **executed as jobs**, therefore a *.sh* script should be generat
 
 - *.sh* example script for *preprocessing.py* called ***first_job_preprocessing.sh***:
 ```bash
-python preprocessing.py -f full/path/input.txt -d full/path/workdir -c full/path/config.yaml -l full/path/log_file.log -t 40
+python full/path/holoflow/preprocessing.py -f full/path/input.txt -d full/path/workdir -c full/path/config.yaml -l full/path/log_file.log -t 40
 ```
 
 - *job execution* in Computerome2 example:
