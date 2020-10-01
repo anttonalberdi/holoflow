@@ -95,11 +95,16 @@ Those lines starting by # won't be considered.
   1. Metagenomic assembly - choose between the mentioned options by writing *megahit* or *spades*
   2. Minimum contig length - minimum bp per contig in final assembly file.
 
+
+## Usage
+
+### Get started: download Holoflow repository
+
 ```bash
 git clone -b nurher --single-branch https://github.com/anttonalberdi/holoflow.git
 ```
 
-## Exectute Holoflow *.py* workflow launchers
+### Exectute Holoflow *.py* workflow launchers
 These should be **executed as jobs**, therefore a *.sh* script should be generated which will contain the job itself:
 
 - *.sh* example script for *preprocessing.py* called ***first_job_preprocessing.sh***:
