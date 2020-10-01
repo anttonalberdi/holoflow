@@ -34,3 +34,6 @@ dastool_db:
 
 search_eng:
   diamond
+
+SSPACE:
+  False

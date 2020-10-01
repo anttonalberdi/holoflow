@@ -57,7 +57,7 @@ if not (os.path.exists(str(out_dir))):
         subprocess.check_call(sspaceCmd, shell=True)
 
 
-    Rearrange outputs
+    #Rearrange outputs
     for bin in binlist:
         bin_name=os.path.basename(bin)
         bin_name = bin.replace(".fa","")

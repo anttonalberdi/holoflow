@@ -246,7 +246,7 @@ rule drep_bins:
 
 #OPTIONAL -----
 
-if config["SSPace"]:
+if config["SSPACE"]:
 
     ##
     # Bin mapping
