@@ -1,4 +1,4 @@
-# holoflow
+# holoflow2
 Bioinformatics pipeline for hologenomics data generation and analysis
 
 Snakemake is a workflow management system which requires from a *Snakefile* and a *config* file. This is a Bioinformatics pipeline for hologenomics data generation and analysis implemented with Snakemake.
@@ -24,19 +24,19 @@ This is designed to be called from the command line, and requires the following 
 | Sample2 | Group1 | /home/Sample2_1.fq;/home/Sample1_2.fq |
 | Sample3 | Group2 | /home/Sample3_1.fq;/home/Sample3_2.fq |
 | Samplen | Groupn | /home/Samplen_1.fq;/home/Samplen_2.fq |
-  
+
 ### Workflows - specific directories
 #### Preprocessing
 - *Snakefile* - which contains rules for:
-  1. Quality filtering using **AdapterRemoval** 
+  1. Quality filtering using **AdapterRemoval**
   2. Duplicate read removal using **seqkit rmdup**
   3. Mapping reads against reference genome(s) using **bwa mem**
-  
+
 - Config file *config.yaml*, in which the user may be interested to customise:
   1. Quality filtering - specific adapter sequences, minimum quality
   2. Mapping reads against reference genome(s) - reference genome for host and human paths
-  
-  
+
+
 #### Metagenomics
 - *Snakefile* - which contains rules for:
   1. Metagenomic assembly using **metaSpades** or **megahit**
@@ -48,18 +48,15 @@ This is designed to be called from the command line, and requires the following 
   6. Redundancy refinement ##### UNDER CONSTRUCTION
   7. Dereplication using dRep ##### UNDER CONSTRUCTION
   7. Bin assembly improvement (contig elongation and scaffolding) using SSPACE. ##### UNDER CONSTRUCTION
-  
+
 - Config file *config.yaml*, in which the user may be interested to customise:
   1. Metagenomic assembly - choose between the mentioned options by writing *megahit* or *spades*
   2. Minimum contig length - minimum bp per contig in final assembly file.
 
-  
+
 ## Exectute *holoflow.py*
 **The python script should be launched from its containing directory:**
 ```
 python holoflow.py -f ${input} -d ${workdir} -w metagenomics -c ${configfile} -t 40
 ```
-*input*, *workdir* and *configfile* are shell variables which where previously defined in the command line, but the corresponding path to the file can also be directly specified in the python command. 
-
-
-
+*input*, *workdir* and *configfile* are shell variables which where previously defined in the command line, but the corresponding path to the file can also be directly specified in the python command.
