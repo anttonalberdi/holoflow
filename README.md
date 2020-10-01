@@ -95,16 +95,22 @@ Those lines starting by # won't be considered.
   1. Metagenomic assembly - choose between the mentioned options by writing *megahit* or *spades*
   2. Minimum contig length - minimum bp per contig in final assembly file.
 
+
+## Usage in Computerome
+
+### Get started: download Holoflow repository
+Clone the repository by running the following command on your command line:
+
 ```bash
 git clone -b nurher --single-branch https://github.com/anttonalberdi/holoflow.git
 ```
 
-## Exectute Holoflow *.py* workflow launchers
-These should be **executed as jobs**, therefore a *.sh* script should be generated which will contain the job itself:
+### Exectute Holoflow *.py* workflow launchers
+These should be **executed as jobs**, therefore a *.sh* script should be generated which will call the desired Holoflow workflow:
 
 - *.sh* example script for *preprocessing.py* called ***first_job_preprocessing.sh***:
 ```bash
-#Declare full path to the project directory
+#Declare full path to the project directory (the .sh file will be stored here as well)
 projectpath=/full/path/project1
 #Declare full path to holoflow
 holoflowpath=/full/path/holoflow
@@ -114,7 +120,7 @@ python ${holoflowpath}/preprocessing.py -f ${projectpath}/input.txt -d ${project
 
 - *job execution* in Computerome2 example:
 ```bash
- qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e full/path/job_error_file.err -o full/path/job_out_file.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N JOB_ID full/path/first_job_preprocessing.sh
+ qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e ${projectpath}/job_error_file.err -o ${projectpath}/job_out_file.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N JOB_ID ${projectpath}/first_job_preprocessing.sh
 
 ```
   Note that the job parameters: *ppn*, *nodes*, *memory*, *wall time* ... can and ought to be customised optimally for every job type.
