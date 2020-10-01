@@ -104,8 +104,11 @@ These should be **executed as jobs**, therefore a *.sh* script should be generat
 
 - *.sh* example script for *preprocessing.py* called ***first_job_preprocessing.sh***:
 ```bash
+#Declare full path to the project directory
 projectpath=/full/path/project1
+#Declare full path to holoflow
 holoflowpath=/full/path/holoflow
+#Run holoflow
 python ${holoflowpath}/preprocessing.py -f ${projectpath}/input.txt -d ${projectpath}/workdir -c ${projectpath}/config.yaml -l ${projectpath}/log_file.log -t 40
 ```
 
