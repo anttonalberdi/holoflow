@@ -96,7 +96,7 @@ Those lines starting by # won't be considered.
   2. Minimum contig length - minimum bp per contig in final assembly file.
 
 ```bash
-git clone -b nurher --single-branch https://github.com/anttonalberdi/holoflow.git```
+git clone -b nurher --single-branch https://github.com/anttonalberdi/holoflow.git
 ```
 
 ## Exectute Holoflow *.py* workflow launchers
