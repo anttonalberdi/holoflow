@@ -96,7 +96,7 @@ Those lines starting by # won't be considered.
   2. Minimum contig length - minimum bp per contig in final assembly file.
 
 
-## Usage
+## Usage in Computerome
 
 ### Get started: download Holoflow repository
 Clone the repository by running the following command on your command line:
@@ -106,7 +106,7 @@ git clone -b nurher --single-branch https://github.com/anttonalberdi/holoflow.gi
 ```
 
 ### Exectute Holoflow *.py* workflow launchers
-These should be **executed as jobs**, therefore a *.sh* script should be generated which will contain the job itself:
+These should be **executed as jobs**, therefore a *.sh* script should be generated which will call the desired Holoflow workflow:
 
 - *.sh* example script for *preprocessing.py* called ***first_job_preprocessing.sh***:
 ```bash
