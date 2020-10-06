@@ -14,6 +14,7 @@ parser.add_argument('-div', help="diversity in PhyloPhlAn", dest="diversity", re
 parser.add_argument('-pip', help="PhyloPhlAn pipeline to be used", dest="pip", required=True)
 parser.add_argument('-ph_db', help="genomes data base to be used by PhyloPhlAn", dest="ph_db", required=True)
 parser.add_argument('-out_dir', help="main output directory", dest="out_dir", required=True)
+parser.add_argument('-ssp', help="SSPACE used or not", dest="ssp", required=True)
 parser.add_argument('-sample', help="sample", dest="sample", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
@@ -26,6 +27,7 @@ diversity=args.diversity
 pip=args.pip
 ph_db=args.ph_db
 out_dir=args.out_dir
+ssp=args.ssp
 sample=args.sample
 log=args.log
 threads=args.threads
@@ -40,6 +42,14 @@ if not (os.path.exists(str(out_dir))):
     with open(str(log),'a+') as logi:
         logi.write('\t\t'+current_time+'\tMAG Phylogenetic assignation step - Sample '+sample+'\n')
         logi.write('\n\n')
+
+    if not ssp: #drep output files have .fa extension, PhyloPhlAn requires .fna for nucl. 
+        genomelist=glob.glob(str(genomes_dir)+"/*.fa")
+        for genome in genomelist:
+            genome_n=genome.replace(".fa",".fna")
+            genomeCmd='mv '+genome+' '+genome_n+''
+            subprocess.check_call(genomeCmd,shell=True)
+
 
         #Run PhyloPhlAn
         if pip == 'concatenation':

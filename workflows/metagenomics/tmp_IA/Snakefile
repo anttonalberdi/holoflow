@@ -1,4 +1,4 @@
-
+q
 ################################################################################################################
 ############################################       METAGENOMICS     ############################################
 ################################################################################################################
@@ -297,6 +297,7 @@ rule phylophlan:
     output:
         directory(output_phylophlan)
     params:
+        SSPACE=expand("{SSPACE}", SSPACE=config['SSPACE']),
         diversity=expand("{diversity}", diversity=config['diversity']),
         phylo_db=expand("{phylo_db}", phylo_db=config['phylo_db']),
         pipeline=expand("{pipeline}", pipeline=config['pipeline']),
@@ -304,5 +305,5 @@ rule phylophlan:
         sample='{sample}'
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-phylophlan.py -genomes_dir {input} -div {params.diversity} -pip {params.pipeline} -ph_db {params.phylo_db} -out_dir {output} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-phylophlan.py -genomes_dir {input} -div {params.diversity} -pip {params.pipeline} -ph_db {params.phylo_db} -out_dir {output} -ssp {params.SSPACE} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
