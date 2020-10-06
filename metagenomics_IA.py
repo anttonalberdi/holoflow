@@ -74,13 +74,6 @@ def in_out_metagenomics(path,in_f):
         read = 0
         output_files=''
 
-        if scaffold:
-            final_temp_dir="MIA_06-BinScaffolding"
-            output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"/Scaffolded_bins ")
-        if not scaffold:
-            final_temp_dir="MIA_05-BinDereplication"
-            output_files+=(path+"/"+final_temp_dir+"/"+file[0]+" ")
-
         lines = in_file.readlines() # Read input.txt lines
         for file in lines:
 
@@ -93,6 +86,13 @@ def in_out_metagenomics(path,in_f):
                 #   if the current input file names do not match the designed ones in input.txt
                 filename=str(file[2])      # current input file path and name
                 desired_filename=os.path.join(str(in_dir),''+str(file[0])+'_'+str(read)+'.fastq') # desired input file path and name specified in input.txt
+
+                if scaffold:
+                    final_temp_dir="MIA_06-BinScaffolding"
+                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"/Scaffolded_bins ")
+                if not scaffold:
+                    final_temp_dir="MIA_05-BinDereplication"
+                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+" ")
 
                 if not (os.path.exists(str(desired_filename))):
                     print(filename == desired_filename)
