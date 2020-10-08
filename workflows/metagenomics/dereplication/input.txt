@@ -1,0 +1,5 @@
+#SAMPLE_GROUP, INPUT_DIR_PATH
+A "/home/projects/ku-cbd/people/nurher/chick_holoflow/PPR_03-MappedToReference/CB13_13F1b_1.fastq"
+A "/home/projects/ku-cbd/people/nurher/chick_holoflow/PPR_03-MappedToReference/CB13_13F1b_2.fastq"
+B "/home/projects/ku-cbd/people/nurher/chick_holoflow/PPR_03-MappedToReference/CA22_07F1b_1.fastq"
+B "/home/projects/ku-cbd/people/nurher/chick_holoflow/PPR_03-MappedToReference/CA22_07F1b_2.fastq"
