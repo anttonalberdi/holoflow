@@ -34,32 +34,32 @@ threads=args.threads
 
 
 # Run
-if not (os.path.exists(str(out_dir))):
-    os.mkdir(str(out_dir))
+# if not (os.path.exists(str(out_dir))):
+#     os.mkdir(str(out_dir))
 
-    # Write to log
-    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-    with open(str(log),'a+') as logi:
-        logi.write('\t\t'+current_time+'\tMAG Phylogenetic assignation step - Sample '+sample+'\n')
-        logi.write('\n\n')
+# Write to log
+current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
+with open(str(log),'a+') as logi:
+    logi.write('\t\t'+current_time+'\tMAG Phylogenetic assignation step - Sample '+sample+'\n')
+    logi.write('\n\n')
 
-    if not ssp: #drep output files have .fa extension, PhyloPhlAn requires .fna for nucl. 
-        genomelist=glob.glob(str(genomes_dir)+"/*.fa")
-        for genome in genomelist:
-            genome_n=genome.replace(".fa",".fna")
-            genomeCmd='mv '+genome+' '+genome_n+''
-            subprocess.check_call(genomeCmd,shell=True)
-
-
-        #Run PhyloPhlAn
-        if pip == 'concatenation':
-            pp_configCmd ='module load tools anaconda3/4.4.0 phylophlan/3.0 && cd '+out_dir+' && phylophlan_write_default_configs.sh && phylophlan -i '+genomes_dir+' -d '+ph_db+' --diversity '+diversity+' -f '+out_dir+'/supermatrix_nt.cfg && rm supermatrix_aa.cfg supertree_nt.cfg supertree_aa.cfg'
-            subprocess.check_call(pp_configCmd, shell=True)
-
-        if pip == 'tree':
-            pp_configCmd ='module load tools anaconda3/4.4.0 phylophlan/3.0 && cd '+out_dir+' && phylophlan_write_default_configs.sh && phylophlan -i '+genomes_dir+' -d '+ph_db+' --diversity '+diversity+' -f '+out_dir+'/supertree_nt.cfg && rm supermatrix_aa.cfg supermatrix_nt.cfg supertree_aa.cfg'
-            subprocess.check_call(pp_configCmd, shell=True)
+if not (ssp): #drep output files have .fa extension, PhyloPhlAn requires .fna for nucl.
+    genomelist=glob.glob(str(genomes_dir)+"/*.fa")
+    for genome in genomelist:
+        genome_n=genome.replace(".fa",".fna")
+        genomeCmd='mv '+genome+' '+genome_n+''
+        subprocess.check_call(genomeCmd,shell=True)
 
 
-    with open(str(log),'a+') as logf:
-        logf.write('\t\t'+current_time+'\tMetagenomics analysis with Holoflow are completed for sample '+sample+'\n')
+#Run PhyloPhlAn
+if pip == 'concatenation':
+    pp_configCmd ='module load tools anaconda3/4.4.0 phylophlan/3.0 && cd '+out_dir+'/.. && phylophlan_write_config_file -o holoflow_matrix_config_nt.cfg -d a --force_nucleotides --db_aa diamond --map_aa diamond --map_dna diamond --msa muscle --tree1 fasttree && phylophlan -i '+genomes_dir+' -d '+ph_db+' --diversity '+diversity+' --force_nucleotides -f '+out_dir+'/../holoflow_matrix_config_nt.cfg -o Matrix_Database'
+    subprocess.check_call(pp_configCmd, shell=True)
+
+if pip == 'tree':
+    pp_configCmd ='module load tools anaconda3/4.4.0 phylophlan/3.0 && cd '+out_dir+'/.. && phylophlan_write_config_file -o holoflow_tree_config_nt.cfg -d a --force_nucleotides --db_aa diamond --map_aa diamond --map_dna diamond --msa muscle --tree1 fasttree --gene_tree1 fasttree --gene_tree2 ramxl &&  phylophlan -i '+genomes_dir+' -d '+ph_db+' --diversity '+diversity+' --force_nucleotides -f '+out_dir+'/../holoflow_tree_config_nt.cfg -o Tree_Database'
+    subprocess.check_call(pp_configCmd, shell=True)
+
+
+with open(str(log),'a+') as logf:
+    logf.write('\t\t'+current_time+'\tMetagenomics analysis with Holoflow are completed for sample '+sample+'\n')

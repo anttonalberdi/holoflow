@@ -1,4 +1,13 @@
-q
+# 30.06.20
+#configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/metagenomics/individual_assembly/config.yaml"
+
+rule get_paths:
+    input:
+        holopath=expand("{holopath}", holopath=config['holopath']),
+        logpath=expand("{logpath}", logpath=config['logpath'])
+
+
+
 ################################################################################################################
 ############################################       METAGENOMICS     ############################################
 ################################################################################################################
@@ -280,12 +289,20 @@ if config['SSPACE']:
 
     #PhyloPhlAn will take as input SSPACE's output - scaffolded bins
     input_phylophlan="{projectpath}/MIA_06-BinScaffolding/{sample}/Scaffolded_bins"
-    output_phylophlan="{projectpath}/MIA_07-MAGPhylogenetics/{sample}"
+
+    if config['pipeline'] == tree:
+        output_phylophlan="{projectpath}/MIA_07-MAGPhylogenetics/{sample}/Tree_Database"
+    else:
+        output_phylophlan="{projectpath}/MIA_07-MAGPhylogenetics/{sample}/Matrix_Database"
 
 
 else:  #PhyloPhlAn will take as input the dereplicated genomes from dRep
     input_phylophlan="{projectpath}/MIA_05-BinDereplication/{sample}/dereplicated_genomes"
-    output_phylophlan="{projectpath}/MIA_06-MAGPhylogenetics/{sample}"
+
+    if config['pipeline'] == tree:
+        output_phylophlan="{projectpath}/MIA_06-MAGPhylogenetics/{sample}/Tree_Database"
+    else:
+        output_phylophlan="{projectpath}/MIA_06-MAGPhylogenetics/{sample}/Matrix_Database"
 
 
 ##
