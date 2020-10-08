@@ -75,9 +75,9 @@ def in_out_metagenomics(path,in_f):
         output_files=''
 
         if scaffold:
-            final_temp_dir="MIA_07-MAGPhylogenetics"
+            final_temp_dir="MIB_07-MAGPhylogenetics"
         if not scaffold:
-            final_temp_dir="MIA_06-MAGPhylogenetics"
+            final_temp_dir="MIB_06-MAGPhylogenetics"
 
         lines = in_file.readlines() # Read input.txt lines
         for file in lines:
@@ -110,7 +110,7 @@ def in_out_metagenomics(path,in_f):
                     output_files+=(path+"/"+final_temp_dir+"/"+file[0]+" ")
 
                     # Add stats output file only once per sample
-                    #output_files+=(path+"/MIA_01-Assembly/"+file[0]+".stats ")
+                    #output_files+=(path+"/MIB_01-Assembly/"+file[0]+".stats ")
                         # change for
                     #####output_files+=(path+"/"+final_temp_dir+"/"+file[0]+".stats ")
 

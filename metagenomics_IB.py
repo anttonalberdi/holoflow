@@ -49,11 +49,6 @@ with open(str(config), 'w') as config_file:
     data['logpath'] = str(log)
     dump = yaml.dump(data, config_file)
 
-    if data['SSPACE']:
-        scaffold=True
-    else:
-        scaffold=False
-
 
 ###########################
 ## Functions
@@ -73,6 +68,7 @@ def in_out_metagenomics(path,in_f):
         # Paste desired output file names from input.txt
         read = 0
         output_files=''
+        final_temp_dir="MIB_04-BinMerging"
 
         lines = in_file.readlines() # Read input.txt lines
         for file in lines:
@@ -86,13 +82,6 @@ def in_out_metagenomics(path,in_f):
                 #   if the current input file names do not match the designed ones in input.txt
                 filename=str(file[2])      # current input file path and name
                 desired_filename=os.path.join(str(in_dir),''+str(file[0])+'_'+str(read)+'.fastq') # desired input file path and name specified in input.txt
-
-                if scaffold:
-                    final_temp_dir="MIA_06-BinScaffolding"
-                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"/Scaffolded_bins ")
-                if not scaffold:
-                    final_temp_dir="MIA_05-BinDereplication"
-                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+" ")
 
                 if not (os.path.exists(str(desired_filename))):
                     print(filename == desired_filename)
@@ -109,12 +98,8 @@ def in_out_metagenomics(path,in_f):
                 if read == 2: # two read files for one sample finished, new sample
                     read=0
                     # Add an output file based on input.txt info to a list for Snakemake command
-                    #output_files+=(path+"/"+final_temp_dir+"/"+file[0]+" ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"_DASTool_bins ")
 
-                    # Add stats output file only once per sample
-                    #output_files+=(path+"/MIA_01-Assembly/"+file[0]+".stats ")
-                        # change for
-                    #####output_files+=(path+"/"+final_temp_dir+"/"+file[0]+".stats ")
 
         return output_files
 

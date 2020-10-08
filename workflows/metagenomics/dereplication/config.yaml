@@ -1,0 +1,19 @@
+# bin scaffolding options
+SSPACE:
+  True
+
+# phylogeny options
+
+  # low , for species- and strain-level phylogenies
+  # medium, for genus- and family-level phylogenies
+  # high, for tree-of-life and higher-ranked taxonomic levels phylogenies
+# {low,medium,high}
+diversity:
+  low
+
+phylo_db:
+  phylophlan
+
+# {tree, concatenation}
+pipeline:
+  tree
