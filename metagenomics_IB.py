@@ -26,7 +26,7 @@ curr_dir = os.path.abspath(file)
 
 
 if not (args.config_file):
-    config = os.path.join(os.path.abspath(curr_dir),"workflows/metagenomics/individual_assembly/config.yaml")
+    config = os.path.join(os.path.abspath(curr_dir),"workflows/metagenomics/individual_binning/config.yaml")
 else:
     config=args.config_file
 
@@ -128,7 +128,7 @@ def run_metagenomics(in_f, path, config, cores):
     out_files = in_out_metagenomics(path,in_f)
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
-    path_snkf = os.path.join(holopath,'workflows/metagenomics/individual_assembly/Snakefile')
+    path_snkf = os.path.join(holopath,'workflows/metagenomics/individual_binning/Snakefile')
 
     # Run snakemake
     mtg_snk_Cmd = 'module unload gcc/5.1.0 && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''

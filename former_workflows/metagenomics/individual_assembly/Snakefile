@@ -1,5 +1,5 @@
 # 29.04.20
-configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/metagenomics/individual_assembly/config.yaml"
+configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/metagenomics/individual_binning/config.yaml"
 
 rule get_holopath:
     input:

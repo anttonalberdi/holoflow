@@ -57,7 +57,7 @@ if pip == 'concatenation':
     subprocess.check_call(pp_configCmd, shell=True)
 
 if pip == 'tree':
-    pp_configCmd ='module load tools anaconda3/4.4.0 phylophlan/3.0 && cd '+out_dir+'/.. && phylophlan_write_config_file -o holoflow_tree_config_nt.cfg -d a --force_nucleotides --db_aa diamond --map_aa diamond --map_dna diamond --msa muscle --tree1 fasttree --gene_tree1 fasttree --gene_tree2 ramxl &&  phylophlan -i '+genomes_dir+' -d '+ph_db+' --diversity '+diversity+' --force_nucleotides -f '+out_dir+'/../holoflow_tree_config_nt.cfg -o Tree_Database'
+    pp_configCmd ='module load tools anaconda3/4.4.0 phylophlan/3.0 && cd '+out_dir+'/.. && phylophlan_write_config_file -o holoflow_tree_config_nt.cfg -d a --force_nucleotides --db_aa diamond --map_aa diamond --map_dna diamond --msa muscle --tree1 fasttree --gene_tree1 fasttree --gene_tree2 ramxl &&  phylophlan -i '+genomes_dir+' -d '+ph_db+' --diversity '+diversity+' --force_nucleotides -f '+out_dir+'/../holoflow_tree_config_nt.cfg -o Tree_Database --maas /services/tools/phylophlan/3.0/lib/python3.7/site-packages/phylophlan/phylophlan_substitution_models/phylophlan.tsv'
     subprocess.check_call(pp_configCmd, shell=True)
 
 

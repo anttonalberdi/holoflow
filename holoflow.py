@@ -182,7 +182,7 @@ def run_metagenomics(in_f, path, config, cores):
     out_files = in_out_metagenomics(path,in_f)
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
-    path_snkf = os.path.join(holopath,'workflows/metagenomics/individual_assembly/Snakefile')
+    path_snkf = os.path.join(holopath,'workflows/metagenomics/individual_binning/Snakefile')
 
     # Run snakemake
     mtg_snk_Cmd = 'snakemake -s '+path_snkf+' '+out_files+' --configfile '+config+' --cores '+cores+''
