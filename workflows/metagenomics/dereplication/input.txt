@@ -1,4 +1,4 @@
-#SAMPLE_GROUP, INPUT_DIR_PATH
+#SAMPLE_GROUP, INPUT_DIR
 Chick_groupA "/home/projects/ku-cbd/people/nurher/chick_holoflow/PPR_03-MappedToReference/CB13_13F1b_1.fastq"
 Chick_groupA "/home/projects/ku-cbd/people/nurher/chick_holoflow/PPR_03-MappedToReference/CB13_13F1b_2.fastq"
 Chick_groupB "/home/projects/ku-cbd/people/nurher/chick_holoflow/PPR_03-MappedToReference/CA22_07F1b_1.fastq"

@@ -18,9 +18,9 @@ rule get_paths:
 ##
 rule drep_bins:
     input:
-        dastool_bin_dir="{projectpath}/MIB_04-BinMerging/{group}_DASTool_bins"
+        dastool_bin_dir="{projectpath}/MDR_04-BinMerging/{group}_DASTool_bins"
     output:
-        directory("{projectpath}/MIB_05-BinDereplication/{group}")
+        directory("{projectpath}/MDR_05-BinDereplication/{group}")
 
     params:
         threads=expand("{threads}", threads=config['threads']),
@@ -43,9 +43,9 @@ if config['SSPACE']:
         input:
             read1="{projectpath}/PPR_03-MappedToReference/{group}_1.fastq",
             read2="{projectpath}/PPR_03-MappedToReference/{group}_2.fastq",
-            bin_dir="{projectpath}/MIB_05-BinDereplication/{group}/dereplicated_genomes"
+            bin_dir="{projectpath}/MDR_05-BinDereplication/{group}/dereplicated_genomes"
         output:
-            directory("{projectpath}/MIB_06-BinScaffolding/{group}/Mapped_bins")
+            directory("{projectpath}/MDR_06-BinScaffolding/{group}/Mapped_bins")
         params:
             threads=expand("{threads}", threads=config['threads']),
             group='{group}'
@@ -60,10 +60,10 @@ if config['SSPACE']:
     ##
     rule bin_scaffolding:
         input:
-            fq_dir="{projectpath}/MIB_06-BinScaffolding/{group}/Mapped_bins",
-            drep_dir="{projectpath}/MIB_05-BinDereplication/{group}"
+            fq_dir="{projectpath}/MDR_06-BinScaffolding/{group}/Mapped_bins",
+            drep_dir="{projectpath}/MDR_05-BinDereplication/{group}"
         output:
-            directory("{projectpath}/MIB_06-BinScaffolding/{group}/Scaffolded_bins")
+            directory("{projectpath}/MDR_06-BinScaffolding/{group}/Scaffolded_bins")
         params:
             threads=expand("{threads}", threads=config['threads']),
             group='{group}'
@@ -73,21 +73,21 @@ if config['SSPACE']:
             """
 
     #PhyloPhlAn will take as input SSPACE's output - scaffolded bins
-    input_phylophlan="{projectpath}/MIB_06-BinScaffolding/{group}/Scaffolded_bins"
+    input_phylophlan="{projectpath}/MDR_06-BinScaffolding/{group}/Scaffolded_bins"
 
     if config['pipeline'] == tree:
-        output_phylophlan="{projectpath}/MIB_07-MAGPhylogenetics/{group}/Tree_Database"
+        output_phylophlan="{projectpath}/MDR_07-MAGPhylogenetics/{group}/Tree_Database"
     else:
-        output_phylophlan="{projectpath}/MIB_07-MAGPhylogenetics/{group}/Matrix_Database"
+        output_phylophlan="{projectpath}/MDR_07-MAGPhylogenetics/{group}/Matrix_Database"
 
 
 else:  #PhyloPhlAn will take as input the dereplicated genomes from dRep
-    input_phylophlan="{projectpath}/MIB_05-BinDereplication/{group}/dereplicated_genomes"
+    input_phylophlan="{projectpath}/MDR_05-BinDereplication/{group}/dereplicated_genomes"
 
     if config['pipeline'] == tree:
-        output_phylophlan="{projectpath}/MIB_06-MAGPhylogenetics/{group}/Tree_Database"
+        output_phylophlan="{projectpath}/MDR_06-MAGPhylogenetics/{group}/Tree_Database"
     else:
-        output_phylophlan="{projectpath}/MIB_06-MAGPhylogenetics/{group}/Matrix_Database"
+        output_phylophlan="{projectpath}/MDR_06-MAGPhylogenetics/{group}/Matrix_Database"
 
 
 ##

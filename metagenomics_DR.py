@@ -75,9 +75,9 @@ def in_out_metagenomics(path,in_f):
         output_files=''
 
         if scaffold:
-            final_temp_dir="MDRP_03-MAGPhylogenetics"
+            final_temp_dir="MDR_03-MAGPhylogenetics"
         if not scaffold:
-            final_temp_dir="MDRP_02-MAGPhylogenetics"
+            final_temp_dir="MDR_02-MAGPhylogenetics"
 
         lines = in_file.readlines() # Read input.txt lines
         last_line = lines[-1]
