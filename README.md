@@ -8,11 +8,11 @@ Snakemake is a workflow management system which requires from a *Snakefile* and 
 
 The main *holoflow* directory contains a given number of Python scripts which work as launchers for the different **workflow programs** in the pipeline:
 
-  - *preparegenomes.py*   - Merge all potential reference genomes to sample into a single *.fna* file to be used in preprocessing.py.  
-  - *preprocessing.py*    - Data preprocessing from quality to duplicate sequences for further downstream analysis.
-  - *metagenomics_IB.py*  - Individual assembly-based analysis and metagenomics binning. 
-  - *metagenomics_CB.py*  - Coassembly-based analysis and metagenomics binning. 
-  - *metagenomics_DR.py*  - Dereplication of metagenomic bins produced by either *metagenomics_IB* or *metagenomics_CB*. 
+  - ***preparegenomes.py***   - Merge all potential reference genomes to sample into a single *.fna* file to be used in preprocessing.py.  
+  - ***preprocessing.py***    - Data preprocessing from quality to duplicate sequences for further downstream analysis.
+  - ***metagenomics_IB.py***  - Individual assembly-based analysis and metagenomics binning. 
+  - ***metagenomics_CB.py***  - Coassembly-based analysis and metagenomics binning. 
+  - ***metagenomics_DR.py***  - Dereplication of metagenomic bins produced by either *metagenomics_IB* or *metagenomics_CB*. 
   
   
   
@@ -26,8 +26,12 @@ These are designed to be called from the command line and require the following 
   
 ```  
   
+#### Config files description
+A template *config.yaml* file can be found in every workflow directory. 
+
 #### Input files description
-Find *input.txt* file description for every workflow.  
+A template *input.txt* file can be found in every workflow directory.  
+See *input.txt* file description for every workflow:
 In all cases, columns must be delimited by a simple space and **no blank lines should be found in the end of the file**.  
 Those lines starting by # won't be considered.  
   
