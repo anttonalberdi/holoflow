@@ -135,9 +135,6 @@ rule depth_table:
         python {rules.get_paths.input.holopath}/bin/holo-depth_files_IA.py -a {input.mapped_bam} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -group {params.group} -log {rules.get_paths.input.logpath}
         """
 
-##
-# BINNING TO ADD #####################
-##
 
 ##
 # Binning with metabat
@@ -160,7 +157,6 @@ rule binning_metabat:
         """
 
 
-
 ##
 # Binning with maxbin
 ##
@@ -179,6 +175,10 @@ rule binning_maxbin:
         """
         python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -group {params.group} -log {rules.get_paths.input.logpath}
         """
+
+##
+# Binning with Concoct?
+##
 
 
 

@@ -134,9 +134,6 @@ rule depth_table:
         python {rules.get_paths.input.holopath}/bin/holo-depth_files_IA.py -a {input.mapped_bam} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -sample {params.sample} -log {rules.get_paths.input.logpath}
         """
 
-##
-# BINNING TO ADD #####################
-##
 
 ##
 # Binning with metabat
