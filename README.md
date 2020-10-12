@@ -104,14 +104,20 @@ Those lines starting by # won't be considered.
   3. Contig binning using **Metabat**, **MaxBin** (and **Concoct** #### NOT YET)
   4. Binner result integration using **DasTool** 
   
+- Config file *config.yaml*, in which the user may be interested to customise:
+  1. Assembler - choose between the mentioned options by writing *megahit* or *spades*
+  2. Minimum contig length - minimum bp per contig in final assembly file.
+
+  
 #### Metagenomics - Dereplication
+- *Snakefile* - which contains rules for:
   1. Bin Dereplication using **dRep**
   2. Bin assembly improvement (contig elongation and scaffolding) using **SSPACE**. 
   3. Phylogenetic analysis and taxonomic assignation **PhylophlAn / GTDBTk** ##### UNDER CONSTRUCTION
-
+  
 - Config file *config.yaml*, in which the user may be interested to customise:
-  1. Metagenomic assembly - choose between the mentioned options by writing *megahit* or *spades*
-  2. Minimum contig length - minimum bp per contig in final assembly file.
+  1. Desired contig scaffolding or not, by setting SSPACE *True/False*
+
 
 
 ## Usage in Computerome
