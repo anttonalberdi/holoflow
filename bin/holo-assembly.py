@@ -12,6 +12,7 @@ parser.add_argument('-1', help="path1", dest="read1", required=True)
 parser.add_argument('-2', help="path2", dest="read2", required=True)
 parser.add_argument('-o', help="output directory", dest="out", required=True)
 parser.add_argument('-empty_o', help="empty touched file", dest="empty_o", required=True)
+parser.add_argument('-coa', help="coassembly", dest="coassembly", required=False)
 parser.add_argument('-m', help="memory", dest="memory", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 parser.add_argument('-k_megahit', help="k-mer size list megahit", dest="k_megahit", required=True)
@@ -37,6 +38,8 @@ sample=args.sample
 log=args.log
 
 
+
+
 # Run
 
 # Write to log
@@ -51,7 +54,19 @@ if not (os.path.exists(str(empty_o)) or os.path.exists(str(temp_a)) or os.path.e
     emptytouchCmd='touch '+empty_o+''
     subprocess.check_call(emptytouchCmd, shell=True)
 
-    if assembler == "megahit":
+    if assembler == "megahit": #If coassembly : read1&read2 will contain a string of comma-separated list of fasta/q paired-end files for each pair
+                                #If not coassembly: read1&read2 will contain a single path for one single sample
+        if (args.coassembly):
+            comma_read1 = ''
+            comma_read1 = open(str(read1),'r').read()
+            read1=comma_read1
+
+            comma_read2 = ''
+            comma_read2 = open(str(read2),'r').read()
+            read2=comma_read2
+        else:
+            pass
+
         megahitCmd = 'module load tools megahit/1.1.1 && mkdir '+out+' && megahit -1 '+read1+' -2 '+read2+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
         subprocess.check_call(megahitCmd, shell=True)
 
@@ -59,7 +74,8 @@ if not (os.path.exists(str(empty_o)) or os.path.exists(str(temp_a)) or os.path.e
         mv_megahitCmd = 'mv '+out+'/final.contigs.fa '+out+'/temp_assembly.fa'
         subprocess.check_call(mv_megahitCmd, shell=True)
 
-    if assembler == "spades":
+    if assembler == "spades": #If coassembly : read1&read2 will contain a single path of a file containing all merged sequences
+                                #If not coassembly: read1&read2 will contain a single path for one single sample
         spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+memory+' -k '+k_spades+' --only-assembler -o '+out+''
         subprocess.check_call(spadesCmd, shell=True)
 

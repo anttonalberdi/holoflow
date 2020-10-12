@@ -31,7 +31,7 @@ else:
     config=args.config_file
 
 if not (args.log):
-    log = os.path.join(path,"Holoflow_metagenomics.log")
+    log = os.path.join(path,"Holoflow_individualA_metagenomics.log")
 else:
     log=args.log
 
@@ -119,7 +119,7 @@ def run_metagenomics(in_f, path, config, cores):
     mtg_snk_Cmd = 'module unload gcc/5.1.0 && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(mtg_snk_Cmd, shell=True)
 
-    print("Have a nice run!\n\t\tHOLOFOW Metagenomics starting")
+    print("Have a nice run!\n\t\tHOLOFOW Metagenomics-IndividualBinning starting")
 
 
 

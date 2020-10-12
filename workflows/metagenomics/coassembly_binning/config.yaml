@@ -1,6 +1,9 @@
 
 
 # assembly options
+coassembly:
+  True
+
 threads:
   40
 
