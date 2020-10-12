@@ -68,7 +68,7 @@ Those lines starting by # won't be considered.
 ##### *metagenomics_CB.py* & *metagenomics_DR.py*
 
   1. Coassembly group or sample group name.  
-  2. Input directory path where all files to coassemble are.
+  2. Input directory path where all *.fastq* files to coassemble or bins to dereplicate are.
   
 - Example:
 
