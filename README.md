@@ -26,8 +26,12 @@ These are designed to be called from the command line and require the following 
   
 ```  
   
+#### Config files description
+A template *config.yaml* file can be found in every workflow directory. 
+
 #### Input files description
-Find *input.txt* file description for every workflow.  
+A template *input.txt* file can be found in every workflow directory.  
+See *input.txt* file description for every workflow:
 In all cases, columns must be delimited by a simple space and **no blank lines should be found in the end of the file**.  
 Those lines starting by # won't be considered.  
   
