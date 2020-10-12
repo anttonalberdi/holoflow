@@ -10,7 +10,10 @@ The main *holoflow* directory contains a given number of Python scripts which wo
 
   - *preparegenomes.py*   - Merge all potential reference genomes to sample into a single *.fna* file to be used in preprocessing.py.  
   - *preprocessing.py*    - Data preprocessing from quality to duplicate sequences for further downstream analysis.
-  - *metagenomics_IA.py*  - Individual assembly-based assembly and metagenomics binning. 
+  - *metagenomics_IB.py*  - Individual assembly-based analysis and metagenomics binning. 
+  - *metagenomics_CB.py*  - Coassembly-based analysis and metagenomics binning. 
+  - *metagenomics_DR.py*  - Dereplication of metagenomic bins produced by either *metagenomics_IB* or *metagenomics_CB*. 
+  
   
   
 These are designed to be called from the command line and require the following arguments ([optional arguments]):  
@@ -25,7 +28,7 @@ These are designed to be called from the command line and require the following 
   
 #### Input files description
 Find *input.txt* file description for every workflow.  
-In all cases, columns must be delimited by a simple space and no blank lines should be found in the end of the file.  
+In all cases, columns must be delimited by a simple space and **no blank lines should be found in the end of the file**.  
 Those lines starting by # won't be considered.  
   
 ##### *preparegenomes.py*
@@ -61,7 +64,19 @@ Those lines starting by # won't be considered.
 | Samplen | Groupn | /home/Samplen_1.fq |
 | Samplen | Groupn | /home/Samplen_2.fq |
   
+
+##### *metagenomics_CB.py* & *metagenomics_DR.py*
+
+  1. Coassembly group or sample group name.  
+  2. Input directory path where all *.fastq* files to coassemble or bins to dereplicate are.
   
+- Example:
+
+|   |   |   |
+| --- | --- | --- |
+| GroupA | /home/directory_samplesA |
+| GroupB | /home/directory_samplesB |
+
   
  
 ### Workflows - Specific directories
@@ -82,18 +97,27 @@ Those lines starting by # won't be considered.
   2. Mapping reads against reference genome(s) - reference genome(s) path(s), stringent level for mapping and other parameters. 
 
 
-#### Metagenomics (Individual Assembly so far)
+#### Metagenomics - Individual Assembly & Coassembly
 - *Snakefile* - which contains rules for:
   1. Metagenomic assembly using **metaSpades** or **megahit**
   2. Read mapping to assembly using **bwa mem** 
   3. Contig binning using **Metabat**, **MaxBin** (and **Concoct** #### NOT YET)
   4. Binner result integration using **DasTool** 
-  5. Bin Dereplication using **dRep**
-  6. Bin assembly improvement (contig elongation and scaffolding) using SSPACE. ##### UNDER CONSTRUCTION
-
+  
 - Config file *config.yaml*, in which the user may be interested to customise:
-  1. Metagenomic assembly - choose between the mentioned options by writing *megahit* or *spades*
+  1. Assembler - choose between the mentioned options by writing *megahit* or *spades*
   2. Minimum contig length - minimum bp per contig in final assembly file.
+
+  
+#### Metagenomics - Dereplication
+- *Snakefile* - which contains rules for:
+  1. Bin Dereplication using **dRep**
+  2. Bin assembly improvement (contig elongation and scaffolding) using **SSPACE**. 
+  3. Phylogenetic analysis and taxonomic assignation **PhylophlAn / GTDBTk** ##### UNDER CONSTRUCTION
+  
+- Config file *config.yaml*, in which the user may be interested to customise:
+  1. Desired contig scaffolding or not, by setting SSPACE *True/False*
+
 
 
 ## Usage in Computerome
