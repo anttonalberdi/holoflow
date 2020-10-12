@@ -51,6 +51,9 @@ subprocess.check_call(dastoolCmd, shell=True)
 binfiles = glob.glob(os.path.join(str(o),'*.fa'))
 for b in binfiles:
     shutil.move(b, str(''+o+'.bin'))
+# mvCmd='mkdir '+o+' && mv '+o+'_DASTool_bins/* '+o+' && mkdir '+o+'_summaries && mv *.eval *_summary* '+o+'_summaries'
+# subprocess.check_call(mvCmd, shell=True)
+
 
 if os.path.exists(str(o+'/'+sample+'_maxbin.eval')):
     # Add relevant info to log
