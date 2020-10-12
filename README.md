@@ -28,7 +28,7 @@ These are designed to be called from the command line and require the following 
   
 #### Input files description
 Find *input.txt* file description for every workflow.  
-In all cases, columns must be delimited by a simple space and no blank lines should be found in the end of the file.  
+In all cases, columns must be delimited by a simple space and **no blank lines should be found in the end of the file**.  
 Those lines starting by # won't be considered.  
   
 ##### *preparegenomes.py*
@@ -67,7 +67,7 @@ Those lines starting by # won't be considered.
 
 ##### *metagenomics_CB.py* & *metagenomics_DR.py*
 
-  1. Coassembly group name.  
+  1. Coassembly group or sample group name.  
   2. Input directory path where all files to coassemble are.
   
 - Example:
