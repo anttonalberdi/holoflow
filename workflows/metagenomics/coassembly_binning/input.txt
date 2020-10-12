@@ -1,15 +1,3 @@
-SAMPLE, SAMPLE_GROUP, INPUT_PATH
-KB116 Bats_groupA "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/kb/KB116_1.fastq"
-KB116 Bats_groupA "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/kb/KB116_2.fastq"
-KB121 Bats_groupA "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/kb/KB121_1.fastq"
-KB121 Bats_groupA "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/kb/KB121_2.fastq"
-KB25 Bats_groupA "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/kb/KB25_1.fastq"
-KB25 Bats_groupA "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/kb/KB25_2.fastq"
-LZ48 Bats_groupB "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/lz/LZ48_1.fastq"
-LZ48 Bats_groupB "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/lz/LZ48_2.fastq"
-LZ50 Bats_groupB "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/lz/LZ50_1.fastq"
-LZ50 Bats_groupB "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/lz/LZ50_2.fastq"
-LZ51 Bats_groupB "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/lz/LZ51_1.fastq"
-LZ51 Bats_groupB "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/lz/LZ51_2.fastq"
-LZ52 Bats_groupB "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/lz/LZ52_1.fastq"
-LZ52 Bats_groupB "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/lz/LZ52_2.fastq"
+SAMPLE_GROUP, INPUT_DIR
+Bats_groupA "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/kb"
+Bats_groupB "/home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/lz"

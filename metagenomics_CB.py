@@ -79,38 +79,34 @@ def in_out_metagenomics(path,in_f):
         final_temp_dir="MCB_04-BinMerging"
 
         lines = in_file.readlines() # Read input.txt lines
-        for file in lines:
+        for dir in lines:
 
-            if not (file.startswith('#')):
-                file = file.strip('\n').split(' ') # Create a list of each line
+            if not (dir.startswith('#')):
+                dir = dir.strip('\n').split(' ') # Create a list of each line
 
                 read+=1 # every sample will have two reads, keep the name of the file but change the read
 
                 # Depending on spades or megahit, create a big file where all .fastq merged or concatenate by ,
-                filename=str(file[2])      # current input file path and name
-                coa1_filename=(str(in_dir)+'/'+str(file[1])+'_1.fastq')
-                coa2_filename=(str(in_dir)+'/'+str(file[1])+'_2.fastq')
+                input_groupdir=str(dir[1])      # current input file path and name
+
+                # Snakemake input files
+                coa1_filename=(str(in_dir)+'/'+str(dir[0])+'_1.fastq')
+                coa2_filename=(str(in_dir)+'/'+str(dir[0])+'_2.fastq')
 
                 if merging: # spades is selected assembler
-                    read1_files+=str(filename)+' '
-
-                    if read == 2: # two read files for one sample finished, new sample
-                        read2_files+=str(filename)+' '
-                        read=0
-
                         # write output files and finish group input
                     if group == 'empty': # will only happen on the first round - first coassembly group
-                        group=str(file[1])
+                        group=dir[0]
 
-                    elif ((not (group == file[1])) or (line == last_line)): # when the group changes, define output files for previous group and finish input
+                    elif ((not (group == dir[1])) or (line == last_line)): # when the group changes, define output files for previous group and finish input
                         #same as last output in Snakefile
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"_DASTool_bins ")
 
                         # merge all .fastq for coassembly with spades
-                        merge1Cmd=''+read1files+' > '+coa1_filename+''
+                        merge1Cmd='cd '+input_groupdir+' && cat *_1.fastq > '+coa1_filename+''
                         subprocess.check_call(merge1Cmd, shell=True)
 
-                        merge2Cmd=''+read2files+' > '+coa2_filename+''
+                        merge2Cmd='cd '+input_groupdir+' && cat *_2.fastq > '+coa2_filename+''
                         subprocess.check_call(merge2Cmd, shell=True)
 
                         group=dir[0] # define new group in case first condition
@@ -118,26 +114,21 @@ def in_out_metagenomics(path,in_f):
 
 
                 if not merging:   #megahit is the selected assembler, all files in string , separated
-                    read1_files+=str(filename)+','
-
-                    if read == 2: # two read files for one sample finished, new sample
-                        read2_files+=str(filename)+','
-                        read=0
 
                         # write output files and finish group input
                     if group == 'empty': # will only happen on the first round - first coassembly group
-                        group=str(file[1])
+                        group=dir[0]
 
-                    elif ((not (group == file[1])) or (line == last_line)): # when the group changes, define output files for previous group and finish input
+                    elif ((not (group == dir[1])) or (line == last_line)): # when the group changes, define output files for previous group and finish input
                         #same as last output in Snakefile
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"_DASTool_bins ")
 
                         # the .fastq files for megahit will contain a list of input files , separated instead of the read content
-                        with open(str(coa1_filename),"w+") as r1:
-                            r1.write(str(read1_files))
+                        find1Cmd='find '+input_groupdir+'/*_1.fastq | tr "\n" "," > '+coa1_filename+''
+                        subprocess.check_call(merge1Cmd, shell=True)
 
-                        with open(str(coa2_filename),"w+") as r2:
-                            r2.write(str(read2_files))
+                        find2Cmd='find '+input_groupdir+'/*_2.fastq | tr "\n" "," > '+coa2_filename+''
+                        subprocess.check_call(merge2Cmd, shell=True)
 
                         group=dir[0] # define new group in case first condition
 
