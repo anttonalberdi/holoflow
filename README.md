@@ -1,7 +1,7 @@
 # holoflow
 Bioinformatics pipeline for hologenomics data generation and analysis
 
-Snakemake is a workflow management system which requires from a *Snakefile* and a *config* file. This is a Bioinformatics pipeline for hologenomics data generation and analysis implemented with Snakemake.
+Snakemake is a workflow management system which requires from a *Snakefile* and a *config* file. This is a Bioinformatics pipeline implemented with Snakemake.
 
 ## Files and directories
 ### Main directory
