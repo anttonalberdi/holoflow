@@ -32,7 +32,7 @@ rule check_compress:
     output:
         check_file="{projectpath}/PRG/{db_ID}.tar.gz"
     params:
-        db_dir="{projectpath}/PRG/",
+        db_dir="{projectpath}/PRG",
         db_ID="{db_ID}"
     shell:
         """
