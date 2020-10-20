@@ -194,7 +194,7 @@ def run_preparegenomes(in_f, path, config, cores):
     path_snkf = os.path.join(holopath,'workflows/preparegenomes/Snakefile')
 
     # Run snakemake
-    prg_snk_Cmd = 'module unload gcc/5.1.0 && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+path_out[1]+' --configfile '+config+' --cores '+cores+''
+    prg_snk_Cmd = 'module unload gcc && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+path_out[1]+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(prg_snk_Cmd, shell=True)
 
     print("Have a nice run!\n\t\tHOLOFOW Prepare genomes starting")

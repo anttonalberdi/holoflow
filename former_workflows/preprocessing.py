@@ -112,7 +112,7 @@ def run_preprocessing(in_f, path, config, cores):
 ###########################
 #### Snakemake pipeline run - load required modules
 ###########################
-load_modulesCmd='module unload gcc/5.1.0 && module load tools anaconda3/4.4.0'
+load_modulesCmd='module unload gcc && module load tools anaconda3/4.4.0'
 subprocess.check_call(load_modulesCmd, shell=True)
 
 
