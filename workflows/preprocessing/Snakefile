@@ -54,7 +54,7 @@ rule dup_rem_paired:
 
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -i {params.ignore_case} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -i {params.ignore_case} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -101,7 +101,7 @@ rule map_ref:
         #R=expand("{R}", R=config['R'])
     shell: #-R {params.R}
         """
-        python {rules.get_paths.input.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {input.refgenomes} -obam {output} -t {params.t} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {input.refgenomes} -obam {output} -t {params.t} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 rule map_ref_split:

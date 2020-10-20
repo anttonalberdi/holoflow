@@ -27,7 +27,7 @@ rule drep_bins:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -group {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -51,7 +51,7 @@ if config['SSPACE']:
             group='{group}'
         shell:
             """
-            python {rules.get_paths.input.holopath}/bin/holo-bin_mapping.py -i1 {input.read1} -i2 {input.read2} -bin_dir {input.bin_dir} -out_dir {output} -t {params.threads} -group {params.group} -log {rules.get_paths.input.logpath}
+            python {rules.get_paths.input.holopath}/bin/holo-bin_mapping.py -i1 {input.read1} -i2 {input.read2} -bin_dir {input.bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
             """
 
 
@@ -69,7 +69,7 @@ if config['SSPACE']:
             group='{group}'
         shell:
             """
-            python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {input.fq_dir} -bin_dir {input.drep_dir} -out_dir {output} -t {params.threads} -group {params.group} -log {rules.get_paths.input.logpath}
+            python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {input.fq_dir} -bin_dir {input.drep_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
             """
 #
 #     #PhyloPhlAn will take as input SSPACE's output - scaffolded bins
@@ -107,5 +107,5 @@ if config['SSPACE']:
 #         group='{group}'
 #     shell:
 #         """
-#         python {rules.get_paths.input.holopath}/bin/holo-phylophlan.py -genomes_dir {input} -div {params.diversity} -pip {params.pipeline} -ph_db {params.phylo_db} -out_dir {output} -ssp {params.SSPACE} -t {params.threads} -group {params.group} -log {rules.get_paths.input.logpath}
+#         python {rules.get_paths.input.holopath}/bin/holo-phylophlan.py -genomes_dir {input} -div {params.diversity} -pip {params.pipeline} -ph_db {params.phylo_db} -out_dir {output} -ssp {params.SSPACE} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
 #         """

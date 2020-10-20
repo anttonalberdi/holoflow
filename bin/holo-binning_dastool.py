@@ -16,7 +16,7 @@ parser.add_argument('-o', help="output main dir", dest="o", required=True)
 parser.add_argument('-se', help="search engine", dest="se", required=True)
 parser.add_argument('-t', help="threads", dest="t", required=True)
 parser.add_argument('-db', help="dastool database directory", dest="db", required=True)
-parser.add_argument('-sample', help="sample", dest="sample", required=True)
+parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
 
@@ -28,7 +28,7 @@ o=args.o
 se=args.se
 t=args.t
 db=args.db
-sample=args.sample
+ID=args.ID
 log=args.log
 
 
@@ -38,7 +38,7 @@ log=args.log
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
-    logi.write('\t\t'+current_time+'\tDASTool Bin Refinement step - Sample '+sample+'\n')
+    logi.write('\t\t'+current_time+'\tDASTool Bin Refinement step - ID '+ID+'\n')
     logi.write('The binning results from MaxBin and Metabat2 are integrated by DASTool to produce one only non-redundant\nset of bins between them.\n\n')
 
 
@@ -55,15 +55,15 @@ for b in binfiles:
 # subprocess.check_call(mvCmd, shell=True)
 
 
-if os.path.exists(str(o+'/'+sample+'_maxbin.eval')):
+if os.path.exists(str(o+'/'+ID+'_maxbin.eval')):
     # Add relevant info to log
     with open(str(log),'a+') as logf:
-        logf.write('\t\tDASTool MaxBin bins evaluation - Sample '+sample+'\n\n')
+        logf.write('\t\tDASTool MaxBin bins evaluation - ID '+ID+'\n\n')
         with open(str(''+o+'_maxbin.eval'),'r') as mxb_eval:
             logf.write(''+mxb_eval.read()+'\n\n\n')
-        logf.write('\t\tDASTool Metabat2 bins evaluation - Sample '+sample+'\n\n')
+        logf.write('\t\tDASTool Metabat2 bins evaluation - ID '+ID+'\n\n')
         with open(str(''+o+'_metabat.eval'),'r') as mtb_eval:
             logf.write(''+mtb_eval.read()+'\n\n\n')
-        logf.write('\t\tDASTool Bin Merging Summary - Sample '+sample+'\n\n')
+        logf.write('\t\tDASTool Bin Merging Summary - ID '+ID+'\n\n')
         with open(str(''+o+'_DASTool_summary.txt'),'r') as summary:
             logf.write(''+summary.read()+'\n\n\n\n')

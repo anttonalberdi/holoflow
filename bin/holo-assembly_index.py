@@ -10,14 +10,14 @@ import time
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-a', help="assembly file", dest="a", required=True)
 parser.add_argument('-ia', help="index assembly file", dest="idx_a", required=True)
-parser.add_argument('-sample', help="sample", dest="sample", required=True)
+parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
 
 
 a=args.a
 idx_a=args.idx_a
-sample=args.sample
+ID=args.ID
 log=args.log
 
 
@@ -26,7 +26,7 @@ log=args.log
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tAssembly Indexing step - Sample '+sample+'\n')
+    log.write('\t\t'+current_time+'\tAssembly Indexing step - ID '+ID+'\n')
     log.write('The assembly file needs to be indexed so the original read files can be mapped to it.\n\n')
 
 

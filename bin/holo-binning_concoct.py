@@ -32,10 +32,10 @@ log=args.log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as log:
     log.write('\t\t'+current_time+'\tConcoct Binning step\n')
-    log.write('Coassembly binning is being done by CONCOCT. (((MERGE SAMPLES))) This will sort the contigs into groups,\ncalled bins, which ideally will belong to taxonomically close organisms. This is mainly done\nbased on coverage and tetranucleotide frequencies.\n\n')
+    log.write('Coassembly binning is being done by CONCOCT. (((MERGE IDS))) This will sort the contigs into groups,\ncalled bins, which ideally will belong to taxonomically close organisms. This is mainly done\nbased on coverage and tetranucleotide frequencies.\n\n')
 
 
-if coa: # default set to FALSE in configfile    # first bin 0 --> to +1 
+if coa: # default set to FALSE in configfile    # first bin 0 --> to +1
     if not glob.glob(str(bb)+"*.fa"):
         concoctCmd='concoct --coverage_file '+d+' --composition_file '+a+' -b '+bb+' -l '+int(l)+''
         subprocess.check_call(concoctCmd, shell=True)

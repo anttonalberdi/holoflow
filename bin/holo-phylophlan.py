@@ -15,7 +15,7 @@ parser.add_argument('-pip', help="PhyloPhlAn pipeline to be used", dest="pip", r
 parser.add_argument('-ph_db', help="genomes data base to be used by PhyloPhlAn", dest="ph_db", required=True)
 parser.add_argument('-out_dir', help="main output directory", dest="out_dir", required=True)
 parser.add_argument('-ssp', help="SSPACE used or not", dest="ssp", required=True)
-parser.add_argument('-sample', help="sample", dest="sample", required=True)
+parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 args = parser.parse_args()
@@ -28,7 +28,7 @@ pip=args.pip
 ph_db=args.ph_db
 out_dir=args.out_dir
 ssp=args.ssp
-sample=args.sample
+ID=args.ID
 log=args.log
 threads=args.threads
 
@@ -40,7 +40,7 @@ threads=args.threads
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
-    logi.write('\t\t'+current_time+'\tMAG Phylogenetic assignation step - Sample '+sample+'\n')
+    logi.write('\t\t'+current_time+'\tMAG Phylogenetic assignation step - ID '+ID+'\n')
     logi.write('\n\n')
 
 if not (ssp): #drep output files have .fa extension, PhyloPhlAn requires .fna for nucl.
@@ -62,4 +62,4 @@ if pip == 'tree':
 
 
 with open(str(log),'a+') as logf:
-    logf.write('\t\t'+current_time+'\tMetagenomics analysis with Holoflow are completed for sample '+sample+'\n')
+    logf.write('\t\t'+current_time+'\tMetagenomics analysis with Holoflow are completed for ID '+ID+'\n')

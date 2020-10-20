@@ -13,7 +13,7 @@ parser.add_argument('-sep', help="sep", dest="separator", required=True)
 parser.add_argument('-D', help="file to save number and list of dup seqs", dest="file_to_dups")
 parser.add_argument('-s', help="by seq", dest="by_seq", required=True)
 parser.add_argument('-n', help="by name", dest="by_name", required=True)
-parser.add_argument('-sample', help="sample", dest="sample", required=True)
+parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-i', help="ignore case", dest="ignore", required=True)
 args = parser.parse_args()
@@ -25,7 +25,7 @@ separator=args.separator
 file_to_dups=args.file_to_dups
 by_seq=args.by_seq
 by_name=args.by_name
-sample=args.sample
+ID=args.ID
 log=args.log
 ignore=args.ignore
 
@@ -35,7 +35,7 @@ ignore=args.ignore
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tDuplicates Removal step - Sample '+sample+'\n')
+    log.write('\t\t'+current_time+'\tDuplicates Removal step - ID '+ID+'\n')
     log.write('Duplicate sequences are being removed.\n\n')
 
 
