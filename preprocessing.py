@@ -65,6 +65,11 @@ def in_out_preprocessing(path,in_f):
     input files where snakemake expects to find them if necessary."""
     # Define input directory and create it if not exists "00-InputData"
     in_dir = os.path.join(path,"PPR_00-InputData")
+
+    if os.path.exists(in_dir):
+        rmdirCmd='cd '+in_dir+'/.. && rm -rf '+in_dir+' && mkdir '+in_dir+''
+        subprocess.check_call(rmdirCmd,shell=True)
+
     if not os.path.exists(in_dir):
         os.makedirs(in_dir)
 
@@ -78,7 +83,7 @@ def in_out_preprocessing(path,in_f):
         # remove empty lines
         all_lines = map(lambda s: s.strip(), all_lines)
         lines = list(filter(None, list(all_lines)))
-        
+
         for file in lines:
 
             if not (file.startswith('#')):

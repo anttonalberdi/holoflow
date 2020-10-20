@@ -64,6 +64,11 @@ def set_up_preparegenomes(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
     db_dir = os.path.join(path,"PRG")
+
+    if os.path.exists(db_dir):
+        rmdirCmd='cd '+db_dir+'/.. && rm -rf '+db_dir+' && mkdir '+db_dir+''
+        subprocess.check_call(rmdirCmd,shell=True)
+
     if not os.path.exists(db_dir):
         os.makedirs(db_dir)
 
@@ -159,9 +164,12 @@ def merge_genomes(refg_IDs,refg_Paths,db_ID):
         mergeCmd='cd '+db_dir+' && cat *.fna > '+db_path+''
         subprocess.check_call(mergeCmd, shell=True)
 
-        # remove all individual genomes
-        rmCmd='cd '+db_dir+' && ls | grep -v "'+db_ID+'*" | xargs rm'
-        subprocess.check_call(rmCmd, shell=True)
+        # remove all individual genomes if more than one
+        if os.path.exists(db_dir+"/"+ID+".fna"):
+            rmCmd='cd '+db_dir+' && ls | grep -v "'+db_ID+'*" | xargs rm'
+            subprocess.check_call(rmCmd, shell=True)
+        else:
+            pass
 
     else: # the db file alreadhy exists
         # define full db path and merge all reference genomes in it

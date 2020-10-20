@@ -66,6 +66,11 @@ def in_out_metagenomics(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
     in_dir = os.path.join(path,"MIB_04-BinMerging")
+
+    if os.path.exists(in_dir):
+        rmdirCmd='cd '+in_dir+'/.. && rm -rf '+in_dir+' && mkdir '+in_dir+''
+        subprocess.check_call(rmdirCmd,shell=True)
+
     if not os.path.exists(in_dir):
         os.makedirs(in_dir)
 
@@ -79,7 +84,7 @@ def in_out_metagenomics(path,in_f):
         # remove empty lines
         all_lines = map(lambda s: s.strip(), all_lines)
         lines = list(filter(None, list(all_lines)))
-        
+
         last_line = lines[-1]
         for line in lines:
 
