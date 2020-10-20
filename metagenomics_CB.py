@@ -95,22 +95,22 @@ def in_out_metagenomics(path,in_f):
 
                 read+=1 # every sample will have two reads, keep the name of the file but change the read
 
-                # Depending on spades or megahit, create a big file where all .fastq merged or concatenate by ,
-                input_groupdir=str(dir[1])      # current input file path and name
-
-                # Snakemake input files
-                coa1_filename=(str(in_dir)+'/'+str(dir[0])+'_1.fastq')
-                coa2_filename=(str(in_dir)+'/'+str(dir[0])+'_2.fastq')
 
                 if merging: # spades is selected assembler
                         # write output files and finish group input
                     if group == 'empty': # will only happen on the first round - first coassembly group
                         group=dir[0]
+                        # Depending on spades or megahit, create a big file where all .fastq merged or concatenate by ,
+                        input_groupdir=str(dir[1])      # current input file path and name
 
                     elif ((not (group == dir[1])) or (line == last_line)): # when the group changes, define output files for previous group and finish input
                         #same as last output in Snakefile
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"_DASTool_bins ")
 
+                        # Snakemake input files
+                        coa1_filename=(str(in_dir)+'/'+str(group)+'_1.fastq')
+                        coa2_filename=(str(in_dir)+'/'+str(group)+'_2.fastq')
+                        print(coa1_filename)
                         # merge all .fastq for coassembly with spades
                         merge1Cmd='cd '+input_groupdir+' && cat *_1.fastq > '+coa1_filename+''
                         subprocess.check_call(merge1Cmd, shell=True)
@@ -118,6 +118,8 @@ def in_out_metagenomics(path,in_f):
                         merge2Cmd='cd '+input_groupdir+' && cat *_2.fastq > '+coa2_filename+''
                         subprocess.check_call(merge2Cmd, shell=True)
 
+                        # Depending on spades or megahit, create a big file where all .fastq merged or concatenate by ,
+                        input_groupdir=str(dir[1])      # current input file path and name
                         group=dir[0] # define new group in case first condition
 
 
