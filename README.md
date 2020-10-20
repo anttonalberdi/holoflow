@@ -41,6 +41,8 @@ Those lines starting by # won't be considered.
   2. Reference genome full path/name.   
   3. Desired output data base with all genomes name. **No spaces**, undersquares or other separators allowed. *All those reference genomes which should be in the same DB should have the same ID in this field*.  
   
+  **The fields 1 and 3 must be different**
+  
 - Example:
 
 |   |   |   |
