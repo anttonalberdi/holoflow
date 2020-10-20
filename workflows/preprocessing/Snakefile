@@ -1,4 +1,3 @@
-#configfile:"/home/projects/ku-cbd/people/nurher/holoflow/workflows/preprocessing/config.yaml"
 
 rule get_paths:
     input:
