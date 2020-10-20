@@ -74,7 +74,11 @@ def in_out_preprocessing(path,in_f):
         output_files=''
         final_temp_dir="PPR_03-MappedToReference"
 
-        lines = in_file.readlines() # Read input.txt lines
+        all_lines = in_file.readlines() # Read input.txt lines
+        # remove empty lines
+        all_lines = map(lambda s: s.strip(), all_lines)
+        lines = list(filter(None, list(all_lines)))
+        
         for file in lines:
 
             if not (file.startswith('#')):

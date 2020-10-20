@@ -76,7 +76,11 @@ def set_up_preparegenomes(path,in_f):
         output_files=''
 
 
-        lines = in_file.readlines() # Read input.txt lines
+        all_lines = in_file.readlines() # Read input.txt lines
+        # remove empty lines
+        all_lines = map(lambda s: s.strip(), all_lines)
+        lines = list(filter(None, list(all_lines)))
+        
         last_file = lines[-1]
         for file in lines:
 

@@ -78,7 +78,11 @@ def in_out_metagenomics(path,in_f):
         output_files=''
         final_temp_dir="MCB_04-BinMerging"
 
-        lines = in_file.readlines() # Read input.txt lines
+        all_lines = in_file.readlines() # Read input.txt lines
+        # remove empty lines
+        all_lines = map(lambda s: s.strip(), all_lines)
+        lines = list(filter(None, list(all_lines)))
+
         for dir in lines:
 
             if not (dir.startswith('#')):
