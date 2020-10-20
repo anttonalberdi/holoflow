@@ -1,7 +1,7 @@
 # holoflow
 Bioinformatics pipeline for hologenomics data generation and analysis
 
-Snakemake is a workflow management system which requires from a *Snakefile* and a *config* file. This is a Bioinformatics pipeline for hologenomics data generation and analysis implemented with Snakemake.
+Snakemake is a workflow management system which requires from a *Snakefile* and a *config* file. This is a Bioinformatics pipeline implemented with Snakemake.
 
 ## Files and directories
 ### Main directory
@@ -40,6 +40,8 @@ Those lines starting by # won't be considered.
   1. Reference genomes ID. **No spaces or undersquares** between different words in identifier.  
   2. Reference genome full path/name.   
   3. Desired output data base with all genomes name. **No spaces**, undersquares or other separators allowed. *All those reference genomes which should be in the same DB should have the same ID in this field*.  
+  
+  **The fields 1 and 3 must be different**
   
 - Example:
 
