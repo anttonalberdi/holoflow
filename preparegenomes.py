@@ -80,7 +80,7 @@ def set_up_preparegenomes(path,in_f):
         # remove empty lines
         all_lines = map(lambda s: s.strip(), all_lines)
         lines = list(filter(None, list(all_lines)))
-        
+
         last_file = lines[-1]
         for file in lines:
 
@@ -130,7 +130,6 @@ def merge_genomes(refg_IDs,refg_Paths,db_ID):
             genome = refg_Paths[i]
             ID = refg_IDs[i]
 
-            print(''+db_dir+'/'+db_ID+'.fna')
 
             if not (os.path.exists(str(''+db_dir+'/'+ID+'.fna'))):
                 if genome.endswith('.gz'): # uncompress genome for editing
