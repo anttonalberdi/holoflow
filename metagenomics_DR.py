@@ -89,7 +89,6 @@ def in_out_metagenomics(path,in_f):
         for line in lines:
 
             if not (line.startswith('#')):
-                print(line)
                 dir = line.strip('\n').split(' ') # Create a list of each line
 
                 # the input will be a directory, where all bins for all samples will be contained
@@ -137,7 +136,6 @@ def in_out_metagenomics(path,in_f):
                         final_temp_dir="MDR_01-BinDereplication"
                         output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
                         group=str(dir[0])
-                print(output_files)
 
         return output_files
 
