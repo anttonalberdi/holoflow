@@ -76,7 +76,7 @@ def in_out_metagenomics(path,in_f):
 
     with open(in_f,'r') as in_file:
         # Paste desired output file names from input.txt
-        group = 'empty'
+        group = "empty"
         output_files=''
 
 
@@ -89,6 +89,7 @@ def in_out_metagenomics(path,in_f):
         for line in lines:
 
             if not (line.startswith('#')):
+                print(line)
                 dir = line.strip('\n').split(' ') # Create a list of each line
 
                 # the input will be a directory, where all bins for all samples will be contained
@@ -108,23 +109,35 @@ def in_out_metagenomics(path,in_f):
                     pass
 
                     # write output files
-                if group == 'empty': # will only happen on the first round - first group
+                if group == "empty": # will only happen on the first round - first group
                     group=str(dir[0])
 
-                elif ((not (group == file[1])) or (line == last_line)): # when the group changes, define output files for previous group
+                if (not (group == dir[0])): # when the group changes, define output files for previous group
                     #same as last output in Snakefile
                     if scaffold:
                         #final_temp_dir="MDR_04-MAGPhylogenetics"
                         final_temp_dir="MDR_02-BinScaffolding"
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"/Scaffolded_bins ")
+                        group=str(dir[0])
                     if not scaffold:
                         #final_temp_dir="MDR_03-MAGPhylogenetics"
                         final_temp_dir="MDR_01-BinDereplication"
                         output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
+                        group=str(dir[0])
 
-                    group=dir[0] # define new group in case first condition
-                    pass
-
+                if (line == last_line):
+                    #same as last output in Snakefile
+                    if scaffold:
+                        #final_temp_dir="MDR_04-MAGPhylogenetics"
+                        final_temp_dir="MDR_02-BinScaffolding"
+                        output_files+=(path+"/"+final_temp_dir+"/"+group+"/Scaffolded_bins ")
+                        group=str(dir[0])
+                    if not scaffold:
+                        #final_temp_dir="MDR_03-MAGPhylogenetics"
+                        final_temp_dir="MDR_01-BinDereplication"
+                        output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
+                        group=str(dir[0])
+                print(output_files)
 
         return output_files
 
