@@ -130,12 +130,10 @@ def in_out_metagenomics(path,in_f):
                         #final_temp_dir="MDR_04-MAGPhylogenetics"
                         final_temp_dir="MDR_02-BinScaffolding"
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"/Scaffolded_bins ")
-                        group=str(dir[0])
                     if not scaffold:
                         #final_temp_dir="MDR_03-MAGPhylogenetics"
                         final_temp_dir="MDR_01-BinDereplication"
                         output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
-                        group=str(dir[0])
 
         return output_files
 
