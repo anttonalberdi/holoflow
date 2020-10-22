@@ -32,46 +32,45 @@ rule drep_bins:
 
 
 #OPTIONAL -----
-input_phylophlan=''
-output_phylophlan=''
-if config['SSPACE']:
-
-    ##
-    # Bin mapping
-    ##
-    rule bin_mapping:
-        input:
-            read1="{projectpath}/PPR_03-MappedToReference/{group}_1.fastq",
-            read2="{projectpath}/PPR_03-MappedToReference/{group}_2.fastq",
-            bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
-        output:
-            directory("{projectpath}/MDR_02-BinScaffolding/{group}/Mapped_bins")
-        params:
-            threads=expand("{threads}", threads=config['threads']),
-            group='{group}'
-        shell:
-            """
-            python {rules.get_paths.input.holopath}/bin/holo-bin_mapping.py -i1 {input.read1} -i2 {input.read2} -bin_dir {input.bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
-            """
-
-
-    ##
-    # SSPace contigs in bin scaffolding
-    ##
-    rule bin_scaffolding:
-        input:
-            fq_dir="{projectpath}/MDR_02-BinScaffolding/{group}/Mapped_bins",
-            drep_dir="{projectpath}/MDR_01-BinDereplication/{group}"
-        output:
-            directory("{projectpath}/MDR_02-BinScaffolding/{group}/Scaffolded_bins")
-        params:
-            threads=expand("{threads}", threads=config['threads']),
-            group='{group}'
-        shell:
-            """
-            python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {input.fq_dir} -bin_dir {input.drep_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
-            """
+# input_phylophlan=''
+# output_phylophlan=''
+# if config['SSPACE']:
 #
+#     ##
+#     # Bin mapping
+#     ##
+#     rule bin_mapping:
+#         input:
+#             read1="{projectpath}/PPR_03-MappedToReference/{group}_1.fastq",
+#             read2="{projectpath}/PPR_03-MappedToReference/{group}_2.fastq",
+#             bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
+#         output:
+#             directory("{projectpath}/MDR_02-BinScaffolding/{group}/Mapped_bins")
+#         params:
+#             threads=expand("{threads}", threads=config['threads']),
+#             group='{group}'
+#         shell:
+#             """
+#             python {rules.get_paths.input.holopath}/bin/holo-bin_mapping.py -i1 {input.read1} -i2 {input.read2} -bin_dir {input.bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+#             """
+#     ##
+#     # SSPace contigs in bin scaffolding
+#     ###
+
+#     rule bin_scaffolding:
+#         input:
+#             fq_dir="{projectpath}/MDR_02-BinScaffolding/{group}/Mapped_bins",
+#             drep_dir="{projectpath}/MDR_01-BinDereplication/{group}"
+#         output:
+#             directory("{projectpath}/MDR_02-BinScaffolding/{group}/Scaffolded_bins")
+#         params:
+#             threads=expand("{threads}", threads=config['threads']),
+#             group='{group}'
+#         shell:
+#             """
+#             python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {input.fq_dir} -bin_dir {input.drep_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+#             """
+# #
 #     #PhyloPhlAn will take as input SSPACE's output - scaffolded bins
 #     input_phylophlan="{projectpath}/MDR_03-BinScaffolding/{group}/Scaffolded_bins"
 #
@@ -109,3 +108,13 @@ if config['SSPACE']:
 #         """
 #         python {rules.get_paths.input.holopath}/bin/holo-phylophlan.py -genomes_dir {input} -div {params.diversity} -pip {params.pipeline} -ph_db {params.phylo_db} -out_dir {output} -ssp {params.SSPACE} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
 #         """
+
+##
+# Prokka mag gene annotation
+##
+
+
+
+##
+# GTDBTk phylogeny building
+##
