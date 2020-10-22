@@ -76,7 +76,7 @@ def in_out_metagenomics(path,in_f):
 
     with open(in_f,'r') as in_file:
         # Paste desired output file names from input.txt
-        group = "empty"
+        group = ''
         input_groupdir=''
         coa1_filename=''
         coa2_filename=''
@@ -99,18 +99,15 @@ def in_out_metagenomics(path,in_f):
 
                 if merging: # spades is selected assembler
                         # write output files and finish group input
-                    if group == "empty": # will only happen on the first round - first coassembly group
-                        group=dir[0]
-                        # Depending on spades or megahit, create a big file where all .fastq merged or concatenate by ,
 
                     if (not (group == dir[0])): # when the group changes, define output files for previous group and finish input
                         #same as last output in Snakefile
+                        group=str(dir[0]) # define new group in case first condition
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"_DASTool_bins ")
 
                         # Snakemake input files
                         coa1_filename=(str(in_dir)+'/'+str(group)+'_1.fastq')
                         coa2_filename=(str(in_dir)+'/'+str(group)+'_2.fastq')
-                        print(coa1_filename)
                         # merge all .fastq for coassembly with spades
                         merge1Cmd='cd '+input_groupdir+' && cat *_1.fastq > '+coa1_filename+''
                         subprocess.check_call(merge1Cmd, shell=True)
@@ -120,15 +117,14 @@ def in_out_metagenomics(path,in_f):
 
                         # Depending on spades or megahit, create a big file where all .fastq merged or concatenate by ,
                         input_groupdir=str(dir[1])      # current input file path and name
-                        group=dir[0] # define new group in case first condition
 
                     if (dir== last_line):
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"_DASTool_bins ")
+                        group=str(dir[0]) # define new group in case first condition
 
                         # Snakemake input files
                         coa1_filename=(str(in_dir)+'/'+str(group)+'_1.fastq')
                         coa2_filename=(str(in_dir)+'/'+str(group)+'_2.fastq')
-                        print(coa1_filename)
                         # merge all .fastq for coassembly with spades
                         merge1Cmd='cd '+input_groupdir+' && cat *_1.fastq > '+coa1_filename+''
                         subprocess.check_call(merge1Cmd, shell=True)
@@ -140,13 +136,13 @@ def in_out_metagenomics(path,in_f):
 
 
                 if not merging:   #megahit is the selected assembler, all files in string , separated
-
                         # write output files and finish group input
-                    if group == 'empty': # will only happen on the first round - first coassembly group
-                        group=dir[0]
+                    # if group == 'empty': # will only happen on the first round - first coassembly group
+                    #     group=dir[0]
 
-                    if (not (group == dir[0])): # when the group changes, define output files for previous group and finish input
+                    if not (group == dir[0]): # when the group changes, define output files for previous group and finish input
                         #same as last output in Snakefile
+                        group=str(dir[0]) # define new group in case first condition
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"_DASTool_bins ")
                         # Snakemake input files
                         coa1_filename=(str(in_dir)+'/'+str(group)+'_1.fastq')
@@ -159,9 +155,10 @@ def in_out_metagenomics(path,in_f):
                         find2Cmd='find '+input_groupdir+'/*_2.fastq | tr "\n" "," | sed -e "s/,$//" > '+coa2_filename+''
                         subprocess.check_call(find2Cmd, shell=True)
 
-                        group=dir[0] # define new group in case first condition
 
-                    if (dir== last_line):
+                    if (dir == last_line):
+                        group=str(dir[0]) # define new group in case first condition
+
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"_DASTool_bins ")
                         # Snakemake input files
                         coa1_filename=(str(in_dir)+'/'+str(group)+'_1.fastq')
@@ -173,7 +170,6 @@ def in_out_metagenomics(path,in_f):
 
                         find2Cmd='find '+input_groupdir+'/*_2.fastq | tr "\n" "," | sed -e "s/,$//" > '+coa2_filename+''
                         subprocess.check_call(find2Cmd, shell=True)
-
 
         return output_files
 

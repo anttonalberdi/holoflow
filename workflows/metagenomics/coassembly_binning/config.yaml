@@ -7,11 +7,11 @@ coassembly:
 threads:
   40
 
-memory:
+memory: #should be higher than 100 if spades wants to be used
   100
 
 assembler:
-  spades
+  megahit
 
 klist_megahit:
   "21,29,39,59,79,99,119,141"

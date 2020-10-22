@@ -76,7 +76,7 @@ def in_out_metagenomics(path,in_f):
 
     with open(in_f,'r') as in_file:
         # Paste desired output file names from input.txt
-        group = "empty"
+        group = ''
         output_files=''
 
 
@@ -108,32 +108,38 @@ def in_out_metagenomics(path,in_f):
                     pass
 
                     # write output files
-                if group == "empty": # will only happen on the first round - first group
-                    group=str(dir[0])
 
                 if (not (group == dir[0])): # when the group changes, define output files for previous group
                     #same as last output in Snakefile
-                    if scaffold:
-                        #final_temp_dir="MDR_04-MAGPhylogenetics"
-                        final_temp_dir="MDR_02-BinScaffolding"
-                        output_files+=(path+"/"+final_temp_dir+"/"+group+"/Scaffolded_bins ")
-                        group=str(dir[0])
-                    if not scaffold:
-                        #final_temp_dir="MDR_03-MAGPhylogenetics"
-                        final_temp_dir="MDR_01-BinDereplication"
-                        output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
-                        group=str(dir[0])
+                    group=str(dir[0])
+                    final_temp_dir="MDR_01-BinDereplication"
+                    output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
+
+##                  # if scaffold:
+                    #     #final_temp_dir="MDR_04-MAGPhylogenetics"
+                    #     final_temp_dir="MDR_02-BinScaffolding"
+                    #     output_files+=(path+"/"+final_temp_dir+"/"+group+"/Scaffolded_bins ")
+                    #     group=str(dir[0])
+                    # if not scaffold:
+                    #     #final_temp_dir="MDR_03-MAGPhylogenetics"
+                    #     final_temp_dir="MDR_01-BinDereplication"
+                    #     output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
+                    #     group=str(dir[0])
 
                 if (line == last_line):
                     #same as last output in Snakefile
-                    if scaffold:
-                        #final_temp_dir="MDR_04-MAGPhylogenetics"
-                        final_temp_dir="MDR_02-BinScaffolding"
-                        output_files+=(path+"/"+final_temp_dir+"/"+group+"/Scaffolded_bins ")
-                    if not scaffold:
-                        #final_temp_dir="MDR_03-MAGPhylogenetics"
-                        final_temp_dir="MDR_01-BinDereplication"
-                        output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
+                    group=str(dir[0])
+                    final_temp_dir="MDR_01-BinDereplication"
+                    output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
+
+                    # if scaffold:
+                    #     #final_temp_dir="MDR_04-MAGPhylogenetics"
+                    #     final_temp_dir="MDR_02-BinScaffolding"
+                    #     output_files+=(path+"/"+final_temp_dir+"/"+group+"/Scaffolded_bins ")
+                    # if not scaffold:
+                    #     #final_temp_dir="MDR_03-MAGPhylogenetics"
+                    #     final_temp_dir="MDR_01-BinDereplication"
+                    #     output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
 
         return output_files
 
