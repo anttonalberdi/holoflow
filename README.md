@@ -44,6 +44,7 @@ Those lines starting by # won't be considered.
   **The fields 1 and 3 must be different**
   
 - Example:
+*Heads-up*: you can generate more than one DB at a time for different projects, be aware that preprocessing only takes ONE DB at a time with all reference genomes to be mapped to a set of samples in a given project.
 
 |   |   |   |
 | --- | --- | --- |
