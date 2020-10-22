@@ -1,4 +1,10 @@
 # bin scaffolding options
+threads:
+  40
+
+memory:
+  100
+
 SSPACE:
   True
 
