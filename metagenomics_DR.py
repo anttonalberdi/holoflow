@@ -95,15 +95,14 @@ def in_out_metagenomics(path,in_f):
                 # If Bins from different samples are in different directories, create input Dir
                 # and move them all there
 
-                desired_input=(str(in_dir)+'/'+str(dir[0])) # desired input dir path
+                desired_input=(str(in_dir)+'/'+str(dir[0])+'_DASTool_bins') # desired input dir path
                 current_input_dir=os.path.dirname(dir[1])
 
                 #if bins not in desired input dir, copy them there
                 if not desired_input == current_input_dir:
                     if not (os.path.exists(str(desired_input))):
                         os.mkdir(desired_input)
-                    else:
-                        copyfilesCmd='cp '+dir[1]+' '+desired_input+''
+                        copyfilesCmd='cp '+dir[1]+'/* '+desired_input+''
                         subprocess.check_call(copyfilesCmd, shell=True)
                 else:
                     pass
@@ -116,11 +115,11 @@ def in_out_metagenomics(path,in_f):
                     #same as last output in Snakefile
                     if scaffold:
                         #final_temp_dir="MDR_04-MAGPhylogenetics"
-                        final_temp_dir="MDR_03-BinScaffolding"
+                        final_temp_dir="MDR_02-BinScaffolding"
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"/Scaffolded_bins ")
                     if not scaffold:
                         #final_temp_dir="MDR_03-MAGPhylogenetics"
-                        final_temp_dir="MDR_02-BinDereplication"
+                        final_temp_dir="MDR_01-BinDereplication"
                         output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
 
                     group=dir[0] # define new group in case first condition

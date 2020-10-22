@@ -18,9 +18,9 @@ rule get_paths:
 ##
 rule drep_bins:
     input:
-        dastool_bin_dir="{projectpath}/MDR_01-BinMerging/{group}_DASTool_bins"
+        dastool_bin_dir="{projectpath}/MIB_04-BinMerging/{group}_DASTool_bins"
     output:
-        directory("{projectpath}/MDR_02-BinDereplication/{group}")
+        directory("{projectpath}/MDR_01-BinDereplication/{group}")
 
     params:
         threads=expand("{threads}", threads=config['threads']),
@@ -43,9 +43,9 @@ if config['SSPACE']:
         input:
             read1="{projectpath}/PPR_03-MappedToReference/{group}_1.fastq",
             read2="{projectpath}/PPR_03-MappedToReference/{group}_2.fastq",
-            bin_dir="{projectpath}/MDR_02-BinDereplication/{group}/dereplicated_genomes"
+            bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
         output:
-            directory("{projectpath}/MDR_03-BinScaffolding/{group}/Mapped_bins")
+            directory("{projectpath}/MDR_02-BinScaffolding/{group}/Mapped_bins")
         params:
             threads=expand("{threads}", threads=config['threads']),
             group='{group}'
@@ -60,10 +60,10 @@ if config['SSPACE']:
     ##
     rule bin_scaffolding:
         input:
-            fq_dir="{projectpath}/MDR_03-BinScaffolding/{group}/Mapped_bins",
-            drep_dir="{projectpath}/MDR_02-BinDereplication/{group}"
+            fq_dir="{projectpath}/MDR_02-BinScaffolding/{group}/Mapped_bins",
+            drep_dir="{projectpath}/MDR_01-BinDereplication/{group}"
         output:
-            directory("{projectpath}/MDR_03-BinScaffolding/{group}/Scaffolded_bins")
+            directory("{projectpath}/MDR_02-BinScaffolding/{group}/Scaffolded_bins")
         params:
             threads=expand("{threads}", threads=config['threads']),
             group='{group}'

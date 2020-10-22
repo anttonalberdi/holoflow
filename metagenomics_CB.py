@@ -87,6 +87,7 @@ def in_out_metagenomics(path,in_f):
         # remove empty lines
         all_lines = map(lambda s: s.strip(), all_lines)
         lines = list(filter(None, list(all_lines)))
+        last_line = lines[-1]
 
         for dir in lines:
 

@@ -39,7 +39,7 @@ if not (os.path.exists(str(out_dir))):
         logi.write('This step retrieves the paired-end reads found in each bin as they are to be used in the next step.\n\n')
 
 
-    binlist = glob.glob(str(bin_dir)+"/*.fa")
+    binlist = glob.glob(str(bin_dir)+"/dereplicated_genomes/*.fa")
     for bin in binlist:
         bin_name=os.path.basename(bin)
         bin_name=bin_name.replace(".contigs.fa","")
