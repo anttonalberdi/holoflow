@@ -16,7 +16,7 @@ The main *holoflow* directory contains a given number of Python scripts which wo
   
   
   
-These are designed to be called from the command line and require the following arguments:  
+These are designed to be called from the command line and require the following arguments (**{only in PREPROCESSING}**,**[optional arguments]**):  
 ```bash
   -f INPUT            File containing input information.
   -d WORK_DIR         Output directory.
@@ -26,9 +26,7 @@ These are designed to be called from the command line and require the following 
   [-c CONFIG]         Configuration file full path.
   
 ```  
- **{only for PREPROCESSING}** 
- **[optional arguments]**
- 
+
  
 #### Config files description
 A template *config.yaml* file can be found in every workflow directory. 
