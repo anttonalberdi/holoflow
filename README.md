@@ -16,16 +16,20 @@ The main *holoflow* directory contains a given number of Python scripts which wo
   
   
   
-These are designed to be called from the command line and require the following arguments ([optional arguments]):  
+These are designed to be called from the command line and require the following arguments:  
 ```bash
   -f INPUT            File containing input information.
   -d WORK_DIR         Output directory.
   -t THREADS          Thread maximum number to be used by Snakemake.  
+  {-r REF_GENOME}     Reference genome(s) file path to be used in read mapping.
   [-l LOG]            Desired pipeline log file path.
   [-c CONFIG]         Configuration file full path.
   
 ```  
-  
+ **{only for PREPROCESSING}** 
+ **[optional arguments]**
+ 
+ 
 #### Config files description
 A template *config.yaml* file can be found in every workflow directory. 
 
