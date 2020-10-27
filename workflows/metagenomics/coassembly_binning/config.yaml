@@ -6,8 +6,9 @@ coassembly:
 
 threads:
   40
-
-memory: #should be higher than 100 if spades wants to be used
+  
+#should be higher than 100 if spades wants to be used
+memory:
   100
 
 assembler:

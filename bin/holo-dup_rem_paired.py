@@ -40,47 +40,48 @@ with open(str(log),'a+') as log:
 
 
 
-if by_seq:
+if by_seq or (not (by_seq or by_name)):
+
     if (file_to_dups and ignore):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -s -j 40 -o '+ output_dir+' -i -D '+file_to_dups+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -s -i -D '+file_to_dups+' -o '+ output_dir+''
 
-    elif file_to_dups:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -s -j 40 -o '+ output_dir+' -D '+file_to_dups+''
+    elif (not ignore) and file_to_dups:
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -D '+file_to_dups+' -o '+ output_dir+''
 
-    elif ignore:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -s -j 40 -o '+ output_dir+' -i '
+    elif (not file_to_dups) and ignore:
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -i -o '+ output_dir+''
 
     else:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -s -j 40 -o '+ output_dir+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -o '+ output_dir+''
 
 
 
 if by_name:
     if (file_to_dups and ignore):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -n -j 40 -o '+ output_dir+' -i -D '+file_to_dups+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -i -D '+file_to_dups+' -o '+ output_dir+''
 
-    elif file_to_dups:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -n -j 40 -o '+ output_dir+' -D '+file_to_dups+''
+    elif (not ignore) and file_to_dups:
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -D '+file_to_dups+' -o '+ output_dir+''
 
-    elif ignore:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -n -j 40 -o '+ output_dir+' -i '
-
-    else:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -n -j 40 -o '+ output_dir+''
-
-
-if not (by_seq or by_name):
-    if (file_to_dups and ignore):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -j 40 -o '+ output_dir+' -i -D '+file_to_dups+''
-
-    elif file_to_dups:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -j 40 -o '+ output_dir+' -D '+file_to_dups+''
-
-    elif ignore:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -j 40 -o '+ output_dir+' -i '
+    elif (not file_to_dups) and ignore:
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -i -o '+ output_dir+''
 
     else:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -j 40 -o '+ output_dir+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -o '+ output_dir+''
 
+
+# if not (by_seq or by_name):
+#     if (file_to_dups and ignore):
+#         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -o '+ output_dir+' -i -D '+file_to_dups+''
+#
+#     if (not ignore) and file_to_dups:
+#         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -o '+ output_dir+' -D '+file_to_dups+''
+#
+#     if (not file_to_dups) and ignore:
+#         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -o '+ output_dir+' -i '
+#
+#     else:
+#         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -o '+ output_dir+''
+#
 
 subprocess.check_call(seqkitCmd, shell=True)

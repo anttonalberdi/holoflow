@@ -37,7 +37,7 @@ ignore_case:
 
 #dup_rem_paired_repair options
 separator:
-  ^
+  "^"
 
 #map_host options   # - get from preparegenomes.py
 refgenomes:
