@@ -120,7 +120,7 @@ rule depth_table:
 
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-depth_files_IA.py -a {input} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-depth_files.py -a {input} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -log {rules.get_paths.input.logpath}
         """
 
 ##
