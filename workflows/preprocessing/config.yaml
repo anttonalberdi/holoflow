@@ -19,17 +19,18 @@ mate_separator:
 
 
 # dup_rem_paired options
-
   # By-name-n and By-seq-s are mutually exclusive !
+# dereplicate based on sequence full name instead of just ID
 by_n:
   False
-  # By-name-n and By-seq-s are mutually exclusive !
+# dereplicate based on sequence
 by_s:
   True
 
 # if not False, write path instead of True !
+# file to dups writes a file with the duplicate sequences
 file_to_dups:
-  False
+  True
 
 ignore_case:
   False
