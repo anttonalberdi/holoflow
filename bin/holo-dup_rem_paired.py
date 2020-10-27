@@ -16,6 +16,8 @@ parser.add_argument('-n', help="by name", dest="by_name", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-i', help="ignore case", dest="ignore", required=True)
+#parser.add_argument('--foo', action='store_true') - would be the optimal option if not Snakemake
+
 args = parser.parse_args()
 
 output_dir=args.output_dir
@@ -40,15 +42,15 @@ with open(str(log),'a+') as log:
 
 
 
-if by_seq or (not (by_seq or by_name)):
+if by_seq == 'True':
 
-    if (file_to_dups and ignore):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit rmdup -s -i -D '+file_to_dups+' -o '+ output_dir+''
+    if (not file_to_dups == 'False') and (ignore == 'True'):
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -i -D '+file_to_dups+' -o '+ output_dir+''
 
-    elif (not ignore) and file_to_dups:
+    elif (not file_to_dups == 'False') and (ignore == 'False'):
         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -D '+file_to_dups+' -o '+ output_dir+''
 
-    elif (not file_to_dups) and ignore:
+    elif (file_to_dups == 'False') and (ignore == 'True'):
         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -i -o '+ output_dir+''
 
     else:
@@ -56,18 +58,21 @@ if by_seq or (not (by_seq or by_name)):
 
 
 
-if by_name:
-    if (file_to_dups and ignore):
+if by_name == 'True':
+    if (not file_to_dups == 'False') and (ignore == 'True'):
         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -i -D '+file_to_dups+' -o '+ output_dir+''
 
-    elif (not ignore) and file_to_dups:
+    elif (not file_to_dups == 'False') and (ignore == 'False'):
         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -D '+file_to_dups+' -o '+ output_dir+''
 
-    elif (not file_to_dups) and ignore:
+    elif (file_to_dups == 'False') and (ignore == 'True'):
         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -i -o '+ output_dir+''
 
     else:
         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -o '+ output_dir+''
+
+print(seqkitCmd)
+subprocess.check_call(seqkitCmd, shell=True)
 
 
 # if not (by_seq or by_name):
@@ -83,5 +88,3 @@ if by_name:
 #     else:
 #         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -o '+ output_dir+''
 #
-
-subprocess.check_call(seqkitCmd, shell=True)

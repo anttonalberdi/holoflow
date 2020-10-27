@@ -33,11 +33,11 @@ file_to_dups:
   True
 
 ignore_case:
-  False
+  True
 
 #dup_rem_paired_repair options
 separator:
-  "^"
+  ^
 
 #map_host options   # - get from preparegenomes.py
 refgenomes:
