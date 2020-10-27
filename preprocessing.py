@@ -102,9 +102,11 @@ def in_out_preprocessing(path,in_f):
                 desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq"'  # desired input file path and name specified in input.txt
 
                 if not ((filename == desired_filename) and (os.path.exists(str(desired_filename)))):
-                    if filename.endswith('.gz'):    # uncompress input file if necessary
+
+                    if (filename.endswith('.gz"') or filename.endswith('.gz')):    # uncompress input file if necessary
                         uncompressCmd='gunzip -c '+filename+' > '+desired_filename+''
                         subprocess.check_call(uncompressCmd, shell=True)
+
                     else:                           # else just move the input file to "00-InputData" with the new name
                         copyfilesCmd='cp '+filename+' '+desired_filename+''
                         subprocess.check_call(copyfilesCmd, shell=True)
