@@ -35,7 +35,11 @@ ID=args.ID
 log=args.log
 
 
-
+if not (args.assembler):
+    args.assembler='megahit'
+    assembler=args.assembler
+else:
+    assembler=args.assembler
 
 # Run
 
