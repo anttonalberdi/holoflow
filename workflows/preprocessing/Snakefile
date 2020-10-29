@@ -42,18 +42,19 @@ rule dup_rem_paired:
       read1="{projectpath}/PPR_01-QualityFiltered/{sample}_1.fastq",
       read2="{projectpath}/PPR_01-QualityFiltered/{sample}_2.fastq"
     output:
-      dir="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.merged.fastq"
+      out="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.merged.fastq"
     threads: 10
     params:
         separator=expand("{separator}", separator=config['separator']),
         by_n=expand("{by_n}", by_n=config['by_n']),
         by_s=expand("{by_s}", by_s=config['by_s']),
+        ignore_case=expand("{ignore_case}",ignore_case=config['ignore_case']),
         file_to_dups=expand("{file_to_dups}", file_to_dups=config['file_to_dups']),
         sample="{sample}"
 
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.out} -sep {params.separator} -i {params.ignore_case} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 

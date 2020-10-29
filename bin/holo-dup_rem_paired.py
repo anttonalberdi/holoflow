@@ -16,8 +16,6 @@ parser.add_argument('-n', help="by name", dest="by_name", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-i', help="ignore case", dest="ignore", required=True)
-#parser.add_argument('--foo', action='store_true') - would be the optimal option if not Snakemake
-
 args = parser.parse_args()
 
 output_dir=args.output_dir
