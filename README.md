@@ -149,16 +149,12 @@ projectpath=/full/path/project1
 #Declare full path to holoflow
 holoflowpath=/full/path/holoflow
 #Run holoflow
-python ${holoflowpath}/preprocessing.py -f ${projectpath}/input.txt -d ${projectpath}/workdir 
--r ${projectpath}/reference_genomes.fna -c ${projectpath}/config.yaml 
--l ${projectpath}/log_file.log -t 40
+python ${holoflowpath}/preprocessing.py -f ${projectpath}/input.txt -d ${projectpath}/workdir -r ${projectpath}/reference_genomes.fna -c ${projectpath}/config.yaml -l ${projectpath}/log_file.log -t 40
 ```
 
 - *job execution* in Computerome2 example:
 ```bash
- qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e ${projectpath}/job_error_file.err 
- -o ${projectpath}/job_out_file.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 
- -N JOB_ID ${projectpath}/first_job_preprocessing.sh
+ qsub -V -A ku-cbd -W group_list=ku-cbd -d `pwd` -e ${projectpath}/job_error_file.err -o ${projectpath}/job_out_file.out -l nodes=1:ppn=40,mem=180gb,walltime=5:00:00:00 -N JOB_ID ${projectpath}/first_job_preprocessing.sh
 
 ```
   Note that the job parameters: *ppn*, *nodes*, *memory*, *wall time* ... can and ought to be customised optimally for every job type.
