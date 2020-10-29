@@ -30,7 +30,7 @@ by_s:
 # if not False, write path instead of True !
 # file to dups writes a file with the duplicate sequences
 file_to_dups:
-  True
+  False
 
 ignore_case:
   True
