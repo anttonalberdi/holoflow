@@ -108,11 +108,13 @@ with open(str(read1o), 'rb') as read:
         try:
             seq = next(read)
             reads += 1
-            bases += len(seq.strip())
+            bases += len(seq.strip())*2
             next(read)
             next(read)
         except:
             break
+
+
 
 #Print stats to stats file
 statsfile=open(str(str(stats)),"a+")
