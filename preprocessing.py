@@ -109,11 +109,11 @@ def in_out_preprocessing(path,in_f):
                     if os.path.isfile(in_for):
                         if in_for.endswith('.gz'):
                             read1Cmd = 'gunzip -c '+in_for+' > '+in1+''
-                            subprocess.check_call(read1Cmd, shell=True).wait()
+                            subprocess.Popen(read1Cmd, shell=True).wait()
                         else:
                             print('copying')
                             read1Cmd = 'cp '+in_for+' '+in1+''
-                            subprocess.check_call(read1Cmd, shell=True).wait()
+                            subprocess.Popen(read1Cmd, shell=True).wait()
 
 
                 # Define input file
