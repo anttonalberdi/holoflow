@@ -87,12 +87,12 @@ def in_out_preprocessing(path,in_f):
 
         for line in lines:
             ### Skip line if starts with # (comment line)
-            if not (file.startswith('#')):
+            if not (line.startswith('#')):
 
-                line = line.strip('\n').split(',') # Create a list of each line
+                line = line.strip('\n').split(' ') # Create a list of each line
                 sample_name=line[0]
-                in_for=line[2]
-                in_rev=line[3]
+                in_for=line[1]
+                in_rev=line[2]
 
                 # Define output files based on input.txt
                 output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
@@ -109,10 +109,11 @@ def in_out_preprocessing(path,in_f):
                     if os.path.isfile(in_for):
                         if in_for.endswith('.gz'):
                             read1Cmd = 'gunzip -c '+in_for+' > '+in1+''
-                            subprocess.Popen(read1Cmd, shell=True).wait()
+                            subprocess.check_call(read1Cmd, shell=True).wait()
                         else:
+                            print('copying')
                             read1Cmd = 'cp '+in_for+' '+in1+''
-                            subprocess.Popen(read1Cmd, shell=True).wait()
+                            subprocess.check_call(read1Cmd, shell=True).wait()
 
 
                 # Define input file
@@ -124,16 +125,18 @@ def in_out_preprocessing(path,in_f):
                     #If the file is not in the working directory, transfer it
                     if os.path.isfile(in_rev):
                         if in_for.endswith('.gz'):
-                            read1Cmd = 'gunzip -c '+in_rev+' > '+in2+''
-                            subprocess.Popen(read1Cmd, shell=True).wait()
+                            read2Cmd = 'gunzip -c '+in_rev+' > '+in2+''
+                            subprocess.Popen(read2Cmd, shell=True).wait()
                         else:
-                            read1Cmd = 'cp '+in_rev+' '+in2+''
-                            subprocess.Popen(read1Cmd, shell=True).wait()
+                            print('copying')
+
+                            read2Cmd = 'cp '+in_rev+' '+in2+''
+                            subprocess.Popen(read2Cmd, shell=True).wait()
 
 
                 # Add stats and bam output files only once per sample
-                output_files+=(path+"/"+final_temp_dir+"/"+sample_name[0]+".stats ")
-                output_files+=(path+"/"+final_temp_dir+"/"+sample_name[0]+"_ref.bam ")
+                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ")
+                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
 
         return output_files
 
