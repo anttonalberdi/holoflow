@@ -65,11 +65,11 @@ Those lines starting by # won't be considered.
   
 - Example:
 
-|   |   |   |
-| --- | --- | --- |
-| Sample1 | Group1 | /home/Sample1_1.fq | /home/Sample1_2.fq |
-| Sample2 | Group1 | /home/Sample2_1.fq | /home/Sample1_2.fq |
-| Samplen | Groupn | /home/Samplen_1.fq | /home/Samplen_2.fq |
+|   |   |   |   |
+| --- | --- | --- | --- |
+| Sample1 | Group1 | /home/Sample1_1.fq | /home/Sample1_2.fq |  
+| Sample2 | Group1 | /home/Sample2_1.fq | /home/Sample1_2.fq |  
+| Samplen | Groupn | /home/Samplen_1.fq | /home/Samplen_2.fq |  
   
 
 ##### *metagenomics_CB.py* & *metagenomics_DR.py*
