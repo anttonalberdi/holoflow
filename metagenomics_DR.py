@@ -65,7 +65,7 @@ with open(str(config), 'w') as config_file:
 def in_out_metagenomics(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
-    in_dir = os.path.join(path,"MIB_04-BinMerging")
+    in_dir = os.path.join(path,"MDR_00-InputBins")
 
     if os.path.exists(in_dir):
         rmdirCmd='cd '+in_dir+'/.. && rm -rf '+in_dir+' && mkdir '+in_dir+''
@@ -95,7 +95,7 @@ def in_out_metagenomics(path,in_f):
                 # If Bins from different samples are in different directories, create input Dir
                 # and move them all there
 
-                desired_input=(str(in_dir)+'/'+str(dir[0])+'_DASTool_bins') # desired input dir path
+                desired_input=(str(in_dir)+'/'+str(dir[0])) # desired input dir path
                 current_input_dir=os.path.dirname(dir[1])
 
                 #if bins not in desired input dir, copy them there

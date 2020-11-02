@@ -70,7 +70,7 @@ def in_out_metagenomics(path,in_f):
         os.makedirs(in_dir)
 
     with open(in_f,'r') as in_file:
-        # Paste desired output file names from input.txt
+        # Define variables
         group = ''
         input_groupdir=''
         coa1_filename=''
@@ -93,10 +93,6 @@ def in_out_metagenomics(path,in_f):
                 input_groupdir=str(dir[1])      # current input file path and name
 
                 # megahit is the selected assembler, all files in string , separated
-                    # write output files and finish group input
-                    # if group == 'empty': # will only happen on the first round - first coassembly group
-                    #     group=dir[0]
-
                 if not (group == dir[0]): # when the group changes, define output files for previous group and finish input
                     #same as last output in Snakefile
                     group=str(dir[0]) # define new group in case first condition
