@@ -111,7 +111,6 @@ def in_out_preprocessing(path,in_f):
                             read1Cmd = 'gunzip -c '+in_for+' > '+in1+''
                             subprocess.Popen(read1Cmd, shell=True).wait()
                         else:
-                            print('copying')
                             read1Cmd = 'cp '+in_for+' '+in1+''
                             subprocess.Popen(read1Cmd, shell=True).wait()
 
@@ -128,8 +127,6 @@ def in_out_preprocessing(path,in_f):
                             read2Cmd = 'gunzip -c '+in_rev+' > '+in2+''
                             subprocess.Popen(read2Cmd, shell=True).wait()
                         else:
-                            print('copying')
-
                             read2Cmd = 'cp '+in_rev+' '+in2+''
                             subprocess.Popen(read2Cmd, shell=True).wait()
 

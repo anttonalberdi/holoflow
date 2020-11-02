@@ -73,6 +73,11 @@ def in_out_metagenomics(path,in_f):
         # Define variables
         output_files=''
         final_temp_dir="MIB_04-BinMerging"
+        all_lines = in_file.readlines() # Read input.txt lines
+
+        # remove empty lines
+        all_lines = map(lambda s: s.strip(), all_lines)
+        lines = list(filter(None, list(all_lines)))
 
         for line in lines:
             ### Skip line if starts with # (comment line)
@@ -82,10 +87,6 @@ def in_out_metagenomics(path,in_f):
                 sample_name=line[0]
                 in_for=line[1]
                 in_rev=line[2]
-
-                # Define output files based on input.txt
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq '
 
 
                 # Define input file
@@ -100,7 +101,6 @@ def in_out_metagenomics(path,in_f):
                             read1Cmd = 'gunzip -c '+in_for+' > '+in1+''
                             subprocess.Popen(read1Cmd, shell=True).wait()
                         else:
-                            print('copying')
                             read1Cmd = 'cp '+in_for+' '+in1+''
                             subprocess.Popen(read1Cmd, shell=True).wait()
 
@@ -117,8 +117,6 @@ def in_out_metagenomics(path,in_f):
                             read2Cmd = 'gunzip -c '+in_rev+' > '+in2+''
                             subprocess.Popen(read2Cmd, shell=True).wait()
                         else:
-                            print('copying')
-
                             read2Cmd = 'cp '+in_rev+' '+in2+''
                             subprocess.Popen(read2Cmd, shell=True).wait()
 
