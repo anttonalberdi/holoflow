@@ -72,52 +72,68 @@ def in_out_preprocessing(path,in_f):
     if os.path.exists(in_dir):
         rmdirCmd='cd '+in_dir+'/.. && rm -rf '+in_dir+' && mkdir '+in_dir+''
         subprocess.check_call(rmdirCmd,shell=True)
-
-    if not os.path.exists(in_dir):
+    else:
         os.makedirs(in_dir)
 
     with open(in_f,'r') as in_file:
-        # Generate desired output file names from input.txt
-        read = 0
-        output_files=''
-        final_temp_dir="PPR_03-MappedToReference"
-
         all_lines = in_file.readlines() # Read input.txt lines
         # remove empty lines
         all_lines = map(lambda s: s.strip(), all_lines)
         lines = list(filter(None, list(all_lines)))
 
-        for file in lines:
+        # Define variables
+        output_files=''
+        final_temp_dir="PPR_03-MappedToReference"
 
+        for line in lines:
+            ### Skip line if starts with # (comment line)
             if not (file.startswith('#')):
-                file = file.strip('\n').split(' ') # Create a list of each line
 
-                read+=1     # every sample will have two reads, keep the name of the file but change the read
-                # Add an output file based on input.txt info to a list for Snakemake command
-                output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"_"+str(read)+".fastq ")
+                line = line.strip('\n').split(',') # Create a list of each line
+                sample_name=line[0]
+                in_for=line[2]
+                in_rev=line[3]
 
-                # Move files to new dir "00-InputData" and change file names for 1st column in input.txt
-                #   if the current input file names do not match the designed ones in input.txt
-                filename=file[2]       # current input file path and name
-                desired_filename='"'+in_dir+'/'+file[0]+'_'+str(read)+'.fastq"'  # desired input file path and name specified in input.txt
-
-                if not ((filename == desired_filename) and (os.path.exists(str(desired_filename)))):
-
-                    if (filename.endswith('.gz"') or filename.endswith('.gz')):    # uncompress input file if necessary
-                        uncompressCmd='gunzip -c '+filename+' > '+desired_filename+''
-                        subprocess.check_call(uncompressCmd, shell=True)
-
-                    else:                           # else just move the input file to "00-InputData" with the new name
-                        copyfilesCmd='cp '+filename+' '+desired_filename+''
-                        subprocess.check_call(copyfilesCmd, shell=True)
+                # Define output files based on input.txt
+                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
+                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq '
 
 
-                if read == 2:
-                    read=0  # two read files for one sample finished, new sample
+                # Define input file
+                in1=in_dir+'/'+sample_name+'_1.fastq'
+                # Check if input files already in desired dir
+                if os.path.isfile(in1):
+                    pass
+                else:
+                    #If the file is not in the working directory, transfer it
+                    if os.path.isfile(in_for):
+                        if in_for.endswith('.gz'):
+                            read1Cmd = 'gunzip -c '+in_for+' > '+in1+''
+                            subprocess.Popen(read1Cmd, shell=True).wait()
+                        else:
+                            read1Cmd = 'cp '+in_for+' '+in1+''
+                            subprocess.Popen(read1Cmd, shell=True).wait()
 
-                    # Add stats and bam output files only once per sample
-                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+".stats ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+file[0]+"_ref.bam ")
+
+                # Define input file
+                in2=in_dir+'/'+sample_name+'_2.fastq'
+                # Check if input files already in desired dir
+                if os.path.isfile(in2):
+                    pass
+                else:
+                    #If the file is not in the working directory, transfer it
+                    if os.path.isfile(in_rev):
+                        if in_for.endswith('.gz'):
+                            read1Cmd = 'gunzip -c '+in_rev+' > '+in2+''
+                            subprocess.Popen(read1Cmd, shell=True).wait()
+                        else:
+                            read1Cmd = 'cp '+in_rev+' '+in2+''
+                            subprocess.Popen(read1Cmd, shell=True).wait()
+
+
+                # Add stats and bam output files only once per sample
+                output_files+=(path+"/"+final_temp_dir+"/"+sample_name[0]+".stats ")
+                output_files+=(path+"/"+final_temp_dir+"/"+sample_name[0]+"_ref.bam ")
 
         return output_files
 
