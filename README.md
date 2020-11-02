@@ -139,7 +139,7 @@ Clone the repository by running the following command on your command line:
 git clone -b nurher --single-branch https://github.com/anttonalberdi/holoflow.git
 ```
 
-### Exectute Holoflow *.py* workflow launchers
+### Execute Holoflow *.py* workflow launchers
 These should be **executed as jobs**, therefore a *.sh* script should be generated which will call the desired Holoflow workflow:
 
 - *.sh* example script for *preprocessing.py* called ***first_job_preprocessing.sh***:
