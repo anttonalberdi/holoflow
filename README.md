@@ -57,22 +57,19 @@ Those lines starting by # won't be considered.
 | Genomen     | /home/Genomen.fq        | DBn    |
 
 
-##### *preprocessing.py*  &  *metagenomics_IA.py*
+##### *preprocessing.py*  &  *metagenomics_IB.py*
 
   1. Sample name.  
-  2. Assembly group (If not *metagenomics/coassembly* this field will be ignored - nevertheless, it is important that is not omitted when writing the input file).   
-  3. Original full path/name of input file/s. These can be both *.gz* or not compressed.  
+  2. Original full path/name of **FORWARD** input file. This can be both *.gz* or not compressed.  
+  3. Original full path/name of **REVERSE** input file. This can be both *.gz* or not compressed.  
   
 - Example:
 
-|   |   |   |
-| --- | --- | --- |
-| Sample1 | Group1 | /home/Sample1_1.fq |
-| Sample1 | Group1 | /home/Sample1_2.fq |
-| Sample2 | Group1 | /home/Sample2_1.fq |
-| Sample2 | Group1 | /home/Sample1_2.fq |
-| Samplen | Groupn | /home/Samplen_1.fq |
-| Samplen | Groupn | /home/Samplen_2.fq |
+|   |   |   |   |
+| --- | --- | --- | --- |
+| Sample1 | Group1 | /home/Sample1_1.fq | /home/Sample1_2.fq |  
+| Sample2 | Group1 | /home/Sample2_1.fq | /home/Sample1_2.fq |  
+| Samplen | Groupn | /home/Samplen_1.fq | /home/Samplen_2.fq |  
   
 
 ##### *metagenomics_CB.py* & *metagenomics_DR.py*
