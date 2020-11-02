@@ -26,7 +26,7 @@ if not os.path.exists(str(o)):
     # Write to log
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as log:
-        log.write('\t\t'+current_time+'\tProdigal Protein Prediction step - ID '+ID+'\n')
+        log.write('\t\t'+current_time+'\tProdigal Protein Prediction step - '+ID+'\n')
         log.write('Prodigal is a gene-finding program for microbial sequences, which will be used in following taxonomic\nassignation procedures.\n\n')
 
 

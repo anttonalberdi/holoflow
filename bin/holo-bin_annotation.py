@@ -1,4 +1,4 @@
-#02.11.2020 
+#02.11.2020
 
 import subprocess
 import argparse
@@ -9,7 +9,7 @@ import time
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-dt_bd', help="dastool bin directory", dest="dt_bd", required=True)
+parser.add_argument('-bin_dir', help="drep bin directory", dest="dt_bd", required=True)
 parser.add_argument('-out_dir', help="main output directory", dest="out_dir", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
@@ -32,56 +32,53 @@ if not (os.path.exists(str(out_dir))):
     # Write to log
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as logi:
-        logi.write('\t\t'+current_time+'\tBin Dereplication step - ID '+ID+'\n')
-        logi.write('dRep identifies those bins that are technically the same  and removed all but the “best” one from each\nredundant set. This is done based on the Average Nucleotide Identity (ANI).\n\n')
+        logi.write('\t\t'+current_time+'\tBin Annotation step - '+ID+'\n')
+        logi.write('\n\n')
 
 
-    # Get genomeInfo from Dastool
-    # Recover completeness and redundancy from Bin Merging Summary
+        # Get bin names and full paths
+        bin_list=glob.glob(str(dt_bd)+"/*.fa")
+        for bin in bin_list:
+            bin_name=bin
+            bin=os.path.abspath(bin)
 
-    # Save all bin_path,completeness,redundancy in new .csv file
+        # Annotation with Prokka
+        ######### DEPENDENCIES module load perl/5.30.2 hmmer/3.2.1 TEST MORE
+        annCmd='prokka --quiet --cpus '+threads+' --outdir '+out_dir+' --prefix '+bin_name+' '+bin+''
+        subprocess.check_call(annCmd, shell=True)
 
-    with open(str(''+out_dir+'/final_bins_Info.csv'),'w+') as bin_data:
-        bin_data.write('genome,completeness,contamination\n')
 
-        stats_list=glob.glob(str(dt_bd)+"/*_DASTool_summary.txt")
-        for file in stats_list:
-            with open(str(file),'r') as summary:
-                summary_data=summary.readlines()
-                for line in summary_data:
-                    if not (line.startswith('bin')):
-                        line_data = line.split()
-                        # store compl and red values in variables
-                        bin_name = line_data[0]
-                        completeness = line_data[11]
-                        redundancy = line_data[12]
 
-                        bin_data.write(os.path.abspath(bin_name+'.contigs.fa')+','+completeness+','+redundancy+'\n')
-                    else:
-                        pass
 
-    # binlist = glob.glob(str(dt_bd)+"/*.fa")
-    # for bin in bin_list:
-    #
-    #
-    # with open(str(''+out_dir+'/final_bins_Info.csv'),'w+') as bins:
-    #     # open binmergingsummary file
-    #     with open(str(''+dt_bd+'/'+ID+'_DASTool_summary.txt'),'r') as summary:
-    #         summary_data = summary.readlines()
-    #         bins.write('genome,completeness,contamination\n')
-    #         for i in range(len(summary_data)):
-    #             if summary_data[i].startswith(str(ID)):
-    #                 line_data = summary_data[i].split()
-    #                     # store compl and red values in variables
-    #                 completeness = line_data[11]
-    #                 redundancy = line_data[12]
-    #                     # discount the 1st row of the summary file and write the .csv file
-    #                 i-=1
-    #                 bins.write(os.path.abspath(binlist[i])+','+completeness+','+redundancy+'\n')
-    #             else:
-    #                 pass
+
+
+for i in $(ls ${bins}); do
+        bin_name=${i%.*}
+        bin_file=${bins}/$i
+	echo "${SOFT}/shorten_contig_names.py $bin_file > ${out}/tmp_bin.fa"
+	${SOFT}/shorten_contig_names.py $bin_file > ${out}/tmp_bin.fa
+	if [[ $? -ne 0 ]]; then error "Could not process/shorten the contig names of ${bin_file}. Exiting..."; fi
+        comm "NOW ANNOTATING ${bin_name}"
+
+        cmd="prokka --quiet --cpus $threads --outdir ${out}/prokka_out/$bin_name --prefix $bin_name ${out}/tmp_bin.fa"
+	echo $cmd
+	$cmd
+
+	if [[ $? -ne 0 ]]; then warning "Something possibly went wrong with annotating ${bin_name}. Proceeding anyways"; fi
+        if [[ ! -s ${out}/prokka_out/${bin_name}/${bin_name}.gff ]]; then error "Something went wrong with annotating ${bin_name}. Exiting..."; fi
+	rm ${out}/tmp_bin.fa
+done
+
+
+
+if [[ $(ls ${out}/prokka_out/) -lt 1 ]]; then error "Something went wrong with running prokka on all the bins! Exiting..."; fi
+
+comm "PROKKA finished annotating all the bins!"
+
+
+
 
 
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))):
-        drepbinsCmd='module load tools ngs anaconda3/4.4.0 anaconda2/4.4.0 mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 pplacer/1.1.alpha19 && dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
+        drepbinsCmd=''
         subprocess.check_call(drepbinsCmd, shell=True)

@@ -69,10 +69,7 @@ def in_out_preprocessing(path,in_f):
     # Define input directory and create it if not exists "00-InputData"
     in_dir = os.path.join(path,"PPR_00-InputData")
 
-    if os.path.exists(in_dir):
-        rmdirCmd='cd '+in_dir+'/.. && rm -rf '+in_dir+' && mkdir '+in_dir+''
-        subprocess.check_call(rmdirCmd,shell=True)
-    else:
+    if not os.path.exists(in_dir):
         os.makedirs(in_dir)
 
     with open(in_f,'r') as in_file:

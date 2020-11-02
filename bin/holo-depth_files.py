@@ -27,7 +27,7 @@ log=args.log
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tDepth File Generation step - ID '+ID+'\n')
+    log.write('\t\t'+current_time+'\tDepth File Generation step - '+ID+'\n')
     log.write('Depth file containing coverage info about the reads is being generated to be used during binning.\n\n')
 
 

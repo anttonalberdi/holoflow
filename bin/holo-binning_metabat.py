@@ -32,7 +32,7 @@ log=args.log
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tMetabat Binning step - ID '+ID+'\n')
+    log.write('\t\t'+current_time+'\tMetabat Binning step - '+ID+'\n')
     log.write('Individual assembly binning is being done by METABAT. This will sort the contigs into groups,\ncalled bins, which ideally will belong to taxonomically close organisms. This is mainly done\nbased on coverage and tetranucleotide frequencies.\n\n')
 
 

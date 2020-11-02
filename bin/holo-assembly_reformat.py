@@ -32,7 +32,7 @@ if not os.path.exists(str(out_a)):
     # Write to log
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as log:
-        log.write('\t\t'+current_time+'\tAssembly Reformat step - ID '+ID+'\n')
+        log.write('\t\t'+current_time+'\tAssembly Reformat step - '+ID+'\n')
         log.write('The generated assembly file in the previous step is being reformatted: Those contigs less than '+min_cl+'\nbase pairs long are being removed and the IDs of the remaining ones are being modified.\n\n')
 
 

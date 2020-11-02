@@ -38,7 +38,7 @@ log=args.log
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
-    logi.write('\t\t'+current_time+'\tDASTool Bin Refinement step - ID '+ID+'\n')
+    logi.write('\t\t'+current_time+'\tDASTool Bin Refinement step - '+ID+'\n')
     logi.write('The binning results from MaxBin and Metabat2 are integrated by DASTool to produce one only non-redundant\nset of bins between them.\n\n')
 
 

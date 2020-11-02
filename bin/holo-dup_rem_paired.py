@@ -35,7 +35,7 @@ ignore=args.ignore
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tDuplicates Removal step - ID '+ID+'\n')
+    log.write('\t\t'+current_time+'\tDuplicates Removal step - '+ID+'\n')
     log.write('Duplicate sequences are being removed.\n\n')
 
 

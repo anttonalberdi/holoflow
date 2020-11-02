@@ -34,7 +34,7 @@ if not (os.path.exists(str(out_dir))):
     # Write to log
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as logi:
-        logi.write('\t\t'+current_time+'\tBin Scaffolding step - ID '+ID+'\n')
+        logi.write('\t\t'+current_time+'\tBin Scaffolding step - '+ID+'\n')
         logi.write('Scaffolds are build from the contigs found in every metagenomic bin by SSPACE.\n\n')
 
 

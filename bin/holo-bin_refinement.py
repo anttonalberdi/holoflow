@@ -34,7 +34,7 @@ threads=args.threads
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
-    logi.write('\t\t'+current_time+'\tRefineM Bin Refinement step - ID '+ID+'\n')
+    logi.write('\t\t'+current_time+'\tRefineM Bin Refinement step - '+ID+'\n')
     logi.write('Based on genome properties and taxonomy, RefineM takes as input all Dastool bins merged from Maxbin and Metabat2\nand try to increase its completeness while reducing the redundancy. \n\n')
 
 

@@ -26,7 +26,7 @@ log=args.log
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tAssembly Indexing step - ID '+ID+'\n')
+    log.write('\t\t'+current_time+'\tAssembly Indexing step - '+ID+'\n')
     log.write('The assembly file needs to be indexed so the original read files can be mapped to it.\n\n')
 
 

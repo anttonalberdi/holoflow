@@ -32,7 +32,7 @@ log=args.log
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
-    logi.write('\t\t'+current_time+'\tMaxbin Binning step - ID '+ID+'\n')
+    logi.write('\t\t'+current_time+'\tMaxbin Binning step - '+ID+'\n')
     logi.write('Individual assembly binning is being done by MAXBIN. This will sort the contigs into groups,\ncalled bins, which ideally will belong to taxonomically close organisms. This is mainly done\nbased on coverage and tetranucleotide frequencies.\n\n')
 
 

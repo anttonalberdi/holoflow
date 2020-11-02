@@ -32,7 +32,7 @@ if not (os.path.exists(str(out_dir))):
     # Write to log
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as logi:
-        logi.write('\t\t'+current_time+'\tBin Dereplication step - ID '+ID+'\n')
+        logi.write('\t\t'+current_time+'\tBin Dereplication step - '+ID+'\n')
         logi.write('dRep identifies those bins that are technically the same  and removed all but the “best” one from each\nredundant set. This is done based on the Average Nucleotide Identity (ANI).\n\n')
 
 

@@ -35,7 +35,7 @@ if not (os.path.exists(str(out_dir))):
     # Write to log
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as logi:
-        logi.write('\t\t'+current_time+'\tBin Mapping step - ID '+ID+'\n')
+        logi.write('\t\t'+current_time+'\tBin Mapping step - '+ID+'\n')
         logi.write('This step retrieves the paired-end reads found in each bin as they are to be used in the next step.\n\n')
 
 

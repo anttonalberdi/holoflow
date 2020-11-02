@@ -33,10 +33,13 @@ log=args.log
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tAssembly Mapping step - ID '+ID+'\n')
+    log.write('\t\t'+current_time+'\tAssembly Mapping step - '+ID+'\n')
     log.write('The original metagenomic reads are being mapped to the indexed assembly so coverage info can be retrieved.\n\n')
 
 
 if not os.path.exists(str(obam)):
-    mappingCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+a+' '+read1+' '+read2+' | samtools view -T '+a+' -b - | samtools sort -T '+a+' - > '+obam+''
+    mappingCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+a+' '+read1+' '+read2+' | samtools view -T -h '+a+' -b - | samtools sort -T '+a+' -h - > '+obam+''
     subprocess.check_call(mappingCmd, shell=True)
+
+
+module load tools ngs samtools/1.9 bwa/0.7.15 bwa mem -t 40 -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample" ${workdir}/${sample}.assembly/${sample}.assembly.binning.fa ${workdir}/${sample}.1.fq.gz ${workdir}/${sample}.2.fq.gz | samtools view -T ${workdir}/${sample}.assembly/${sample} -b - | samtools sort -T ${workdir}/${sample}.assembly/${sample} - > ${workdir}/${sample}.assembly/${sample}.bam  samtools index ${workdir}/${sample}.assembly/${sample}.bam

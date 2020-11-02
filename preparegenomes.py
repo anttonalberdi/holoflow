@@ -65,9 +65,6 @@ def set_up_preparegenomes(path,in_f):
     input files where snakemake expects to find them if necessary."""
     db_dir = os.path.join(path,"PRG")
 
-    if os.path.exists(db_dir):
-        rmdirCmd='cd '+db_dir+'/.. && rm -rf '+db_dir+' && mkdir '+db_dir+''
-        subprocess.check_call(rmdirCmd,shell=True)
 
     if not os.path.exists(db_dir):
         os.makedirs(db_dir)

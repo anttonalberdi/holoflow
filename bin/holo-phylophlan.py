@@ -40,7 +40,7 @@ threads=args.threads
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
-    logi.write('\t\t'+current_time+'\tMAG Phylogenetic assignation step - ID '+ID+'\n')
+    logi.write('\t\t'+current_time+'\tMAG Phylogenetic assignation step - '+ID+'\n')
     logi.write('\n\n')
 
 if not (ssp): #drep output files have .fa extension, PhyloPhlAn requires .fna for nucl.

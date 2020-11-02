@@ -47,7 +47,7 @@ log=args.log
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as log:
-    log.write('\t\t'+current_time+'\tMapping To Reference Genomes step - ID '+ID+'\n')
+    log.write('\t\t'+current_time+'\tMapping To Reference Genomes step - '+ID+'\n')
     log.write('All the reads are being mapped to the reference genome(s).\n')
 
 
