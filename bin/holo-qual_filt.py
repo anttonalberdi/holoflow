@@ -71,7 +71,7 @@ statsfile.close()
 
 
 # Write to log
-with open(str(log),'w+') as log:
+with open(str(log),'a+') as log:
     log.write('\tHOLOFLOW\tPREPROCESSING\n\t\t'+current_time+'\tQuality Filtering step\n')
     log.write('Those reads with a minimum quality of '+minq+' are being removed.\nThe sequencing adapters of all reads as well.\n\n')
 

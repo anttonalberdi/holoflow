@@ -202,10 +202,29 @@ def run_preparegenomes(in_f, path, config, cores):
     path_snkf = os.path.join(holopath,'workflows/preparegenomes/Snakefile')
 
     # Run snakemake
+    log_file = open(str(log),'w+')
+    log_file.write("Have a nice run!\n\t\tHOLOFOW Preparegenomes starting")
+    log_file.close()
+
     prg_snk_Cmd = 'module unload gcc && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+path_out[1]+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(prg_snk_Cmd, shell=True)
 
-    print("Have a nice run!\n\t\tHOLOFOW Prepare genomes starting")
+    log_file = open(str(log),'a+')
+    log_file.write("\n\t\tHOLOFOW Preparegenomes has finished :)")
+    log_file.close()
+
+
+    #Check how the run went
+
+    for file in out_files.split(" "):
+        exist.append(os.path.isfile(file))
+
+    if not all(exist): # all output files exist
+
+        log_file = open(str(log),'a+')
+        log_file.write("Looks like something went wrong...\n\t\t The temporal directories have been kept, you should have a look...")
+        log_file.close()
+
 
 
 

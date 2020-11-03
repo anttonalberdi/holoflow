@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True)
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
 parser.add_argument('-c', help="config file", dest="config_file", required=False)
+parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 args = parser.parse_args()
@@ -95,14 +96,13 @@ def in_out_metagenomics(path,in_f):
 
 
                 if not (group == dir[0]): # when the group changes, define output files for previous group and finish input
-
                     group=str(dir[0])
 
                     # Generate Snakemake input files
                     coa1_filename=(str(in_dir)+'/'+str(group)+'_1.fastq')
                     coa2_filename=(str(in_dir)+'/'+str(group)+'_2.fastq')
 
-                    if not ((os.path.isfile(coa1_filename) and (os.path.isfile(coa2_filename)):
+                    if not (os.path.isfile(coa1_filename) and os.path.isfile(coa2_filename)):
                             # merge all .fastq for coassembly
                         merge1Cmd='cd '+input_groupdir+' && cat *_1.fastq > '+coa1_filename+''
                         subprocess.check_call(merge1Cmd, shell=True)
@@ -122,7 +122,7 @@ def in_out_metagenomics(path,in_f):
                     coa1_filename=(str(in_dir)+'/'+str(group)+'_1.fastq')
                     coa2_filename=(str(in_dir)+'/'+str(group)+'_2.fastq')
 
-                    if not ((os.path.isfile(coa1_filename) and (os.path.isfile(coa2_filename)):
+                    if not (os.path.isfile(coa1_filename) and os.path.isfile(coa2_filename)):
                             # merge all .fastq for coassembly
                         merge1Cmd=''+str(for_files)+' > '+coa1_filename+''
                         subprocess.check_call(merge1Cmd, shell=True)
@@ -148,10 +148,33 @@ def run_metagenomics(in_f, path, config, cores):
     path_snkf = os.path.join(holopath,'workflows/metagenomics/coassembly_binning/Snakefile')
 
     # Run snakemake
+    log_file=open(str(log),'w+')
+    log_file.write("Have a nice run!\n\t\tHOLOFOW Metagenomics-Coassembly starting")
+    log_file.close()
+
     mtg_snk_Cmd = 'module unload gcc && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(mtg_snk_Cmd, shell=True)
 
-    print("Have a nice run!\n\t\tHOLOFOW Metagenomics-Coassembly starting")
+    log_file=open(str(log),'a+')
+    log_file.write("\n\t\tHOLOFOW Metagenomics-Coassembly has finished :)")
+    log_file.close()
+
+
+    # Keep temp dirs / remove all
+    if args.keep: # If -k, True: keep
+        pass
+    else: # If not -k, keep only last dir
+        for file in out_files.split(" "):
+            exist.append(os.path.isfile(file))
+
+        if all(exist): # all output files exist
+            rmCmd='cd '+path+' | grep -v '+final_temp_dir+' | xargs rm -rf && mv '+final_temp_dir+' MCB_Holoflow'
+            subprocess.Popen(rmCmd,shell=True).wait()
+
+        else:   # all expected output files don't exist: keep tmp dirs
+            log_file = open(str(log),'a+')
+            log_file.write("Looks like something went wrong...\n\t\t The temporal directories have been kept, you should have a look...")
+            log_file.close()
 
 
 

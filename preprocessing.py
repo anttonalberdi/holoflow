@@ -148,15 +148,33 @@ def run_preprocessing(in_f, path, config, cores):
     path_snkf = os.path.join(holopath,'workflows/preprocessing/Snakefile')
 
     # Run snakemake
+    log_file = open(str(log),'w+')
+    log_file.write("Have a nice run!\n\t\tHOLOFOW Preprocessing starting")
+    log_file.close()
+
     prep_snk_Cmd = 'module unload gcc && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
     subprocess.Popen(prep_snk_Cmd, shell=True).wait()
-    print("Have a nice run!\n\t\tHOLOFOW Preprocessing starting")
+
+    log_file = open(str(log),'a+')
+    log_file.write("\n\t\tHOLOFOW Preprocessing has finished :)")
+    log_file.close()
 
     # Keep temp dirs / remove all
     if args.keep: # If -k, True: keep
         pass
     else: # If not -k, keep only last dir
-        path/final_temp_dir
+        for file in out_files.split(" "):
+            exist.append(os.path.isfile(file))
+
+        if all(exist): # all output files exist
+            rmCmd='cd '+path+' | grep -v '+final_temp_dir+' | xargs rm -rf && mv '+final_temp_dir+' PPR_Holoflow'
+            subprocess.Popen(rmCmd,shell=True).wait()
+
+        else:   # all expected output files don't exist: keep tmp dirs
+            log_file = open(str(log),'a+')
+            log_file.write("Looks like something went wrong...\n\t\t The temporal directories have been kept, you should have a look...")
+            log_file.close()
+
 
 
 
