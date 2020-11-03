@@ -22,6 +22,7 @@ These are designed to be called from the command line and require the following 
   -d WORK_DIR         Output directory.
   -t THREADS          Thread maximum number to be used by Snakemake.  
   {-r REF_GENOME}     Reference genome(s) file path to be used in read mapping.
+  [-k KEEP_TMP]       If present, keep temporal directories - NOT IN PREPAREGENOMES.
   [-l LOG]            Desired pipeline log file path.
   [-c CONFIG]         Configuration file full path.
   
