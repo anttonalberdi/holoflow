@@ -12,6 +12,7 @@ parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
 parser.add_argument('-c', help="config file", dest="config_file", required=False)
 parser.add_argument('-g', help="reference genome", dest="ref", required=False)
+parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 args = parser.parse_args()
@@ -137,7 +138,8 @@ def in_out_preprocessing(path,in_f):
 
 
 def run_preprocessing(in_f, path, config, cores):
-    """Run snakemake on shell"""
+    """Run snakemake on shell, wait for it to finish.
+    Given flag, decide whether keep only last directory."""
 
     # Define output names
     out_files = in_out_preprocessing(path,in_f)
@@ -147,8 +149,15 @@ def run_preprocessing(in_f, path, config, cores):
 
     # Run snakemake
     prep_snk_Cmd = 'module unload gcc && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
-    subprocess.check_call(prep_snk_Cmd, shell=True)
+    subprocess.Popen(prep_snk_Cmd, shell=True).wait()
     print("Have a nice run!\n\t\tHOLOFOW Preprocessing starting")
+
+    # Keep temp dirs / remove all
+    if args.keep: # If -k, True: keep
+        pass
+    else: # If not -k, keep only last dir
+        path/final_temp_dir
+
 
 
 ###########################

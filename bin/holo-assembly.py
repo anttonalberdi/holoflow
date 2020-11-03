@@ -35,10 +35,8 @@ ID=args.ID
 log=args.log
 
 
-if not (args.assembler):
+if (args.coassembly):
     args.assembler='megahit'
-    assembler=args.assembler
-else:
     assembler=args.assembler
 
 # Run
@@ -55,18 +53,8 @@ if not (os.path.exists(str(empty_o)) or os.path.exists(str(temp_a)) or os.path.e
     emptytouchCmd='touch '+empty_o+''
     subprocess.check_call(emptytouchCmd, shell=True)
 
-    if (args.assembler == "megahit") or (args.coassembly): #If coassembly : read1&read2 will contain a string of comma-separated list of fasta/q paired-end files for each pair
-                                #If not coassembly: read1&read2 will contain a single path for one single ID
-        if (args.coassembly):
-            comma_read1 = ''
-            comma_read1 = open(str(read1),'r').read()
-            read1=comma_read1
 
-            comma_read2 = ''
-            comma_read2 = open(str(read2),'r').read()
-            read2=comma_read2
-        else:
-            pass
+    if (args.assembler == "megahit") or (args.coassembly):
 
         megahitCmd = 'module load tools megahit/1.1.1 && megahit -1 '+read1+' -2 '+read2+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
         subprocess.check_call(megahitCmd, shell=True)
@@ -75,8 +63,8 @@ if not (os.path.exists(str(empty_o)) or os.path.exists(str(temp_a)) or os.path.e
         subprocess.check_call(mv_megahitCmd, shell=True)
 
 
-    if args.assembler == "spades": #If coassembly : read1&read2 will contain a single path of a file containing all merged sequences
-                                #If not coassembly: read1&read2 will contain a single path for one single ID
+    if args.assembler == "spades":
+
         spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
         subprocess.check_call(spadesCmd, shell=True)
 
