@@ -222,7 +222,7 @@ def run_preparegenomes(in_f, path, config, cores):
     if not all(exist): # all output files exist
 
         log_file = open(str(log),'a+')
-        log_file.write("Looks like something went wrong...\n\t\t The temporal directories have been kept, you should have a look...")
+        log_file.write("Looks like something went wrong...\n\t\t")
         log_file.close()
 
 
