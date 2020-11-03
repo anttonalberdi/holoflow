@@ -1,6 +1,7 @@
 import argparse
 import subprocess
 import os
+import glob
 import sys
 import ruamel.yaml
 
@@ -90,12 +91,7 @@ def in_out_metagenomics(path,in_f):
 
             if not (dir.startswith('#')):
                 dir = dir.strip('\n').split(' ') # Create a list of each line
-
-                # Get all fastq paths to merge
                 input_groupdir=str(dir[1])      # current input file path and name
-                for_files=glob.glob(str(input_groupdir)+"_1.fastq")
-                rev_files=glob.glob(str(input_groupdir)+"_2.fastq")
-
 
 
                 if not (group == dir[0]): # when the group changes, define output files for previous group and finish input
@@ -105,12 +101,14 @@ def in_out_metagenomics(path,in_f):
                     # Generate Snakemake input files
                     coa1_filename=(str(in_dir)+'/'+str(group)+'_1.fastq')
                     coa2_filename=(str(in_dir)+'/'+str(group)+'_2.fastq')
-                        # merge all .fastq for coassembly
-                    merge1Cmd=''+for_files+' > '+coa1_filename+''
-                    subprocess.check_call(merge1Cmd, shell=True)
 
-                    merge2Cmd=''+rev_files+' > '+coa2_filename+''
-                    subprocess.check_call(merge2Cmd, shell=True)
+                    if not ((os.path.isfile(coa1_filename) and (os.path.isfile(coa2_filename)):
+                            # merge all .fastq for coassembly
+                        merge1Cmd='cd '+input_groupdir+' && cat *_1.fastq > '+coa1_filename+''
+                        subprocess.check_call(merge1Cmd, shell=True)
+
+                        merge2Cmd='cd '+input_groupdir+' && cat *_2.fastq > '+coa2_filename+''
+                        subprocess.check_call(merge2Cmd, shell=True)
 
                     # Define Snakemake output files
                     output_files+=(path+"/"+final_temp_dir+"/"+group+"_DASTool_bins ")
@@ -123,12 +121,14 @@ def in_out_metagenomics(path,in_f):
                     # Generate Snakemake input files
                     coa1_filename=(str(in_dir)+'/'+str(group)+'_1.fastq')
                     coa2_filename=(str(in_dir)+'/'+str(group)+'_2.fastq')
-                        # merge all .fastq for coassembly
-                    merge1Cmd=''+for_files+' > '+coa1_filename+''
-                    subprocess.check_call(merge1Cmd, shell=True)
 
-                    merge2Cmd=''+rev_files+' > '+coa2_filename+''
-                    subprocess.check_call(merge2Cmd, shell=True)
+                    if not ((os.path.isfile(coa1_filename) and (os.path.isfile(coa2_filename)):
+                            # merge all .fastq for coassembly
+                        merge1Cmd=''+str(for_files)+' > '+coa1_filename+''
+                        subprocess.check_call(merge1Cmd, shell=True)
+
+                        merge2Cmd=''+str(rev_files)+' > '+coa2_filename+''
+                        subprocess.check_call(merge2Cmd, shell=True)
 
                     # Define Snakemake output files
                     output_files+=(path+"/"+final_temp_dir+"/"+group+"_DASTool_bins ")
