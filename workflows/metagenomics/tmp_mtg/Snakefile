@@ -1,5 +1,5 @@
-# 30.06.20
-#configfile: "/home/projects/ku-cbd/people/nurher/holoflow/workflows/metagenomics/individual_binning/config.yaml"
+# 08.10.20
+# Metagenomics dereplication
 
 rule get_paths:
     input:
@@ -14,215 +14,127 @@ rule get_paths:
 
 
 ##
-# Assembly
+# dRep bin dereplication
 ##
-rule assembly:
+rule drep_bins:
     input:
-        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
-        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq"
-
+        dastool_bin_dir="{projectpath}/MDR_00-InputBins/{group}"
     output:
-        "{projectpath}/MIB_01-Assembly/{sample}_file_to_remove"
-    params:
-        memory=expand("{memory}", memory=config['memory']),
-        klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
-        klist_spades=expand("{klist_spades}", klist_spades=config['klist_spades']),
-        threads=expand("{threads}", threads=config['threads']),
-        assembler=expand("{assembler}", assembler=config['assembler']),
-        out_dir="{projectpath}/MIB_01-Assembly/{sample}_assembly",
-        temp_assembly="{projectpath}/MIB_01-Assembly/{sample}_assembly/temp_assembly.fa",
-        sample="{sample}"
-
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-assembly.py -1 {input.read1} -2 {input.read2} -m {params.memory} -t {params.threads} -k_megahit {params.klist_megahit} -k_spades {params.klist_spades} -a {params.assembler} -o {params.out_dir} -empty_o {output} -temp_a {params.temp_assembly} -sample {params.sample} -log {rules.get_paths.input.logpath}
-        """
-
-
-
-rule assembly_reformat:
-    input:
-        empt_file="{projectpath}/MIB_01-Assembly/{sample}_file_to_remove"
-    output:
-        stats="{projectpath}/MIB_01-Assembly/{sample}.stats",
-        out_assembly="{projectpath}/MIB_01-Assembly/{sample}.fa"
-    params:
-        sample="{sample}",
-        stats_in="{projectpath}/PPR_03-MappedToReference/{sample}.stats",
-        min_contig_len=expand("{min_contig_len}", min_contig_len=config['min_contig_len']),
-        in_assembly="{projectpath}/MIB_01-Assembly/{sample}_assembly/temp_assembly.fa"
-
-
-    shell:
-        """
-        rm {input.empt_file} && python {rules.get_paths.input.holopath}/bin/holo-assembly_reformat.py -sample {params.sample} -min_cl {params.min_contig_len} -in_a {params.in_assembly} -out_a {output.out_assembly} -st_in {params.stats_in} -st_out {output.stats} -log {rules.get_paths.input.logpath}
-        """
-
-
-##
-# Index assembly
-##
-rule assembly_index:
-    input:
-        "{projectpath}/MIB_01-Assembly/{sample}.fa"
-    output: # FUTURE: ADD OPTION TO REMOVE ALL BUT FA.FAI
-        samtools="{projectpath}/MIB_01-Assembly/{sample}.fa.fai",
-        bwa_bwt="{projectpath}/MIB_01-Assembly/{sample}.fa.bwt",
-        bwa_pac="{projectpath}/MIB_01-Assembly/{sample}.fa.pac",
-        bwa_ann="{projectpath}/MIB_01-Assembly/{sample}.fa.ann",
-        bwa_amb="{projectpath}/MIB_01-Assembly/{sample}.fa.amb",
-        bwa_sa="{projectpath}/MIB_01-Assembly/{sample}.fa.sa"
-    params:
-        sample="{sample}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-assembly_index.py -a {input} -ia {output.samtools} -log {rules.get_paths.input.logpath} -sample {params.sample}
-        """
-
-##
-# Assembly mapping
-##
-
-rule assembly_mapping:
-    input:
-        assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-        samtools="{projectpath}/MIB_01-Assembly/{sample}.fa.fai",
-        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
-        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq"
-    output:
-        "{projectpath}/MIB_02-Assembly_mapping/{sample}.mapped.bam"
+        directory("{projectpath}/MDR_01-BinDereplication/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
-        sample="{sample}"
+        group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-assembly_mapping.py -a {input.assembly} -1 {input.read1} -2 {input.read2} -t {params.threads} -obam {output} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
+
 ##
-# Prodigal ORF prediction
+# Prokka gene annotation
 ##
-#"Metagenomes - The simplest approach for metagenomes is to put all the sequences in one FASTA file and analyze them in Anonymous Mode."
-rule protein_prediction_prodigal:
+rule bin_annotation:
     input:
-        assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-        mapped_bam="{projectpath}/MIB_02-Assembly_mapping/{sample}.mapped.bam" # not necessary
+        drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
     output:
-        genetic_coords="{projectpath}/MIB_02-ProdigalPrediction/{sample}.coords.gbk",
-        protein_translations="{projectpath}/MIB_02-ProdigalPrediction/{sample}.protein_translations.faa"
-    params:
-        sample="{sample}"
-    shell: # Prodigal is run in "anon", Anonymous workflow
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-pp_prodigal.py -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations} -sample {params.sample} -log {rules.get_paths.input.logpath}
-        """
-
-##
-# Create depth table
-##
-
-rule depth_table:
-    input:
-        genetic_coords="{projectpath}/MIB_02-ProdigalPrediction/{sample}.coords.gbk",  #not actually necessary here, but used to keep order
-        mapped_bam="{projectpath}/MIB_02-Assembly_mapping/{sample}.mapped.bam"
-    output:
-        metabat_depth_file="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.depth.txt",
-        maxbin_depth_file="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.depth.txt"
-    params:
-        sample="{sample}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-depth_files.py -a {input.mapped_bam} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -sample {params.sample} -log {rules.get_paths.input.logpath}
-        """
-
-##
-# BINNING TO ADD #####################
-##
-
-##
-# Binning with metabat
-##
-
-rule binning_metabat:
-    input:
-        assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-        depth_table="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.depth.txt"
-    output:
-        bin_table_mtb="{projectpath}/MIB_03-Binning/{sample}.bins_metabat.txt"#,
-        #final_file="{projectpath}/MIB_03-Binning/{sample}.metabat/{sample}.bins_metabat.gz"
-    params:
-        base_mtb="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.mtb",
-        threads=expand("{threads}", threads=config['threads']),
-        sample="{sample}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_metabat.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mtb}  -bb {params.base_mtb} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
-        """
-
-
-
-##
-# Binning with maxbin
-##
-
-rule binning_maxbin:
-    input:
-        assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-        depth_table="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.depth.txt"
-    output:
-        bin_table_mxb="{projectpath}/MIB_03-Binning/{sample}.bins_maxbin.txt"
-    params:
-        base_mxb="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.mxb",
-        threads=expand("{threads}", threads=config['threads']),
-        sample="{sample}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -sample {params.sample} -log {rules.get_paths.input.logpath}
-        """
-
-
-
-##
-# Bin refinement with DASTool using binning: metabat, maxbin and proteins from: prodigal
-##
- # --proteins                 Predicted proteins in prodigal fasta format (>scaffoldID_geneNo).
- #                              Gene prediction step will be skipped if given. (optional)
-rule das_tool:
-    input:
-        assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-        bin_table_mxb="{projectpath}/MIB_03-Binning/{sample}.bins_maxbin.txt",
-        bin_table_mtb="{projectpath}/MIB_03-Binning/{sample}.bins_metabat.txt",
-        pproteins="{projectpath}/MIB_02-ProdigalPrediction/{sample}.protein_translations.faa"
-    output:
-        directory("{projectpath}/MIB_04-BinMerging/{sample}_DASTool_bins")
+        directory("{projectpath}/MDR_02-BinAnnotation/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
-        search_eng=expand("{search_eng}", search_eng=config['search_eng']),
-        dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db']),
-        dastool_dir="{projectpath}/MIB_04-BinMerging/{sample}",
-        sample="{sample}"
+        group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -a {input.assembly} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_annotation.py -bin_dir {input.drep_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 
+
 ##
-# RefineM bin refinement
+# GTDBTk taxonomic classification
 ##
-#>refinem filter_bins <bin_dir> <outlier_output_dir>/outliers.tsv <filtered_output_dir>
-# rule bin_refinement:
+# rule phylogeny:
 #     input:
-#         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-#         assembly_map="{projectpath}/MIB_02-Assembly_mapping/{sample}.mapped.bam",
-#         check_dastool="{projectpath}/MIB_04-BinMerging/{sample}_DASTool_bins"
 #     output:
-#         directory("{projectpath}/MIB_05-BinRefinement/{sample}")
 #     params:
-#         dastool_bin_dir="{projectpath}/MIB_04-BinMerging/{sample}_DASTool_bins",
+#     shell:
+
+
+
+
+
+#OPTIONAL -----
+# input_phylophlan=''
+# output_phylophlan=''
+# if config['SSPACE']:
+#
+#     ##
+#     # Bin mapping
+#     ##
+#     rule bin_mapping:
+#         input:
+#             read1="{projectpath}/PPR_03-MappedToReference/{group}_1.fastq",
+#             read2="{projectpath}/PPR_03-MappedToReference/{group}_2.fastq",
+#             bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
+#         output:
+#             directory("{projectpath}/MDR_02-BinScaffolding/{group}/Mapped_bins")
+#         params:
+#             threads=expand("{threads}", threads=config['threads']),
+#             group='{group}'
+#         shell:
+#             """
+#             python {rules.get_paths.input.holopath}/bin/holo-bin_mapping.py -i1 {input.read1} -i2 {input.read2} -bin_dir {input.bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+#             """
+#     ##
+#     # SSPace contigs in bin scaffolding
+#     ###
+
+#     rule bin_scaffolding:
+#         input:
+#             fq_dir="{projectpath}/MDR_02-BinScaffolding/{group}/Mapped_bins",
+#             drep_dir="{projectpath}/MDR_01-BinDereplication/{group}"
+#         output:
+#             directory("{projectpath}/MDR_02-BinScaffolding/{group}/Scaffolded_bins")
+#         params:
+#             threads=expand("{threads}", threads=config['threads']),
+#             group='{group}'
+#         shell:
+#             """
+#             python {rules.get_paths.input.holopath}/bin/holo-bin_scaffolding.py -fq_dir {input.fq_dir} -bin_dir {input.drep_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+#             """
+# #
+#     #PhyloPhlAn will take as input SSPACE's output - scaffolded bins
+#     input_phylophlan="{projectpath}/MDR_03-BinScaffolding/{group}/Scaffolded_bins"
+#
+#     if config['pipeline'] == tree:
+#         output_phylophlan="{projectpath}/MDR_04-MAGPhylogenetics/{group}/Tree_Database"
+#     else:
+#         output_phylophlan="{projectpath}/MDR_04-MAGPhylogenetics/{group}/Matrix_Database"
+#
+#
+# else:  #PhyloPhlAn will take as input the dereplicated genomes from dRep
+#     input_phylophlan="{projectpath}/MDR_02-BinDereplication/{group}/dereplicated_genomes"
+#
+#     if config['pipeline'] == tree:
+#         output_phylophlan="{projectpath}/MDR_03-MAGPhylogenetics/{group}/Tree_Database"
+#     else:
+#         output_phylophlan="{projectpath}/MDR_03-MAGPhylogenetics/{group}/Matrix_Database"
+#
+#
+# ##
+# # PhyloPhlAn Rule - drep/SSPACE input
+# ##
+# rule phylophlan:
+#     input:
+#         input_phylophlan
+#     output:
+#         directory(output_phylophlan)
+#     params:
+#         SSPACE=expand("{SSPACE}", SSPACE=config['SSPACE']),
+#         diversity=expand("{diversity}", diversity=config['diversity']),
+#         phylo_db=expand("{phylo_db}", phylo_db=config['phylo_db']),
+#         pipeline=expand("{pipeline}", pipeline=config['pipeline']),
 #         threads=expand("{threads}", threads=config['threads']),
-#         sample="{sample}"
+#         group='{group}'
 #     shell:
 #         """
-#         python {rules.get_paths.input.holopath}/bin/holo-bin_refinement.py -a {input.assembly} -bam {input.assembly_map} -dastool_bd {params.dastool_bin_dir} -out_dir {output} -sample {params.sample} -t {params.threads} -log {rules.get_paths.input.logpath}
+#         python {rules.get_paths.input.holopath}/bin/holo-phylophlan.py -genomes_dir {input} -div {params.diversity} -pip {params.pipeline} -ph_db {params.phylo_db} -out_dir {output} -ssp {params.SSPACE} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
 #         """

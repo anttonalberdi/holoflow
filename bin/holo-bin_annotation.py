@@ -33,7 +33,8 @@ if not (os.path.exists(str(out_dir))):
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as logi:
         logi.write('\t\t'+current_time+'\tBin Annotation step - '+ID+'\n')
-        logi.write('\n\n')
+        logi.write('Using Prokka, Holoflow is identifying features of interest (ORFs) in the Bin sequences outputted by dRep and labelling them.\n The functional annotations, translated and untranslated genes can be found in the respective directories.\n\n')
+
 
     # Get bin names and full paths
     bin_dir=str(bin_dir)+"/dereplicated_genomes"
