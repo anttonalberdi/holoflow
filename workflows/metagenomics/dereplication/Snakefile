@@ -35,7 +35,7 @@ rule drep_bins:
 ##
 rule bin_annotation:
     input:
-        drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
+        drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}/dereplicated_genomes"
     output:
         directory("{projectpath}/MDR_02-BinAnnotation/{group}")
     params:
