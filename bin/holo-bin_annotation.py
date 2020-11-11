@@ -35,50 +35,22 @@ if not (os.path.exists(str(out_dir))):
         logi.write('\t\t'+current_time+'\tBin Annotation step - '+ID+'\n')
         logi.write('\n\n')
 
-
-        # Get bin names and full paths
-        bin_list=glob.glob(str(bin_dir)+"/*.fa")
-        for bin in bin_list:
-            bin_name=bin
-            bin=os.path.abspath(bin)
+    # Get bin names and full paths
+    bin_list=glob.glob(str(bin_dir)+"/*.fa")
+    for bin in bin_list:
+        bin_name=bin
+        bin=os.path.abspath(bin)
 
         # Annotation with Prokka
-        ######### DEPENDENCIES module load perl/5.30.2 hmmer/3.2.1 TEST MORE
-        annCmd='prokka --quiet --cpus '+threads+' --outdir '+out_dir+' --prefix '+bin_name+' '+bin+''
-        subprocess.check_call(annCmd, shell=True)
+        annCmd='module load perl/5.30.2 hmmer/3.2.1 prodigal/2.6.3 tbl2asn/20191211 ##BLASTP### prokka && prokka --quiet --cpus '+threads+' --outdir '+out_dir+'/prokka_out --prefix '+bin_name+' '+bin+''
+        subprocess.Popen(annCmd, shell=True).wait()
 
+        # Reformat annotations
+        functCmd='mkdir '+out_dir+'/bin_funct_annotations && grep product '+out_dir+'/prokka_out/'+bin_name+'/'+bin_name+'.gff > '+out_dir+'/bin_funct_annotations/'+bin_name+'.gff'
+        subprocess.check_call(functCmd, shell=True)
 
+        trgenCmd='mkdir '+out_dir+'/bin_translated_genes && cp '+out_dir+'/prokka_out/'+bin_name+'/'+bin_name+'.faa '+out_dir+'/bin_translated_genes'
+        subprocess.check_call(trgenCmd, shell=True)
 
-
-
-
-for i in $(ls ${bins}); do
-        bin_name=${i%.*}
-        bin_file=${bins}/$i
-	echo "${SOFT}/shorten_contig_names.py $bin_file > ${out}/tmp_bin.fa"
-	${SOFT}/shorten_contig_names.py $bin_file > ${out}/tmp_bin.fa
-	if [[ $? -ne 0 ]]; then error "Could not process/shorten the contig names of ${bin_file}. Exiting..."; fi
-        comm "NOW ANNOTATING ${bin_name}"
-
-        cmd="prokka --quiet --cpus $threads --outdir ${out}/prokka_out/$bin_name --prefix $bin_name ${out}/tmp_bin.fa"
-	echo $cmd
-	$cmd
-
-	if [[ $? -ne 0 ]]; then warning "Something possibly went wrong with annotating ${bin_name}. Proceeding anyways"; fi
-        if [[ ! -s ${out}/prokka_out/${bin_name}/${bin_name}.gff ]]; then error "Something went wrong with annotating ${bin_name}. Exiting..."; fi
-	rm ${out}/tmp_bin.fa
-done
-
-
-
-if [[ $(ls ${out}/prokka_out/) -lt 1 ]]; then error "Something went wrong with running prokka on all the bins! Exiting..."; fi
-
-comm "PROKKA finished annotating all the bins!"
-
-
-
-
-
-    if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))):
-        drepbinsCmd=''
-        subprocess.check_call(drepbinsCmd, shell=True)
+        untrgenCmd='mkdir '+out_dir+'/bin_untranslated_genes && cp '+out_dir+'/prokka_out/'+bin_name+'/'+bin_name+'.ffn '+out_dir+'/bin_untranslated_genes'
+        subprocess.check_call(untrgenCmd, shell=True)
