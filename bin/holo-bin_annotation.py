@@ -40,10 +40,11 @@ if not (os.path.exists(str(out_dir))):
     bin_list=glob.glob(str(bin_dir)+"/*.fa")
     for bin in bin_list:
         bin_name=os.path.basename(bin)
+        bin_name=bin_name.replace(".fa","")
         bin=os.path.abspath(bin)
 
         # Annotation with Prokka
-        annCmd='module load tools perl/5.30.2 hmmer/3.2.1 prodigal/2.6.3 tbl2asn/20191211 ncbi-blast/2.8.1+ prokka/1.14.0 && prokka --quiet --cpus '+threads+' --outdir '+out_dir+'/prokka_out --prefix '+bin_name+' '+bin+''
+        annCmd='module load tools perl/5.30.2 hmmer/3.2.1 prodigal/2.6.3 tbl2asn/20191211 ncbi-blast/2.8.1+ prokka/1.14.0 && prokka --quiet --force --cpus '+threads+' --outdir '+out_dir+'/prokka_out --prefix '+bin_name+' '+bin+''
         subprocess.Popen(annCmd, shell=True).wait()
 
         # Reformat annotations

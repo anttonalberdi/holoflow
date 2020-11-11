@@ -49,14 +49,14 @@ rule bin_annotation:
 
 
 ##
-# GTDBTk phylogeny building
+# GTDBTk taxonomic classification
 ##
 rule phylogeny:
     input:
     output:
     params:
     shell:
-    
+
 
 
 
