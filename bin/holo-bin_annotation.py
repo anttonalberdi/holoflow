@@ -47,12 +47,17 @@ if not (os.path.exists(str(out_dir))):
         annCmd='module load tools perl/5.30.2 hmmer/3.2.1 prodigal/2.6.3 tbl2asn/20191211 ncbi-blast/2.8.1+ prokka/1.14.0 && prokka --quiet --force --cpus '+threads+' --outdir '+out_dir+'/prokka_out --prefix '+bin_name+' '+bin+''
         subprocess.Popen(annCmd, shell=True).wait()
 
+
         # Reformat annotations
-        functCmd='mkdir '+out_dir+'/bin_funct_annotations && grep product '+out_dir+'/prokka_out/'+bin_name+'/'+bin_name+'.gff > '+out_dir+'/bin_funct_annotations/'+bin_name+'.gff'
+        if not (os.path.exists(out_dir+'/bin_funct_annotations') and os.path.exists(out_dir+'/bin_translated_genes') and os.path.exists(out_dir+'/bin_untranslated_genes')):
+            mkdirCmd='cd '+out_dir+' && mkdir bin_funct_annotations bin_translated_genes bin_untranslated_genes'
+            subprocess.Popen(mkdirCmd,shell=True).wait()
+
+        functCmd='grep product '+out_dir+'/prokka_out/'+bin_name+'.gff > '+out_dir+'/bin_funct_annotations/'+bin_name+'.gff'
         subprocess.check_call(functCmd, shell=True)
 
-        trgenCmd='mkdir '+out_dir+'/bin_translated_genes && cp '+out_dir+'/prokka_out/'+bin_name+'/'+bin_name+'.faa '+out_dir+'/bin_translated_genes'
+        trgenCmd='cp '+out_dir+'/prokka_out/'+bin_name+'.faa '+out_dir+'/bin_translated_genes'
         subprocess.check_call(trgenCmd, shell=True)
 
-        untrgenCmd='mkdir '+out_dir+'/bin_untranslated_genes && cp '+out_dir+'/prokka_out/'+bin_name+'/'+bin_name+'.ffn '+out_dir+'/bin_untranslated_genes'
+        untrgenCmd='mkdir '+out_dir+'/bin_untranslated_genes && cp '+out_dir+'/prokka_out/'+bin_name+'.ffn '+out_dir+'/bin_untranslated_genes'
         subprocess.check_call(untrgenCmd, shell=True)
