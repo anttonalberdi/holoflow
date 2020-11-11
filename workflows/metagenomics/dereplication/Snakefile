@@ -21,7 +21,6 @@ rule drep_bins:
         dastool_bin_dir="{projectpath}/MDR_00-InputBins/{group}"
     output:
         directory("{projectpath}/MDR_01-BinDereplication/{group}")
-
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
@@ -29,6 +28,24 @@ rule drep_bins:
         """
         python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
+
+
+##
+# annotation with Prokka
+##
+rule bin_annotation:
+    input:
+        drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
+    output:
+        directory("{projectpath}/MDR_02-BinAnnotation/{group}")
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-bin_annotation.py -bin_dir {input.drep_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """
+
 
 
 
