@@ -50,12 +50,6 @@ with open(str(config), 'w') as config_file:
     data['logpath'] = str(log)
     dump = yaml.dump(data, config_file)
 
-    if data['SSPACE']:
-        scaffold=True
-    else:
-        scaffold=False
-
-
 ###########################
 ## Functions
 ###########################
@@ -99,7 +93,7 @@ def in_out_metagenomics(path,in_f):
                 if not desired_input == current_input_dir:
                     if not (os.path.exists(str(desired_input))):
                         os.mkdir(desired_input)
-                        copyfilesCmd='cp '+dir[1]+'/* '+desired_input+''
+                        copyfilesCmd='mkdir '+desired_input+' && cp '+dir[1]+'/* '+desired_input+''
                         subprocess.check_call(copyfilesCmd, shell=True)
                 else:
                     pass
@@ -168,6 +162,7 @@ def run_metagenomics(in_f, path, config, cores):
     if args.keep: # If -k, True: keep
         pass
     else: # If not -k, keep only last dir
+        exist=list()
         for file in out_files.split(" "):
             exist.append(os.path.isfile(file))
 

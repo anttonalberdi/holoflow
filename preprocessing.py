@@ -163,6 +163,7 @@ def run_preprocessing(in_f, path, config, cores):
     if args.keep: # If -k, True: keep
         pass
     else: # If not -k, keep only last dir
+        exist=list()
         for file in out_files.split(" "):
             exist.append(os.path.isfile(file))
 
