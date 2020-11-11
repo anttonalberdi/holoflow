@@ -92,7 +92,6 @@ def in_out_metagenomics(path,in_f):
                 #if bins not in desired input dir, copy them there
                 if not desired_input == current_input_dir:
                     if not (os.path.exists(str(desired_input))):
-                        os.mkdir(desired_input)
                         copyfilesCmd='mkdir '+desired_input+' && cp '+dir[1]+'/* '+desired_input+''
                         subprocess.check_call(copyfilesCmd, shell=True)
                 else:
@@ -103,7 +102,7 @@ def in_out_metagenomics(path,in_f):
                 if (not (group == dir[0])): # when the group changes, define output files for previous group
                     #same as last output in Snakefile
                     group=str(dir[0])
-                    final_temp_dir="MDR_01-BinDereplication"
+                    final_temp_dir="MDR_02-BinAnnotation"
                     output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
 
 ##                  # if scaffold:
@@ -120,7 +119,7 @@ def in_out_metagenomics(path,in_f):
                 if (line == last_line):
                     #same as last output in Snakefile
                     group=str(dir[0])
-                    final_temp_dir="MDR_01-BinDereplication"
+                    final_temp_dir="MDR_02-BinAnnotation"
                     output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
 
                     # if scaffold:

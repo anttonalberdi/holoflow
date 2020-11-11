@@ -31,11 +31,11 @@ rule drep_bins:
 
 
 ##
-# annotation with Prokka
+# Prokka gene annotation
 ##
 rule bin_annotation:
     input:
-        drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}/dereplicated_genomes"
+        drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
     output:
         directory("{projectpath}/MDR_02-BinAnnotation/{group}")
     params:
@@ -47,6 +47,16 @@ rule bin_annotation:
         """
 
 
+
+##
+# GTDBTk phylogeny building
+##
+rule phylogeny:
+    input:
+    output:
+    params:
+    shell:
+    
 
 
 
@@ -128,13 +138,3 @@ rule bin_annotation:
 #         """
 #         python {rules.get_paths.input.holopath}/bin/holo-phylophlan.py -genomes_dir {input} -div {params.diversity} -pip {params.pipeline} -ph_db {params.phylo_db} -out_dir {output} -ssp {params.SSPACE} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
 #         """
-
-##
-# Prokka mag gene annotation
-##
-
-
-
-##
-# GTDBTk phylogeny building
-##

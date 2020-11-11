@@ -36,6 +36,7 @@ if not (os.path.exists(str(out_dir))):
         logi.write('\n\n')
 
     # Get bin names and full paths
+    bin_dir=str(bin_dir)+"/dereplicated_genomes"
     bin_list=glob.glob(str(bin_dir)+"/*.fa")
     for bin in bin_list:
         bin_name=os.path.basename(bin)
