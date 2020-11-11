@@ -9,7 +9,7 @@ import time
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-bin_dir', help="drep bin directory", dest="dt_bd", required=True)
+parser.add_argument('-bin_dir', help="drep bin directory", dest="bin_dir", required=True)
 parser.add_argument('-out_dir', help="main output directory", dest="out_dir", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 
 
-dt_bd=args.dt_bd
+bin_dir=args.bin_dir
 out_dir=args.out_dir
 ID=args.ID
 log=args.log
@@ -37,7 +37,7 @@ if not (os.path.exists(str(out_dir))):
 
 
         # Get bin names and full paths
-        bin_list=glob.glob(str(dt_bd)+"/*.fa")
+        bin_list=glob.glob(str(bin_dir)+"/*.fa")
         for bin in bin_list:
             bin_name=bin
             bin=os.path.abspath(bin)
