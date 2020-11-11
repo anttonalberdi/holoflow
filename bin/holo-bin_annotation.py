@@ -59,5 +59,5 @@ if not (os.path.exists(str(out_dir))):
         trgenCmd='cp '+out_dir+'/prokka_out/'+bin_name+'.faa '+out_dir+'/bin_translated_genes'
         subprocess.check_call(trgenCmd, shell=True)
 
-        untrgenCmd='mkdir '+out_dir+'/bin_untranslated_genes && cp '+out_dir+'/prokka_out/'+bin_name+'.ffn '+out_dir+'/bin_untranslated_genes'
+        untrgenCmd='cp '+out_dir+'/prokka_out/'+bin_name+'.ffn '+out_dir+'/bin_untranslated_genes'
         subprocess.check_call(untrgenCmd, shell=True)
