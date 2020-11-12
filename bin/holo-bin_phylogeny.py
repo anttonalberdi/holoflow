@@ -32,7 +32,7 @@ if not (os.path.exists(str(out_dir))):
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as logi:
         logi.write('\t\t'+current_time+'\tTaxonomic Classification step - '+ID+'\n')
-        logi.write('GTDB-Tk is assigning objective taxonomic classifications to baterial genomes based on the Genome Database Taxonomy GTDB.\nThe taxonomic classification of each genome can be found in the .summary.tsv file.\n\n')
+        logi.write('GTDB-Tk is assigning objective taxonomic classifications to baterial genomes based on the Genome Database Taxonomy GTDB.\nThe taxonomic classifications can be found in the .summary.tsv file.\n\n')
 
 
     #if args.reference: # Classify genomes by placement in GTDB reference tree
