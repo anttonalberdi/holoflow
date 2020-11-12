@@ -3,7 +3,6 @@ import subprocess
 import os
 import glob
 import sys
-import ruamel.yaml
 
 ###########################
 #Argument parsing
@@ -36,10 +35,13 @@ else:
     log=args.log
 
 
-##### CONIF LOG FALSE - SET A DEFAULT
+    # Load dependencies
+loaddepCmd='module unload gcc && module load tools anaconda3/4.4.0'
+subprocess.Popen(loaddepCmd,shell=True).wait()
 
 
     #Append current directory to .yaml config for standalone calling
+import ruamel.yaml
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
 with open(str(config), 'r') as config_file:
@@ -206,7 +208,7 @@ def run_preparegenomes(in_f, path, config, cores):
     log_file.write("Have a nice run!\n\t\tHOLOFOW Preparegenomes starting")
     log_file.close()
 
-    prg_snk_Cmd = 'module unload gcc && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+path_out[1]+' --configfile '+config+' --cores '+cores+''
+    prg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+path_out[1]+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(prg_snk_Cmd, shell=True)
 
     log_file = open(str(log),'a+')

@@ -2,7 +2,6 @@ import argparse
 import subprocess
 import os
 import sys
-import ruamel.yaml
 
 ###########################
 #Argument parsing
@@ -37,8 +36,13 @@ if not (args.log):
 else:
     log=args.log
 
+    # Load dependencies
+loaddepCmd='module unload gcc && module load tools anaconda3/4.4.0'
+subprocess.Popen(loaddepCmd,shell=True).wait()
+
 
     #Append current directory to .yaml config for standalone calling
+import ruamel.yaml
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
 with open(str(config), 'r') as config_file:
@@ -152,7 +156,7 @@ def run_preprocessing(in_f, path, config, cores):
     log_file.write("Have a nice run!\n\t\tHOLOFOW Preprocessing starting")
     log_file.close()
 
-    prep_snk_Cmd = 'module unload gcc && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
+    prep_snk_Cmd = 'module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
     subprocess.Popen(prep_snk_Cmd, shell=True).wait()
 
     log_file = open(str(log),'a+')

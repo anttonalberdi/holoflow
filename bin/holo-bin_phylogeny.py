@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 
 gen_dir=args.gen_dir
-gen_dir=str(gen_dir+"/dereplicated_genomes")
+gen_dir=str(gen_dir+"/annotated_bins")
 out_dir=args.out_dir
 ID=args.ID
 log=args.log
@@ -35,8 +35,5 @@ if not (os.path.exists(str(out_dir))):
         logi.write('GTDB-Tk is assigning objective taxonomic classifications to baterial genomes based on the Genome Database Taxonomy GTDB.\nThe taxonomic classifications can be found in the .summary.tsv file.\n\n')
 
 
-    #if args.reference: # Classify genomes by placement in GTDB reference tree
-    gtdbtkCmd='module load tools anaconda3/4.4.0 prodigal/2.6.3 hmmer/3.2.1 anaconda2/4.4.0 pplacer/1.1.alpha19 fastani/1.1 && gtdbtk classify_wf --genome_dir '+gen_dir+' --extension "fa" --out_dir '+out_dir+' --cpus '+threads+''
+    gtdbtkCmd='module load tools anaconda3/4.4.0 prodigal/2.6.3 hmmer/3.2.1 anaconda2/4.4.0 pplacer/1.1.alpha19 fastani/1.1 && gtdbtk classify_wf --genome_dir '+gen_dir+' --extension "fa" --out_dir '+out_dir+' --cpus '+threads+' --pplacer_cpus 1'
     subprocess.Popen(gtdbtkCmd,shell=True).wait()
-
-    #if args.denovo: # Infer de novo tree and decorate with GTDB taxonomy # Requires OUTGROUP

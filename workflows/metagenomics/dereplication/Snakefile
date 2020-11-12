@@ -53,8 +53,7 @@ rule bin_annotation:
 ##
 rule phylogeny:
     input:
-        annotations="{projectpath}/MDR_02-BinAnnotation/{group}", # see if these can be inputted and useful to gtdbtk
-        drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
+        annotated_bins="{projectpath}/MDR_02-BinAnnotation/{group}"
     output:
         directory("{projectpath}/MDR_03-BinPhylogeny/{group}")
     params:
@@ -62,5 +61,5 @@ rule phylogeny:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_phylogeny.py -genome_dir {input.drep_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_phylogeny.py -genome_dir {input.annotated_bins} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """

@@ -50,8 +50,8 @@ if not (os.path.exists(str(out_dir))):
 
 
         # Reformat annotations
-        if not (os.path.exists(out_dir+'/bin_funct_annotations') and os.path.exists(out_dir+'/bin_translated_genes') and os.path.exists(out_dir+'/bin_untranslated_genes')):
-            mkdirCmd='cd '+out_dir+' && mkdir bin_funct_annotations bin_translated_genes bin_untranslated_genes'
+        if not (os.path.exists(out_dir+'/bin_funct_annotations') and os.path.exists(out_dir+'/bin_translated_genes') and os.path.exists(out_dir+'/bin_untranslated_genes') and os.path.exists(out_dir+'/annotated_bins')):
+            mkdirCmd='cd '+out_dir+' && mkdir bin_funct_annotations bin_translated_genes bin_untranslated_genes annotated_bins'
             subprocess.Popen(mkdirCmd,shell=True).wait()
 
         functCmd='grep product '+out_dir+'/prokka_out/'+bin_name+'.gff > '+out_dir+'/bin_funct_annotations/'+bin_name+'.gff'

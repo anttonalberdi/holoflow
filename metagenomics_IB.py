@@ -2,7 +2,6 @@ import argparse
 import subprocess
 import os
 import sys
-import ruamel.yaml
 
 ###########################
 #Argument parsing
@@ -37,7 +36,12 @@ else:
     log=args.log
 
 
+    # Load dependencies
+loaddepCmd='module unload gcc && module load tools anaconda3/4.4.0'
+subprocess.Popen(loaddepCmd,shell=True).wait()
+
     #Append current directory to .yaml config for standalone calling
+import ruamel.yaml
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
 with open(str(config), 'r') as config_file:
@@ -139,7 +143,7 @@ def run_metagenomics(in_f, path, config, cores):
     log_file.write("Have a nice run!\n\t\tHOLOFOW Metagenomics-IndividualBinning starting")
     log_file.close()
 
-    mtg_snk_Cmd = 'module unload gcc && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
+    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(mtg_snk_Cmd, shell=True)
 
     log_file = open(str(log),'a+')

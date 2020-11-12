@@ -37,7 +37,7 @@ subprocess.check_call(refbam1Cmd, shell=True)
 refbam2Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -1 '+read1+' -2 '+read2+' -'
 subprocess.check_call(refbam2Cmd, shell=True)
 
-rmAllbamCmd = 'rm '+all_bam+''
+rmAllbamCmd = 'rm '+all_bam+'' # Change this if dark matter workflow
 subprocess.check_call(rmAllbamCmd, shell=True)
 
 
