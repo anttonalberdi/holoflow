@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 
 gen_dir=args.gen_dir
-gen_dir=str(gen_dir+"/annotated_bins")
+gen_dir=str(gen_dir+"/dereplicated_genomes")
 out_dir=args.out_dir
 ID=args.ID
 log=args.log
