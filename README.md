@@ -67,7 +67,7 @@ Those lines starting by # won't be considered.
 - Example:
 
 |   |   |   |   |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | Sample1 | /home/Sample1_1.fq | /home/Sample1_2.fq |  
 | Sample2 | /home/Sample2_1.fq | /home/Sample1_2.fq |  
 | Samplen | /home/Samplen_1.fq | /home/Samplen_2.fq |  
@@ -81,7 +81,7 @@ Those lines starting by # won't be considered.
 - Example:
 
 |   |   |   |
-| --- | --- |
+| --- | --- | --- |
 | GroupA | /home/directory_samplesA |
 | GroupB | /home/directory_samplesB |
 
