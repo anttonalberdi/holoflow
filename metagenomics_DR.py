@@ -102,13 +102,13 @@ def in_out_metagenomics(path,in_f):
                 if (not (group == dir[0])): # when the group changes, define output files for previous group
                     #same as last output in Snakefile
                     group=str(dir[0])
-                    final_temp_dir="MDR_02-BinAnnotation"
+                    final_temp_dir="MDR_03-BinPhylogeny"
                     output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
 
                 if (line == last_line):
                     #same as last output in Snakefile
                     group=str(dir[0])
-                    final_temp_dir="MDR_02-BinAnnotation"
+                    final_temp_dir="MDR_03-BinPhylogeny"
                     output_files+=(path+"/"+final_temp_dir+"/"+group+" ")
 
         return output_files
