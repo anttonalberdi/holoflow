@@ -4,8 +4,6 @@ import subprocess
 import argparse
 import time
 import os
-import numpy as np
-
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
@@ -62,9 +60,9 @@ if not (os.path.exists(str(read1o))):
                 if not (line.startswith('@') or line.startswith('+')):
                     seq+= line.strip()
 
-        if seq:
-            read_n= str(n).zfill(14)
-            read_id = ("@"+str(ID)+"_"+str(read_n))
-            n += 1
-            r_output.write(read_id+'\n'+seq+'\n+\n')
-            seq=''
+            if seq:
+                read_n= str(n).zfill(14)
+                read_id = ("@"+str(ID)+"_"+str(read_n))
+                n += 1
+                r_output.write(read_id+'\n'+seq+'\n+\n')
+                seq=''
