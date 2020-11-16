@@ -51,19 +51,21 @@ subprocess.check_call(dastoolCmd, shell=True)
 binfiles = glob.glob(os.path.join(str(o),'*.fa'))
 for b in binfiles:
     shutil.move(b, str(''+o+'.bin'))
-# mvCmd='mkdir '+o+' && mv '+o+'_DASTool_bins/* '+o+' && mkdir '+o+'_summaries && mv *.eval *_summary* '+o+'_summaries'
-# subprocess.check_call(mvCmd, shell=True)
 
 
-if os.path.exists(str(o+'/'+ID+'_maxbin.eval')):
+print (str(o+'_maxbin.eval'))
+if os.path.exists(str(o+'_maxbin.eval')):
     # Add relevant info to log
     with open(str(log),'a+') as logf:
+
         logf.write('\t\tDASTool MaxBin bins evaluation - ID '+ID+'\n\n')
-        with open(str(''+o+'_maxbin.eval'),'r') as mxb_eval:
+        with open(str(o+'_maxbin.eval'),'r') as mxb_eval:
             logf.write(''+mxb_eval.read()+'\n\n\n')
+
         logf.write('\t\tDASTool Metabat2 bins evaluation - ID '+ID+'\n\n')
-        with open(str(''+o+'_metabat.eval'),'r') as mtb_eval:
+        with open(str(o+'_metabat.eval'),'r') as mtb_eval:
             logf.write(''+mtb_eval.read()+'\n\n\n')
+
         logf.write('\t\tDASTool Bin Merging Summary - ID '+ID+'\n\n')
-        with open(str(''+o+'_DASTool_summary.txt'),'r') as summary:
+        with open(str(o+'_DASTool_summary.txt'),'r') as summary:
             logf.write(''+summary.read()+'\n\n\n\n')
