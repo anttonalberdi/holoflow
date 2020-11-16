@@ -102,7 +102,7 @@ def in_out_preprocessing(path,in_f):
 
 
                 # Define input file
-                in1=in_dir+'/'+sample_name+'_1.fastq'
+                in1=in_dir+'/'+sample_name+'_1.fastq.tmp'
                 # Check if input files already in desired dir
                 if os.path.isfile(in1):
                     pass
@@ -118,7 +118,7 @@ def in_out_preprocessing(path,in_f):
 
 
                 # Define input file
-                in2=in_dir+'/'+sample_name+'_2.fastq'
+                in2=in_dir+'/'+sample_name+'_2.fastq.tmp'
                 # Check if input files already in desired dir
                 if os.path.isfile(in2):
                     pass

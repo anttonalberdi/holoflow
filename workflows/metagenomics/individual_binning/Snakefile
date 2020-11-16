@@ -175,6 +175,22 @@ rule binning_maxbin:
         python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
+# ##
+# # Check binning
+# ##
+# rule check_bins:
+#     input:
+#         bin_table_mxb="{projectpath}/MIB_03-Binning/{sample}.bins_maxbin.txt",
+#         bin_table_mtb="{projectpath}/MIB_03-Binning/{sample}.bins_metabat.txt",
+#         mxb_dir="{projectpath}/MIB_03-Binning/{sample}_maxbin",
+#         mtb_dir="{projectpath}/MIB_03-Binning/{sample}_metabat"
+#     params:
+#         sample="{sample}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-check_bins.py -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -mxb {input.mxb_dir} -mtb {input.mtb_dir} -ID {params.sample} -log {rules.get_paths.input.logpath}
+#         """
+#
 
 
 ##

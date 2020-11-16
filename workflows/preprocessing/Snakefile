@@ -9,6 +9,22 @@ rule get_paths:
 ################################################################################################################
 ############################################       PREPROCESSING     ###########################################
 ################################################################################################################
+##
+# Input reformat
+##
+rule in_reformat:
+    input:
+        read1i="{projectpath}/PPR_00-InputData/{sample}_1.fastq.tmp",
+        read2i="{projectpath}/PPR_00-InputData/{sample}_2.fastq.tmp"
+    output:
+        read1o="{projectpath}/PPR_00-InputData/{sample}_1.fastq",
+        read2o="{projectpath}/PPR_00-InputData/{sample}_2.fastq"
+    params:
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-in_reformat.py -r1i {input.read1i} -r2i {input.read2i} -r1o {output.read1o} -r2o {output.read2o} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        """
 
 ##
 # Quality-filtering
@@ -51,7 +67,6 @@ rule dup_rem_paired:
         ignore_case=expand("{ignore_case}",ignore_case=config['ignore_case']),
         file_to_dups=expand("{file_to_dups}", file_to_dups=config['file_to_dups']),
         sample="{sample}"
-
     shell:
         """
         python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.out} -sep {params.separator} -i {params.ignore_case} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -ID {params.sample} -log {rules.get_paths.input.logpath}
@@ -97,9 +112,8 @@ rule map_ref:
         O=expand("{O}", O=config['O']),
         E=expand("{E}", E=config['E']),
         L=expand("{L}", L=config['L']),
-        sample="{sample}"#,
-        #R=expand("{R}", R=config['R'])
-    shell: #-R {params.R}
+        sample="{sample}"
+    shell:
         """
         python {rules.get_paths.input.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {input.refgenomes} -obam {output} -t {params.t} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
