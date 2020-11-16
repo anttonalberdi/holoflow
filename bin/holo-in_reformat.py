@@ -43,26 +43,49 @@ if not (os.path.exists(str(read1o))):
             r_o=read2o
 
         with open(str(r_i),'r') as r_input, open(str(r_o), 'w') as r_output:
-            seq = ''
-            n = 0
+            n = 1
+            read_n=''
+            seq1 = ''
+            seq2 = ''
             read_id=''
+            qual_id=''
 
             for line in r_input:
 
                 if line.startswith('@'):
-                    if seq:
+                    if seq1:
                         read_n= str(n).zfill(14)
-                        read_id = ("@"+str(ID)+"_"+str(read_n))
+                        read_id = ("@"+str(ID)+"_"+str(read_n)+'\n')
+                        r_output.write(read_id+seq1+'\n'+qual_id+seq2+'\n')
+
                         n += 1
-                        r_output.write(read_id+'\n'+seq+'\n+\n')
-                        seq=''
+                        seq1=''
+                        seq2=''
+                        qual_id=''
 
-                if not (line.startswith('@') or line.startswith('+')):
-                    seq+= line.strip()
+                    else:
+                        pass
 
-            if seq:
+                if line.startswith('+'):
+                    read_n= str(n).zfill(14)
+                    qual_id = ("+"+str(ID)+"_"+str(read_n)+'\n')
+
+                if seq1 and (not line.startswith('+')):
+                    seq2+= line.strip()
+
+                if not (line.startswith('@') or line.startswith('+') or seq2):
+                    seq1+= line.strip()
+
+
+            if seq1:
                 read_n= str(n).zfill(14)
-                read_id = ("@"+str(ID)+"_"+str(read_n))
+                read_id = ("@"+str(ID)+"_"+str(read_n)+'\n')
+                r_output.write(read_id+seq1+'\n'+qual_id+seq2+'\n')
+
                 n += 1
-                r_output.write(read_id+'\n'+seq+'\n+\n')
-                seq=''
+                seq1=''
+                seq2=''
+                qual_id=''
+
+            else:
+                pass
