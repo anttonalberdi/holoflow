@@ -85,7 +85,7 @@ rule assembly_mapping:
         read1="{projectpath}/PPR_03-MappedToReference/{group}_1.fastq",
         read2="{projectpath}/PPR_03-MappedToReference/{group}_2.fastq"
     output:
-        "{projectpath}/MCB_02-Assembly_mapping/{group}.mapped.bam"
+        "{projectpath}/MCB_02-AssemblyMapping/{group}.mapped.bam"
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
@@ -101,7 +101,7 @@ rule assembly_mapping:
 rule protein_prediction_prodigal:
     input:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        mapped_bam="{projectpath}/MCB_02-Assembly_mapping/{group}.mapped.bam" # not necessary
+        mapped_bam="{projectpath}/MCB_02-AssemblyMapping/{group}.mapped.bam" # not necessary
     output:
         genetic_coords="{projectpath}/MCB_02-ProdigalPrediction/{group}.coords.gbk",
         protein_translations="{projectpath}/MCB_02-ProdigalPrediction/{group}.protein_translations.faa"
@@ -119,7 +119,7 @@ rule protein_prediction_prodigal:
 rule depth_table:
     input:
         genetic_coords="{projectpath}/MCB_02-ProdigalPrediction/{group}.coords.gbk",  #not actually necessary here, but used to keep order
-        mapped_bam="{projectpath}/MCB_02-Assembly_mapping/{group}.mapped.bam"
+        mapped_bam="{projectpath}/MCB_02-AssemblyMapping/{group}.mapped.bam"
     output:
         metabat_depth_file="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.depth.txt",
         maxbin_depth_file="{projectpath}/MCB_03-Binning/{group}_maxbin/{group}.depth.txt"
@@ -209,7 +209,7 @@ rule das_tool:
 # rule bin_refinement:
 #     input:
 #         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-#         assembly_map="{projectpath}/MCB_02-Assembly_mapping/{group}.mapped.bam",
+#         assembly_map="{projectpath}/MCB_02-AssemblyMapping/{group}.mapped.bam",
 #         check_dastool="{projectpath}/MCB_04-BinMerging/{group}_DASTool_bins"
 #     output:
 #         directory("{projectpath}/MCB_05-BinRefinement/{group}")

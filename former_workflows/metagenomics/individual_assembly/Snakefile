@@ -83,7 +83,7 @@ rule assembly_mapping:
         read1="{projectpath}/PPR04-MappedToHuman/{sample}_1.fastq",
         read2="{projectpath}/PPR04-MappedToHuman/{sample}_2.fastq"
     output:
-        "{projectpath}/MIB_02-Assembly_mapping/{sample}.mapped.bam"
+        "{projectpath}/MIB_02-AssemblyMapping/{sample}.mapped.bam"
     params:
         threads=expand("{threads}", threads=config['threads'])
     shell:
@@ -112,7 +112,7 @@ rule protein_prediction_prodigal:
 
 rule depth_table:
     input:
-        "{projectpath}/MIB_02-Assembly_mapping/{sample}.mapped.bam"
+        "{projectpath}/MIB_02-AssemblyMapping/{sample}.mapped.bam"
     output:
         metabat_depth_file="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.depth.txt",
         maxbin_depth_file="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.depth.txt"

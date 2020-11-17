@@ -88,7 +88,7 @@ rule assembly_mapping:
         read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
         read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq"
     output:
-        "{projectpath}/MIB_02-Assembly_mapping/{sample}.mapped.bam"
+        "{projectpath}/MIB_02-AssemblyMapping/{sample}.mapped.bam"
     params:
         threads=expand("{threads}", threads=config['threads']),
         sample="{sample}"
@@ -104,7 +104,7 @@ rule assembly_mapping:
 rule protein_prediction_prodigal:
     input:
         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-        mapped_bam="{projectpath}/MIB_02-Assembly_mapping/{sample}.mapped.bam" # not necessary
+        mapped_bam="{projectpath}/MIB_02-AssemblyMapping/{sample}.mapped.bam" # not necessary
     output:
         genetic_coords="{projectpath}/MIB_02-ProdigalPrediction/{sample}.coords.gbk",
         protein_translations="{projectpath}/MIB_02-ProdigalPrediction/{sample}.protein_translations.faa"
@@ -122,7 +122,7 @@ rule protein_prediction_prodigal:
 rule depth_table:
     input:
         genetic_coords="{projectpath}/MIB_02-ProdigalPrediction/{sample}.coords.gbk",  #not actually necessary here, but used to keep order
-        mapped_bam="{projectpath}/MIB_02-Assembly_mapping/{sample}.mapped.bam"
+        mapped_bam="{projectpath}/MIB_02-AssemblyMapping/{sample}.mapped.bam"
     output:
         metabat_depth_file="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.depth.txt",
         maxbin_depth_file="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.depth.txt"
@@ -175,22 +175,21 @@ rule binning_maxbin:
         python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
-# ##
-# # Check binning
-# ##
-# rule check_bins:
-#     input:
-#         bin_table_mxb="{projectpath}/MIB_03-Binning/{sample}.bins_maxbin.txt",
-#         bin_table_mtb="{projectpath}/MIB_03-Binning/{sample}.bins_metabat.txt",
-#         mxb_dir="{projectpath}/MIB_03-Binning/{sample}_maxbin",
-#         mtb_dir="{projectpath}/MIB_03-Binning/{sample}_metabat"
-#     params:
-#         sample="{sample}"
-#     shell:
-#         """
-#         python {rules.get_paths.input.holopath}/bin/holo-check_bins.py -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -mxb {input.mxb_dir} -mtb {input.mtb_dir} -ID {params.sample} -log {rules.get_paths.input.logpath}
-#         """
-#
+##
+# Check binning
+##
+rule check_bins:
+    input:
+        bin_dir="{projectpath}/MIB_03-Binning"
+    output:
+        "{projectpath}/MIB_03-Binning/{sample}_checked_bins"
+    params:
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-check_bins.py -binning_dir {input.bin_dir} -check_file {output} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
 
 
 ##
@@ -200,6 +199,7 @@ rule binning_maxbin:
  #                              Gene prediction step will be skipped if given. (optional)
 rule das_tool:
     input:
+        check_bins="{projectpath}/MIB_03-Binning/{sample}_checked_bins",
         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
         bin_table_mxb="{projectpath}/MIB_03-Binning/{sample}.bins_maxbin.txt",
         bin_table_mtb="{projectpath}/MIB_03-Binning/{sample}.bins_metabat.txt",
@@ -214,7 +214,7 @@ rule das_tool:
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -a {input.assembly} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -a {input.assembly} -check_file {input.check_bins} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -225,7 +225,7 @@ rule das_tool:
 # rule bin_refinement:
 #     input:
 #         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-#         assembly_map="{projectpath}/MIB_02-Assembly_mapping/{sample}.mapped.bam",
+#         assembly_map="{projectpath}/MIB_02-AssemblyMapping/{sample}.mapped.bam",
 #         check_dastool="{projectpath}/MIB_04-BinMerging/{sample}_DASTool_bins"
 #     output:
 #         directory("{projectpath}/MIB_05-BinRefinement/{sample}")
