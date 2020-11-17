@@ -10,6 +10,8 @@ import sys
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-binning_dir', help="binning directory", dest="binning_dir", required=True)
+# parser.add_argument('-check_mtb', help="empty check file", dest="check_mtb", required=True)
+# parser.add_argument('-check_mxb', help="empty check file", dest="check_mxb", required=True)
 parser.add_argument('-check_file', help="empty check file", dest="check_file", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
@@ -17,6 +19,8 @@ args = parser.parse_args()
 
 
 binning_dir=args.binning_dir
+# check_mxb=args.check_mxb
+# check_mtb=args.check_mtb
 check_file=args.check_file
 ID=args.ID
 log=args.log
@@ -24,12 +28,15 @@ log=args.log
 ##############################################
 #################### WRITE TO LOG ##########################
 ##############################################
+# if check_mtb and check_mxb:
+#     os.remove(check_mtb)
+#     os.remove(check_mxb)
+
 
 mtb=str(os.path.join(binning_dir,ID+'_metabat'))
 bt_mtb=str(binning_dir+'/'+ID+'.bins_metabat.txt')
 mxb=str(os.path.join(binning_dir,ID+'_maxbin'))
 bt_mxb=str(binning_dir+'/'+ID+'.bins_maxbin.txt')
-
 
 
     # If only one of the binners produced bins:
@@ -64,7 +71,7 @@ if not (os.path.isfile(bt_mxb)):
     if os.path.exists(bp_e):
         os.rmdir(bp_e)
 
-else:
+if (os.path.isfile(bt_mtb) and os.path.isfile(bt_mxb)):
     os.mknod(str(check_file))
     sys.exit()
 

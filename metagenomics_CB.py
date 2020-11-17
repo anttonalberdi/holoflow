@@ -69,10 +69,6 @@ def in_out_metagenomics(path,in_f):
     input files where snakemake expects to find them if necessary."""
     in_dir = os.path.join(path,"PPR_03-MappedToReference")
 
-    if os.path.exists(in_dir):
-        rmdirCmd='cd '+in_dir+'/.. && rm -rf '+in_dir+' && mkdir '+in_dir+''
-        subprocess.check_call(rmdirCmd,shell=True)
-
     if not os.path.exists(in_dir):
         os.makedirs(in_dir)
 

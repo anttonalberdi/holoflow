@@ -41,7 +41,7 @@ if not glob.glob(str(bb)+"*.fa"):
     try:
 
         metabatCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i '+a+' -a '+d+' -o '+bb+' -m 1500 -t '+t+''
-        subprocess.check_call(metabatCmd, shell=True)
+        subprocess.Popen(metabatCmd, shell=True).wait()
 
             #Fill contig to bin table
         binlist=glob.glob(str(bb)+"*.fa")

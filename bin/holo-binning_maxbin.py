@@ -46,7 +46,7 @@ if not glob.glob(str(bb)+"*.fa"):
 
             # Modify bin names and create contig to bin table
         renamebinsCmd='binlist=$(ls '+bb+'*.fasta | sed "s/.*mxb\.//" | sed "s/\.fasta//") && for bin in $binlist; do bin2=$((10#$bin)) ; mv '+bb+'.${bin}.fasta '+bb+'${bin2}.fa; done'
-        subprocess.check_call(renamebinsCmd, shell=True)
+        subprocess.Popen(renamebinsCmd, shell=True).wait()
 
 
             #Fill contig to bin table
@@ -62,7 +62,6 @@ if not glob.glob(str(bb)+"*.fa"):
                         contig = contig.replace(">", "")
                         bintable.write("{0}\t{1}\r\n".format(contig,binname))
         bintable.close()
-
 
 
     except:

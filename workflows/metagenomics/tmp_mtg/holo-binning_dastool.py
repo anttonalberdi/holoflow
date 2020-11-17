@@ -16,6 +16,7 @@ parser.add_argument('-o', help="output main dir", dest="o", required=True)
 parser.add_argument('-se', help="search engine", dest="se", required=True)
 parser.add_argument('-t', help="threads", dest="t", required=True)
 parser.add_argument('-db', help="dastool database directory", dest="db", required=True)
+parser.add_argument('-check_file', help="empty check file", dest="check_file", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
@@ -28,12 +29,15 @@ o=args.o
 se=args.se
 t=args.t
 db=args.db
+check_file=args.check_file
 ID=args.ID
 log=args.log
 
 
 
 # Run
+if os.path.exists(str(check_file)):
+    os.remove(str(check_file))
 
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
