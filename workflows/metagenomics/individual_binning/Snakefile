@@ -174,22 +174,20 @@ rule binning_maxbin:
         python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
-##
-# Check binning
-##
-rule check_bins:
-    input:
-        bin_dir="{projectpath}/MIB_03-Binning"#,
-        # check_mtb="{projectpath}/MIB_03-Binning/{sample}_metabat_binned",
-        # check_mxb="{projectpath}/MIB_03-Binning/{sample}_maxbin_binned"
-    output:
-        "{projectpath}/MIB_03-Binning/{sample}_checked_bins"
-    params:
-        sample="{sample}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-check_bins.py -binning_dir {imput.bin_dir} -check_file {output} -ID {params.sample} -log {rules.get_paths.input.logpath}
-        """
+# ##
+# # Check binning
+# ##
+# rule check_bins:
+#     input:
+#         bin_dir="{projectpath}/MIB_03-Binning"
+#     output:
+#         "{projectpath}/MIB_03-Binning/{sample}_checked_bins"
+#     params:
+#         sample="{sample}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-check_bins.py -binning_dir {imput.bin_dir} -check_file {output} -ID {params.sample} -log {rules.get_paths.input.logpath}
+#         """
 
 
 
@@ -200,7 +198,6 @@ rule check_bins:
  #                              Gene prediction step will be skipped if given. (optional)
 rule das_tool:
     input:
-        #check_bins="{projectpath}/MIB_03-Binning/{sample}_checked_bins",
         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
         bin_table_mxb="{projectpath}/MIB_03-Binning/{sample}.bins_maxbin.txt",
         bin_table_mtb="{projectpath}/MIB_03-Binning/{sample}.bins_metabat.txt",
