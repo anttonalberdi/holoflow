@@ -53,7 +53,7 @@ rule bin_annotation:
 ##
 rule phylogeny:
     input:
-        annotated_bins="{projectpath}/MDR_02-BinAnnotation/{group}"
+        annotated_bins="{projectpath}/MDR_01-BinDereplication/{group}"
     output:
         directory("{projectpath}/MDR_03-BinPhylogeny/{group}")
     params:

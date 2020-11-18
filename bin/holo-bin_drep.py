@@ -40,7 +40,6 @@ if not (os.path.exists(str(out_dir))):
     # Recover completeness and redundancy from Bin Merging Summary
 
     # Save all bin_path,completeness,redundancy in new .csv file
-
     with open(str(''+out_dir+'/final_bins_Info.csv'),'w+') as bin_data:
         bin_data.write('genome,completeness,contamination\n')
 
