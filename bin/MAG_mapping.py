@@ -5,6 +5,7 @@ import argparse
 import os
 import glob
 import time
+import re
 
 
 #Argument parsing
@@ -26,7 +27,6 @@ log=args.log
 threads=args.threads
 
 
-
 # Run
 if not (os.path.exists(str(out_dir))):
     os.mkdir(str(out_dir))
@@ -34,18 +34,53 @@ if not (os.path.exists(str(out_dir))):
     # Write to log
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as logi:
-        logi.write('\t\t'+current_time+'\tBin Mapping step - '+ID+'\n')
+        logi.write('\t\t'+current_time+'\tMAG Mapping step - '+ID+'\n')
         logi.write('MAGs are being mapped to the original metagenomic read files to assess its coverage.\n\n')
 
 
-    binlist = glob.glob(str(bin_dir)+"/*.fa")
-    for bin in binlist:
-        bin_name=os.path.basename(bin)
-        bin_name = bin_name.replace(".contigs.fa","")
-        lib_file=str(out_dir+'/'+bin_name+'.lib')
+    # Create MAGs file --> competitive mapping for each sample
+    mag_catalogue_file=out_dir+'/'+ID+'_MAG_Catalogue.fa'
 
-        #Create library file
-            # Insertion size between paired reads: 150
-            # Maximum allowed error: 1
-        libCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+bin+' '+fq_dir+'/'+bin_name+'_1.fastq '+fq_dir+'/'+bin_name+'_2.fastq | samtools view -b - | samtools sort - > '+obam+''
-        subprocess.check_call(libCmd, shell=True)
+    if not (os.path.isfile(str(mag_catalogue_file))):
+        with open(mag_catalogue_file,'w+') as magcat:
+
+            maglist = glob.glob(str(bin_dir)+"/*.fa")
+            for mag in maglist:
+                mag_name=os.path.basename(mag)
+                mag_name = mag_name.replace(".contigs.fa","")
+
+                with open(mag,'r') as mag_data:
+                    for line in mag_data.readlines():
+                        if line.startswith('>'):
+                            line=line.replace('>','>'+mag_name+'-')
+                            magcat.write(line)
+                        else:
+                            magcat.write(line)
+
+
+    # Index MAG catalogue file
+    IDXmag_catalogue_file=out_dir+'/'+ID+'_MAG_Catalogue.fa.fai'
+
+    if not (os.path.isfile(str(IDXmag_catalogue_file))):
+        idxsamCmd='module load tools samtools/1.9 && samtools faidx '+mag_catalogue_file+''
+        idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+mag_catalogue_file+''
+
+        subprocess.Popen(idxbwaCmd, shell=True).wait()
+        subprocess.Popen(idxsamCmd, shell=True).wait()
+
+
+    if (os.path.isfile(str(IDXmag_catalogue_file))):
+        readlist = glob.glob(str(fq_dir)+"/*.fastq")
+        samples = list()
+        for file in readlist:
+            read_name=''
+            read_name=os.path.basename(file)
+            read_name = re.sub('_[0-9]\.fastq','',read_name)
+            samples.append(read_name)
+
+        sample_list = set(samples)
+        for sample in sample_list:
+            # Map every sample to mag catalogue file (competitive mapping) - get one bam for every sample
+            out_bam=out_dir+'/'+sample+'.bam'
+            mapbinCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+mag_catalogue_file+' '+fq_dir+'/'+sample+'_1.fastq '+fq_dir+'/'+sample+'_2.fastq | samtools view -b - | samtools sort - > '+out_bam+''
+            subprocess.Popen(mapbinCmd, shell=True).wait()
