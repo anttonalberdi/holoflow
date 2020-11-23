@@ -27,8 +27,20 @@ rule mag_mapping:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-mag_mapping.py -fq_dir {input.read_dir} -bin_dir {input.drep_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-MAG_mapping.py -fq_dir {input.read_dir} -bin_dir {input.drep_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 rule coverage:
-    bedtools genomecov -i A.bam
+    input:
+        mapped_MAGs="{projectpath}/MFS_01-MAGMapping/{group}"
+    output:
+
+    
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py
+         -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """
