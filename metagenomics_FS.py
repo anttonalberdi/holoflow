@@ -1,7 +1,6 @@
 import argparse
 import subprocess
 import os
-import glob
 import sys
 
 ###########################
@@ -20,22 +19,20 @@ in_f=args.input_txt
 path=args.work_dir
 cores=args.threads
 
-
     # retrieve current directory
 file = os.path.dirname(sys.argv[0])
 curr_dir = os.path.abspath(file)
 
 
 if not (args.config_file):
-    config = os.path.join(os.path.abspath(curr_dir),"workflows/metagenomics/final_stats/config.yaml")
+    config = os.path.join(os.path.abspath(curr_dir),"workflows/final_stats/config.yaml")
 else:
     config=args.config_file
 
 if not (args.log):
-    log = os.path.join(path,"Holoflow_final_stats_metagenomics.log")
+    log = os.path.join(path,"Holoflow_final_stats.log")
 else:
     log=args.log
-
 
     # Load dependencies
 loaddepCmd='module unload gcc && module load tools anaconda3/4.4.0'
@@ -57,112 +54,98 @@ with open(str(config), 'w') as config_file:
     dump = yaml.dump(data, config_file)
 
 
+
+
 ###########################
 ## Functions
 ###########################
 
-    ###########################
-    ###### METAGENOMICS FUNCTIONS
 
-def in_out_metagenomics(path,in_f):
+
+    ###########################
+    ###### PREPROCESSING FUNCTIONS
+
+def in_out_final_stats(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
+    # Define input directory and create it if not exists "00-InputData"
     in_dir = os.path.join(path,"MFS_00-InputData")
 
     if not os.path.exists(in_dir):
         os.makedirs(in_dir)
 
     with open(in_f,'r') as in_file:
-        # Define variables
-        group = ''
-        input_groupdir=''
-        coa1_filename=''
-        coa2_filename=''
-        read1_files=''
-        read2_files=''
-        output_files=''
-        final_temp_dir="MCB_04-BinMerging" ######################################################
-        ###################################################################################################
-
         all_lines = in_file.readlines() # Read input.txt lines
         # remove empty lines
         all_lines = map(lambda s: s.strip(), all_lines)
         lines = list(filter(None, list(all_lines)))
-        last_line = lines[-1]
 
-        for dir in lines:
+        # Define variables
+        output_files=''   ##############################################################################################################################
+        final_temp_dir="MFS_"##############################################################################################################################
 
-            if not (dir.startswith('#')):
-                dir = dir.strip('\n').split(' ') # Create a list of each line
-                input_groupdir=str(dir[1])      # current input file path and name
+        for line in lines:
+            ### Skip line if starts with # (comment line)
+            if not (line.startswith('#')):
 
+                line = line.strip('\n').split(' ') # Create a list of each line
+                sample_name=line[0]
+                mtg_reads_dir=line[1]
+                drep_bins_dir=line[2]
 
-                if not (group == dir[0]): # when the group changes, define output files for previous group and finish input
-                    group=str(dir[0])
-
-                    # Generate Snakemake input files
-                    coa1_filename=(str(in_dir)+'/'+str(group)+'_1.fastq')
-                    coa2_filename=(str(in_dir)+'/'+str(group)+'_2.fastq')
-
-                    if not (os.path.exists(coa1_filename) and os.path.exists(coa2_filename)):
-                            # merge all .fastq for final_stats
-                        merge1Cmd='cd '+input_groupdir+' && cat *_1.fastq > '+coa1_filename+''
-                        subprocess.check_call(merge1Cmd, shell=True)
-
-                        merge2Cmd='cd '+input_groupdir+' && cat *_2.fastq > '+coa2_filename+''
-                        subprocess.check_call(merge2Cmd, shell=True)
-                    else:
-                        pass
-
-                    # Define Snakemake output files
-                    output_files+=(path+"/"+final_temp_dir+"/"+group+"_DASTool_bins ")
+                # Define output files based on input.txt
+                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'' ##############################################################################################################################
 
 
+                # Define input dir
+                in1=in_dir+'/'+sample_name+'/metagenomic_reads'
+                # Check if input files already in desired dir
+                if os.path.exists(in1):
+                    pass
+                else:
+                    mvreadsCmd = 'cd '+mtg_reads_dir+' && cp *.fastq '+in1+''
+                    subprocess.Popen(mvreadsCmd, shell=True).wait()
 
-                if (dir == last_line):
-                    group=str(dir[0])
 
-                    # Generate Snakemake input files
-                    coa1_filename=(str(in_dir)+'/'+str(group)+'_1.fastq')
-                    coa2_filename=(str(in_dir)+'/'+str(group)+'_2.fastq')
+                # Define input dir
+                in2=in_dir+'/'+sample_name+'/dereplicated_bins'
+                # Check if input files already in desired dir
+                if os.path.exists(in2):
+                    pass
+                else:
+                    mvbinsCmd = 'cd '+drep_bins_dir+' && cp *.fa '+in2+''
+                    subprocess.Popen(mvbinsCmd, shell=True).wait()
 
-                    if not (os.path.exists(coa1_filename) and os.path.exists(coa2_filename)):
-                            # merge all .fastq for final_stats
-                        merge1Cmd=''+str(for_files)+' > '+coa1_filename+''
-                        subprocess.check_call(merge1Cmd, shell=True)
 
-                        merge2Cmd=''+str(rev_files)+' > '+coa2_filename+''
-                        subprocess.check_call(merge2Cmd, shell=True)
-
-                    # Define Snakemake output files
-                    output_files+=(path+"/"+final_temp_dir+"/"+group+"_DASTool_bins ")
+                # Add stats and bam output files only once per sample
+                # output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ") ##############################################################################################################################
+                # output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
 
         return output_files
 
 
 
-
-def run_metagenomics(in_f, path, config, cores):
-    """Run snakemake on shell"""
+def run_final_stats(in_f, path, config, cores):
+    """Run snakemake on shell, wait for it to finish.
+    Given flag, decide whether keep only last directory."""
 
     # Define output names
-    out_files = in_out_metagenomics(path,in_f)
+    out_files = in_out_final_stats(path,in_f)
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
-    path_snkf = os.path.join(holopath,'workflows/metagenomics/final_stats/Snakefile')
+    path_snkf = os.path.join(holopath,'workflows/final_stats/Snakefile')
 
     # Run snakemake
-    log_file=open(str(log),'w+')
-    log_file.write("Have a nice run!\n\t\tHOLOFOW Metagenomics-Coassembly starting")
+    log_file = open(str(log),'w+')
+    log_file.write("Have a nice run!\n\t\tHOLOFOW Final Stats starting")
     log_file.close()
 
-    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
-    subprocess.check_call(mtg_snk_Cmd, shell=True)
+    final_stats_snk_Cmd = 'module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
+    subprocess.Popen(final_stats_snk_Cmd, shell=True).wait()
 
-    log_file=open(str(log),'a+')
-    log_file.write("\n\t\tHOLOFOW Metagenomics-Coassembly has finished :)")
+    log_file = open(str(log),'a+')
+    log_file.write("\n\t\tHOLOFOW Final Stats has finished :)")
     log_file.close()
-
 
     # Keep temp dirs / remove all
     if args.keep: # If -k, True: keep
@@ -173,7 +156,7 @@ def run_metagenomics(in_f, path, config, cores):
             exist.append(os.path.isfile(file))
 
         if all(exist): # all output files exist
-            rmCmd='cd '+path+' | grep -v '+final_temp_dir+' | xargs rm -rf && mv '+final_temp_dir+' MCB_Holoflow'
+            rmCmd='cd '+path+' | grep -v '+final_temp_dir+' | xargs rm -rf && mv '+final_temp_dir+' MFS_Holoflow'
             subprocess.Popen(rmCmd,shell=True).wait()
 
         else:   # all expected output files don't exist: keep tmp dirs
@@ -183,8 +166,11 @@ def run_metagenomics(in_f, path, config, cores):
 
 
 
+
 ###########################
 #### Workflows running
 ###########################
-# 2    # Metagenomics workflow
-run_metagenomics(in_f, path, config, cores)
+
+
+# 1    # Final Stats workflow
+run_final_stats(in_f, path, config, cores)

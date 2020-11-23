@@ -16,15 +16,16 @@ rule get_paths:
 ##
 #
 ##
-rule :
+rule mag_mapping:
     input:
-        dastool_bin_dir="{projectpath}/MDR_00-InputBins/{group}"
+        drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
+        read_dir="{projectpath}/MFS_00-InputData/{group}/metagenomic_reads"
     output:
-        directory("{projectpath}/MDR_01-BinDereplication/{group}")
+        directory("{projectpath}/MFS_01-MAGMapping/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-mag_mapping.py -fq_dir {input.read_dir} -bin_dir {input.drep_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
