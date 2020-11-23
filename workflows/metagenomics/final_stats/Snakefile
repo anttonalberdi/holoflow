@@ -1,0 +1,30 @@
+# 08.10.20
+# Metagenomics dereplication
+
+rule get_paths:
+    input:
+        holopath=expand("{holopath}", holopath=config['holopath']),
+        logpath=expand("{logpath}", logpath=config['logpath'])
+
+
+
+################################################################################################################
+############################################       METAGENOMICS     ############################################
+################################################################################################################
+
+
+##
+# dRep bin dereplication
+##
+rule drep_bins:
+    input:
+        dastool_bin_dir="{projectpath}/MDR_00-InputBins/{group}"
+    output:
+        directory("{projectpath}/MDR_01-BinDereplication/{group}")
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """
