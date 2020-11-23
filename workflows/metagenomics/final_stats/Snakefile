@@ -14,9 +14,9 @@ rule get_paths:
 
 
 ##
-# dRep bin dereplication
+#
 ##
-rule drep_bins:
+rule :
     input:
         dastool_bin_dir="{projectpath}/MDR_00-InputBins/{group}"
     output:

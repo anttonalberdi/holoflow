@@ -1,3 +1,2 @@
-#SAMPLE_GROUP, INPUT_DIR
-Bats_groupA /home/projects/ku-cbd/people/nurher/Physilia_bats/MIB_04-BinMerging/LZ_GroupA
-Bats_groupB /home/projects/ku-cbd/people/nurher/Physilia_bats/MIB_04-BinMerging/LZ_GroupB
+#SAMPLE_GROUP PREPROCESSING_MTG_READS_DIR DREP_BIN_DIR
+Bats_groupA /home/projects/ku-cbd/people/nurher/Physilia_bats/PPR_03-MappedToReference/final_Stats_test /home/projects/ku-cbd/people/nurher/Physilia_bats/MDR_01-BinDereplication/Bats_groupA/dereplicated_genomes 
