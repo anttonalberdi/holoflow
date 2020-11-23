@@ -1,6 +1,8 @@
 # 08.10.20
 # Metagenomics dereplication
 
+configfile:"/home/projects/ku-cbd/people/nurher//holoflow/workflows/metagenomics/final_stats/config.yaml"
+
 rule get_paths:
     input:
         holopath=expand("{holopath}", holopath=config['holopath']),
@@ -34,13 +36,11 @@ rule coverage:
     input:
         mapped_MAGs="{projectpath}/MFS_01-MAGMapping/{group}"
     output:
-
-    
+        directory("{projectpath}/MFS_02-MAGCoverage/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py
-         -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py -mag_dir {input.mapped_MAGs} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
