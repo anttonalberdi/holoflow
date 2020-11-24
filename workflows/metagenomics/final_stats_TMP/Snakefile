@@ -49,5 +49,17 @@ rule coverage:
         """
 
 ##
-# Create [MAGs x Samples] table of 1. num nucleotides  2. normalized coverage (num nucleotides / len)
+# Extract MAG info
 ##
+rule summary:
+    input:
+        bed_coverages="{projectpath}/MFS_02-MAGCoverage/{group}"
+    output:
+        directory("{projectpath}/MFS_03-MAGSummary/{group}")
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py -bed_dir {input.bed_coverages} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """
