@@ -55,8 +55,8 @@ if not (os.path.exists(str(read1o))):
                 if line.startswith('@'):
                     if seq1:
                         read_n= str(n).zfill(14)
-                        read_id = ("@"+str(ID)+"_"+str(read_n)+'.'+str(i)+'\n')
-                        r_output.write(read_id+seq1+'\n'+qual_id+seq2+'\n')
+                        read_id = ("@"+str(ID)+"_"+str(read_n)+'.'+str(i))
+                        r_output.write(read_id+'\n'+seq1+'\n'+qual_id+'\n'+seq2+'\n')
 
                         n += 1
                         seq1=''
@@ -67,8 +67,7 @@ if not (os.path.exists(str(read1o))):
                         pass
 
                 if line.startswith('+'):
-                    read_n= str(n).zfill(14)
-                    qual_id = ('+\n')
+                    qual_id = ('+')
 
                 if seq1 and (not line.startswith('+')):
                     seq2+= line.strip()
@@ -79,8 +78,9 @@ if not (os.path.exists(str(read1o))):
 
             if seq1:
                 read_n= str(n).zfill(14)
-                read_id = ("@"+str(ID)+"_"+str(read_n)+'.'+str(i)+'\n')
-                r_output.write(read_id+seq1+'\n'+qual_id+seq2+'\n')
+                read_id = ("@"+str(ID)+"_"+str(read_n)+'.'+str(i))
+                r_output.write(read_id+'\n'+seq1+'\n'+qual_id+'\n'+seq2+'\n')
+
 
                 n += 1
                 seq1=''
