@@ -55,7 +55,7 @@ if not (os.path.exists(str(read1o))):
                 if line.startswith('@'):
                     if seq1:
                         read_n= str(n).zfill(14)
-                        read_id = ("@"+str(ID)+"_"+str(read_n)+'.'+i+'\n')
+                        read_id = ("@"+str(ID)+"_"+str(read_n)+'.'+str(i)+'\n')
                         r_output.write(read_id+seq1+'\n'+qual_id+seq2+'\n')
 
                         n += 1
@@ -79,7 +79,7 @@ if not (os.path.exists(str(read1o))):
 
             if seq1:
                 read_n= str(n).zfill(14)
-                read_id = ("@"+str(ID)+"_"+str(read_n)+'.'+i+'\n')
+                read_id = ("@"+str(ID)+"_"+str(read_n)+'.'+str(i)+'\n')
                 r_output.write(read_id+seq1+'\n'+qual_id+seq2+'\n')
 
                 n += 1
