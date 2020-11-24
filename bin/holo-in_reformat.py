@@ -89,3 +89,7 @@ if not (os.path.exists(str(read1o))):
 
             else:
                 pass
+
+if (os.path.isfile(read2o)):
+    os.remove(read1i)
+    os.remove(read2i)
