@@ -47,7 +47,7 @@ if not (os.path.exists(str(out_dir))):
             maglist = glob.glob(str(bin_dir)+"/*.fa")
             for mag in maglist:
                 mag_name=os.path.basename(mag)
-                mag_name = mag_name.replace(".contigs.fa","")
+                mag_name = mag_name.replace(".fa","")
 
                 with open(mag,'r') as mag_data:
                     for line in mag_data.readlines():
