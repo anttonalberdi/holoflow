@@ -108,7 +108,7 @@ def in_out_preprocessing(path,in_f):
                     pass
                 else:
                     #If the file is not in the working directory, transfer it
-                    if os.path.isfile(in_for):
+                    if os.path.isfile(in_for) and not (os.path.isfile(in1)):
                         if in_for.endswith('.gz'):
                             read1Cmd = 'gunzip -c '+in_for+' > '+in1+''
                             subprocess.Popen(read1Cmd, shell=True).wait()
@@ -124,7 +124,7 @@ def in_out_preprocessing(path,in_f):
                     pass
                 else:
                     #If the file is not in the working directory, transfer it
-                    if os.path.isfile(in_rev):
+                    if os.path.isfile(in_rev) and not (os.path.isfile(in2)):
                         if in_for.endswith('.gz'):
                             read2Cmd = 'gunzip -c '+in_rev+' > '+in2+''
                             subprocess.Popen(read2Cmd, shell=True).wait()
