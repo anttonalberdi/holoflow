@@ -3,7 +3,6 @@
 import subprocess
 import argparse
 import time
-import re
 import os
 
 #Argument parsing
