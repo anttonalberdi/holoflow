@@ -3,6 +3,7 @@
 import subprocess
 import argparse
 import time
+import re
 import os
 
 #Argument parsing
@@ -51,9 +52,12 @@ if not (os.path.exists(str(read1o))):
             qual_id=''
 
             for line in r_input:
-
                 if line.startswith('@'):
-                    if seq1:
+
+                    if seq1 and (not seq2)): # If no seq2, means quality string starts either with @
+                        seq2+= line.strip()
+
+                    if seq1 and seq2:
                         read_n= str(n).zfill(14)
                         read_id = ("@"+str(ID)+"_"+str(read_n)+'.'+str(i))
                         r_output.write(read_id+'\n'+seq1+'\n'+qual_id+'\n'+seq2+'\n')
@@ -69,8 +73,9 @@ if not (os.path.exists(str(read1o))):
                 if line.startswith('+'):
                     qual_id = ('+')
 
-                if seq1 and (not line.startswith('+')):
+                if seq1 and (not (line.startswith('+') or line.startswith('@'))):
                     seq2+= line.strip()
+
 
                 if not (line.startswith('@') or line.startswith('+') or seq2):
                     seq1+= line.strip()
@@ -89,6 +94,7 @@ if not (os.path.exists(str(read1o))):
 
             else:
                 pass
+
 
 if (os.path.isfile(read2o)):
     os.remove(read1i)
