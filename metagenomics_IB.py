@@ -93,7 +93,7 @@ def in_out_metagenomics(path,in_f):
                 # Define input file
                 in1=in_dir+'/'+sample_name+'_1.fastq'
                 # Check if input files already in desired dir
-                if os.path.isfile(in1):
+                if os.path.isfile(in1) or os.path.isfile(in1+'.gz'):
                     pass
                 else:
                     #If the file is not in the working directory, transfer it
@@ -109,7 +109,7 @@ def in_out_metagenomics(path,in_f):
                 # Define input file
                 in2=in_dir+'/'+sample_name+'_2.fastq'
                 # Check if input files already in desired dir
-                if os.path.isfile(in2):
+                if os.path.isfile(in2) or os.path.isfile(in2+'.gz'):
                     pass
                 else:
                     #If the file is not in the working directory, transfer it
