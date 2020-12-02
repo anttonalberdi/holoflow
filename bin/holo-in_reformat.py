@@ -53,7 +53,7 @@ if not (os.path.exists(str(read1o))):
             for line in r_input:
                 if line.startswith('@'):
 
-                    if seq1 and (not seq2)): # If no seq2, means quality string starts either with @
+                    if seq1 and not (seq2): # If no seq2, means quality string starts either with @
                         seq2+= line.strip()
 
                     if seq1 and seq2:
