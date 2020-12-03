@@ -171,24 +171,26 @@ rule binning_maxbin:
         python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
-# ##
-# # Binning with Concoct
-# ##
-#
-# rule binning_concoct:
-#     input:
-#         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-#         depth_table="{projectpath}/MCB_03-Binning/{group}_concoct{group}.depth.txt"
-#     output:
-#         bin_table_mxb="{projectpath}/MCB_03-Binning/{group}.bins_concoct.txt"
-#     params:
-#         base_mxb="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.cct",
-#         threads=expand("{threads}", threads=config['threads']),
-#         group="{group}"
-#     shell:
-#         """
-#         python {rules.get_paths.input.holopath}/bin/holo-binning_concoct.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_cct} -bb {params.base_cct} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
-#         """
+##
+# Binning with Concoct
+##
+
+rule binning_concoct:
+    input:
+        assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
+        depth_table="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.depth.txt"
+    output:
+        bin_table_cct="{projectpath}/MCB_03-Binning/{group}.bins_concoct.txt"
+    params:
+        base_cct="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.cct",
+        min_cl_tobin=expand("{min_cl_tobin}", min_cl_tobin=config['min_cl_tobin']),
+        min_rl_tobin=expand("{min_rl_tobin}", min_rl_tobin=config['min_rl_tobin']),
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-binning_concoct.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_cct} -bb {params.base_cct} -l {params.min_cl_tobin} -r {params.min_rl_tobin} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """
 
 
 
