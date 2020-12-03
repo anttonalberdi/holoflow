@@ -53,7 +53,7 @@ if not (os.path.exists(str(read1o))):
             for line in r_input:
                 if line.startswith('@'):
 
-                    if seq1 and not (seq2): # If no seq2, means quality string starts either with @
+                    if seq1 and not (seq2): # If no seq2, means quality string starts with @
                         seq2+= line.strip()
 
                     if seq1 and seq2:
@@ -70,7 +70,15 @@ if not (os.path.exists(str(read1o))):
                         pass
 
                 if line.startswith('+'):
-                    qual_id = ('+')
+
+                    if qual_id: # If qual_id, means quality string starts with +
+                        seq2+=line.strip()
+
+                    if seq1 and (not qual_id): # This is the ID of the quality string
+                        qual_id = ('+')
+
+                    else:
+                        pass
 
                 if seq1 and (not (line.startswith('+') or line.startswith('@'))):
                     seq2+= line.strip()
