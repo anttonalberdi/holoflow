@@ -82,16 +82,15 @@ rule assembly_mapping:
     input:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
         samtools="{projectpath}/MCB_01-Assembly/{group}.fa.fai",
-        read1="{projectpath}/PPR_03-MappedToReference/{group}_1.fastq",
-        read2="{projectpath}/PPR_03-MappedToReference/{group}_2.fastq"
+        fq_path= #####################################################################################################################
     output:
-        "{projectpath}/MCB_02-AssemblyMapping/{group}.mapped.bam"
+        directory("{projectpath}/MCB_02-AssemblyMapping/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-assembly_mapping.py -a {input.assembly} -1 {input.read1} -2 {input.read2} -t {params.threads} -obam {output} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-assembly_mapping.py -a {input.assembly} -fq_path {input.fq_path} -t {params.threads} -obam_b {output} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 ##
@@ -101,7 +100,7 @@ rule assembly_mapping:
 rule protein_prediction_prodigal:
     input:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        mapped_bam="{projectpath}/MCB_02-AssemblyMapping/{group}.mapped.bam" # not necessary
+        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}" # not necessary
     output:
         genetic_coords="{projectpath}/MCB_02-ProdigalPrediction/{group}.coords.gbk",
         protein_translations="{projectpath}/MCB_02-ProdigalPrediction/{group}.protein_translations.faa"
@@ -119,15 +118,16 @@ rule protein_prediction_prodigal:
 rule depth_table:
     input:
         genetic_coords="{projectpath}/MCB_02-ProdigalPrediction/{group}.coords.gbk",  #not actually necessary here, but used to keep order
-        mapped_bam="{projectpath}/MCB_02-AssemblyMapping/{group}.mapped.bam"
+        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}"
     output:
         metabat_depth_file="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.depth.txt",
-        maxbin_depth_file="{projectpath}/MCB_03-Binning/{group}_maxbin/{group}.depth.txt"
+        maxbin_depth_file="{projectpath}/MCB_03-Binning/{group}_maxbin/{group}.depth.txt",
+        concoct_depth_file="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.depth.txt"
     params:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-depth_files.py -a {input.mapped_bam} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-depth_files.py -bam_p {input.mapped_bams} --cct -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -171,9 +171,24 @@ rule binning_maxbin:
         python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
-##
-# Binning with Concoct?
-##
+# ##
+# # Binning with Concoct
+# ##
+#
+# rule binning_concoct:
+#     input:
+#         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
+#         depth_table="{projectpath}/MCB_03-Binning/{group}_concoct{group}.depth.txt"
+#     output:
+#         bin_table_mxb="{projectpath}/MCB_03-Binning/{group}.bins_concoct.txt"
+#     params:
+#         base_mxb="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.cct",
+#         threads=expand("{threads}", threads=config['threads']),
+#         group="{group}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-binning_concoct.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_cct} -bb {params.base_cct} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+#         """
 
 
 

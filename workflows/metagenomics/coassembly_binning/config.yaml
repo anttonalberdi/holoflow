@@ -16,6 +16,14 @@ klist_megahit:
 min_contig_len:
   1000
 
+# binning with concoct parameters
+
+minimum_contig_len_tobin:
+  1500
+
+minimum_read_len_tobin:
+  150 
+
 # bin refinement options
 dastool_db:
   /home/projects/ku-cbd/people/antalb/databases/dastool_db
