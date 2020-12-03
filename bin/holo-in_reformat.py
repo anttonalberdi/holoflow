@@ -58,7 +58,7 @@ if not (os.path.exists(str(read1o))):
 
                     if seq1 and seq2:
                         read_n= str(n).zfill(14)
-                        read_id = ("@"+str(ID)+"_"+str(read_n)+'.'+str(i))
+                        read_id = ("@"+str(ID)+"_"+str(read_n)+'/'+str(i))
                         r_output.write(read_id+'\n'+seq1+'\n'+qual_id+'\n'+seq2+'\n')
 
                         n += 1
@@ -90,7 +90,7 @@ if not (os.path.exists(str(read1o))):
 
             if seq1:
                 read_n= str(n).zfill(14)
-                read_id = ("@"+str(ID)+"_"+str(read_n)+'.'+str(i))
+                read_id = ("@"+str(ID)+"_"+str(read_n)+'/'+str(i))
                 r_output.write(read_id+'\n'+seq1+'\n'+qual_id+'\n'+seq2+'\n')
 
 
