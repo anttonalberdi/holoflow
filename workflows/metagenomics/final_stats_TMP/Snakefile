@@ -37,6 +37,7 @@ rule mag_mapping:
 ##
 rule coverage:
     input:
+        drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
         bam_MAGs="{projectpath}/MFS_01-MAGMapping/{group}"
     output:
         directory("{projectpath}/MFS_02-MAGCoverage/{group}")
@@ -45,7 +46,7 @@ rule coverage:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py -mag_dir {input.bam_MAGs} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py -bam_dir {input.bam_MAGs} -mag_dir {input.drep_bin_dir}  -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 # ##
