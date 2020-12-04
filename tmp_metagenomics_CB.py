@@ -99,7 +99,6 @@ def in_out_metagenomics(path,in_f):
                     read2_files+=line[3]+' '
                     coa_group=line[1]
 
-
                 if coa_group and not (coa_group == line[1]): # When the coa group is defined and changes, define output files for previous group and finish input
 
                     # Finish last coa group
@@ -117,6 +116,11 @@ def in_out_metagenomics(path,in_f):
 
                         merge2Cmd='cat '+read2_files+' > '+coa2_filename+''
                         subprocess.check_call(merge2Cmd, shell=True)
+
+
+##################################################################################################################################################################################################################
+CHECK IF .FASTQ IN PPR_03 - IF NOT, COPY THERE with: PPR_03-MappedToReference/COA_GROUP/.FASTQ FILES
+
 
                     else:
                         pass
@@ -146,6 +150,10 @@ def in_out_metagenomics(path,in_f):
 
                     else:
                         pass
+
+##################################################################################################################################################################################################################
+CHECK IF .FASTQ IN PPR_03 - IF NOT, COPY THERE with: PPR_03-MappedToReference/COA_GROUP/.FASTQ FILES
+
 
 
         return output_files

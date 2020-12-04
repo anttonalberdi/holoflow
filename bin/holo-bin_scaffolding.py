@@ -41,7 +41,7 @@ if not (os.path.exists(str(out_dir))):
     binlist = glob.glob(str(bin_dir)+"/*.fa")
     for bin in binlist:
         bin_name=os.path.basename(bin)
-        bin_name = bin_name.replace(".contigs.fa","")
+        bin_name = bin_name.replace(".fa","")
         lib_file=str(out_dir+'/'+bin_name+'.lib')
 
         #Create library file
@@ -57,7 +57,7 @@ if not (os.path.exists(str(out_dir))):
     #Rearrange outputs
     for bin in binlist:
         bin_name=os.path.basename(bin)
-        bin_name = bin_name.replace(".contigs.fa","")
+        bin_name = bin_name.replace(".fa","")
         faoutpCmd='cp '+out_dir+'/'+bin_name+'/'+bin_name+'.final.scaffolds.fasta '+out_dir+'/../'+bin_name+'.fna'
         subprocess.check_call(faoutpCmd, shell=True)
         infoutCmd='cp '+out_dir+'/'+bin_name+'/'+bin_name+'.summaryfile.txt '+out_dir+'/../'+bin_name+'.info'

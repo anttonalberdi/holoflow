@@ -55,7 +55,7 @@ if not (os.path.exists(str(out_dir))):
                         completeness = line_data[11]
                         redundancy = line_data[12]
 
-                        bin_data.write(os.path.abspath(bin_name+'.contigs.fa')+','+completeness+','+redundancy+'\n')
+                        bin_data.write(os.path.abspath(bin_name+'.fa')+','+completeness+','+redundancy+'\n')
                     else:
                         pass
 
