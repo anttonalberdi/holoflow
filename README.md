@@ -71,12 +71,29 @@ Those lines starting by # won't be considered.
 | Sample1 | /home/Sample1_1.fq | /home/Sample1_2.fq |  
 | Sample2 | /home/Sample2_1.fq | /home/Sample1_2.fq |  
 | Samplen | /home/Samplen_1.fq | /home/Samplen_2.fq |  
+
+
+##### *preprocessing.py*  &  *metagenomics_IB.py*
+
+  1. Sample name.  
+  2. Coassembly group.  
+  3. Original full path/name of **FORWARD** input file.  
+  4. Original full path/name of **REVERSE** input file.  
+   * Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference, the last preprocessing step.
+  
+- Example:
+
+|   |   |   |   |
+| --- | --- | --- | --- |
+| Sample1 | /home/Sample1_1.fq | /home/Sample1_2.fq |  
+| Sample2 | /home/Sample2_1.fq | /home/Sample1_2.fq |  
+| Samplen | /home/Samplen_1.fq | /home/Samplen_2.fq |
   
 
-##### *metagenomics_CB.py* & *metagenomics_DR.py*
+##### *metagenomics_DR.py*
 
   1. Coassembly group or sample group name.  
-  2. Input directory path where all *.fastq* files to coassemble or bins to dereplicate are.
+  2. Input directory path where all *.fa* bins to dereplicate are.
   
 - Example:
 
