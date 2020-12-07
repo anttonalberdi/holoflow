@@ -68,9 +68,10 @@ def in_out_metagenomics(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
     in_dir = os.path.join(path,"PPR_03-MappedToReference")
+    merged_in_dir = os.path.join(path,"MCB_00-MergedData")
 
-    if not os.path.exists(in_dir):
-        os.makedirs(in_dir)
+    if not os.path.exists(merged_in_dir):
+        os.makedirs(merged_in_dir)
 
     with open(in_f,'r') as in_file:
         # Define variables
@@ -101,14 +102,34 @@ def in_out_metagenomics(path,in_f):
 
                 if coa_group and not (coa_group == line[1]): # When the coa group is defined and changes, define output files for previous group and finish input
 
-                    # Finish last coa group
-                    coa1_filename=(str(in_dir)+'/'+str(coa_group)+'_1.fastq')
-                    coa2_filename=(str(in_dir)+'/'+str(coa_group)+'_2.fastq')
-
-                    # Define Snakemake output files
-                    output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_DASTool_bins ")
-
                     # Define Snakemake input files
+                        # If original .fastq not in PPR_03-MappedToReference, copy there - coa group specific for AssemblyMapping
+                    if not os.path.exists(in_dir):
+                        os.makedirs(in_dir)
+                        os.makedirs(in_dir+'/'+coa_group)
+                        cpCmd='cp '+read1_files+' '+read2_files+' '+in_dir+'/'+coa_group+''
+                        subprocess.check_call(cpCmd, shell=True)
+
+                    if os.path.exists(in_dir):
+                        os.makedirs(in_dir+'/'+coa_group)
+                        for file in read1_files:
+                            file=os.path.basename(file)
+                            file2=file.replace('1','2')
+                            file=in_dir+'/'+file
+                            file2=in_dir+'/'+file2
+
+                            if not os.path.isfile(file):
+                                cpCmd='cp '+file+' '+file2+' '+in_dir+'/'+coa_group+''
+                                subprocess.check_call(cpCmd, shell=True)
+                        # If original .fastq  in PPR_03-MappedToReference, move to coa group-specific for AssemblyMapping
+                            if os.path.isfile(file):
+                                mvCmd='mv '+file+' '+file2+' '+in_dir+'/'+coa_group+''
+                                subprocess.check_call(cpCmd, shell=True)
+
+                        # Create merged files
+                    coa1_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_1.fastq')
+                    coa2_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_2.fastq')
+
                     if not (os.path.exists(coa1_filename) and os.path.exists(coa2_filename)):
                             # merge all .fastq for coassembly
                         merge1Cmd='cat '+read1_files+' > '+coa1_filename+''
@@ -117,13 +138,11 @@ def in_out_metagenomics(path,in_f):
                         merge2Cmd='cat '+read2_files+' > '+coa2_filename+''
                         subprocess.check_call(merge2Cmd, shell=True)
 
-
-##################################################################################################################################################################################################################
-CHECK IF .FASTQ IN PPR_03 - IF NOT, COPY THERE with: PPR_03-MappedToReference/COA_GROUP/.FASTQ FILES
-
-
                     else:
                         pass
+
+                    # Define Snakemake output files
+                    output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_DASTool_bins ")
 
                     # Define new coa group
                     coa_group=line[1]
@@ -132,14 +151,35 @@ CHECK IF .FASTQ IN PPR_03 - IF NOT, COPY THERE with: PPR_03-MappedToReference/CO
 
 
                 if line == last_line:
-                    # Finish last coa group
-                    coa1_filename=(str(in_dir)+'/'+str(coa_group)+'_1.fastq')
-                    coa2_filename=(str(in_dir)+'/'+str(coa_group)+'_2.fastq')
-
-                    # Define Snakemake output files
-                    output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_DASTool_bins ")
 
                     # Define Snakemake input files
+                        # If original .fastq not in PPR_03-MappedToReference, copy there - coa group specific for AssemblyMapping
+                    if not os.path.exists(in_dir):
+                        os.makedirs(in_dir)
+                        os.makedirs(in_dir+'/'+coa_group)
+                        cpCmd='cp '+read1_files+' '+read2_files+' '+in_dir+'/'+coa_group+''
+                        subprocess.check_call(cpCmd, shell=True)
+
+                    if os.path.exists(in_dir):
+                        os.makedirs(in_dir+'/'+coa_group)
+                        for file in read1_files:
+                            file=os.path.basename(file)
+                            file2=file.replace('1','2')
+                            file=in_dir+'/'+file
+                            file2=in_dir+'/'+file2
+
+                            if not os.path.isfile(file):
+                                cpCmd='cp '+file+' '+file2+' '+in_dir+'/'+coa_group+''
+                                subprocess.check_call(cpCmd, shell=True)
+                        # If original .fastq  in PPR_03-MappedToReference, move to coa group-specific for AssemblyMapping
+                            if os.path.isfile(file):
+                                mvCmd='mv '+file+' '+file2+' '+in_dir+'/'+coa_group+''
+                                subprocess.check_call(cpCmd, shell=True)
+
+                        # Create merged files
+                    coa1_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_1.fastq')
+                    coa2_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_2.fastq')
+
                     if not (os.path.exists(coa1_filename) and os.path.exists(coa2_filename)):
                             # merge all .fastq for coassembly
                         merge1Cmd='cat '+read1_files+' > '+coa1_filename+''
@@ -150,11 +190,6 @@ CHECK IF .FASTQ IN PPR_03 - IF NOT, COPY THERE with: PPR_03-MappedToReference/CO
 
                     else:
                         pass
-
-##################################################################################################################################################################################################################
-CHECK IF .FASTQ IN PPR_03 - IF NOT, COPY THERE with: PPR_03-MappedToReference/COA_GROUP/.FASTQ FILES
-
-
 
         return output_files
 
