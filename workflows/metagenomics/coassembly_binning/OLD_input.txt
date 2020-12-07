@@ -1,3 +1,0 @@
-#SAMPLE_GROUP, INPUT_DIR
-Bats_coa_groupA /home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/kb
-Bats_coa_groupB /home/projects/ku-cbd/people/nurher/Physilia_bats/rawdata_P/lz

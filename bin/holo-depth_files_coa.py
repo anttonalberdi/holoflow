@@ -19,6 +19,7 @@ args = parser.parse_args()
 bam_p=args.bam_p
 mtb=args.mtb
 mxb=args.mxb
+cct=args.cct
 ID=args.ID
 log=args.log
 
@@ -36,14 +37,14 @@ with open(str(log),'a+') as log:
 # Metabat
 if not (os.path.isfile(mtb)):
     metabatCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth '+mtb+' '+bam_p+'/*.bam'
-    subprocess.check_call(metabatCmd, shell=True)
+    #subprocess.check_call(metabatCmd, shell=True)
 
 # Concoct
 if not (os.path.isfile(cct)):
-    concoctCmd='cat '+mtb+' | awk -v OFS="'\t'" ""{print $1,$4,$6,$8}"" > '+cct+''
+    concoctCmd='cat '+mtb+' | cut -f1,4,6 > '+cct+''
     subprocess.Popen(concoctCmd, shell=True).wait()
 
 
 # Maxbin
-maxbinCmd='cp '+mtb+' '+mxb+''
+#maxbinCmd='cp '+mtb+' '+mxb+''
 subprocess.check_call(maxbinCmd, shell=True)
