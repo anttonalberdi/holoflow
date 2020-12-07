@@ -16,7 +16,7 @@ parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
 
 
-bam=args.bam
+bam_p=args.bam_p
 mtb=args.mtb
 mxb=args.mxb
 ID=args.ID
