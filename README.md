@@ -73,7 +73,7 @@ Those lines starting by # won't be considered.
 | Samplen | /home/Samplen_1.fq | /home/Samplen_2.fq |  
 
 
-##### *preprocessing.py*  &  *metagenomics_IB.py*
+##### *metagenomics_CB.py*
 
   1. Sample name.  
   2. Coassembly group.  
@@ -85,9 +85,9 @@ Those lines starting by # won't be considered.
 
 |   |   |   |   |
 | --- | --- | --- | --- |
-| Sample1 | /home/Sample1_1.fq | /home/Sample1_2.fq |  
-| Sample2 | /home/Sample2_1.fq | /home/Sample1_2.fq |  
-| Samplen | /home/Samplen_1.fq | /home/Samplen_2.fq |
+| Sample1 | CoassemblyGroup1 | /home/Sample1_1.fq | /home/Sample1_2.fq |  
+| Sample2 | CoassemblyGroup2 | /home/Sample2_1.fq | /home/Sample1_2.fq |  
+| Samplen | CoassemblyGroup3 | /home/Samplen_1.fq | /home/Samplen_2.fq |
   
 
 ##### *metagenomics_DR.py*
