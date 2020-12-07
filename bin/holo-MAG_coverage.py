@@ -79,6 +79,7 @@ if not (os.path.exists(str(out_dir))):
             # Sum coverage and length for all contigs in mag
             cov_data=cov_data.astype(np.float)
             cov_data=np.sum(cov_data,axis=0)
+            cov_data=cov_data.round(decimals=4)
             cov_data=cov_data.tolist()
 
             # Write coverage for given MAG
