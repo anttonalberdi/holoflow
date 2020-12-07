@@ -12,19 +12,15 @@ parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-binning_dir', help="binning directory", dest="binning_dir", required=True)
 parser.add_argument('-check_mtb', help="empty check file", dest="check_mtb", required=True)
 parser.add_argument('-check_mxb', help="empty check file", dest="check_mxb", required=True)
-parser.add_argument('-check_file', help="empty check file", dest="check_file", required=True)
+parser.add_argument('--check_cct', help="concoct check if empty", dest="check_cct")
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
-
-parser.add_argument('--check_cct', help="concoct check if empty", dest="check_cct")
-
 args = parser.parse_args()
 
 
 binning_dir=args.binning_dir
 check_mxb=args.check_mxb
 check_mtb=args.check_mtb
-check_file=args.check_file
 ID=args.ID
 log=args.log
 

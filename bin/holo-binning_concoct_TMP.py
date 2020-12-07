@@ -15,6 +15,7 @@ parser.add_argument('-bt', help="bin table output", dest="bt", required=True)
 parser.add_argument('-t', help="threads", dest="t", required=True)
 parser.add_argument('-l', help="minimum contig length", dest="l", required=True)
 parser.add_argument('-r', help="minimum contig length", dest="r", required=True)
+parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
 
@@ -26,6 +27,7 @@ bt=args.bt
 t=args.t
 l=args.l
 r=args.r
+ID=args.ID
 log=args.log
 
 # Run
