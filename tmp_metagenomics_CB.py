@@ -1,6 +1,7 @@
 import argparse
 import subprocess
 import os
+import re
 import glob
 import sys
 
@@ -103,28 +104,71 @@ def in_out_metagenomics(path,in_f):
                 if coa_group and not (coa_group == line[1]): # When the coa group is defined and changes, define output files for previous group and finish input
 
                     # Define Snakemake input files
-                        # If original .fastq not in PPR_03-MappedToReference, copy there - coa group specific for AssemblyMapping
+                        # If PPR_03-MappedToReference not exists, copy there - coa group specific for AssemblyMapping
                     if not os.path.exists(in_dir):
                         os.makedirs(in_dir)
                         os.makedirs(in_dir+'/'+coa_group)
-                        cpCmd='cp '+read1_files+' '+read2_files+' '+in_dir+'/'+coa_group+''
-                        subprocess.check_call(cpCmd, shell=True)
 
+                        ### READ1
+                        for file1 in read1_files:
+                            file1=os.path.basename(file1)
+                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file1) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
+
+                            read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
+                            cp1Cmd='cp '+read1_files+' '+read1+''
+                            subprocess.check_call(cp1Cmd, shell=True)
+
+                        ### READ2
+                        for file2 in read2_files:
+                            file2=os.path.basename(file2)
+                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file2) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
+
+                            read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
+                            cp2Cmd='cp '+read2_files+' '+read2+''
+                            subprocess.check_call(cp2Cmd, shell=True)
+
+                            # If PPR_03-MappedToReference  exists
                     if os.path.exists(in_dir):
                         os.makedirs(in_dir+'/'+coa_group)
-                        for file in read1_files:
-                            file=os.path.basename(file)
-                            file2=file.replace('1','2')
-                            file=in_dir+'/'+file
-                            file2=in_dir+'/'+file2
 
-                            if not os.path.isfile(file):
-                                cpCmd='cp '+file+' '+file2+' '+in_dir+'/'+coa_group+''
-                                subprocess.check_call(cpCmd, shell=True)
+                        ### READ1
+                        for file in read1_files:
+                            file1=os.path.basename(file)
+                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file1)
+
+                            # How the reads should look like coming from preprocessing
+                            read1=in_dir+'/'+sampleID+'_1.fastq'
+                            # How reads will look like for coassembly
+                            coa_read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
+
+                        # If original .fastq not in PPR_03-MappedToReference
+                            if not os.path.isfile(read1):
+                                cp1Cmd='cp '+file+' '+coa_read1+''
+                                subprocess.check_call(cp1Cmd, shell=True)
                         # If original .fastq  in PPR_03-MappedToReference, move to coa group-specific for AssemblyMapping
-                            if os.path.isfile(file):
-                                mvCmd='mv '+file+' '+file2+' '+in_dir+'/'+coa_group+''
-                                subprocess.check_call(cpCmd, shell=True)
+                            if os.path.isfile(read1):
+                                mv1Cmd='mv '+read1+' '+coaread1+''
+                                subprocess.check_call(mv1Cmd, shell=True)
+
+                        ### READ2
+                        for file in read2_files:
+                            file2=os.path.basename(file)
+                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file2)
+
+                            # How the reads should look like coming from preprocessing
+                            read2=in_dir+'/'+sampleID+'_2.fastq'
+                            # How reads will look like for coassembly
+                            coa_read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
+
+                        # If original .fastq not in PPR_03-MappedToReference
+                            if not os.path.isfile(read2):
+                                cp2Cmd='cp '+file+' '+coa_read2+''
+                                subprocess.check_call(cp2Cmd, shell=True)
+                        # If original .fastq  in PPR_03-MappedToReference, move to coa group-specific for AssemblyMapping
+                            if os.path.isfile(read2):
+                                mv2Cmd='mv '+read2+' '+coaread2+''
+                                subprocess.check_call(mv2Cmd, shell=True)
+
 
                         # Create merged files
                     coa1_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_1.fastq')
@@ -153,28 +197,71 @@ def in_out_metagenomics(path,in_f):
                 if line == last_line:
 
                     # Define Snakemake input files
-                        # If original .fastq not in PPR_03-MappedToReference, copy there - coa group specific for AssemblyMapping
-                    if not os.path.exists(in_dir):
+                        # If PPR_03-MappedToReference not exists, copy there - coa group specific for AssemblyMapping
+                        if not os.path.exists(in_dir):
                         os.makedirs(in_dir)
                         os.makedirs(in_dir+'/'+coa_group)
-                        cpCmd='cp '+read1_files+' '+read2_files+' '+in_dir+'/'+coa_group+''
-                        subprocess.check_call(cpCmd, shell=True)
 
+                        ### READ1
+                        for file1 in read1_files:
+                            file1=os.path.basename(file1)
+                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file1) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
+
+                            read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
+                            cp1Cmd='cp '+read1_files+' '+read1+''
+                            subprocess.check_call(cp1Cmd, shell=True)
+
+                        ### READ2
+                        for file2 in read2_files:
+                            file2=os.path.basename(file2)
+                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file2) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
+
+                            read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
+                            cp2Cmd='cp '+read2_files+' '+read2+''
+                            subprocess.check_call(cp2Cmd, shell=True)
+
+                            # If PPR_03-MappedToReference  exists
                     if os.path.exists(in_dir):
                         os.makedirs(in_dir+'/'+coa_group)
-                        for file in read1_files:
-                            file=os.path.basename(file)
-                            file2=file.replace('1','2')
-                            file=in_dir+'/'+file
-                            file2=in_dir+'/'+file2
 
-                            if not os.path.isfile(file):
-                                cpCmd='cp '+file+' '+file2+' '+in_dir+'/'+coa_group+''
-                                subprocess.check_call(cpCmd, shell=True)
+                        ### READ1
+                        for file in read1_files:
+                            file1=os.path.basename(file)
+                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file1)
+
+                            # How the reads should look like coming from preprocessing
+                            read1=in_dir+'/'+sampleID+'_1.fastq'
+                            # How reads will look like for coassembly
+                            coa_read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
+
+                        # If original .fastq not in PPR_03-MappedToReference
+                            if not os.path.isfile(read1):
+                                cp1Cmd='cp '+file+' '+coa_read1+''
+                                subprocess.check_call(cp1Cmd, shell=True)
                         # If original .fastq  in PPR_03-MappedToReference, move to coa group-specific for AssemblyMapping
-                            if os.path.isfile(file):
-                                mvCmd='mv '+file+' '+file2+' '+in_dir+'/'+coa_group+''
-                                subprocess.check_call(cpCmd, shell=True)
+                            if os.path.isfile(read1):
+                                mv1Cmd='mv '+read1+' '+coaread1+''
+                                subprocess.check_call(mv1Cmd, shell=True)
+
+                        ### READ2
+                        for file in read2_files:
+                            file2=os.path.basename(file)
+                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file2)
+
+                            # How the reads should look like coming from preprocessing
+                            read2=in_dir+'/'+sampleID+'_2.fastq'
+                            # How reads will look like for coassembly
+                            coa_read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
+
+                        # If original .fastq not in PPR_03-MappedToReference
+                            if not os.path.isfile(read2):
+                                cp2Cmd='cp '+file+' '+coa_read2+''
+                                subprocess.check_call(cp2Cmd, shell=True)
+                        # If original .fastq  in PPR_03-MappedToReference, move to coa group-specific for AssemblyMapping
+                            if os.path.isfile(read2):
+                                mv2Cmd='mv '+read2+' '+coaread2+''
+                                subprocess.check_call(mv2Cmd, shell=True)
+
 
                         # Create merged files
                     coa1_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_1.fastq')
@@ -190,6 +277,9 @@ def in_out_metagenomics(path,in_f):
 
                     else:
                         pass
+
+                    # Define Snakemake output files
+                    output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_DASTool_bins ")
 
         return output_files
 
