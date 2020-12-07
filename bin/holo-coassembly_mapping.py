@@ -38,15 +38,15 @@ with open(str(log),'a+') as log:
 
 # Get read1 and read2 paths
 
-reads1=glob.glob(fq_path+'/*_1.f*')
+reads1=glob.glob(fq_path+'/*_1.fastq')
 
-for read1 in reads:
-    read1=os.path.basename(read1)
-    sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',read1) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
+for read1 in reads1:
+    sampleID=os.path.basename(read1)
+    sampleID=sampleID.replace('_1.fastq','')
 
+    read2=fq_path+'/'+sampleID+'/_2.fastq'
     obam=obam_b+'/'+sampleID+'.mapped.bam'
-    read2= read1.replace('1','2')
 
     if not os.path.exists(str(obam)):
-        mappingCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+a+' '+fq_path+'/'+read1+' '+fq_path+'/'+read2+' | samtools view -b - | samtools sort -T '+sampleID+' -o '+obam+''
+        mappingCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+a+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+sampleID+' -o '+obam+''
         subprocess.check_call(mappingCmd, shell=True)

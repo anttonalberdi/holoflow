@@ -42,7 +42,7 @@ if not (os.path.isfile(mtb)):
 if args.cct:
     cct = mtb
     cct = cct.replace('maxbin','concoct')
-    concoctCmd='cat '+mtb+' | awk -v OFS="'\t'" "'{print $1,$4,$6,$8}'" > '+cct+''
+    concoctCmd='cat '+mtb+' | awk -v OFS="'\t'" ""{print $1,$4,$6,$8}"" > '+cct+''
     subprocess.Popen(concoctCmd, shell=True).wait()
 
 else:
