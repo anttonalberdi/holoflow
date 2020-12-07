@@ -1,0 +1,28 @@
+
+# assembly options
+threads:
+  40
+
+memory:
+  100
+
+assembler:
+  spades
+
+klist_megahit:
+  "21,29,39,59,79,99,119,141"
+
+klist_spades:
+  "21,29,39,59,79,99,119"
+
+# reformat assembly options
+min_contig_len:
+  1000
+
+# bin refinement options
+dastool_db:
+  /home/projects/ku-cbd/people/antalb/databases/dastool_db
+
+
+search_eng:
+  diamond

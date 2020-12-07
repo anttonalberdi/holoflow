@@ -174,6 +174,21 @@ rule binning_maxbin:
         python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
+##
+# Check binning
+##
+rule check_bins:
+    input:
+        bin_dir="{projectpath}/MIB_03-Binning"
+    output:
+        "{projectpath}/MIB_03-Binning/{sample}_checked_bins"
+    params:
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-check_bins.py -binning_dir {imput.bin_dir} -check_file {output} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
 
 
 ##
@@ -183,9 +198,8 @@ rule binning_maxbin:
  #                              Gene prediction step will be skipped if given. (optional)
 rule das_tool:
     input:
+        checked_bins="{projectpath}/MIB_03-Binning/{sample}_checked_bins",
         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-        bin_table_mxb="{projectpath}/MIB_03-Binning/{sample}.bins_maxbin.txt",
-        bin_table_mtb="{projectpath}/MIB_03-Binning/{sample}.bins_metabat.txt",
         pproteins="{projectpath}/MIB_02-ProdigalPrediction/{sample}.protein_translations.faa"
     output:
         directory("{projectpath}/MIB_04-BinMerging/{sample}_DASTool_bins")
@@ -194,10 +208,12 @@ rule das_tool:
         search_eng=expand("{search_eng}", search_eng=config['search_eng']),
         dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db']),
         dastool_dir="{projectpath}/MIB_04-BinMerging/{sample}",
+        bin_table_mxb="{projectpath}/MIB_03-Binning/{sample}.bins_maxbin.txt",
+        bin_table_mtb="{projectpath}/MIB_03-Binning/{sample}.bins_metabat.txt",
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -a {input.assembly} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -cb {input.checked_bins} -a {input.assembly} -bt_mtb {params.bin_table_mtb} -bt_mxb {params.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 

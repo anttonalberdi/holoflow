@@ -62,3 +62,14 @@ if not glob.glob(str(bb)+"*.fa"):
                     contig = contig.replace(">", "")
                     bintable.write("{0}\t{1}\r\n".format(contig,binname))
     bintable.close()
+
+
+
+# check
+    if binlist: # if bin list not empty, which means bin table exists
+        with open(bb+'_checked_bins','w+') as check:
+            check.write('True concoct')
+
+    else:
+        with open(bb+'_checked_bins','w+') as check:
+            check.write('False concoct')
