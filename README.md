@@ -79,7 +79,7 @@ Those lines starting by # won't be considered.
   2. Coassembly group.  
   3. Original full path/name of **FORWARD** input file.  
   4. Original full path/name of **REVERSE** input file.  
-   * Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference, the last preprocessing step.
+Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference, the last preprocessing step.
   
 - Example:
 
@@ -124,9 +124,9 @@ Those lines starting by # won't be considered.
 
 #### Metagenomics - Individual Assembly & Coassembly
 - *Snakefile* - which contains rules for:
-  1. Metagenomic assembly using **metaSpades** or **megahit**
+  1. Metagenomic assembly using **megahit**. In Individual Assembly also **metaSpades** available.  
   2. Read mapping to assembly using **bwa mem** 
-  3. Contig binning using **Metabat**, **MaxBin** (and **Concoct** #### NOT YET)
+  3. Contig binning using **Metabat**, **MaxBin**. In Coassembly also binning by **Concoct**.  
   4. Binner result integration using **DasTool** 
   
 - Config file *config.yaml*, in which the user may be interested to customise:
@@ -137,11 +137,8 @@ Those lines starting by # won't be considered.
 #### Metagenomics - Dereplication
 - *Snakefile* - which contains rules for:
   1. Bin Dereplication using **dRep**
-  2. Bin assembly improvement (contig elongation and scaffolding) using SSPACE. ##### UNDER CONSTRUCTION
-  3. Phylogenetic analysis and taxonomic assignation ##### UNDER CONSTRUCTION 
-  
-- Config file *config.yaml*, in which the user may be interested to customise:
-  1. Desired contig scaffolding or not, by setting SSPACE *True/False*
+  2. Bin Gene Annotation with **Prokka**
+  3. Bin Taxonomic Classification with **GTDB-Tk**
 
 
 
