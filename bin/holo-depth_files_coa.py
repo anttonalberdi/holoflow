@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-bam_p', help="path to bam files", dest="bam_p", required=True)
 parser.add_argument('-mtb', help="metabat depth file", dest="mtb", required=True)
 parser.add_argument('-mxb', help="maxbin depth file", dest="mxb", required=True)
-parser.add_argument('--cct', help="concoct depth file to be generated", dest="cct", action='store_true')
+parser.add_argument('-cct', help="concoct depth file ", dest="cct", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
@@ -39,14 +39,10 @@ if not (os.path.isfile(mtb)):
     subprocess.check_call(metabatCmd, shell=True)
 
 # Concoct
-if args.cct:
-    cct = mtb
-    cct = cct.replace('maxbin','concoct')
+if not (os.path.isfile(cct)):
     concoctCmd='cat '+mtb+' | awk -v OFS="'\t'" ""{print $1,$4,$6,$8}"" > '+cct+''
     subprocess.Popen(concoctCmd, shell=True).wait()
 
-else:
-    pass
 
 # Maxbin
 maxbinCmd='cp '+mtb+' '+mxb+''

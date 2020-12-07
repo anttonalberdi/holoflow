@@ -11,6 +11,7 @@ parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-a', help="assembly file", dest="a", required=True)
 parser.add_argument('-bt_mtb', help="metabat bin table", dest="bt_mtb", required=True)
 parser.add_argument('-bt_mxb', help="maxbin bin table", dest="bt_mxb", required=True)
+parser.add_argument('--bt_cct', help="concoct bin table", dest="bt_cct")
 parser.add_argument('-p', help="prodigal predicted proteins", dest="p", required=True)
 parser.add_argument('-o', help="output main dir", dest="o", required=True)
 parser.add_argument('-se', help="search engine", dest="se", required=True)
@@ -42,30 +43,70 @@ with open(str(log),'a+') as logi:
     logi.write('The binning results from MaxBin and Metabat2 are integrated by DASTool to produce one only non-redundant\nset of bins between them.\n\n')
 
 
-dastoolDependencies='module unload maxbin/2.2.7 fraggenescan/1.31 perl/5.20.2 && module load tools gcc/5.4.0 intel/perflibs/2018 R/3.6.1 ruby/2.6.3 pullseq/1.0.2 perl/5.24.0 ncbi-blast/2.6.0+ prodigal/2.6.3 das_tool/1.1.1 diamond/0.9.24 usearch/11.0.667'
-dastoolCmd=''+dastoolDependencies+' && DAS_Tool -i '+bt_mxb+','+bt_mtb+' -c '+a+' -o '+o+' --proteins '+p+' -l maxbin,metabat --search_engine '+se+' -t '+t+' --db_directory '+db+' --write_bins 1'
-subprocess.check_call(dastoolCmd, shell=True)
+# Coassembly
+if args.bt_cct:
+    bt_cct=args.bt_cct
+
+    dastoolDependencies='module unload maxbin/2.2.7 fraggenescan/1.31 perl/5.20.2 && module load tools gcc/5.4.0 intel/perflibs/2018 R/3.6.1 ruby/2.6.3 pullseq/1.0.2 perl/5.24.0 ncbi-blast/2.6.0+ prodigal/2.6.3 das_tool/1.1.1 diamond/0.9.24 usearch/11.0.667'
+    dastoolCmd=''+dastoolDependencies+' && DAS_Tool -i '+bt_cct+','+bt_mxb+','+bt_mtb+' -c '+a+' -o '+o+' --proteins '+p+' -l concoct,maxbin,metabat --search_engine '+se+' -t '+t+' --db_directory '+db+' --write_bins 1'
+    subprocess.check_call(dastoolCmd, shell=True)
 
 
-# Move definitive bins to final directory
-binfiles = glob.glob(os.path.join(str(o),'*.fa'))
-for b in binfiles:
-    shutil.move(b, str(''+o+'.bin'))
+    # Move definitive bins to final directory
+    binfiles = glob.glob(os.path.join(str(o),'*.fa'))
+    for b in binfiles:
+        shutil.move(b, str(''+o+'.bin'))
 
 
-print (str(o+'_maxbin.eval'))
-if os.path.exists(str(o+'_maxbin.eval')):
-    # Add relevant info to log
-    with open(str(log),'a+') as logf:
+    print (str(o+'_maxbin.eval'))
+    if os.path.exists(str(o+'_maxbin.eval')):
+        # Add relevant info to log
+        with open(str(log),'a+') as logf:
 
-        logf.write('\t\tDASTool MaxBin bins evaluation - ID '+ID+'\n\n')
-        with open(str(o+'_maxbin.eval'),'r') as mxb_eval:
-            logf.write(''+mxb_eval.read()+'\n\n\n')
+            logf.write('\t\tDASTool MaxBin bins evaluation - ID '+ID+'\n\n')
+            with open(str(o+'_maxbin.eval'),'r') as mxb_eval:
+                logf.write(''+mxb_eval.read()+'\n\n\n')
 
-        logf.write('\t\tDASTool Metabat2 bins evaluation - ID '+ID+'\n\n')
-        with open(str(o+'_metabat.eval'),'r') as mtb_eval:
-            logf.write(''+mtb_eval.read()+'\n\n\n')
+            logf.write('\t\tDASTool Metabat2 bins evaluation - ID '+ID+'\n\n')
+            with open(str(o+'_metabat.eval'),'r') as mtb_eval:
+                logf.write(''+mtb_eval.read()+'\n\n\n')
 
-        logf.write('\t\tDASTool Bin Merging Summary - ID '+ID+'\n\n')
-        with open(str(o+'_DASTool_summary.txt'),'r') as summary:
-            logf.write(''+summary.read()+'\n\n\n\n')
+            logf.write('\t\tDASTool Concoct bins evaluation - ID '+ID+'\n\n')
+            with open(str(o+'_concoct.eval'),'r') as cct_eval:
+                logf.write(''+cct_eval.read()+'\n\n\n')
+
+            logf.write('\t\tDASTool Bin Merging Summary - ID '+ID+'\n\n')
+            with open(str(o+'_DASTool_summary.txt'),'r') as summary:
+                logf.write(''+summary.read()+'\n\n\n\n')
+
+
+
+else: # Individual assembly and binning - only maxbin and metabat
+
+    dastoolDependencies='module unload maxbin/2.2.7 fraggenescan/1.31 perl/5.20.2 && module load tools gcc/5.4.0 intel/perflibs/2018 R/3.6.1 ruby/2.6.3 pullseq/1.0.2 perl/5.24.0 ncbi-blast/2.6.0+ prodigal/2.6.3 das_tool/1.1.1 diamond/0.9.24 usearch/11.0.667'
+    dastoolCmd=''+dastoolDependencies+' && DAS_Tool -i '+bt_mxb+','+bt_mtb+' -c '+a+' -o '+o+' --proteins '+p+' -l maxbin,metabat --search_engine '+se+' -t '+t+' --db_directory '+db+' --write_bins 1'
+    subprocess.check_call(dastoolCmd, shell=True)
+
+
+    # Move definitive bins to final directory
+    binfiles = glob.glob(os.path.join(str(o),'*.fa'))
+    for b in binfiles:
+        shutil.move(b, str(''+o+'.bin'))
+
+
+    print (str(o+'_maxbin.eval'))
+    if os.path.exists(str(o+'_maxbin.eval')):
+        # Add relevant info to log
+        with open(str(log),'a+') as logf:
+
+            logf.write('\t\tDASTool MaxBin bins evaluation - ID '+ID+'\n\n')
+            with open(str(o+'_maxbin.eval'),'r') as mxb_eval:
+                logf.write(''+mxb_eval.read()+'\n\n\n')
+
+            logf.write('\t\tDASTool Metabat2 bins evaluation - ID '+ID+'\n\n')
+            with open(str(o+'_metabat.eval'),'r') as mtb_eval:
+                logf.write(''+mtb_eval.read()+'\n\n\n')
+
+            logf.write('\t\tDASTool Bin Merging Summary - ID '+ID+'\n\n')
+            with open(str(o+'_DASTool_summary.txt'),'r') as summary:
+                logf.write(''+summary.read()+'\n\n\n\n')
