@@ -35,3 +35,7 @@ with open(str(log),'a+') as log:
 if not (os.path.isfile(mtb)):
     metabatCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth '+mtb+' '+bam+''
     subprocess.check_call(metabatCmd, shell=True)
+
+# Maxbin
+maxbinCmd='cp '+mtb+' '+mxb+''
+subprocess.check_call(maxbinCmd, shell=True)

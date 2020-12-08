@@ -46,5 +46,5 @@ if not (os.path.isfile(cct)):
 
 
 # Maxbin
-#maxbinCmd='cp '+mtb+' '+mxb+''
+maxbinCmd='cp '+mtb+' '+mxb+''
 subprocess.check_call(maxbinCmd, shell=True)

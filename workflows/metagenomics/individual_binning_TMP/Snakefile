@@ -130,7 +130,7 @@ rule depth_table:
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-depth_files.py -a {input.mapped_bam} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-depth_files.py -bam {input.mapped_bam} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -151,7 +151,7 @@ rule binning_metabat:
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_metabat_TMP.py -a {input.assembly} -d {input.depth_table} -bt {params.bin_table_mtb}  -bb {params.base_mtb} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_metabat_TMP.py -a {input.assembly} -d {input.depth_table} -bt {params.bin_table_mtb} -bb {params.base_mtb} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -183,13 +183,13 @@ rule check_bins:
         check_mxb="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.mxb_checked_bins",
         check_mtb="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.mtb_checked_bins",
     output:
-        "{projectpath}/MIB_03-Binning/{sample}_checked_bins"
+        "{projectpath}/MIB_03-Binning/{sample}_checked_bins.txt"
     params:
         binning_dir="{projectpath}/MIB_03-Binning/",
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-check_bins_TMP.py -check_mtb {imput.check_mtb} -check_mxb {input.check_mxb}  -binning_dir {params.binning_dir} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-check_bins_TMP.py -check_mtb {input.check_mtb} -check_mxb {input.check_mxb}  -binning_dir {params.binning_dir} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -200,7 +200,7 @@ rule check_bins:
  #                              Gene prediction step will be skipped if given. (optional)
 rule das_tool:
     input:
-        checked_bins="{projectpath}/MIB_03-Binning/{sample}_checked_bins",
+        checked_bins="{projectpath}/MIB_03-Binning/{sample}_checked_bins.txt",
         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
         pproteins="{projectpath}/MIB_02-ProdigalPrediction/{sample}.protein_translations.faa"
     output:

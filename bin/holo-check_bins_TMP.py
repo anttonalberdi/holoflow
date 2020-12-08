@@ -30,7 +30,7 @@ log=args.log
 
 true_bins=list()
 false_bins=list()
-final_check=binning_dir+'/'+ID+'_checked_bins'
+final_check=binning_dir+'/'+ID+'_checked_bins.txt'
 
 ######## Coassembly
 if args.check_cct:
