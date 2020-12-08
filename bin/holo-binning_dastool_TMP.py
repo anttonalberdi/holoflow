@@ -81,9 +81,12 @@ if args.check_b: # means all binners have bins, either duplicated or own
                 with open(str(o+'_concoct.eval'),'r') as cct_eval:
                     logf.write(''+cct_eval.read()+'\n\n\n')
 
-                logf.write('\t\tDASTool Bin Merging Summary - ID '+ID+'\n\n')
-                with open(str(o+'_DASTool_summary.txt'),'r') as summary:
-                    logf.write(''+summary.read()+'\n\n\n\n')
+                if os.path.exists(str(o+'_DASTool_summary.txt')):
+                    logf.write('\t\tDASTool Bin Merging Summary - ID '+ID+'\n\n')
+                    with open(str(o+'_DASTool_summary.txt'),'r') as summary:
+                        logf.write(''+summary.read()+'\n\n\n\n')
+                else:
+                    pass
 
 
     else: # Individual assembly and binning - only maxbin and metabat
@@ -112,9 +115,12 @@ if args.check_b: # means all binners have bins, either duplicated or own
                 with open(str(o+'_metabat.eval'),'r') as mtb_eval:
                     logf.write(''+mtb_eval.read()+'\n\n\n')
 
-                logf.write('\t\tDASTool Bin Merging Summary - ID '+ID+'\n\n')
-                with open(str(o+'_DASTool_summary.txt'),'r') as summary:
-                    logf.write(''+summary.read()+'\n\n\n\n')
-
+                if os.path.exists(str(o+'_DASTool_summary.txt')):
+                    logf.write('\t\tDASTool Bin Merging Summary - ID '+ID+'\n\n')
+                    with open(str(o+'_DASTool_summary.txt'),'r') as summary:
+                        logf.write(''+summary.read()+'\n\n\n\n')
+                else:
+                    pass
+                    
 else: # No binners had bins
     sys.exit()
