@@ -70,8 +70,8 @@ if not glob.glob(str(bb)+"*.fa"):
 # check
     if binlist: # if bin list not empty, which means bin table exists
         with open(bb+'_checked_bins','w+') as check:
-            check.write('True concoct')
+            check.write('True concoct cct')
 
     else:
         with open(bb+'_checked_bins','w+') as check:
-            check.write('False concoct')
+            check.write('False concoct cct')

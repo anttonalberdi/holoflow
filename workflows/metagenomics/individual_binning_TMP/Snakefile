@@ -185,7 +185,7 @@ rule check_bins:
     output:
         "{projectpath}/MIB_03-Binning/{sample}_checked_bins.txt"
     params:
-        binning_dir="{projectpath}/MIB_03-Binning/",
+        binning_dir="{projectpath}/MIB_03-Binning",
         sample="{sample}"
     shell:
         """

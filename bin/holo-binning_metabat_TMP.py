@@ -67,8 +67,8 @@ if not glob.glob(str(bb)+"*.fa"):
 # check
     if binlist: # if bin list not empty, which means bin table exists
         with open(bb+'_checked_bins','w+') as check:
-            check.write('True metabat')
+            check.write('True metabat mtb')
 
     else:
         with open(bb+'_checked_bins','w+') as check:
-            check.write('False metabat')
+            check.write('False metabat mtb')

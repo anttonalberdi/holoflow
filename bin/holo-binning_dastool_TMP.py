@@ -45,7 +45,9 @@ with open(str(log),'a+') as logi:
     logi.write('The binning results from MaxBin and Metabat2 are integrated by DASTool to produce one only non-redundant\nset of bins between them.\n\n')
 
 if args.check_b: # means all binners have bins, either duplicated or own
-    os.remove(check_b)
+    bin_dir=os.path.dirname(bt_mtb)
+    rmCmd='rm -rf '+args.check_b+' '+bin_dir+'/*remove'
+    subprocess.check_call(rmCmd,shell=True)
 
     # Coassembly
     if args.bt_cct:
