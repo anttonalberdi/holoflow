@@ -40,13 +40,17 @@ with open(str(log),'a+') as log:
 
 
 if not glob.glob(str(bb)+"*.fa"):
+    output_path=bb.replace('/GroupC.cct','')
     concoct1Cmd='module load tools && concoct --coverage_file '+d+' --no_original_data --composition_file '+a+' -b '+bb+' -l '+l+' -t '+t+' -r '+r+' '
     subprocess.Popen(concoct1Cmd, shell=True).wait()
 
     concoct2Cmd='merge_cutup_clustering.py '+bb+'_clustering_gt1500.csv > '+bb+'_clustering_merged.csv '
     subprocess.Popen(concoct2Cmd, shell=True).wait()
 
-    concoct3Cmd='extract_fasta_bins.py '+a+' '+bb+'_clustering_merged.csv --output_path '+bb+''
+    while not os.path.exists(bb+'_clustering_merged.csv'):
+        time.sleep(1)
+
+    concoct3Cmd='extract_fasta_bins.py '+a+' '+bb+'_clustering_merged.csv --output_path '+output_path+''
     subprocess.Popen(concoct3Cmd, shell=True).wait()
 
 

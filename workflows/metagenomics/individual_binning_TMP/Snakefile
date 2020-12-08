@@ -143,15 +143,15 @@ rule binning_metabat:
         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
         depth_table="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.depth.txt"
     output:
-        bin_table_mtb="{projectpath}/MIB_03-Binning/{sample}.bins_metabat.txt"#,
-        #final_file="{projectpath}/MIB_03-Binning/{sample}.metabat/{sample}.bins_metabat.gz"
+        check_mtb="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.mtb_checked_bins"
     params:
         base_mtb="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.mtb",
+        bin_table_mtb="{projectpath}/MIB_03-Binning/{sample}.bins_metabat.txt",
         threads=expand("{threads}", threads=config['threads']),
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_metabat.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mtb}  -bb {params.base_mtb} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_metabat_TMP.py -a {input.assembly} -d {input.depth_table} -bt {params.bin_table_mtb}  -bb {params.base_mtb} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -164,14 +164,15 @@ rule binning_maxbin:
         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
         depth_table="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.depth.txt"
     output:
-        bin_table_mxb="{projectpath}/MIB_03-Binning/{sample}.bins_maxbin.txt"
+        check_mxb="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.mxb_checked_bins"
     params:
         base_mxb="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.mxb",
+        bin_table_mxb="{projectpath}/MIB_03-Binning/{sample}.bins_maxbin.txt",
         threads=expand("{threads}", threads=config['threads']),
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin_TMP.py -a {input.assembly} -d {input.depth_table} -bt {params.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 ##
@@ -181,7 +182,6 @@ rule check_bins:
     input:
         check_mxb="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.mxb_checked_bins",
         check_mtb="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.mtb_checked_bins",
-        check_cct="{projectpath}/MIB_03-Binning/{sample}_concoct/{sample}.cct_checked_bins",
     output:
         "{projectpath}/MIB_03-Binning/{sample}_checked_bins"
     params:
@@ -189,7 +189,7 @@ rule check_bins:
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-check_bins.py -check_mtb {imput.check_mtb} -check_mxb {input.check_mxb}  --check_cct {imput.check_cct} -binning_dir {params.binning_dir} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-check_bins_TMP.py -check_mtb {imput.check_mtb} -check_mxb {input.check_mxb}  -binning_dir {params.binning_dir} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -215,7 +215,7 @@ rule das_tool:
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -cb {input.checked_bins} -a {input.assembly} -bt_mtb {params.bin_table_mtb} -bt_mxb {params.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool_TMP.py -cb {input.checked_bins} -a {input.assembly} -bt_mtb {params.bin_table_mtb} -bt_mxb {params.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 
