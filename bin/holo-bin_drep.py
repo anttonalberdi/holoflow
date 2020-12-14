@@ -59,27 +59,6 @@ if not (os.path.exists(str(out_dir))):
                     else:
                         pass
 
-    # binlist = glob.glob(str(dt_bd)+"/*.fa")
-    # for bin in bin_list:
-    #
-    #
-    # with open(str(''+out_dir+'/final_bins_Info.csv'),'w+') as bins:
-    #     # open binmergingsummary file
-    #     with open(str(''+dt_bd+'/'+ID+'_DASTool_summary.txt'),'r') as summary:
-    #         summary_data = summary.readlines()
-    #         bins.write('genome,completeness,contamination\n')
-    #         for i in range(len(summary_data)):
-    #             if summary_data[i].startswith(str(ID)):
-    #                 line_data = summary_data[i].split()
-    #                     # store compl and red values in variables
-    #                 completeness = line_data[11]
-    #                 redundancy = line_data[12]
-    #                     # discount the 1st row of the summary file and write the .csv file
-    #                 i-=1
-    #                 bins.write(os.path.abspath(binlist[i])+','+completeness+','+redundancy+'\n')
-    #             else:
-    #                 pass
-
 
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))):
         drepbinsCmd='module load tools ngs anaconda3/4.4.0 anaconda2/4.4.0 mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 pplacer/1.1.alpha19 && dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'

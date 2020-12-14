@@ -39,34 +39,34 @@ with open(str(log),'a+') as logi:
 
 
 if not glob.glob(str(bb)+"*.fa"):
-    try:
+    maxbinCmd='module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig '+a+' -abund '+d+' -out '+bb+' -thread '+t+''
+    subprocess.check_call(maxbinCmd, shell=True)
 
-        maxbinCmd='module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig '+a+' -abund '+d+' -out '+bb+' -thread '+t+''
-        subprocess.check_call(maxbinCmd, shell=True)
-
-            # Modify bin names and create contig to bin table
-        renamebinsCmd='binlist=$(ls '+bb+'*.fasta | sed "s/.*mxb\.//" | sed "s/\.fasta//") && for bin in $binlist; do bin2=$((10#$bin)) ; mv '+bb+'.${bin}.fasta '+bb+'${bin2}.fa; done'
-        subprocess.Popen(renamebinsCmd, shell=True).wait()
+        # Modify bin names and create contig to bin table
+    renamebinsCmd='binlist=$(ls '+bb+'*.fasta | sed "s/.*mxb\.//" | sed "s/\.fasta//") && for bin in $binlist; do bin2=$((10#$bin)) ; mv '+bb+'.${bin}.fasta '+bb+'${bin2}.fa; done'
+    subprocess.Popen(renamebinsCmd, shell=True).wait()
 
 
-            #Fill contig to bin table
-        binlist=glob.glob(str(bb)+"*.fa")
-        bintable = open(str(bt),"a+")
+        #Fill contig to bin table
+    binlist=glob.glob(str(bb)+"*.fa")
+    bintable = open(str(bt),"a+")
 
-        for bin in binlist:
-            binname = os.path.splitext(os.path.basename(bin))[0]+''
-            with open(bin, 'r') as binfile:
-               for line in binfile:
-                    if line.startswith('>'):
-                        contig = line.strip()
-                        contig = contig.replace(">", "")
-                        bintable.write("{0}\t{1}\r\n".format(contig,binname))
-        bintable.close()
+    for bin in binlist:
+        binname = os.path.splitext(os.path.basename(bin))[0]+''
+        with open(bin, 'r') as binfile:
+           for line in binfile:
+                if line.startswith('>'):
+                    contig = line.strip()
+                    contig = contig.replace(">", "")
+                    bintable.write("{0}\t{1}\r\n".format(contig,binname))
+    bintable.close()
 
 
-    except:
-        # Write to log
-        current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-        with open(str(log),'a+') as logf:
-            logf.write(''+current_time+' - Marker gene search reveals that the dataset cannot be binned (the medium of marker gene number <= 1). Program stop.\n\n')
-        pass
+# check
+    if binlist: # if bin list not empty, which means bin table exists
+        with open(bb+'_checked_bins','w+') as check:
+            check.write('True maxbin mxb')
+
+    else:
+        with open(bb+'_checked_bins','w+') as check:
+            check.write('False maxbin mxb')

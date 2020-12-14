@@ -140,14 +140,15 @@ rule binning_metabat:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
         depth_table="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.depth.txt"
     output:
-        bin_table_mtb="{projectpath}/MCB_03-Binning/{group}.bins_metabat.txt"
+        check_mtb="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.mtb_checked_bins"
     params:
         base_mtb="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.mtb",
+        bin_table_mtb="{projectpath}/MCB_03-Binning/{group}.bins_metabat.txt",
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_metabat.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mtb}  -bb {params.base_mtb} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_metabat.py -a {input.assembly} -d {input.depth_table} -bt {params.bin_table_mtb}  -bb {params.base_mtb} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -160,15 +161,17 @@ rule binning_maxbin:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
         depth_table="{projectpath}/MCB_03-Binning/{group}_maxbin/{group}.depth.txt"
     output:
-        bin_table_mxb="{projectpath}/MCB_03-Binning/{group}.bins_maxbin.txt"
+        check_mxb="{projectpath}/MCB_03-Binning/{group}_maxbin/{group}.mxb_checked_bins"
     params:
         base_mxb="{projectpath}/MCB_03-Binning/{group}_maxbin/{group}.mxb",
+        bin_table_mxb="{projectpath}/MCB_03-Binning/{group}.bins_maxbin.txt",
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {params.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
+
 
 ##
 # Binning with Concoct
@@ -179,18 +182,38 @@ rule binning_concoct:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
         depth_table="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.depth.txt"
     output:
-        bin_table_cct="{projectpath}/MCB_03-Binning/{group}.bins_concoct.txt"
+        check_cct="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.cct_checked_bins"
     params:
         base_cct="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.cct",
+        bin_table_cct="{projectpath}/MCB_03-Binning/{group}.bins_concoct.txt",
         min_cl_tobin=expand("{min_cl_tobin}", min_cl_tobin=config['min_cl_tobin']),
         min_rl_tobin=expand("{min_rl_tobin}", min_rl_tobin=config['min_rl_tobin']),
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_concoct.py -a {input.assembly} -d {input.depth_table} -bt {output.bin_table_cct} -bb {params.base_cct} -l {params.min_cl_tobin} -r {params.min_rl_tobin} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_concoct.py -a {input.assembly} -d {input.depth_table} -bt {params.bin_table_cct} -bb {params.base_cct} -l {params.min_cl_tobin} -r {params.min_rl_tobin} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
+
+
+##
+# Check binning
+##
+rule check_bins:
+    input:
+        check_mxb="{projectpath}/MCB_03-Binning/{group}_maxbin/{group}.mxb_checked_bins",
+        check_mtb="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.mtb_checked_bins",
+        check_cct="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.cct_checked_bins"
+    output:
+        "{projectpath}/MCB_03-Binning/{group}_checked_bins.txt"
+    params:
+        binning_dir="{projectpath}/MCB_03-Binning",
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-check_bins.py --check_cct {input.check_cct} -check_mtb {input.check_mtb} -check_mxb {input.check_mxb} -binning_dir {params.binning_dir} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """
 
 
 ##
@@ -200,23 +223,25 @@ rule binning_concoct:
  #                              Gene prediction step will be skipped if given. (optional)
 rule das_tool:
     input:
+        checked_bins="{projectpath}/MCB_03-Binning/{group}_checked_bins.txt",
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        bin_table_mxb="{projectpath}/MCB_03-Binning/{group}.bins_maxbin.txt",
-        bin_table_mtb="{projectpath}/MCB_03-Binning/{group}.bins_metabat.txt",
-        bin_table_cct="{projectpath}/MCB_03-Binning/{group}.bins_concoct.txt",
         pproteins="{projectpath}/MCB_02-ProdigalPrediction/{group}.protein_translations.faa"
     output:
         directory("{projectpath}/MCB_04-BinMerging/{group}_DASTool_bins")
     params:
         threads=expand("{threads}", threads=config['threads']),
         search_eng=expand("{search_eng}", search_eng=config['search_eng']),
+        bin_table_mxb="{projectpath}/MCB_03-Binning/{group}.bins_maxbin.txt",
+        bin_table_mtb="{projectpath}/MCB_03-Binning/{group}.bins_metabat.txt",
+        bin_table_cct="{projectpath}/MCB_03-Binning/{group}.bins_concoct.txt",
         dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db']),
         dastool_dir="{projectpath}/MCB_04-BinMerging/{group}",
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -a {input.assembly} --bt_cct {input.bin_table_cct} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -cb {input.checked_bins} -a {input.assembly} --bt_cct {input.bin_table_cct} -bt_mtb {input.bin_table_mtb} -bt_mxb {input.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
+
 
 
 ##

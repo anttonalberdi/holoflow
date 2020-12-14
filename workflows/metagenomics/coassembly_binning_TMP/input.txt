@@ -1,0 +1,5 @@
+#SAMPLE COASSEMBLY_GROUP FOR_PATH REV_PATH
+LZ44 a_Pbats /home/projects/ku-cbd/people/nurher/Physilia_bats/PPR_03-MappedToReference/LZ44_1.fastq /home/projects/ku-cbd/people/nurher/Physilia_bats/PPR_03-MappedToReference/LZ44_2.fastq
+LZ47 a_Pbats /home/projects/ku-cbd/people/nurher/Physilia_bats/PPR_03-MappedToReference/LZ47_1.fastq /home/projects/ku-cbd/people/nurher/Physilia_bats/PPR_03-MappedToReference/LZ47_2.fastq
+LZ45 b_Pbats /home/projects/ku-cbd/people/nurher/Physilia_bats/PPR_03-MappedToReference/LZ45_1.fastq /home/projects/ku-cbd/people/nurher/Physilia_bats/PPR_03-MappedToReference/LZ45_2.fastq
+LZ48 b_Pbats /home/projects/ku-cbd/people/nurher/Physilia_bats/PPR_03-MappedToReference/LZ48_1.fastq /home/projects/ku-cbd/people/nurher/Physilia_bats/PPR_03-MappedToReference/LZ48_2.fastq

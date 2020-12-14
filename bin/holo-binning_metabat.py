@@ -38,38 +38,37 @@ with open(str(log),'a+') as log:
 
 
 if not glob.glob(str(bb)+"*.fa"):
-    try:
+    metabatCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i '+a+' -a '+d+' -o '+bb+' -m 1500 -t '+t+''
+    subprocess.Popen(metabatCmd, shell=True).wait()
 
-        metabatCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i '+a+' -a '+d+' -o '+bb+' -m 1500 -t '+t+''
-        subprocess.Popen(metabatCmd, shell=True).wait()
+        #Fill contig to bin table
+    binlist=glob.glob(str(bb)+"*.fa")
+    bintable = open(str(bt),"a+")
 
-            #Fill contig to bin table
-        binlist=glob.glob(str(bb)+"*.fa")
-        bintable = open(str(bt),"a+")
+    for bin in binlist:
+        full_bin=os.path.abspath(bin)
+        new_bin=full_bin.replace("mtb.","mtb")
 
-        for bin in binlist:
-            full_bin=os.path.abspath(bin)
-            new_bin=full_bin.replace("mtb.","mtb")
+        renameBinCmd='mv '+full_bin+' '+new_bin+''
+        subprocess.check_call(renameBinCmd, shell=True)
 
-            renameBinCmd='mv '+full_bin+' '+new_bin+''
-            subprocess.check_call(renameBinCmd, shell=True)
+    binlist=glob.glob(str(bb)+"*.fa")
+    for bin in binlist:
 
-        binlist=glob.glob(str(bb)+"*.fa")
-        for bin in binlist:
+        binname = os.path.splitext(os.path.basename(bin))[0]+''
+        with open(bin, 'r') as binfile:
+           for line in binfile:
+                if line.startswith('>'):
+                    contig = line.strip()
+                    contig = contig.replace(">", "")
+                    bintable.write("{0}\t{1}\r\n".format(contig,binname))
+    bintable.close()
 
-            binname = os.path.splitext(os.path.basename(bin))[0]+''
-            with open(bin, 'r') as binfile:
-               for line in binfile:
-                    if line.startswith('>'):
-                        contig = line.strip()
-                        contig = contig.replace(">", "")
-                        bintable.write("{0}\t{1}\r\n".format(contig,binname))
-        bintable.close()
+# check
+    if binlist: # if bin list not empty, which means bin table exists
+        with open(bb+'_checked_bins','w+') as check:
+            check.write('True metabat mtb')
 
-
-    except:
-        # Write to log
-        current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-        with open(str(log),'a+') as log:
-            log.write(''+current_time+' - Marker gene search reveals that the dataset cannot be binned (the medium of marker gene number <= 1). Program stop.\n\n')
-        pass
+    else:
+        with open(bb+'_checked_bins','w+') as check:
+            check.write('False metabat mtb')

@@ -38,22 +38,35 @@ with open(str(log),'a+') as log:
     log.write('\t\t'+current_time+'\tConcoct Binning step\n')
     log.write('Coassembly binning is being done by CONCOCT. This will sort the contigs into groups,\ncalled bins, which ideally will belong to taxonomically close organisms. This is mainly done\nbased on coverage and tetranucleotide frequencies.\n\n')
 
+output_path=bb.replace('/GroupC.cct','')
 
-if not glob.glob(str(bb)+"*.fa"):
+if not glob.glob(output_path+"/*.fa"):
     concoct1Cmd='module load tools && concoct --coverage_file '+d+' --no_original_data --composition_file '+a+' -b '+bb+' -l '+l+' -t '+t+' -r '+r+' '
     subprocess.Popen(concoct1Cmd, shell=True).wait()
 
-    concoct2Cmd='merge_cutup_clustering.py '+bb+'_clustering_gt1500.csv > '+bb+'_clustering_merged.csv '
+    concoct2Cmd='merge_cutup_clustering.py '+bb+'_clustering_gt1500.csv > '+bb+'_clustering_merged.csv  && mv '+bb+'_clustering_merged.csv? '+bb+'_clustering_merged.csv' # The script creates ? in the end of the name file: Sounds like you script uses \r\n as line endings, this is typical DOS style line endings. Unix like systems uses \n.
     subprocess.Popen(concoct2Cmd, shell=True).wait()
 
-    concoct3Cmd='extract_fasta_bins.py '+a+' '+bb+'_clustering_merged.csv --output_path '+bb+''
+    concoct3Cmd='extract_fasta_bins.py '+a+' '+bb+'_clustering_merged.csv --output_path '+output_path+''
     subprocess.Popen(concoct3Cmd, shell=True).wait()
 
 
         #Create contig to bin table
     bintable = open(str(bt),"a+")
-    binlist=glob.glob(str(bb)+"*.fa")
 
+    # Rename bins
+    binlist=glob.glob(output_path+"/*.fa")
+
+    for bin in binlist:
+        full_bin=os.path.abspath(bin)
+        base_bin=os.path.basename(bin)
+        new_bin=bb+base_bin
+
+        renameBinCmd='mv '+full_bin+' '+new_bin+''
+        subprocess.check_call(renameBinCmd, shell=True)
+
+
+    binlist=glob.glob(bb+'*.fa')
 
     for bin in binlist:
         binname = os.path.splitext(os.path.basename(bin))[0]+''
@@ -64,14 +77,3 @@ if not glob.glob(str(bb)+"*.fa"):
                     contig = contig.replace(">", "")
                     bintable.write("{0}\t{1}\r\n".format(contig,binname))
     bintable.close()
-
-
-
-# check
-    if binlist: # if bin list not empty, which means bin table exists
-        with open(bb+'_checked_bins','w+') as check:
-            check.write('True concoct cct')
-
-    else:
-        with open(bb+'_checked_bins','w+') as check:
-            check.write('False concoct cct')
