@@ -82,5 +82,5 @@ if not (os.path.exists(str(out_dir))):
         for sample in sample_list:
             # Map every sample to mag catalogue file (competitive mapping) - get one bam for every sample
             out_bam=out_dir+'/'+sample+'.bam'
-            mapbinCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+mag_catalogue_file+' '+fq_dir+'/'+sample+'_1.fastq '+fq_dir+'/'+sample+'_2.fastq | samtools view -b - | samtools sort - > '+out_bam+''
+            mapbinCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+mag_catalogue_file+' '+fq_dir+'/'+sample+'_1.fastq '+fq_dir+'/'+sample+'_2.fastq | samtools view -b - | samtools sort -T '+ID+' -o '+out_bam+''
             subprocess.Popen(mapbinCmd, shell=True).wait()

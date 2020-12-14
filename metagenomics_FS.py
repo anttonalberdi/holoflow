@@ -25,7 +25,7 @@ curr_dir = os.path.abspath(file)
 
 
 if not (args.config_file):
-    config = os.path.join(os.path.abspath(curr_dir),"workflows/final_stats/config.yaml")
+    config = os.path.join(os.path.abspath(curr_dir),"workflows/metagenomics/final_stats/config.yaml")
 else:
     config=args.config_file
 
@@ -128,7 +128,7 @@ def run_final_stats(in_f, path, config, cores):
     out_files = in_out_final_stats(path,in_f)
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
-    path_snkf = os.path.join(holopath,'workflows/final_stats/Snakefile')
+    path_snkf = os.path.join(holopath,'workflows/metagenomics/final_stats/Snakefile')
 
     # Run snakemake
     log_file = open(str(log),'w+')

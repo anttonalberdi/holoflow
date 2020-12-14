@@ -43,7 +43,7 @@ rule coverage:
         "{projectpath}/MFS_02-MAGCoverage/{group}/{group}.coverage_byMAG.txt"
     params:
         threads=expand("{threads}", threads=config['threads']),
-        out_dir="{projectpath}/MFS_02-MAGCoverage/{group}"
+        out_dir="{projectpath}/MFS_02-MAGCoverage/{group}",
         group="{group}"
     shell:
         """
