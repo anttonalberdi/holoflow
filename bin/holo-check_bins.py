@@ -36,7 +36,7 @@ final_check=binning_dir+'/'+ID+'_checked_bins.txt'
 
 ######## Coassembly
 if args.check_cct:
-    with open(check_mxb,'r') as mxb, open(check_mtb,'r') as mtb, open(check_cct,'r') as cct:
+    with open(check_mxb,'r') as mxb, open(check_mtb,'r') as mtb, open(args.check_cct,'r') as cct:
 
         # Read whether it is True: there are bins or it is False: there are no bins
         check=list()
@@ -59,7 +59,7 @@ if args.check_cct:
         if len(false_bins) == 0:
             os.remove(check_mxb)
             os.remove(check_mtb)
-            os.remove(check_cct)
+            os.remove(args.check_cct)
             pass
 
         # Some of all the  binners did not generate bins
