@@ -94,8 +94,8 @@ def in_out_final_stats(path,in_f):
                 drep_bins_dir=line[2]
 
                 # Define output files based on input.txt
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'/'+sample_name+'.coverage_byMAG.txt'
-                
+                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'/'+sample_name+'.coverage_byMAG.txt '
+
                 # Define input dir
                 in1=in_dir+'/'+sample_name+'/metagenomic_reads'
                 # Check if input files already in desired dir
@@ -115,10 +115,6 @@ def in_out_final_stats(path,in_f):
                     mvbinsCmd = 'cd '+drep_bins_dir+' && cp *.fa '+in2+''
                     subprocess.Popen(mvbinsCmd, shell=True).wait()
 
-
-                # Add stats and bam output files only once per sample
-                # output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ") ##############################################################################################################################
-                # output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
 
         return output_files
 
