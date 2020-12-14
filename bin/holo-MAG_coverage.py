@@ -54,6 +54,7 @@ with open(depth_mag, 'w+') as cov_mag:
     cov_contig = open(depth_contig,'r')
     first_dcontig = cov_contig.readline()
     first_dcontig = first_dcontig.replace('contig','MAG')
+    # Generate header of new MAG coverage file: contigID, contigLength, averageCoverage + .bam coverage
     first_dMAG = '\t'.join(first_dcontig.split()[0:3])
     first_dMAG += '\t'+'\t'.join([os.path.basename(x) for x in glob.glob(bam_dir+'/*.bam')])
     cov_mag.write(first_dMAG.strip()+'\n')

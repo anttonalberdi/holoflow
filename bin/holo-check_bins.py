@@ -60,6 +60,7 @@ if args.check_cct:
             os.remove(check_mxb)
             os.remove(check_mtb)
             os.remove(args.check_cct)
+            os.mknod(final_check)
             pass
 
         # Some of all the  binners did not generate bins
@@ -125,6 +126,7 @@ else:
         if len(false_bins) == 0:
             os.remove(check_mxb)
             os.remove(check_mtb)
+            os.mknod(final_check)
             pass
 
         # Some of all the  binners did not generate bins
