@@ -44,10 +44,10 @@ if not glob.glob(output_path+"/*.fa"):
     concoct1Cmd='module load tools && concoct --coverage_file '+d+' --no_original_data --composition_file '+a+' -b '+bb+' -l '+l+' -t '+t+' -r '+r+' '
     subprocess.Popen(concoct1Cmd, shell=True).wait()
 
-    concoct2Cmd='merge_cutup_clustering.py '+bb+'_clustering_gt1500.csv > '+bb+'_clustering_merged.csv '
+    concoct2Cmd='merge_cutup_clustering.py '+bb+'_clustering_gt1500.csv > '+bb+'_clustering_merged.csv  && mv '+bb+'_clustering_merged.csv? '+bb+'_clustering_merged.csv' # The script creates ? in the end of the name file: Sounds like you script uses \r\n as line endings, this is typical DOS style line endings. Unix like systems uses \n.
     subprocess.Popen(concoct2Cmd, shell=True).wait()
 
-    concoct3Cmd='extract_fasta_bins.py '+a+' '+bb+'_clustering_merged.csv --output_path '+bb+''
+    concoct3Cmd='extract_fasta_bins.py '+a+' '+bb+'_clustering_merged.csv --output_path '+output_path+''
     subprocess.Popen(concoct3Cmd, shell=True).wait()
 
 
@@ -77,6 +77,7 @@ if not glob.glob(output_path+"/*.fa"):
                     contig = contig.replace(">", "")
                     bintable.write("{0}\t{1}\r\n".format(contig,binname))
     bintable.close()
+
 
 # check
     if binlist: # if bin list not empty, which means bin table exists
