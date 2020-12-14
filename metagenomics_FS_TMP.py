@@ -81,8 +81,8 @@ def in_out_final_stats(path,in_f):
         lines = list(filter(None, list(all_lines)))
 
         # Define variables
-        output_files=''   ##############################################################################################################################
-        final_temp_dir="MFS_"##############################################################################################################################
+        output_files=''
+        final_temp_dir="MFS_02-MAGCoverage"
 
         for line in lines:
             ### Skip line if starts with # (comment line)
@@ -94,9 +94,8 @@ def in_out_final_stats(path,in_f):
                 drep_bins_dir=line[2]
 
                 # Define output files based on input.txt
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'' ##############################################################################################################################
-
-
+                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'/'+sample_name+'.coverage_byMAG.txt'
+                
                 # Define input dir
                 in1=in_dir+'/'+sample_name+'/metagenomic_reads'
                 # Check if input files already in desired dir
