@@ -12,7 +12,7 @@ The main *holoflow* directory contains a given number of Python scripts which wo
   - ***preprocessing.py***    - Data preprocessing from quality to duplicate sequences for further downstream analysis.
   - ***metagenomics_IB.py***  - Individual assembly-based analysis and metagenomics binning. 
   - ***metagenomics_CB.py***  - Coassembly-based analysis and metagenomics binning. 
-  - ***metagenomics_DR.py***  - Dereplication of metagenomic bins produced by either *metagenomics_IB* or *metagenomics_CB*. 
+  - ***metagenomics_DR.py***  - Dereplication and annotation of metagenomic bins produced by either *metagenomics_IB* or *metagenomics_CB*. 
   
   
   
