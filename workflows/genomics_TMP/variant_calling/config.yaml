@@ -1,32 +1,78 @@
-# BCFTools
-mpileup parameters:
--C coeficiente para degradar la calidad del mapeo. si se usa bwa, se recomienda usar 50
--q calidad de mapeo mínima
--Q calidad de base mínima
--r región, por cromosoma
--b lista de BAM files, en formato texto. Por cada muestra una linea, tiene que aparecer todo el path de la muestra.
+###### 15.12.20
+# Variant Calling parameters
 
-call parameters:
--m multicaller mode
--v sólo llamar a variantes, no indels
+#######################
+# BCFTools - High and low depth samples
+#######################
 
-view parameters: Este paso es para quedarse con los variantes bialélicos, sólo con snps.
-http://samtools.github.io/bcftools/bcftools.html
+  # mpileup parameters
+
+# Coefficient for downgrading mapping quality for reads containing excessive mismatches.
+# Set to 'default' if ,give number instead. 50 recommneded if bwa used.
+degr_mapp_qual:
+  50
+
+# Set to 'default' if ,give number instead
+min_mapp_qual:
+  'default'
+
+# Set to 'default' if ,give number instead
+min_base_qual:
+  'default'
+
+# Only generate mpileup output in given regions.
+# Set to False if all included, specify region instead if desired
+chr_region:
+  False
+
+  # call parameters
+
+# Multicaller mode: alternative model for multiallelic and rare-variant calling designed to overcome known limitations
+# Set to False/True
+multicaller_mode:
+  False
+
+# Set to True if only variants NOT indels to be called, set to False instead if desired
+not_indels:
+  False
+
+# view parameters: Este paso es para quedarse con los variantes bialélicos, sólo con snps.
+# http://samtools.github.io/bcftools/bcftools.html
 
 
-# ANGSD
-parametros:
--GL con este parámetro se elige el modelo. 1 es para samtools. 2 para GATK. Estas dos opciones entiendo que son los que más nos interesan.
--doGLf outputs log genotype likehoods to a file.
--doMajorMinor 1 o 2. con 1 estima los major y minor alleles basandose en likelihoods data. Con la opción 2, a partir de recuentos de datos.
--doPost estimate posterior genotype probability based on the allele frequency as a prior
--doMaf frequency estimation. Opciones 1,2,4,8.
--nThreads
--out file name
-*no he adivinado todavía cómo definir el cromosoma.
-http://www.popgen.dk/angsd/index.php/ANGSD
+#######################
+# GATK - High and low depth samples
+#######################
 
-# GATK
-Estos parametros deberían ser opcionales, son para conseguir variantes más agresivos.
---min-prunning 1
---min-dangling-branch-length1
+  # These two parameters obtain more agressive variants.
+
+# (False/Number) Give number if desired, set to False instead otherwise
+min_prunning:
+  1
+
+min_dangling:
+  True
+
+
+#######################
+# ANGSD - Low depth samples
+#######################
+
+# Choose model (1/2): 1 = samtools ; 2 = GATK
+model:
+  1
+
+# Outputs log genotype likelihoods to a file (True/False)
+output_logL:
+  True
+
+# How to estimate minor and major alleles (1/2): 1 = from likelihood data ; 2 = from count data
+major_minor:
+  1
+
+# Estimate posterior genotype probability based on the allele frequency as a prior (True/False)
+do_Post:
+  True
+
+angsd_threads:
+  20

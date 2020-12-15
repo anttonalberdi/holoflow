@@ -11,6 +11,12 @@ parametros:
 -doPost estimate posterior genotype probability based on the allele frequency as a prior
 -doMaf frequency estimation. Opciones 1,2,4,8.
 -nThreads
+
+
+
 -out file name
+    --> Snakefile specified
+
+    
 *no he adivinado todavía cómo definir el cromosoma.
 http://www.popgen.dk/angsd/index.php/ANGSD
