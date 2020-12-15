@@ -1,4 +1,5 @@
 #03.09.2020 - Holoflow 0.1.
+#!/usr/bin/env
 
 import subprocess
 import argparse
@@ -35,7 +36,6 @@ if not (os.path.exists(str(out_dir))):
         logi.write('\t\t'+current_time+'\tBin Dereplication step - '+ID+'\n')
         logi.write('dRep identifies those bins that are technically the same  and removed all but the “best” one from each\nredundant set. This is done based on the Average Nucleotide Identity (ANI).\n\n')
 
-
     # Get genomeInfo from Dastool
     # Recover completeness and redundancy from Bin Merging Summary
 
@@ -61,5 +61,5 @@ if not (os.path.exists(str(out_dir))):
 
 
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))):
-        drepbinsCmd='module unload anaconda3/4.4.0 && module load tools ngs anaconda3/4.4.0 anaconda2/4.4.0 mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 pplacer/1.1.alpha19 && dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
+        drepbinsCmd='module load tools ngs anaconda2/4.4.0 pplacer/1.1.alpha19 anaconda3/4.4.0  mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 && dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
         subprocess.check_call(drepbinsCmd, shell=True)
