@@ -1,6 +1,8 @@
 ###### 15.12.20
 # Variant Calling parameters
 
+threads:
+  40
 #######################
 # BCFTools - High and low depth samples
 #######################
@@ -73,6 +75,3 @@ major_minor:
 # Estimate posterior genotype probability based on the allele frequency as a prior (True/False)
 do_Post:
   True
-
-angsd_threads:
-  20

@@ -58,6 +58,16 @@ if not (os.path.exists(str(out_dir))):
                     else:
                         pass
 
+    # Rename bins to match DasTool summary data if they don't
+    bin_list=glob.glob(str(dt_bd)+"/*.fa")
+    for bin in bin_list:
+        if 'contigs' in bin:
+            new_bin=bin.replace('.contigs','')
+             mvcmd='mv '+bin+' '+new_bin+''
+             subprocess.check_call(mvcmd,shell=True)
+
+
+
 
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))):
         drepbinsCmd='module load tools ngs anaconda2/4.4.0 pplacer/1.1.alpha19 anaconda3/4.4.0  mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 && dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
