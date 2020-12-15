@@ -2,7 +2,13 @@
 ANGSD:
 module load htslib/1.9 angsd/0.931
 
+-bam lista de BAM files, en formato texto. Por cada muestra una linea, tiene que aparecer todo el path de la muestra.
+            --->  ''.join(globglob)
+
+
 angsd -bam sample_list.txt  -doGlf 2 -GL 1 -doPost 1 -doMaf 1 -doMajorMinor 1 -nThreads 10 -out file
+
+
 
 parametros:
 -GL con este parámetro se elige el modelo. 1 es para samtools. 2 para GATK. Estas dos opciones entiendo que son los que más nos interesan.
@@ -13,10 +19,17 @@ parametros:
 -nThreads
 
 
+######################################
+######################################
+######################################
+IF LEARN HOW TO SPECIFY CHROMOSOME, LOOP OVER CHR LIST 
 
 -out file name
     --> Snakefile specified
 
-    
+
 *no he adivinado todavía cómo definir el cromosoma.
 http://www.popgen.dk/angsd/index.php/ANGSD
+
+
+######################################

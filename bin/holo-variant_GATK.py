@@ -2,20 +2,34 @@
 GATK (es un poco más pesado):
 module load java/1.8.0 gatk/4.1.8.1
 
-Primero este paso hay que hacerlo para cada muestra por individual y por cromosoma:
-gatk HaplotypeCaller --java-options "-XmxXXg" -R ${REF}  -I input.bam --ERC GVCF --native-pair-hmm-threads ${THREADS} --sample-ploidy 2 --min-prunning 1 --min-dangling-branch-length1 -L ${CHROM} -O ${SAMPLE}.raw.g.vcf.gz
+
+- lista de BAM files, en formato texto. Por cada muestra una linea, tiene que aparecer todo el path de la muestra.
+            --->  ''.join(globglob)
+
+##################
+Primero este paso hay que hacerlo para cada muestra por individual y por cromosoma: (GET SAMPLE ID FROM BAM)
+
+for bam in bam_list: ##################
+    for chr in chr_list:
+
+        gatk HaplotypeCaller --java-options "-XmxXXg" -R ${REF}  -I input.bam --ERC GVCF --native-pair-hmm-threads ${THREADS} --sample-ploidy 2 --min-prunning 1 --min-dangling-branch-length1 -L ${CHROM} -O ${SAMPLE}.raw.g.vcf.gz
 
 
-Estos parametros deberían ser opcionales, son para conseguir variantes más agresivos.
---min-prunning 1
---min-dangling-branch-length1
+        Estos parametros deberían ser opcionales, son para conseguir variantes más agresivos.
+        --min-prunning 1
+        --min-dangling-branch-length1
 
-Después para todas las muestras a la vez por cromosoma:
-gatk GenomicsDBImport --java-options "-Xmx XX g" --sample-name-map cohort.sample_map --genomicsdb-workspace-path my_database --reader-threads ${THREADS} -L ${CHROM}  -O ${SAMPLE}.raw.g.vcf.gz
 
-gatk GenotypeGVCFs --java-options "-Xmx XX g" -R ${REF} -L ${CHROM}  -V gendb://my_database -O combined.raw.vcf
 
-gatk GatherVcfs --java-options "-Xmx XX g" -I input -O output
+##################
+Después para todas las muestras a la vez por cromosoma: (ID)
+for chr in chr_list: ##################
 
-gatk SelectVariants -V combined.raw.vcf  --select-type-to-include SNP -O SNPs_${CHROM} vcf.gz
-#############
+    gatk GenomicsDBImport --java-options "-Xmx XX g" --sample-name-map cohort.sample_map --genomicsdb-workspace-path my_database --reader-threads ${THREADS} -L ${CHROM}  -O ${SAMPLE}.raw.g.vcf.gz
+
+    gatk GenotypeGVCFs --java-options "-Xmx XX g" -R ${REF} -L ${CHROM}  -V gendb://my_database -O combined.raw.vcf
+
+    gatk GatherVcfs --java-options "-Xmx XX g" -I input -O output
+
+    gatk SelectVariants -V combined.raw.vcf  --select-type-to-include SNP -O SNPs_${CHROM}.vcf.gz
+    #############
