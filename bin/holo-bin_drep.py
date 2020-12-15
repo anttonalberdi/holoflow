@@ -63,8 +63,8 @@ if not (os.path.exists(str(out_dir))):
     for bin in bin_list:
         if 'contigs' in bin:
             new_bin=bin.replace('.contigs','')
-             mvcmd='mv '+bin+' '+new_bin+''
-             subprocess.check_call(mvcmd,shell=True)
+            mvcmd='mv '+bin+' '+new_bin+''
+            subprocess.check_call(mvcmd,shell=True)
 
 
 
