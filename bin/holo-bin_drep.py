@@ -1,5 +1,4 @@
 #03.09.2020 - Holoflow 0.1.
-#!/usr/bin/env
 
 import subprocess
 import argparse
