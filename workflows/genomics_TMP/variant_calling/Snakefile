@@ -1,0 +1,71 @@
+
+rule get_paths:
+    input:
+        holopath=expand("{holopath}", holopath=config['holopath']),
+        logpath=expand("{logpath}", logpath=config['logpath'])
+
+
+
+################################################################################################################
+##########################################       VARIANT CALLING     ###########################################
+################################################################################################################
+
+
+
+# BCFtools as variant caller
+
+if config['var_caller'] == 'bcftools':
+
+    ##
+    # Index input bam
+    ##
+    rule index_bam:
+        input:
+            "{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam"
+        output:
+        params:
+        shell:
+
+    ##
+    # call variants with BCFtools
+    ##
+    rule bcf_run:
+        input:
+        output:
+        params:
+        shell:
+
+
+if config['var_caller'] == 'angsd':
+
+    ##
+    # call variants with ANGSD
+    ##
+    rule angsd_run:
+        input:
+            "{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam"
+        output:
+        params:
+        shell:
+
+
+if config['var_caller'] == 'gatk':
+
+    ##
+    # run GATK per sample and chromosome
+    ##
+    rule get_samples:
+        input:
+            "{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam"
+        output:
+        params:
+        shell:
+
+    ##
+    # run GATK per chromosome on all group
+    ##
+    rule get_group:
+        input:
+        output:
+        params:
+        shell:

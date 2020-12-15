@@ -1,0 +1,32 @@
+# BCFTools
+mpileup parameters:
+-C coeficiente para degradar la calidad del mapeo. si se usa bwa, se recomienda usar 50
+-q calidad de mapeo mínima
+-Q calidad de base mínima
+-r región, por cromosoma
+-b lista de BAM files, en formato texto. Por cada muestra una linea, tiene que aparecer todo el path de la muestra.
+
+call parameters:
+-m multicaller mode
+-v sólo llamar a variantes, no indels
+
+view parameters: Este paso es para quedarse con los variantes bialélicos, sólo con snps.
+http://samtools.github.io/bcftools/bcftools.html
+
+
+# ANGSD
+parametros:
+-GL con este parámetro se elige el modelo. 1 es para samtools. 2 para GATK. Estas dos opciones entiendo que son los que más nos interesan.
+-doGLf outputs log genotype likehoods to a file.
+-doMajorMinor 1 o 2. con 1 estima los major y minor alleles basandose en likelihoods data. Con la opción 2, a partir de recuentos de datos.
+-doPost estimate posterior genotype probability based on the allele frequency as a prior
+-doMaf frequency estimation. Opciones 1,2,4,8.
+-nThreads
+-out file name
+*no he adivinado todavía cómo definir el cromosoma.
+http://www.popgen.dk/angsd/index.php/ANGSD
+
+# GATK
+Estos parametros deberían ser opcionales, son para conseguir variantes más agresivos.
+--min-prunning 1
+--min-dangling-branch-length1
