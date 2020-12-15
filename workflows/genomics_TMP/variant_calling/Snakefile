@@ -22,9 +22,10 @@ if config['var_caller'] == 'bcftools':
     ##
     rule index_bam:
         input:
-            "{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam"
+            "{projectpath}/GVC_00-InputBams/{group}"
         output:
         params:
+            group="{group}"
         shell:
 
     ##
@@ -34,21 +35,17 @@ if config['var_caller'] == 'bcftools':
         input:
         output:
         params:
+            degr_mapp_qual=expand("{degr_mapp_qual}", degr_mapp_qual=config['degr_mapp_qual']),
+            min_mapp_qual=expand("{min_mapp_qual}", min_mapp_qual=config['min_mapp_qual']),
+            min_base_qual=expand("{min_base_qual}", min_base_qual=config['min_base_qual']),
+            chr_region=expand("{chr_region}", chr_region=config['chr_region']),
+            multicaller=expand("{multicaller}", multicaller=config['multicaller']),
+            not_indels=expand("{not_indels}", not_indels=config['not_indels']),
+            group="{group}"
         shell:
 
 
-if config['var_caller'] == 'angsd':
-
-    ##
-    # call variants with ANGSD
-    ##
-    rule angsd_run:
-        input:
-            "{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam"
-        output:
-        params:
-        shell:
-
+# GATK as variant caller
 
 if config['var_caller'] == 'gatk':
 
@@ -60,7 +57,11 @@ if config['var_caller'] == 'gatk':
             "{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam"
         output:
         params:
+            min_prunning=expand("{min_prunning}", min_prunning=config['min_prunning']),
+            min_dangling=expand("{min_dangling}", min_dangling=config['min_dangling']),
+            group="{group}"
         shell:
+
 
     ##
     # run GATK per chromosome on all group
@@ -69,4 +70,26 @@ if config['var_caller'] == 'gatk':
         input:
         output:
         params:
+            group="{group}"
+        shell:
+
+
+
+# ANGSD as variant caller
+
+if config['var_caller'] == 'angsd':
+
+    ##
+    # call variants with ANGSD
+    ##
+    rule angsd_run:
+        input:
+            "{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam"
+        output:
+        params:
+            model=expand("{model}", model=config['model']),
+            output_logL=expand("{output_logL}", output_logL=config['output_logL']),
+            major_minor=expand("{major_minor}", major_minor=config['major_minor']),
+            angsd_threads=expand("{angsd_threads}", angsd_threads=config['angsd_threads']),
+            group="{group}"
         shell:

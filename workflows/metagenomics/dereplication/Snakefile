@@ -9,7 +9,7 @@ rule get_paths:
 
 
 ################################################################################################################
-############################################       METAGENOMICS     ############################################
+###########################################       DEREPLICATION     ############################################
 ################################################################################################################
 
 
@@ -53,7 +53,7 @@ rule bin_annotation:
 ##
 rule phylogeny:
     input:
-        prokka_output="{projectpath}/MDR_02-BinAnnotation/{group}", # not necessary for gtdbtk but necessary for creating dependency between rules 
+        prokka_output="{projectpath}/MDR_02-BinAnnotation/{group}", # not necessary for gtdbtk but necessary for creating dependency between rules
         drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
     output:
         directory("{projectpath}/MDR_03-BinPhylogeny/{group}")
