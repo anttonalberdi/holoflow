@@ -34,7 +34,7 @@ threads=args.threads
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
     logi.write('\t\t'+current_time+'\tMAG Coverage step - '+ID+'\n')
-    logi.write('\n\n')
+    logi.write('\tTwo tables are generated respectively depicting the coverage of every MAG and of every contig in it for every sample.')
 
 # # Extract MAGs coverage from bam files - BY CONTIG
 #     # CONTIGS X SAMPLES
