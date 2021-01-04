@@ -80,15 +80,19 @@ if args.check_cct:
 
                     # Duplicate bin table
                     if (not os.path.isfile(f_bintable)) or os.path.getsize(f_bintable) == 0:
-                        cp_btCmd='cp '+t_bintable+' '+f_bintable+'.tmp && grep '+str(dim_tb)+' '+f_bintable+'.tmp | sed s/'+dim_tb+'/dup_'+dim_fb+'/ > '+f_bintable+' && rm '+f_bintable+'.tmp'
+                        cp_btCmd='cp '+t_bintable+' '+f_bintable+'.tmp && grep '+str(dim_tb)+' '+f_bintable+'.tmp | sed s/'+dim_tb+'/'+dim_fb+'/ > '+f_bintable+' && rm '+f_bintable+'.tmp'
                         subprocess.Popen(cp_btCmd,shell=True).wait()
 
                     # Duplicate bin directory
                     # Remove if exists, because it will be empty, Duplicate and rename
                     if os.path.exists(f_bindir):
-                        mv_bdCmd='mv '+f_bindir+' '+f_bindir+'_remove && cp -r '+t_bindir+' '+f_bindir+' && for f in '+f_bindir+'/*'+str(dim_tb)+'* ; do mv "$f" "$(echo "$f" | sed s/'+str(dim_tb)+'/dup_'+str(dim_fb)+'/)"; done'
+                        mv_bdCmd='mv '+f_bindir+' '+f_bindir+'_remove && cp -r '+t_bindir+' '+f_bindir+' && for f in '+f_bindir+'/*'+str(dim_tb)+'* ; do mv "$f" "$(echo "$f" | sed s/'+str(dim_tb)+'/'+str(dim_fb)+'/)"; done'
                         subprocess.Popen(mv_bdCmd,shell=True).wait()
 
+                        with open(log,'a+') as log_dup:
+                            log_dup.write('\n\t\t'+f_binner+' did not produce any bins originally, the observed bins are duplicates from '+t_binner+'.\n')
+                            sys.exit()
+                            
                         # Check and finish
                         if (not len(os.listdir(f_bindir)) == 0) and (f_binner == false_bins[-1]):
                             os.mknod(final_check)
@@ -146,14 +150,19 @@ else:
 
                     # Duplicate bin table
                     if (not os.path.isfile(f_bintable)) or os.path.getsize(f_bintable) == 0:
-                        cp_btCmd='cp '+t_bintable+' '+f_bintable+'.tmp && grep '+str(dim_tb)+' '+f_bintable+'.tmp | sed s/'+dim_tb+'/dup_'+dim_fb+'/ > '+f_bintable+' && rm '+f_bintable+'.tmp'
+                        cp_btCmd='cp '+t_bintable+' '+f_bintable+'.tmp && grep '+str(dim_tb)+' '+f_bintable+'.tmp | sed s/'+dim_tb+'/'+dim_fb+'/ > '+f_bintable+' && rm '+f_bintable+'.tmp'
                         subprocess.Popen(cp_btCmd,shell=True).wait()
 
                     # Duplicate bin directory
                     # Remove if exists, because it will be empty, Duplicate and rename
                     if os.path.exists(f_bindir):
-                        mv_bdCmd='mv '+f_bindir+' '+f_bindir+'_remove && cp -r '+t_bindir+' '+f_bindir+' && for f in '+f_bindir+'/*'+str(dim_tb)+'* ; do mv "$f" "$(echo "$f" | sed s/'+str(dim_tb)+'/dup_'+str(dim_fb)+'/)"; done'
+                        mv_bdCmd='mv '+f_bindir+' '+f_bindir+'_remove && cp -r '+t_bindir+' '+f_bindir+' && for f in '+f_bindir+'/*'+str(dim_tb)+'* ; do mv "$f" "$(echo "$f" | sed s/'+str(dim_tb)+'/'+str(dim_fb)+'/)"; done'
                         subprocess.Popen(mv_bdCmd,shell=True).wait()
+
+                        with open(log,'a+') as log_dup:
+                            log_dup.write('\n\t\t'+f_binner+' did not produce any bins originally, the observed bins are duplicates from '+t_binner+'.\n')
+                            sys.exit()
+
 
                         # Check and finish
                         if (not len(os.listdir(f_bindir)) == 0) and (f_binner == false_bins[-1]):
