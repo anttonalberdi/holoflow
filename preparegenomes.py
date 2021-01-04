@@ -30,7 +30,7 @@ else:
     config=args.config_file
 
 if not (args.log):
-    log = os.path.join(path,"Holoflow_prepragenomes.log")
+    log = os.path.join(path,"Holoflow_preparegenomes.log")
 else:
     log=args.log
 
