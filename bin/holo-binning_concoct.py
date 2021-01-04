@@ -38,14 +38,20 @@ with open(str(log),'a+') as log:
     log.write('\t\t'+current_time+'\tConcoct Binning step\n')
     log.write('Coassembly binning is being done by CONCOCT. This will sort the contigs into groups,\ncalled bins, which ideally will belong to taxonomically close organisms. This is mainly done\nbased on coverage and tetranucleotide frequencies.\n\n')
 
-output_path=bb.replace('/GroupC.cct','')
+output_path=bb.replace('/'+ID+'.cct','')
 
 if not glob.glob(output_path+"/*.fa"):
-    concoct1Cmd='module load tools && concoct --coverage_file '+d+' --no_original_data --composition_file '+a+' -b '+bb+' -l '+l+' -t '+t+' -r '+r+' '
-    subprocess.Popen(concoct1Cmd, shell=True).wait()
+    if not os.path.isfile(''+bb+'_PCA_components_data_gt1500.csv'):
+        concoct1Cmd='module load tools && concoct --coverage_file '+d+' --no_original_data --composition_file '+a+' -b '+bb+' -l '+l+' -t '+t+' -r '+r+' '
+        subprocess.Popen(concoct1Cmd, shell=True).wait()
+    else:
+        pass
 
-    concoct2Cmd='merge_cutup_clustering.py '+bb+'_clustering_gt1500.csv > '+bb+'_clustering_merged.csv  && mv '+bb+'_clustering_merged.csv? '+bb+'_clustering_merged.csv' # The script creates ? in the end of the name file: Sounds like you script uses \r\n as line endings, this is typical DOS style line endings. Unix like systems uses \n.
-    subprocess.Popen(concoct2Cmd, shell=True).wait()
+    if not os.path.isfile(''+bb+'_clustering_merged.csv'):
+        concoct2Cmd='merge_cutup_clustering.py '+bb+'_clustering_gt1500.csv > '+bb+'_clustering_merged.csv  && mv '+bb+'_clustering_merged.csv? '+bb+'_clustering_merged.csv' # The script creates ? in the end of the name file: Sounds like you script uses \r\n as line endings, this is typical DOS style line endings. Unix like systems uses \n.
+        subprocess.Popen(concoct2Cmd, shell=True).wait()
+    else:
+        pass
 
     concoct3Cmd='extract_fasta_bins.py '+a+' '+bb+'_clustering_merged.csv --output_path '+output_path+''
     subprocess.Popen(concoct3Cmd, shell=True).wait()

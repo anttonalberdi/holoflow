@@ -170,7 +170,7 @@ def merge_genomes(refg_IDs,refg_Paths,db_ID):
         else:
             pass
 
-    else: # the db file alreadhy exists
+    else: # the db file already exists
         # define full db path and merge all reference genomes in it
         db_path = ''+db_dir+'/'+db_ID+'.fna'
 
