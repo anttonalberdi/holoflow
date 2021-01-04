@@ -6,12 +6,18 @@ BCFtools:
 module load samtools/1.9 bcftools/1.9
 
 
--b lista de BAM files, en formato texto. Por cada muestra una linea, tiene que aparecer todo el path de la muestra.
-            --->  ''.join(globglob)
+-b lista de BAM files, en formato lista? Por cada muestra una linea, tiene que aparecer todo el path de la muestra.
+            --->  globglob
+    write sample_list.txt file for file in globglob
 
 
-for bam in bam_list:    (GET SAMPLE ID FROM BAM)
+for bam in bam_list:
 
+    (IF SAMPLEID needed, GET SAMPLE ID FROM BAM)
+    sample = os.path.basename(bam)
+    sample = sample.replace('.bam','')
+
+    (I do not think it is necessary, but directly INDEX BAM)
     samtools index ${SAMPLE}_map2host.bam
 
     if SAMPLE.bam.bai:

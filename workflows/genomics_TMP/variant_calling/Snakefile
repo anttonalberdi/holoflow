@@ -82,7 +82,7 @@ if config['var_caller'] == 'angsd':
     ##
     rule angsd_run:
         input:
-            "{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam"
+            "{projectpath}/GVC_00-InputBams/{group}"
         output:
             directory("{projectpath}/GVC_01-CalledVar/{group}/per_chr")
         params:
