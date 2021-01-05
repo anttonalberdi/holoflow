@@ -93,7 +93,7 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
 ##### *metagenomics_DR.py*
 
   1. Coassembly group or sample group name.  
-  2. Input directory path where all *.fa* bins to dereplicate are.
+  2. Input directory path where all *.fa* bins to dereplicate and the respective *ID*_DASTool_summary.txt files are.
   
 - Example:
 
