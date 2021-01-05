@@ -7,28 +7,27 @@ module load samtools/1.9 bcftools/1.9
 
 
 -b lista de BAM files, en formato lista? Por cada muestra una linea, tiene que aparecer todo el path de la muestra.
-            --->  globglob
-    write sample_list.txt file for file in globglob
+            1. --->  globglob
+            2. write sample_list.txt file for file in globglob
+
+-chr list
+        1. get parameter from Snakefile
+        2. range(total_chr)
+        3. remove 0
 
 
 for bam in bam_list:
 
-    (IF SAMPLEID needed, GET SAMPLE ID FROM BAM)
-    sample = os.path.basename(bam)
-    sample = sample.replace('.bam','')
+    if not os.path.isfile(bam+'.bai'):           = (SAMPLE.bam.bai)
 
-    (I do not think it is necessary, but directly INDEX BAM)
-    samtools index ${SAMPLE}_map2host.bam
+        samtools index bam                       =(){SAMPLE}_map2host.bam)
 
-    if SAMPLE.bam.bai:
+    if os.path.isfile(bam+'.bai'):               = (SAMPLE.bam.bai)
 
         for chr in chr_list:
 
-        bcftools mpileup  -C 10 -q 10 -Q 10 -Ou -f ${REF} -r ${CHROM} -b sample_list.txt | bcftools call -m -v  -Oz -o all_${CHROM}.vcf.gz
-        bcftools view -m2 -M2 -v snps -Oz -o SNPs_${CHROM}.vcf.gz all_${CHROM}.vcf.gz
-
-
-
+            bcftools mpileup  -C 10 -q 10 -Q 10 -Ou -f ${REF} -r ${CHROM} -b sample_list.txt | bcftools call -m -v -Oz -o all_${CHROM}.vcf.gz
+            bcftools view -m2 -M2 -v snps -Oz -o SNPs_${CHROM}.vcf.gz all_${CHROM}.vcf.gz
 
 
 mpileup parameters:

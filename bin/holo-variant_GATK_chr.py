@@ -13,7 +13,7 @@ for chr in chr_list: ##################
 
 
 ### Isn't GenomicsDBImport supposed to go before this chr loop? inside the by-sample loop
-    gatk GenomicsDBImport --java-options "-Xmx XX g" --sample-name-map cohort.sample_map --genomicsdb-workspace-path my_database --reader-threads ${THREADS} -L ${CHROM}  -O ${SAMPLE}.raw.g.vcf.gz
+    gatk GenomicsDBImport --java-options "-Xmx28g" --sample-name-map cohort.sample_map --genomicsdb-workspace-path ${PATH OUT}/my_database --reader-threads ${THREADS} -L ${CHR} 2> >(tee "$logfile")
 
     gatk GenotypeGVCFs --java-options "-Xmx XX g" -R ${REF} -L ${CHROM}  -V gendb://my_database -O combined.raw.vcf
 

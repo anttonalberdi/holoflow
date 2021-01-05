@@ -23,6 +23,7 @@ if config['var_caller'] == 'bcftools':
     rule bcf_run:
         input:
             "{projectpath}/GVC_00-InputBams/{group}"
+            # BAMs_path=expand("{BAMs_path}", BAMs_path=config['BAMs_path'])
         output:
             directory("{projectpath}/GVC_01-CalledVar/{group}/per_chr")
         params:
@@ -33,6 +34,7 @@ if config['var_caller'] == 'bcftools':
             chr_region=expand("{chr_region}", chr_region=config['chr_region']),
             multicaller=expand("{multicaller}", multicaller=config['multicaller']),
             not_indels=expand("{not_indels}", not_indels=config['not_indels']),
+            ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
@@ -48,11 +50,13 @@ if config['var_caller'] == 'gatk':
     rule get_samples:
         input:
             "{projectpath}/GVC_00-InputBams/{group}"
+            # BAMs_path=expand("{BAMs_path}", BAMs_path=config['BAMs_path'])
         output:
             directory("{projectpath}/GVC_01-CalledVar/{group}/individual_samples")
         params:
             min_prunning=expand("{min_prunning}", min_prunning=config['min_prunning']),
             min_dangling=expand("{min_dangling}", min_dangling=config['min_dangling']),
+            ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
@@ -68,6 +72,7 @@ if config['var_caller'] == 'gatk':
             directory("{projectpath}/GVC_01-CalledVar/{group}/per_chr")
         params:
             group="{group}",
+            ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
             threads=expand("{threads}", threads=config['threads'])
         shell:
 
@@ -75,7 +80,7 @@ if config['var_caller'] == 'gatk':
 
 # ANGSD as variant caller
 
-if config['var_caller'] == 'angsd':
+if config['var_caller'] == 'angsd': ### AND LOW DEPTH 
 
     ##
     # call variants with ANGSD
@@ -83,12 +88,30 @@ if config['var_caller'] == 'angsd':
     rule angsd_run:
         input:
             "{projectpath}/GVC_00-InputBams/{group}"
+            # BAMs_path=expand("{BAMs_path}", BAMs_path=config['BAMs_path'])
         output:
             directory("{projectpath}/GVC_01-CalledVar/{group}/per_chr")
         params:
             model=expand("{model}", model=config['model']),
             output_logL=expand("{output_logL}", output_logL=config['output_logL']),
             major_minor=expand("{major_minor}", major_minor=config['major_minor']),
+            ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
+
+
+
+### Conditional HD
+
+    ### - PHASING
+
+
+
+### Conditional LD
+#Reference panel in config has to be defined
+
+    ### - LIKELIHOOD UPDATE
+
+
+    ### - IMPUTATION

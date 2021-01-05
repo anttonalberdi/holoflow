@@ -2,11 +2,26 @@
 ANGSD:
 module load htslib/1.9 angsd/0.931
 
--bam lista de BAM files, en formato texto. Por cada muestra una linea, tiene que aparecer todo el path de la muestra.
-            --->  ''.join(globglob)
+
+-b lista de BAM files, en formato lista? Por cada muestra una linea, tiene que aparecer todo el path de la muestra.
+            1. --->  globglob
+            2. write sample_list.txt file for file in globglob
+
+-chr find out HOW TO SPECIFY CHR
+
+-out_file = Snakefile_given_out_dir+group_name
 
 
-angsd -bam sample_list.txt  -doGlf 2 -GL 1 -doPost 1 -doMaf 1 -doMajorMinor 1 -nThreads 10 -out file
+
+            angsd -bam sample_list.txt  -doGlf 2 -GL 1 -doPost 1 -doMaf 1 -doMajorMinor 1 -nThreads 10 -out out_file
+
+
+
+
+
+
+
+
 
 
 
@@ -22,7 +37,7 @@ parametros:
 ######################################
 ######################################
 ######################################
-IF LEARN HOW TO SPECIFY CHROMOSOME, LOOP OVER CHR LIST 
+IF LEARN HOW TO SPECIFY CHROMOSOME, LOOP OVER CHR LIST
 
 -out file name
     --> Snakefile specified

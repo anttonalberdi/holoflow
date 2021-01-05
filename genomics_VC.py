@@ -118,6 +118,16 @@ def in_out_variant_calling(path,in_f):
                     mvbamsCmd = 'cd '+in_bam_path+' && cp *.bam '+in1+'' ############################################################################################################## PROBABLY NOT THE BEST IDEA TO COPY ALL GENOMIC BAMS... ALTERNATIVE!
                     subprocess.Popen(mvbamsCmd, shell=True).wait()
 
+                # Append final bam input path to config for Snakefile run
+                # yaml = ruamel.yaml.YAML()
+                # yaml.explicit_start = True
+                # with open(str(config), 'r') as config_file:
+                #     data = yaml.load(config_file)
+                #
+                # with open(str(config), 'w') as config_file:
+                #     data['BAMs_path'] = str(in_bam_path).strip() ############################################################################################################## INSTEAD OF NEW COPIED PATH, USE THE GIVEN INPUT PATH TO SEND IT TO SNAKEMAKE
+                #     dump = yaml.dump(data, config_file)
+
         return output_files
 
 
@@ -128,6 +138,7 @@ def run_variant_calling(in_f, path, config, cores):
 
     # Define output names
     out_files = in_out_variant_calling(path,in_f)
+
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
     path_snkf = os.path.join(holopath,'workflows/genomics/variant_calling/Snakefile')
