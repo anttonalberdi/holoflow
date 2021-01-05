@@ -79,7 +79,6 @@ if args.check_b: # means all binners have bins, either duplicated or own
             subprocess.check_call(mvCmd,shell=True)
 
 
-        print (str(o+'_maxbin.eval'))
         if os.path.exists(str(o+'_maxbin.eval')):
             # Add relevant info to log
             with open(str(log),'a+') as logf:
