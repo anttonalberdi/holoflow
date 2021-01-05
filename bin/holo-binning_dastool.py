@@ -75,7 +75,7 @@ if args.check_b: # means all binners have bins, either duplicated or own
         bins=glob.glob(o+"_DASTool_bins/*.fa")
 
         for bin in bins:
-            mvCmd='cd '+ori_dir+'/.. && mv '+bin+' .'
+            mvCmd='cd '+ori_dir+'/.. && mv '+bin+' . && rm -rf '+ori_dir+''
             subprocess.check_call(mvCmd,shell=True)
 
 
@@ -125,7 +125,7 @@ if args.check_b: # means all binners have bins, either duplicated or own
         bins=glob.glob(o+"_DASTool_bins/*.fa")
 
         for bin in bins:
-            mvCmd='cd '+ori_dir+'/.. && mv '+bin+' .'
+            mvCmd='cd '+ori_dir+'/.. && mv '+bin+' . && rm -rf '+ori_dir+''
             subprocess.check_call(mvCmd,shell=True)
 
 
