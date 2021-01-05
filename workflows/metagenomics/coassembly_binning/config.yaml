@@ -29,5 +29,6 @@ dastool_db:
   /home/projects/ku-cbd/people/antalb/databases/dastool_db
 
 
+# either diamond, blast or usearch
 search_eng:
   diamond

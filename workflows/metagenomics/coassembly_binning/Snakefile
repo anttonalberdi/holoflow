@@ -93,23 +93,23 @@ rule assembly_mapping:
         python {rules.get_paths.input.holopath}/bin/holo-coassembly_mapping.py -a {input.assembly} -fq_path {input.fq_path} -t {params.threads} -obam_b {output} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
-##
-# Prodigal ORF prediction
-##
-#"Metagenomes - The simplest approach for metagenomes is to put all the sequences in one FASTA file and analyze them in Anonymous Mode."
-rule protein_prediction_prodigal:
-    input:
-        assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}" # not necessary
-    output:
-        genetic_coords="{projectpath}/MCB_02-ProdigalPrediction/{group}.coords.gbk",
-        protein_translations="{projectpath}/MCB_02-ProdigalPrediction/{group}.protein_translations.faa"
-    params:
-        group="{group}"
-    shell: # Prodigal is run in "anon", Anonymous workflow
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-pp_prodigal.py -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations} -ID {params.group} -log {rules.get_paths.input.logpath}
-        """
+# ##
+# # Prodigal ORF prediction
+# ##
+# #"Metagenomes - The simplest approach for metagenomes is to put all the sequences in one FASTA file and analyze them in Anonymous Mode."
+# rule protein_prediction_prodigal:
+#     input:
+#         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
+#         mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}" # not necessary
+#     output:
+#         genetic_coords="{projectpath}/MCB_02-ProdigalPrediction/{group}.coords.gbk",
+#         protein_translations="{projectpath}/MCB_02-ProdigalPrediction/{group}.protein_translations.faa"
+#     params:
+#         group="{group}"
+#     shell: # Prodigal is run in "anon", Anonymous workflow
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-pp_prodigal.py -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations} -ID {params.group} -log {rules.get_paths.input.logpath}
+#         """
 
 ##
 # Create depth table
@@ -117,7 +117,7 @@ rule protein_prediction_prodigal:
 
 rule depth_table:
     input:
-        genetic_coords="{projectpath}/MCB_02-ProdigalPrediction/{group}.coords.gbk",  #not actually necessary here, but used to keep order
+        #genetic_coords="{projectpath}/MCB_02-ProdigalPrediction/{group}.coords.gbk",  #not actually necessary here, but used to keep order
         mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}"
     output:
         metabat_depth_file="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.depth.txt",
@@ -224,8 +224,8 @@ rule check_bins:
 rule das_tool:
     input:
         checked_bins="{projectpath}/MCB_03-Binning/{group}_checked_bins.txt",
-        assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        pproteins="{projectpath}/MCB_02-ProdigalPrediction/{group}.protein_translations.faa"
+        assembly="{projectpath}/MCB_01-Assembly/{group}.fa"#,
+        #pproteins="{projectpath}/MCB_02-ProdigalPrediction/{group}.protein_translations.faa"
     output:
         directory("{projectpath}/MCB_04-BinMerging/{group}_DASTool_bins")
     params:
@@ -239,8 +239,9 @@ rule das_tool:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -cb {input.checked_bins} -a {input.assembly} --bt_cct {params.bin_table_cct} -bt_mtb {params.bin_table_mtb} -bt_mxb {params.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -cb {input.checked_bins} -a {input.assembly} --bt_cct {params.bin_table_cct} -bt_mtb {params.bin_table_mtb} -bt_mxb {params.bin_table_mxb} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
+        #python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -cb {input.checked_bins} -a {input.assembly} --bt_cct {params.bin_table_cct} -bt_mtb {params.bin_table_mtb} -bt_mxb {params.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.group} -log {rules.get_paths.input.logpath}
 
 
 
