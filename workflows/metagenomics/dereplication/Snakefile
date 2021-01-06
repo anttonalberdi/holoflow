@@ -33,7 +33,7 @@ rule drep_bins:
 ##
 # Prokka gene annotation
 ##
-rule bin_annotation:
+rule annotation:
     input:
         drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
     output:
