@@ -103,6 +103,7 @@ def in_out_genomics(path,in_f):
                 line = line.strip('\n').split(' ') # Create a list of each line
                 group=line[0]
                 in_bam_path=line[1]
+                chromosome_list = line[2]
 
                 # Define output files based on input.txt
                 output_files+=path+'/'+final_temp_dir+'/'+group+'/per_chr '
@@ -113,12 +114,11 @@ def in_out_genomics(path,in_f):
                 # Check if input files already in desired dir
                 if os.path.exists(in1):
                     pass
-                else: ############################################################################# CREATE LINK 
-                    mvbamsCmd = 'cd '+in_bam_path+' && cp *.bam '+in1+'' ############################################################################################################## PROBABLY NOT THE BEST IDEA TO COPY ALL GENOMIC BAMS... ALTERNATIVE!
-                    subprocess.Popen(mvbamsCmd, shell=True).wait()
+                else:
+                    linkbamsCmd = 'mkdir '+in1+' && ln -s '+in_bam_path+'/* '+in1+'' # Create soft link for files to be linked to new dir
+                    subprocess.Popen(linkbamsCmd, shell=True).wait()
 
                 # Append chromosome list path to config
-                chromosome_list = line[2]
                 yaml = ruamel.yaml.YAML()
                 yaml.explicit_start = True
                 with open(str(config), 'r') as config_file:
