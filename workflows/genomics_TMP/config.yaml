@@ -15,20 +15,21 @@ chr_total:
   # mpileup parameters
 
 # Coefficient for downgrading mapping quality for reads containing excessive mismatches.
-# Set to 'default' if ,give number instead. 50 recommneded if bwa used.
+# Set to 50 (default),give another number instead.
 degr_mapp_qual:
   50
 
-# Set to 'default' if ,give number instead
+# Set to 0 (default),give another number instead.
 min_mapp_qual:
-  'default'
+  0
 
-# Set to 'default' if ,give number instead
+# Set to 13 (default),give another number instead.
 min_base_qual:
-  'default'
+  13
 
 # Only generate mpileup output in given regions.
 # Set to False if all included, specify region instead if desired
+# -r, --regions CHR|CHR:POS|CHR:FROM-TO|CHR:FROM-[,…]
 chr_region:
   False
 
@@ -37,7 +38,7 @@ chr_region:
 # Multicaller mode: alternative model for multiallelic and rare-variant calling designed to overcome known limitations
 # Set to False/True
 multicaller:
-  False
+  True
 
 # Set to True if only variants NOT indels to be called, set to False instead if desired
 not_indels:

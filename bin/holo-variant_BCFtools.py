@@ -1,47 +1,110 @@
-## 15.12.20 - Holoflow
+## 11.01.20 - Holoflow 0.1
+
+import subprocess
+import argparse
+import os
+import glob
+import time
 
 
-#############
-BCFtools:
-module load samtools/1.9 bcftools/1.9
+#Argument parsing
+parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
+parser.add_argument('-bam_dir', help="bam files directory", dest="bam_dir", required=True)
+parser.add_argument('-out_dir', help="main output directory", dest="out_dir", required=True)
+parser.add_argument('-ref_g', help="reference genome", dest="ref_g", required=True)
+parser.add_argument('-chr_list', help="chromosome list file path", dest="chr_list", required=True)
+parser.add_argument('-degr_mapp_qual', help="degradation mapping quality", dest="degr_mqual", required=True)
+parser.add_argument('-min_mapp_qual', help="minimum mapping quality", dest="min_mqual", required=True)
+parser.add_argument('-min_base_qual', help="minimum base quality", dest="min_bqual", required=True)
+parser.add_argument('-chr_region', help="specific chromosome region", dest="chr_region", required=True)
+parser.add_argument('-multicaller', help="multicaller option", dest="multicaller", required=True)
+parser.add_argument('-not_indels', help="only variants not indels", dest="not_indels", required=True)
+parser.add_argument('-ID', help="ID", dest="ID", required=True)
+parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
+parser.add_argument('-t', help="threads", dest="threads", required=True)
+args = parser.parse_args()
 
 
--b lista de BAM files, en formato lista? Por cada muestra una linea, tiene que aparecer todo el path de la muestra.
-            1. --->  globglob
-            2. write sample_list.txt file for file in globglob
+bam_dir=args.bam_dir
+out_dir=args.out_dir
+ref_g=args.ref_g
+chr_list=args.chr_list
+degr_mqual=args.degr_mqual
+min_mqual=args.min_mqual
+min_bqual=args.min_bqual
+chr_region=args.chr_region
+multicaller=args.multicaller
+not_indels=args.not_indels
+ID=args.ID
+log=args.log
+threads=args.threads
 
--chr list
-        1. get parameter from Snakefile
-        2. range(total_chr)
-        3. remove 0
-
-
-for bam in bam_list:
-
-    if not os.path.isfile(bam+'.bai'):           = (SAMPLE.bam.bai)
-
-        samtools index bam                       =(){SAMPLE}_map2host.bam)
-
-    if os.path.isfile(bam+'.bai'):               = (SAMPLE.bam.bai)
-
-        for chr in chr_list:
-
-            bcftools mpileup  -C 10 -q 10 -Q 10 -Ou -f ${REF} -r ${CHROM} -b sample_list.txt | bcftools call -m -v -Oz -o all_${CHROM}.vcf.gz
-            bcftools view -m2 -M2 -v snps -Oz -o SNPs_${CHROM}.vcf.gz all_${CHROM}.vcf.gz
+## Run
+if not os.path.exists(out_dir):
+    os.makedirs(out_dir)
 
 
-mpileup parameters:
+    # Write to log
+    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
+    with open(str(log),'a+') as logi:
+        logi.write('\t\t'+current_time+'\tVariant calling with BCFtools tep - '+ID+'\n')
+        logi.write(' \n\n')
 
--C coeficiente para degradar la calidad del mapeo. si se usa bwa, se recomienda usar 50
--q calidad de mapeo mínima
--Q calidad de base mínima
--r región, por cromosoma
+    # Get chromosomes list
+    chromosome_list = list()
+    with open(chr_list,'r+') as chr_data:
+        for chr in chr_data.readlines():
+            chromosome_list.append(chr.strip())
 
 
 
-call parameters:
--m multicaller mode
--v sólo llamar a variantes, no indels
+    # Generate bam files' paths file list & index
+    bam_list = [os.path.basename(x) for x in glob.glob(bam_dir+'/*.bam')]
+    bam_list_file = out_path+'/'+ID+'_bam_list.txt'
 
-view parameters: Este paso es para quedarse con los variantes bialélicos, sólo con snps.
-http://samtools.github.io/bcftools/bcftools.html
+    with open(bam_list_file,'w+') as bam_files:
+
+        for bam in bam_list:
+
+            bam_files.write(str(bam)+'\n')
+
+            if not os.path.isfile(bam+'.bai'): # If not indexed, index bam
+                idxbamCmd = 'module load tools samtools/1.9 && samtools index '+bam+''
+                subprocess.Popen(idxbamCmd,shell=True).wait()
+
+            else:
+                pass
+
+    # Run BCFtools
+    for CHR in chromosome_list:
+
+        mpileup_output = out_dir+'/all_'+CHR+'.vcf.gz'
+        view_output = out_dir+'/SNPs_'+CHR+'.vcf.gz'
+
+        if not (chr_region == 'False'):
+
+            if not (multicaller == 'False'):
+                bcf1Cmd = 'module load tools samtools/1.9 bcftools/1.9 && bcftools mileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' -r '+chr_region+' | bcftools call -m -v -Oz -o '+mpileup_output+''
+                subprocess.Popen(bcf1Cmd,shell=True).wait()
+                bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                subprocess.Popen(bcf2Cmd,shell=True).wait()
+
+            else:
+                bcf1Cmd = 'module load tools samtools/1.9 bcftools/1.9 && bcftools mileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' -r '+chr_region+' | bcftools call -v -Oz -o '+mpileup_output+''
+                subprocess.Popen(bcf1Cmd,shell=True).wait()
+                bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                subprocess.Popen(bcf2Cmd,shell=True).wait()
+
+
+        else:
+            if not (multicaller == 'False'):
+                bcf1Cmd = 'module load tools samtools/1.9 bcftools/1.9 && bcftools mileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -m -v -Oz -o '+mpileup_output+''
+                subprocess.Popen(bcf1Cmd,shell=True).wait()
+                bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                subprocess.Popen(bcf2Cmd,shell=True).wait()
+
+            else:
+                bcf1Cmd = 'module load tools samtools/1.9 bcftools/1.9 && bcftools mileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -v -Oz -o '+mpileup_output+''
+                subprocess.Popen(bcf1Cmd,shell=True).wait()
+                bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                subprocess.Popen(bcf2Cmd,shell=True).wait()

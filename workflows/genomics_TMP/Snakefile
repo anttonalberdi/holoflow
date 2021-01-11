@@ -23,11 +23,9 @@ if config['var_caller'] == 'bcftools':
     rule bcf_run:
         input:
             "{projectpath}/GVC_00-InputBams/{group}"
-            # BAMs_path=expand("{BAMs_path}", BAMs_path=config['BAMs_path'])
         output:
-            directory("{projectpath}/GVC_01-CalledVar/{group}/per_chr")
+            directory("{projectpath}/GVC_01-CalledVar/per_chr/{group}")
         params:
-            bam_dir="{projectpath}/GVC_00-InputBams/{group}"
             degr_mapp_qual=expand("{degr_mapp_qual}", degr_mapp_qual=config['degr_mapp_qual']),
             min_mapp_qual=expand("{min_mapp_qual}", min_mapp_qual=config['min_mapp_qual']),
             min_base_qual=expand("{min_base_qual}", min_base_qual=config['min_base_qual']),
@@ -35,6 +33,7 @@ if config['var_caller'] == 'bcftools':
             multicaller=expand("{multicaller}", multicaller=config['multicaller']),
             not_indels=expand("{not_indels}", not_indels=config['not_indels']),
             ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
+            chr_list=expand("{chr_list}", chr_list=config['chr_list']),
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
@@ -52,7 +51,7 @@ if config['var_caller'] == 'gatk':
             "{projectpath}/GVC_00-InputBams/{group}"
             # BAMs_path=expand("{BAMs_path}", BAMs_path=config['BAMs_path'])
         output:
-            directory("{projectpath}/GVC_01-CalledVar/{group}/individual_samples")
+            directory("{projectpath}/GVC_01-CalledVar/individual_samples/{group}")
         params:
             min_prunning=expand("{min_prunning}", min_prunning=config['min_prunning']),
             min_dangling=expand("{min_dangling}", min_dangling=config['min_dangling']),
@@ -69,7 +68,7 @@ if config['var_caller'] == 'gatk':
         input:
             my_db="{projectpath}/GVC_01-CalledVar/{group}/individual_samples"
         output:
-            directory("{projectpath}/GVC_01-CalledVar/{group}/per_chr")
+            directory("{projectpath}/GVC_01-CalledVar/per_chr/{group}")
         params:
             group="{group}",
             ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
@@ -80,7 +79,7 @@ if config['var_caller'] == 'gatk':
 
 # ANGSD as variant caller
 
-if config['var_caller'] == 'angsd': ### AND LOW DEPTH 
+if config['var_caller'] == 'angsd': ### AND LOW DEPTH
 
     ##
     # call variants with ANGSD
@@ -90,7 +89,7 @@ if config['var_caller'] == 'angsd': ### AND LOW DEPTH
             "{projectpath}/GVC_00-InputBams/{group}"
             # BAMs_path=expand("{BAMs_path}", BAMs_path=config['BAMs_path'])
         output:
-            directory("{projectpath}/GVC_01-CalledVar/{group}/per_chr")
+            directory("{projectpath}/GVC_01-CalledVar/per_chr/{group}")
         params:
             model=expand("{model}", model=config['model']),
             output_logL=expand("{output_logL}", output_logL=config['output_logL']),

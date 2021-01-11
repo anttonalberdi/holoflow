@@ -106,7 +106,7 @@ def in_out_genomics(path,in_f):
                 chromosome_list = line[2]
 
                 # Define output files based on input.txt
-                output_files+=path+'/'+final_temp_dir+'/'+group+'/per_chr '
+                output_files+=path+'/'+final_temp_dir+'/per_chr/'+group+' '
 
                 # Define input dir
                 in1=in_dir+'/'+group+''
