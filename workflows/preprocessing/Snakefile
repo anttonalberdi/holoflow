@@ -127,8 +127,9 @@ rule map_ref_split:
         read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq",
         stats_out="{projectpath}/PPR_03-MappedToReference/{sample}.stats"
     params:
-        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes'])
+        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
+        sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-map_ref_split.py -refg {params.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output.ref} -si {input.stats_in} -so {output.stats_out} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-map_ref_split.py -refg {params.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output.ref} -si {input.stats_in} -so {output.stats_out} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """

@@ -43,7 +43,6 @@ threads=args.threads
 if not os.path.exists(out_dir):
     os.makedirs(out_dir)
 
-
     # Write to log
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as logi:
@@ -78,8 +77,8 @@ if not os.path.exists(out_dir):
     # Run BCFtools
     for CHR in chromosome_list:
 
-        mpileup_output = out_dir+'/all_'+CHR+'.vcf.gz'
-        view_output = out_dir+'/SNPs_'+CHR+'.vcf.gz'
+        mpileup_output = out_dir+'/'+ID+'.all_'+CHR+'.vcf.gz'
+        view_output = out_dir+'/'+ID+'.SNPs_'+CHR+'.vcf.gz'
 
         if not (chr_region == 'False'):
 

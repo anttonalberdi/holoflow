@@ -296,7 +296,7 @@ def in_out_metagenomics(path,in_f):
 
 
                     # Define Snakemake output files
-                    output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_DASTool_bins ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_DASTool_files ")
 
         return output_files
 
