@@ -62,6 +62,7 @@ if args.check_b: # means all binners have bins, either duplicated or own
         # Move definitive bins to final directory
         # Remove '.contigs' from bin ID, which was added by DASTool
         ori_dir=o+"_DASTool_bins"
+        out_dir=o.replace('/A','')
         bins=glob.glob(ori_dir+"/*.fa")
 
         for bin in bins:
@@ -71,12 +72,10 @@ if args.check_b: # means all binners have bins, either duplicated or own
             renameCmd='mv '+bin+' '+new_bin+''
             subprocess.check_call(renameCmd,shell=True)
 
-        # Move definitive bins to final directory
-        bins=glob.glob(o+"_DASTool_bins/*.fa")
-
-        for bin in bins:
-            mvCmd='cd '+ori_dir+'/.. && mv '+bin+' . && rm -rf '+ori_dir+''
-            subprocess.check_call(mvCmd,shell=True)
+        # Move definitive bins to final directory and rest to sub-dir
+        # bins in DASTool bins and rest of files in DASTool files && bins out to main dir, remove DASTool bins dir
+        mvCmd='mv '+o+'_DASTool_summary.txt '+ori_dir+' && mkdir '+o+'_DASTool_files && find '+out_dir+' -maxdepth 1 -type f | xargs -I {} mv {} '+o+'_DASTool_files && mv '+ori_dir+'/* '+out_dir+' && rm -rf '+ori_dir+''
+        subprocess.check_call(mvCmd,shell=True)
 
 
         if os.path.exists(str(o+'_maxbin.eval')):
@@ -122,12 +121,9 @@ if args.check_b: # means all binners have bins, either duplicated or own
             subprocess.check_call(renameCmd,shell=True)
 
         # Move definitive bins to final directory and rest to sub-dir
-        bins=glob.glob(o+"_DASTool_bins/*.fa")
-
-        for bin in bins:
-            # bins in DASTool bins and rest of files in DASTool files && bins out to main dir, remove DASTool bins dir
-            mvCmd='mv '+o+'_DASTool_summary.txt '+o+'_DASTool_bins && mkdir '+ori_dir+'/DASTool_files && find '+ori_dir+' -maxdepth 1 -type f | xargs -I {} cp {} '+ori_dir+'/DASTool_files && mv '+o+'_DASTool_bins/* '+ori_dir+' && rm -rf '+o+'_DASTool_bins'
-            subprocess.check_call(mvCmd,shell=True)
+        # bins in DASTool bins and rest of files in DASTool files && bins out to main dir, remove DASTool bins dir
+        mvCmd='mv '+o+'_DASTool_summary.txt '+ori_dir+' && mkdir '+o+'_DASTool_files && find '+out_dir+' -maxdepth 1 -type f | xargs -I {} mv {} '+o+'_DASTool_files && mv '+ori_dir+'/* '+out_dir+' && rm -rf '+ori_dir+''
+        subprocess.check_call(mvCmd,shell=True)
 
 
         # Write to log

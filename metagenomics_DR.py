@@ -100,7 +100,6 @@ def in_out_metagenomics(path,in_f):
                         copyfilesCmd='mkdir '+desired_input+' && find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} cp {} '+desired_input+''
                         subprocess.check_call(copyfilesCmd, shell=True)
 
-
                 else:
                     pass
 
