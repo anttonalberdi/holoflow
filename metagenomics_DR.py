@@ -97,8 +97,10 @@ def in_out_metagenomics(path,in_f):
                 #if bins not in desired input dir, copy them there
                 if not desired_input == current_input_dir:
                     if not (os.path.exists(str(desired_input))):
-                        copyfilesCmd='mkdir '+desired_input+' && cp '+dir[1]+'/* '+desired_input+''
+                        copyfilesCmd='mkdir '+desired_input+' && find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} cp {} '+desired_input+''
                         subprocess.check_call(copyfilesCmd, shell=True)
+
+
                 else:
                     pass
 

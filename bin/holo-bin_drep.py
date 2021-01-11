@@ -34,7 +34,7 @@ if not (os.path.exists(str(out_dir))):
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as logi:
         logi.write('\t\t'+current_time+'\tBin Dereplication step - '+ID+'\n')
-        logi.write('dRep identifies those bins that are technically the same  and removed all but the “best” one from each\nredundant set. This is done based on the Average Nucleotide Identity (ANI).\n\n')
+        logi.write('dRep identifies those bins that are technically the same  and removes all but the “best” one from each\nredundant set. This is done based on the Average Nucleotide Identity (ANI).\n\n')
 
     # Get genomeInfo from Dastool
     # Recover completeness and redundancy from Bin Merging Summary

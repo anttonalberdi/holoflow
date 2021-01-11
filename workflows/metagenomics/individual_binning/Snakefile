@@ -204,7 +204,7 @@ rule das_tool:
         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
         pproteins="{projectpath}/MIB_02-ProdigalPrediction/{sample}.protein_translations.faa"
     output:
-        directory("{projectpath}/MIB_04-BinMerging/{sample}_DASTool_bins")
+        directory("{projectpath}/MIB_04-BinMerging/{sample}_DASTool_files")
     params:
         threads=expand("{threads}", threads=config['threads']),
         search_eng=expand("{search_eng}", search_eng=config['search_eng']),

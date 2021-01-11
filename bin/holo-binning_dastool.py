@@ -121,11 +121,12 @@ if args.check_b: # means all binners have bins, either duplicated or own
             renameCmd='mv '+bin+' '+new_bin+''
             subprocess.check_call(renameCmd,shell=True)
 
-        # Move definitive bins to final directory
+        # Move definitive bins to final directory and rest to sub-dir
         bins=glob.glob(o+"_DASTool_bins/*.fa")
 
         for bin in bins:
-            mvCmd='cd '+ori_dir+'/.. && mv '+bin+' . && rm -rf '+ori_dir+''
+            # bins in DASTool bins and rest of files in DASTool files && bins out to main dir, remove DASTool bins dir
+            mvCmd='mv '+o+'_DASTool_summary.txt '+o+'_DASTool_bins && mkdir '+ori_dir+'/DASTool_files && find '+ori_dir+' -maxdepth 1 -type f | xargs -I {} cp {} '+ori_dir+'/DASTool_files && mv '+o+'_DASTool_bins/* '+ori_dir+' && rm -rf '+o+'_DASTool_bins'
             subprocess.check_call(mvCmd,shell=True)
 
 

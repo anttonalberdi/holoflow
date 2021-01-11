@@ -227,7 +227,7 @@ rule das_tool:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa"#,
         #pproteins="{projectpath}/MCB_02-ProdigalPrediction/{group}.protein_translations.faa"
     output:
-        directory("{projectpath}/MCB_04-BinMerging/{group}_DASTool_bins")
+        directory("{projectpath}/MCB_04-BinMerging/{group}_DASTool_files")
     params:
         threads=expand("{threads}", threads=config['threads']),
         search_eng=expand("{search_eng}", search_eng=config['search_eng']),
