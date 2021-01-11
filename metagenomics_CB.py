@@ -194,7 +194,7 @@ def in_out_metagenomics(path,in_f):
                                 subprocess.Popen(mv2Cmd, shell=True).wait()
 
                     # Define Snakemake output files
-                    output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_DASTool_bins ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_DASTool_files ")
 
                     # Define new coa group
                     coa_group=line[1]

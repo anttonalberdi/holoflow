@@ -122,7 +122,7 @@ def in_out_metagenomics(path,in_f):
                             subprocess.Popen(read2Cmd, shell=True).wait()
 
 
-                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_bins ")
+                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
 
         return output_files
 
