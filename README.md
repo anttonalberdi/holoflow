@@ -21,7 +21,7 @@ These are designed to be called from the command line and require the following 
   -f INPUT            File containing input information.
   -d WORK_DIR         Output directory.
   -t THREADS          Thread maximum number to be used by Snakemake.  
-  {-r REF_GENOME}     Reference genome(s) file path to be used in read mapping.
+  {-g REF_GENOME}     Reference genome(s) file path to be used in read mapping.
   [-k KEEP_TMP]       If present, keep temporal directories - NOT IN PREPAREGENOMES.
   [-l LOG]            Desired pipeline log file path.
   [-c CONFIG]         Configuration file full path.
@@ -161,7 +161,7 @@ projectpath=/full/path/project1
 #Declare full path to holoflow
 holoflowpath=/full/path/holoflow
 #Run holoflow
-python ${holoflowpath}/preprocessing.py -f ${projectpath}/input.txt -d ${projectpath}/workdir -r ${projectpath}/reference_genomes.fna -c ${projectpath}/config.yaml -l ${projectpath}/log_file.log -t 40
+python ${holoflowpath}/preprocessing.py -f ${projectpath}/input.txt -d ${projectpath}/workdir -g ${projectpath}/reference_genomes.fna -c ${projectpath}/config.yaml -l ${projectpath}/log_file.log -t 40
 ```
 
 - *job execution* in Computerome2 example:
