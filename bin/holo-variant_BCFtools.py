@@ -18,7 +18,7 @@ parser.add_argument('-min_mapp_qual', help="minimum mapping quality", dest="min_
 parser.add_argument('-min_base_qual', help="minimum base quality", dest="min_bqual", required=True)
 parser.add_argument('-chr_region', help="specific chromosome region", dest="chr_region", required=True)
 parser.add_argument('-multicaller', help="multicaller option", dest="multicaller", required=True)
-parser.add_argument('-not_indels', help="only variants not indels", dest="not_indels", required=True)
+#parser.add_argument('-not_indels', help="only variants not indels", dest="not_indels", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
@@ -34,7 +34,7 @@ min_mqual=args.min_mqual
 min_bqual=args.min_bqual
 chr_region=args.chr_region
 multicaller=args.multicaller
-not_indels=args.not_indels
+#not_indels=args.not_indels
 ID=args.ID
 log=args.log
 threads=args.threads
