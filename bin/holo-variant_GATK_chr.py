@@ -59,12 +59,5 @@ if not os.path.exists(out_dir):
         genoCmd = 'gatk GenotypeGVCFs --java-options "-Xmx XX g" -R '+ref_g+' -L '+CHR+' -V '+my_database+' -O '+geno_output+''
         subrocess.Popen(genoCmd,shell=True).wait()
 
-###############################################################################################
-WHAT'S WITH THIS STEP?
-###################
-        gatk GatherVcfs --java-options "-Xmx XX g" -I input -O output
-###############################################################################################
-
-
         variantsCmd = 'gatk SelectVariants -V '+geno_output+'  --select-type-to-include SNP -O '+variants_output+''
         subrocess.Popen(variantsCmd,shell=True).wait()
