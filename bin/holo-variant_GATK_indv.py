@@ -20,7 +20,6 @@ parser.add_argument('-t', help="threads", dest="threads", required=True)
 args = parser.parse_args()
 
 
-
 bam_dir=args.bam_dir
 out_dir=args.out_dir
 ref_g=args.ref_g
@@ -46,6 +45,10 @@ if not os.path.exists(out_dir):
         for chr in chr_data.readlines():
             chromosome_list.append(chr.strip())
 
+    # Generate empty sample map files per each chromosome
+    for CHR in chromosome_list:
+        sample_map_file = out_dir+'/sample_map.'+CHR+'.txt'
+        os.mknod(sample_map_file)
 
     # Generate bam files' paths list & index
     bam_list = [os.path.basename(x) for x in glob.glob(bam_dir+'/*.bam')]
@@ -54,9 +57,10 @@ if not os.path.exists(out_dir):
         bam_ID = bam.replace(bam_dir,'')
         bam_ID = bam.replace('.bam','')
 
-        # Index bam with GATK
+        # Index bam with picard
         if not os.path.isfile(bam+'.bai')
-            'module load tools && samtools index '+bam+''
+            idxCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && picard BuildBamIndex I='+bam+''
+            subprocess.Popen(idxCmd,shell=True).wait()
 
 
         for CHR in chromosome_list:
@@ -81,3 +85,10 @@ if not os.path.exists(out_dir):
                 else:
                     haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-XmxXXg" -R '+ref_g+'  -I '+bam+' --ERC GVCF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 -L '+CHR+' -O '+out_haplo+''
                     subprocess.Popen(haploCmd,shell=True).wait()
+
+
+            # Generate sample map
+            sample_map_file = out_dir+'/sample_map.'+CHR+'.txt'
+            sample_map = open(sample_map_file,'a+')
+            sample_map.write(bam_ID+'_'+CHR+'\t'+out_haplo+'\n')
+            sample_map.close()

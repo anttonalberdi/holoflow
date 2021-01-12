@@ -9,7 +9,7 @@ import time
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-bam_dir', help="bam files directory", dest="bam_dir", required=True)
+parser.add_argument('-vcf_dir', help="individual vcf files directory", dest="vcf_dir", required=True)
 parser.add_argument('-out_dir', help="main output directory", dest="out_dir", required=True)
 parser.add_argument('-ref_g', help="reference genome", dest="ref_g", required=True)
 parser.add_argument('-chr_list', help="chromosome list file path", dest="chr_list", required=True)
@@ -25,16 +25,10 @@ parser.add_argument('-t', help="threads", dest="threads", required=True)
 args = parser.parse_args()
 
 
-bam_dir=args.bam_dir
+vcf_dir=args.vcf_dir
 out_dir=args.out_dir
 ref_g=args.ref_g
 chr_list=args.chr_list
-degr_mqual=args.degr_mqual
-min_mqual=args.min_mqual
-min_bqual=args.min_bqual
-chr_region=args.chr_region
-multicaller=args.multicaller
-#not_indels=args.not_indels
 ID=args.ID
 log=args.log
 threads=args.threads
@@ -55,28 +49,28 @@ if not os.path.exists(out_dir):
         for chr in chr_data.readlines():
             chromosome_list.append(chr.strip())
 
+    # Run GATK
+    for CHR in chromosome_list:
+        sample_map_name = vcf_dir+'/sample_map.'+CHR
+
+        # Define outputs
+        my_database = out_dir+'/'+CHR+'_database'
+        geno_output = out_dir+'/'+ID+'_'+CHR+'.combined.raw.vcf'
+        variants_output = out_dir+'/'+ID+'_'+CHR+'_SNPs.vcf.gz'
+
+        dbCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk GenomicsDBImport --java-options "-Xmx28g" --sample-name-map '+sample_map_name+' --genomicsdb-workspace-path '+my_database+' --reader-threads '+threads+' -L '+CHR+''
+        subrocess.Popen(dbCmd,shell=True).wait()
+
+        # If does not work -V gendb://my_database
+        genoCmd = 'gatk GenotypeGVCFs --java-options "-Xmx XX g" -R '+ref_g+' -L '+CHR+' -V '+my_database+' -O '+geno_output+''
+        subrocess.Popen(genoCmd,shell=True).wait()
+
+###############################################################################################
+WHAT'S WITH THIS STEP?
+###################
+        gatk GatherVcfs --java-options "-Xmx XX g" -I input -O output
+###############################################################################################
 
 
-##############################
-GATK (es un poco más pesado):
-module load java/1.8.0 gatk/4.1.8.1
-
-
-- lista de BAM files. Por cada muestra una linea, tiene que aparecer todo el path de la muestra.
-            --->  globglob
-
-
-##################
-Después para todas las muestras a la vez por cromosoma: (ID)
-for chr in chr_list: ##################
-
-
-### Isn't GenomicsDBImport supposed to go before this chr loop? inside the by-sample loop
-    gatk GenomicsDBImport --java-options "-Xmx28g" --sample-name-map cohort.sample_map --genomicsdb-workspace-path ${PATH OUT}/my_database --reader-threads ${THREADS} -L ${CHR} 2> >(tee "$logfile")
-
-    gatk GenotypeGVCFs --java-options "-Xmx XX g" -R ${REF} -L ${CHROM}  -V gendb://my_database -O combined.raw.vcf
-
-    gatk GatherVcfs --java-options "-Xmx XX g" -I input -O output
-
-    gatk SelectVariants -V combined.raw.vcf  --select-type-to-include SNP -O SNPs_${CHROM}.vcf.gz
-    #############
+        variantsCmd = 'gatk SelectVariants -V '+geno_output+'  --select-type-to-include SNP -O '+variants_output+''
+        subrocess.Popen(variantsCmd,shell=True).wait()

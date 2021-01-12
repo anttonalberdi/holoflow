@@ -54,7 +54,6 @@ if config['var_caller'] == 'gatk':
     rule get_samples:
         input:
             "{projectpath}/GVC_00-InputBams/{group}"
-            # BAMs_path=expand("{BAMs_path}", BAMs_path=config['BAMs_path'])
         output:
             directory("{projectpath}/GVC_01-CalledVar/individual_samples/{group}")
         params:
@@ -64,6 +63,9 @@ if config['var_caller'] == 'gatk':
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-variant_GATK_indv.py -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -min_prunning {params.min_prunning} -min_dangling {params.min_dangling} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
+        """
 
 
     ##
@@ -94,7 +96,6 @@ if config['var_caller'] == 'angsd': ### AND LOW DEPTH
     rule angsd_run:
         input:
             "{projectpath}/GVC_00-InputBams/{group}"
-            # BAMs_path=expand("{BAMs_path}", BAMs_path=config['BAMs_path'])
         output:
             directory("{projectpath}/GVC_01-CalledVar/per_chr/{group}")
         params:
@@ -112,7 +113,6 @@ if config['var_caller'] == 'angsd': ### AND LOW DEPTH
 ### Conditional HD
 
     ### - PHASING
-
 
 
 ### Conditional LD
