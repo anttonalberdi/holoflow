@@ -111,10 +111,11 @@ rule map_ref:
         O=expand("{O}", O=config['O']),
         E=expand("{E}", E=config['E']),
         L=expand("{L}", L=config['L']),
+        M=expand("{L}", L=config['L'])
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {params.refgenomes} -obam {output} -t {params.t} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {params.refgenomes} -obam {output} -t {params.t} -M {params.M} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 rule map_ref_split:
