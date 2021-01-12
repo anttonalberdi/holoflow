@@ -14,6 +14,7 @@ parser.add_argument('-out_dir', help="main output directory", dest="out_dir", re
 parser.add_argument('-ref_g', help="reference genome", dest="ref_g", required=True)
 parser.add_argument('-min_prunning', help="minimum prunning", dest="min_prunning", required=True)
 parser.add_argument('-min_dangling', help="minimum dangling", dest="min_dangling", required=True)
+parser.add_argument('-chr_list', help="chromosome list file path", dest="chr_list", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
@@ -25,6 +26,7 @@ out_dir=args.out_dir
 ref_g=args.ref_g
 min_prunning=args.min_prunning
 min_dangling=args.min_dangling
+chr_list=args.chr_list
 ID=args.ID
 log=args.log
 threads=args.threads

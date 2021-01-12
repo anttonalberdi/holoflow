@@ -59,12 +59,13 @@ if config['var_caller'] == 'gatk':
         params:
             min_prunning=expand("{min_prunning}", min_prunning=config['min_prunning']),
             min_dangling=expand("{min_dangling}", min_dangling=config['min_dangling']),
+            chr_list=expand("{chr_list}", chr_list=config['chr_list']),
             ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-variant_GATK_indv.py -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -min_prunning {params.min_prunning} -min_dangling {params.min_dangling} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-variant_GATK_indv.py -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -min_prunning {params.min_prunning} -min_dangling {params.min_dangling} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -73,7 +74,7 @@ if config['var_caller'] == 'gatk':
     ##
     rule get_group:
         input:
-            my_db="{projectpath}/GVC_01-CalledVar/{group}/individual_samples"
+            "{projectpath}/GVC_01-CalledVar/{group}/individual_samples"
         output:
             directory("{projectpath}/GVC_01-CalledVar/per_chr/{group}")
         params:
@@ -83,8 +84,11 @@ if config['var_caller'] == 'gatk':
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-variant_GATK_chr.py -vcf_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
+        """
 
-
+        
 
 # ANGSD as variant caller
 
