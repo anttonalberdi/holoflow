@@ -4,8 +4,6 @@
 threads:
   40
 
-chr_total:
-  46
 # Example humans
 
 #######################
@@ -57,6 +55,8 @@ not_indels:
 # (False/Number) Give number if desired, set to False instead
 min_prunning:
   1
+
+# (True/False) Give number if desired, set to False instead
 
 min_dangling:
   True

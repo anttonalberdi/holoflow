@@ -34,7 +34,7 @@ with open(str(log),'a+') as logi:
 
 
 #refbam1Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' | samtools sort -T '+ID+' -o '+bam+''
-refbam1Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+' && samtools sort -T '+ID+' -o '+bam+''
+refbam1Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+'.notsorted && samtools sort -T '+ID+' -o '+bam+' '+bam+'.notsorted'
 subprocess.check_call(refbam1Cmd, shell=True)
 
 refbam2Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -1 '+read1+' -2 '+read2+' -'

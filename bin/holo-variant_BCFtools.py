@@ -46,7 +46,7 @@ if not os.path.exists(out_dir):
     # Write to log
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as logi:
-        logi.write('\t\t'+current_time+'\tVariant calling with BCFtools tep - '+ID+'\n')
+        logi.write('\t\t'+current_time+'\tVariant calling with BCFtools step - '+ID+'\n')
         logi.write(' \n\n')
 
     # Get chromosomes list
