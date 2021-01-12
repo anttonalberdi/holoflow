@@ -49,20 +49,3 @@ rule coverage:
         """
         python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py -bam_dir {input.bam_MAGs} -mag_dir {input.drep_bin_dir}  -out_dir {params.out_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
-
-# ##
-# # Extract MAG info
-# ##
-# rule summary:
-#     input:
-#         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
-#         bed_coverages="{projectpath}/MFS_02-MAGCoverage/{group}"
-#     output:
-#         directory("{projectpath}/MFS_03-MAGSummary/{group}")
-#     params:
-#         threads=expand("{threads}", threads=config['threads']),
-#         group="{group}"
-#     shell:
-#         """
-#         python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py -bed_dir {input.bed_coverages} -mag_dir {input.drep_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
-#         """

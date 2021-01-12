@@ -64,6 +64,9 @@ E:
   1
 L:
   5
+# Generate picard-friendly bam - used for further Variant Calling with GATK on Genomics workflow
+M:
+  True
 R:
   '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample'
 

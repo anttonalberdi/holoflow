@@ -54,6 +54,11 @@ if not os.path.exists(out_dir):
         bam_ID = bam.replace(bam_dir,'')
         bam_ID = bam.replace('.bam','')
 
+        # Index bam with GATK
+        if not os.path.isfile(bam+'.bai')
+            'module load tools && samtools index '+bam+''
+
+
         for CHR in chromosome_list:
             out_haplo = out_dir+'/'+bam_ID+'_'+CHR+'.raw.g.vcf.gz'
 
