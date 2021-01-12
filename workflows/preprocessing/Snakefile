@@ -111,7 +111,7 @@ rule map_ref:
         O=expand("{O}", O=config['O']),
         E=expand("{E}", E=config['E']),
         L=expand("{L}", L=config['L']),
-        M=expand("{L}", L=config['L'])
+        M=expand("{L}", L=config['L']),
         sample="{sample}"
     shell:
         """
