@@ -15,16 +15,16 @@ rule get_paths:
 
 # BCFtools as variant caller
 
-if config['var_caller'] == 'bcftools':
+if config['var_caller'] == "bcftools":
 
     ##
     # call variants with BCFtools
     ##
     rule bcf_run:
         input:
-            "{projectpath}/GVC_00-InputBams/{group}"
+            "{projectpath}/GNM_00-InputBams/{group}"
         output:
-            directory("{projectpath}/GVC_01-CalledVar/per_chr/{group}")
+            directory("{projectpath}/GNM_01-CalledVar/per_chr/{group}")
         params:
             degr_mapp_qual=expand("{degr_mapp_qual}", degr_mapp_qual=config['degr_mapp_qual']),
             min_mapp_qual=expand("{min_mapp_qual}", min_mapp_qual=config['min_mapp_qual']),
@@ -37,25 +37,24 @@ if config['var_caller'] == 'bcftools':
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -chr_region {params.chr_region} -multicaller {params.multicaller} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
-        """
+            """
+            python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -chr_region {params.chr_region} -multicaller {params.multicaller} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
+            """
         #python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -chr_region {params.chr_region} -multicaller {params.multicaller} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath} #-not_indels {params.not_indels}
 
 
 
 # GATK as variant caller
 
-if config['var_caller'] == 'gatk':
-
+if config['var_caller'] == "gatk":
     ##
     # run GATK per sample and chromosome
     ##
     rule get_samples:
         input:
-            "{projectpath}/GVC_00-InputBams/{group}"
+            "{projectpath}/GNM_00-InputBams/{group}"
         output:
-            directory("{projectpath}/GVC_01-CalledVar/individual_samples/{group}")
+            directory("{projectpath}/GNM_01-CalledVar/individual_samples/{group}")
         params:
             min_prunning=expand("{min_prunning}", min_prunning=config['min_prunning']),
             min_dangling=expand("{min_dangling}", min_dangling=config['min_dangling']),
@@ -64,9 +63,9 @@ if config['var_caller'] == 'gatk':
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-variant_GATK_indv.py -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -min_prunning {params.min_prunning} -min_dangling {params.min_dangling} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
-        """
+            """
+            python {rules.get_paths.input.holopath}/bin/holo-variant_GATK_indv.py -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -min_prunning {params.min_prunning} -min_dangling {params.min_dangling} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
+            """
 
 
     ##
@@ -74,9 +73,9 @@ if config['var_caller'] == 'gatk':
     ##
     rule get_group:
         input:
-            "{projectpath}/GVC_01-CalledVar/{group}/individual_samples"
+            "{projectpath}/GNM_01-CalledVar/{group}/individual_samples"
         output:
-            directory("{projectpath}/GVC_01-CalledVar/per_chr/{group}")
+            directory("{projectpath}/GNM_01-CalledVar/per_chr/{group}")
         params:
             group="{group}",
             ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
@@ -84,24 +83,24 @@ if config['var_caller'] == 'gatk':
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-variant_GATK_chr.py -vcf_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
-        """
+            """
+            python {rules.get_paths.input.holopath}/bin/holo-variant_GATK_chr.py -vcf_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
+            """
 
-        
+
 
 # ANGSD as variant caller
 
-if config['var_caller'] == 'angsd': ### AND LOW DEPTH
+if config['var_caller'] == "angsd": ### AND LOW DEPTH
 
     ##
     # call variants with ANGSD
     ##
     rule angsd_run:
         input:
-            "{projectpath}/GVC_00-InputBams/{group}"
+            "{projectpath}/GNM_00-InputBams/{group}"
         output:
-            directory("{projectpath}/GVC_01-CalledVar/per_chr/{group}")
+            directory("{projectpath}/GNM_01-CalledVar/per_chr/{group}")
         params:
             model=expand("{model}", model=config['model']),
             output_logL=expand("{output_logL}", output_logL=config['output_logL']),

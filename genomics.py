@@ -81,7 +81,7 @@ def in_out_genomics(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
     # Define input directory and create it if not exists "00-InputData"
-    in_dir = os.path.join(path,"GVC_00-InputBams")
+    in_dir = os.path.join(path,"GNM_00-InputBams")
 
     if not os.path.exists(in_dir):
         os.makedirs(in_dir)
@@ -94,7 +94,7 @@ def in_out_genomics(path,in_f):
 
         # Define variables
         output_files=''
-        final_temp_dir="GVC_01-CalledVar"
+        final_temp_dir="GNM_01-CalledVar"
 
         for line in lines:
             ### Skip line if starts with # (comment line)
@@ -115,7 +115,7 @@ def in_out_genomics(path,in_f):
                 if os.path.exists(in1):
                     pass
                 else:
-                    linkbamsCmd = 'mkdir '+in1+' && ln -s '+in_bam_path+'/* '+in1+'' # Create soft link for files to be linked to new dir
+                    linkbamsCmd = 'mkdir '+in1+' && ln -s '+in_bam_path+'/*.bam '+in1+'' # Create soft link for files to be linked to new dir
                     subprocess.Popen(linkbamsCmd, shell=True).wait()
 
                 # Append chromosome list path to config
@@ -163,7 +163,7 @@ def run_genomics(in_f, path, config, cores):
             exist.append(os.path.isfile(file))
 
         if all(exist): # all output files exist
-            rmCmd='cd '+path+' | grep -v '+final_temp_dir+' | xargs rm -rf && mv '+final_temp_dir+' GVC_Holoflow'
+            rmCmd='cd '+path+' | grep -v '+final_temp_dir+' | xargs rm -rf && mv '+final_temp_dir+' GNM_Holoflow'
             subprocess.Popen(rmCmd,shell=True).wait()
 
         else:   # all expected output files don't exist: keep tmp dirs

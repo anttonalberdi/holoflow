@@ -56,7 +56,7 @@ if not os.path.exists(out_dir):
         subrocess.Popen(dbCmd,shell=True).wait()
 
         # If does not work -V gendb://my_database
-        genoCmd = 'gatk GenotypeGVCFs --java-options "-Xmx XX g" -R '+ref_g+' -L '+CHR+' -V '+my_database+' -O '+geno_output+''
+        genoCmd = 'gatk GenotypeGNMFs --java-options "-Xmx XX g" -R '+ref_g+' -L '+CHR+' -V '+my_database+' -O '+geno_output+''
         subrocess.Popen(genoCmd,shell=True).wait()
 
         variantsCmd = 'gatk SelectVariants -V '+geno_output+'  --select-type-to-include SNP -O '+variants_output+''

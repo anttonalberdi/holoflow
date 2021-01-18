@@ -71,21 +71,21 @@ if not os.path.exists(out_dir):
             if not (min_dangling == 'False'):
 
                 if not (min_prunning == 'False'):
-                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-XmxXXg" -R '+ref_g+'  -I '+bam+' --ERC GVCF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 --min-prunning '+min_prunning+' --min-dangling-branch-length1 -L '+CHR+' -O '+out_haplo+''
+                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-XmxXXg" -R '+ref_g+'  -I '+bam+' --ERC GNMF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 --min-prunning '+min_prunning+' --min-dangling-branch-length1 -L '+CHR+' -O '+out_haplo+''
                     subprocess.Popen(haploCmd,shell=True).wait()
 
                 else:
-                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-XmxXXg" -R '+ref_g+'  -I '+bam+' --ERC GVCF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 --min-dangling-branch-length1 -L '+CHR+' -O '+out_haplo+''
+                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-XmxXXg" -R '+ref_g+'  -I '+bam+' --ERC GNMF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 --min-dangling-branch-length1 -L '+CHR+' -O '+out_haplo+''
                     subprocess.Popen(haploCmd,shell=True).wait()
 
             else:
 
                 if not (min_prunning == 'False'):
-                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-XmxXXg" -R '+ref_g+'  -I '+bam+' --ERC GVCF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 --min-prunning '+min_prunning+' -L '+CHR+' -O '+out_haplo+''
+                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-XmxXXg" -R '+ref_g+'  -I '+bam+' --ERC GNMF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 --min-prunning '+min_prunning+' -L '+CHR+' -O '+out_haplo+''
                     subprocess.Popen(haploCmd,shell=True).wait()
 
                 else:
-                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-XmxXXg" -R '+ref_g+'  -I '+bam+' --ERC GVCF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 -L '+CHR+' -O '+out_haplo+''
+                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-XmxXXg" -R '+ref_g+'  -I '+bam+' --ERC GNMF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 -L '+CHR+' -O '+out_haplo+''
                     subprocess.Popen(haploCmd,shell=True).wait()
 
 
