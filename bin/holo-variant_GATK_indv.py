@@ -56,8 +56,8 @@ if not os.path.exists(out_dir):
     bam_list = [os.path.basename(x) for x in glob.glob(bam_dir+'/*.bam')]
 
     # Load dependencies
-    depCmd = 'module load tools java/1.8.0 gatk/4.1.8.1'
-    subprocess.Popen(depCmd,shell=True).wait()
+    #depCmd = 'module load tools java/1.8.0 '
+    #subprocess.Popen(depCmd,shell=True).wait()
 
     for bam in bam_list:
         bam_ID = bam.replace(bam_dir,'')
@@ -65,7 +65,7 @@ if not os.path.exists(out_dir):
 
         # Index bam with picard
         if not os.path.isfile(bam+'.bai'):
-            idxCmd = 'module load picard-tools/2.9.1 && picard BuildBamIndex I='+bam+''
+            idxCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 picard-tools/2.9.1 && picard BuildBamIndex I='+bam+''
             subprocess.Popen(idxCmd,shell=True).wait()
 
 
