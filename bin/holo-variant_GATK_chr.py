@@ -52,11 +52,11 @@ if not os.path.exists(out_dir):
         geno_output = out_dir+'/'+ID+'_'+CHR+'.combined.raw.vcf'
         variants_output = out_dir+'/'+ID+'_'+CHR+'_SNPs.vcf.gz'
 
-        dbCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk GenomicsDBImport --java-options "-Xmx28g" --sample-name-map '+sample_map_name+' --genomicsdb-workspace-path '+my_database+' --reader-threads '+threads+' -L '+CHR+''
+        dbCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk GenomicsDBImport --java-options "-Xmx18g" --sample-name-map '+sample_map_name+' --genomicsdb-workspace-path '+my_database+' --reader-threads '+threads+' -L '+CHR+''
         subrocess.Popen(dbCmd,shell=True).wait()
 
         # If does not work -V gendb://my_database
-        genoCmd = 'gatk GenotypeGNMFs --java-options "-Xmx XX g" -R '+ref_g+' -L '+CHR+' -V '+my_database+' -O '+geno_output+''
+        genoCmd = 'gatk GenotypeGNMFs --java-options "Xmx18g" -R '+ref_g+' -L '+CHR+' -V '+my_database+' -O '+geno_output+''
         subrocess.Popen(genoCmd,shell=True).wait()
 
         variantsCmd = 'gatk SelectVariants -V '+geno_output+'  --select-type-to-include SNP -O '+variants_output+''
