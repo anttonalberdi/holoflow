@@ -102,7 +102,7 @@ def in_out_final_stats(path,in_f):
                 if os.path.exists(in1):
                     pass
                 else:
-                    mvreadsCmd = 'cd '+mtg_reads_dir+' && cp *.fastq '+in1+''
+                    mvreadsCmd = 'mkdir '+in1+' && cd '+mtg_reads_dir+' && cp *.fastq '+in1+''
                     subprocess.Popen(mvreadsCmd, shell=True).wait()
 
 
@@ -112,7 +112,7 @@ def in_out_final_stats(path,in_f):
                 if os.path.exists(in2):
                     pass
                 else:
-                    mvbinsCmd = 'cd '+drep_bins_dir+' && cp *.fa '+in2+''
+                    mvbinsCmd = 'mkdir '+in2+' && cd '+drep_bins_dir+' && cp *.fa '+in2+''
                     subprocess.Popen(mvbinsCmd, shell=True).wait()
 
 
