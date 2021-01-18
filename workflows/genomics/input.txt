@@ -1,2 +1,2 @@
-#GROUP_NAME PATH_TO_BAMS_DIR CHROMOSOME_LIST_PATH
+#GROUP_NAME PATH_TO_BAMS_DIR CHROMOSOME_LIST_FILE_PATH
 HoloFood_chicks path/to/chicken/data/Directory my/path/chr_list_Gallusgallus.txt
