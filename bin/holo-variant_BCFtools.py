@@ -82,13 +82,13 @@ if not os.path.exists(out_dir):
         if not (chr_region == 'False'):
 
             if not (multicaller == 'False'):
-                bcf1Cmd = 'module load tools samtools/1.9 bcftools/1.9 && bcftools mileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' -r '+chr_region+' | bcftools call -m -v -Oz -o '+mpileup_output+''
+                bcf1Cmd = 'module load tools bcftools/1.9 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' -r '+chr_region+' | bcftools call -m -v -Oz -o '+mpileup_output+''
                 subprocess.Popen(bcf1Cmd,shell=True).wait()
                 bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
                 subprocess.Popen(bcf2Cmd,shell=True).wait()
 
             else:
-                bcf1Cmd = 'module load tools samtools/1.9 bcftools/1.9 && bcftools mileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' -r '+chr_region+' | bcftools call -v -Oz -o '+mpileup_output+''
+                bcf1Cmd = 'module load tools bcftools/1.9 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' -r '+chr_region+' | bcftools call -v -Oz -o '+mpileup_output+''
                 subprocess.Popen(bcf1Cmd,shell=True).wait()
                 bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
                 subprocess.Popen(bcf2Cmd,shell=True).wait()
@@ -96,13 +96,13 @@ if not os.path.exists(out_dir):
 
         else:
             if not (multicaller == 'False'):
-                bcf1Cmd = 'module load tools samtools/1.9 bcftools/1.9 && bcftools mileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -m -v -Oz -o '+mpileup_output+''
+                bcf1Cmd = 'module load tools bcftools/1.9 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -m -v -Oz -o '+mpileup_output+''
                 subprocess.Popen(bcf1Cmd,shell=True).wait()
                 bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
                 subprocess.Popen(bcf2Cmd,shell=True).wait()
 
             else:
-                bcf1Cmd = 'module load tools samtools/1.9 bcftools/1.9 && bcftools mileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -v -Oz -o '+mpileup_output+''
+                bcf1Cmd = 'module load tools bcftools/1.9 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -v -Oz -o '+mpileup_output+''
                 subprocess.Popen(bcf1Cmd,shell=True).wait()
                 bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
                 subprocess.Popen(bcf2Cmd,shell=True).wait()
