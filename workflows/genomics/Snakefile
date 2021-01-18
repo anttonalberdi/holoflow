@@ -91,25 +91,25 @@ if config['var_caller'] == "gatk":
 
 # ANGSD as variant caller
 
-if config['var_caller'] == "angsd": ### AND LOW DEPTH
-
-    ##
-    # call variants with ANGSD
-    ##
-    rule angsd_run:
-        input:
-            "{projectpath}/GNM_00-InputBams/{group}"
-        output:
-            directory("{projectpath}/GNM_01-CalledVar/per_chr/{group}")
-        params:
-            model=expand("{model}", model=config['model']),
-            output_logL=expand("{output_logL}", output_logL=config['output_logL']),
-            major_minor=expand("{major_minor}", major_minor=config['major_minor']),
-            ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
-            chr_list=expand("{chr_list}", chr_list=config['chr_list']),
-            group="{group}",
-            threads=expand("{threads}", threads=config['threads'])
-        shell:
+# if config['var_caller'] == "angsd": ### AND LOW DEPTH
+#
+#     ##
+#     # call variants with ANGSD
+#     ##
+#     rule angsd_run:
+#         input:
+#             "{projectpath}/GNM_00-InputBams/{group}"
+#         output:
+#             directory("{projectpath}/GNM_01-CalledVar/per_chr/{group}")
+#         params:
+#             model=expand("{model}", model=config['model']),
+#             output_logL=expand("{output_logL}", output_logL=config['output_logL']),
+#             major_minor=expand("{major_minor}", major_minor=config['major_minor']),
+#             ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
+#             chr_list=expand("{chr_list}", chr_list=config['chr_list']),
+#             group="{group}",
+#             threads=expand("{threads}", threads=config['threads'])
+#         shell:
 
 
 
