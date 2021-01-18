@@ -58,13 +58,14 @@ if not os.path.exists(out_dir):
 
 
     # Generate bam files' paths file list & index
-    bam_list = [os.path.basename(x) for x in glob.glob(bam_dir+'/*.bam')]
-    bam_list_file = out_path+'/'+ID+'_bam_list.txt'
+    bam_list = glob.glob(bam_dir+'/*.bam')
+    bam_list_file = out_dir+'/'+ID+'_bam_list.txt'
 
     with open(bam_list_file,'w+') as bam_files:
 
         for bam in bam_list:
             bam_files.write(str(bam)+'\n')
+
 
             if not os.path.isfile(bam+'.bai'): # If not indexed, index bam - Theoretically these are sorted from preprocessing
                 idxbamCmd = 'module load tools samtools/1.9 && samtools index '+bam+''
@@ -106,3 +107,5 @@ if not os.path.exists(out_dir):
                 subprocess.Popen(bcf1Cmd,shell=True).wait()
                 bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
                 subprocess.Popen(bcf2Cmd,shell=True).wait()
+
+        

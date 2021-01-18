@@ -38,9 +38,9 @@ if config['var_caller'] == "bcftools":
             threads=expand("{threads}", threads=config['threads'])
         shell:
             """
-            python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -chr_region {params.chr_region} -multicaller {params.multicaller} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
+            python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -chr_region {params.chr_region} -multicaller {params.multicaller} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
             """
-        #python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -chr_region {params.chr_region} -multicaller {params.multicaller} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath} #-not_indels {params.not_indels}
+        #python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -chr_region {params.chr_region} -multicaller {params.multicaller} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath} #-not_indels {params.not_indels}
 
 
 
@@ -77,7 +77,6 @@ if config['var_caller'] == "gatk":
         output:
             directory("{projectpath}/GNM_01-CalledVar/per_chr/{group}")
         params:
-            group="{group}",
             ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
             chr_list=expand("{chr_list}", chr_list=config['chr_list']),
             group="{group}",
