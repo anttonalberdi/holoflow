@@ -52,21 +52,25 @@ if not os.path.exists(out_dir):
         sample_map_file = out_dir+'/sample_map.'+CHR+'.txt'
         os.mknod(sample_map_file)
 
-    # Generate bam files' paths list & index
-    bam_list = [os.path.basename(x) for x in glob.glob(bam_dir+'/*.bam')]
+    # Create .dict for reference genome
+    ref_g_base = ref_g.replace('.fna','')
+    if not os.path.isfile(ref_g_base+'.dict'):
+        dictCmd = 'PICARD="/services/tools/picard-tools/2.20.2/picard.jar" && java -jar $PICARD CreateSequenceDictionary R='+ref_g+' O='+ref_g_base+'.dict'
+        subprocess.Popen(dictCmd,shell=True).wait()
 
-    # Load dependencies
-    #depCmd = 'module load tools java/1.8.0 '
-    #subprocess.Popen(depCmd,shell=True).wait()
+
+    # Generate bam files' paths list & index
+    bam_list = glob.glob(bam_dir+'/*.bam')
 
     for bam in bam_list:
-        bam_ID = bam.replace(bam_dir,'')
-        bam_ID = bam.replace('.bam','')
+        bam_ID = bam.replace(bam_dir+'/','')
+        bam_ID = bam_ID.replace('.bam','')
+        print(bam_ID)
 
         # Index bam with picard
         if not os.path.isfile(bam+'.bai'):
-            idxCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 picard-tools/2.9.1 && picard BuildBamIndex I='+bam+''
-            subprocess.Popen(idxCmd,shell=True).wait()
+            idxCmd = 'module load tools java/1.8.0 && PICARD="/services/tools/picard-tools/2.20.2/picard.jar" && java -jar $PICARD BuildBamIndex I='+bam+' O='+bam+'.bai'
+            #subprocess.Popen(idxCmd,shell=True).wait()
 
 
         for CHR in chromosome_list:
@@ -75,11 +79,11 @@ if not os.path.exists(out_dir):
             if not (min_dangling == 'False'):
 
                 if not (min_pruning == 'False'):
-                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-Xmx180g" -R '+ref_g+'  -I '+bam+' --ERC GVCF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 --min-pruning '+min_pruning+' -- min-dangling-branch-length '+min_dangling+' -L '+CHR+' -O '+out_haplo+''
+                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-Xmx180g" -R '+ref_g+'  -I '+bam+' --ERC GVCF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 --min-pruning '+min_pruning+' --min-dangling-branch-length '+min_dangling+' -L '+CHR+' -O '+out_haplo+''
                     subprocess.Popen(haploCmd,shell=True).wait()
 
                 else:
-                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-Xmx180g" -R '+ref_g+'  -I '+bam+' --ERC GVCF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 -- min-dangling-branch-length '+min_dangling+' -L '+CHR+' -O '+out_haplo+''
+                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-Xmx180g" -R '+ref_g+'  -I '+bam+' --ERC GVCF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 --min-dangling-branch-length '+min_dangling+' -L '+CHR+' -O '+out_haplo+''
                     subprocess.Popen(haploCmd,shell=True).wait()
 
             else:
