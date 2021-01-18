@@ -56,10 +56,10 @@ not_indels:
 min_pruning:
   1
 
-# (True/False) Give number if desired, set to False instead
+# (False/Number) Give number if desired, set to False instead
 
 min_dangling:
-  True
+  1
 
 
 #######################

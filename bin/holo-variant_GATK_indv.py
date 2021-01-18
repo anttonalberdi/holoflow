@@ -55,13 +55,17 @@ if not os.path.exists(out_dir):
     # Generate bam files' paths list & index
     bam_list = [os.path.basename(x) for x in glob.glob(bam_dir+'/*.bam')]
 
+    # Load dependencies
+    depCmd = 'module load tools java/1.8.0 gatk/4.1.8.1'
+    subprocess.Popen(depCmd,shell=True).wait()
+
     for bam in bam_list:
         bam_ID = bam.replace(bam_dir,'')
         bam_ID = bam.replace('.bam','')
 
         # Index bam with picard
         if not os.path.isfile(bam+'.bai'):
-            idxCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && picard BuildBamIndex I='+bam+''
+            idxCmd = 'module load picard-tools/2.9.1 && picard BuildBamIndex I='+bam+''
             subprocess.Popen(idxCmd,shell=True).wait()
 
 
@@ -71,11 +75,11 @@ if not os.path.exists(out_dir):
             if not (min_dangling == 'False'):
 
                 if not (min_pruning == 'False'):
-                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-Xmx180g" -R '+ref_g+'  -I '+bam+' --ERC GNMF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 --min-pruning '+min_pruning+' --min-dangling-branch-length1 -L '+CHR+' -O '+out_haplo+''
+                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-Xmx180g" -R '+ref_g+'  -I '+bam+' --ERC GNMF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 --min-pruning '+min_pruning+' -- min-dangling-branch-length '+min_dangling+' -L '+CHR+' -O '+out_haplo+''
                     subprocess.Popen(haploCmd,shell=True).wait()
 
                 else:
-                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-Xmx180g" -R '+ref_g+'  -I '+bam+' --ERC GNMF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 --min-dangling-branch-length1 -L '+CHR+' -O '+out_haplo+''
+                    haploCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk HaplotypeCaller --java-options "-Xmx180g" -R '+ref_g+'  -I '+bam+' --ERC GNMF --native-pair-hmm-threads '+threads+' --sample-ploidy 2 -- min-dangling-branch-length '+min_dangling+' -L '+CHR+' -O '+out_haplo+''
                     subprocess.Popen(haploCmd,shell=True).wait()
 
             else:
