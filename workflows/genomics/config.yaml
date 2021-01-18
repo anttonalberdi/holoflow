@@ -53,7 +53,7 @@ not_indels:
   # These two parameters obtain more agressive variants.
 
 # (False/Number) Give number if desired, set to False instead
-min_prunning:
+min_pruning:
   1
 
 # (True/False) Give number if desired, set to False instead

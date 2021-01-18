@@ -92,7 +92,7 @@ if args.check_cct:
                         with open(log,'a+') as log_dup:
                             log_dup.write('\n\t\t'+f_binner+' did not produce any bins originally, the observed bins are duplicates from '+t_binner+'.\n')
                             sys.exit()
-                            
+
                         # Check and finish
                         if (not len(os.listdir(f_bindir)) == 0) and (f_binner == false_bins[-1]):
                             os.mknod(final_check)
