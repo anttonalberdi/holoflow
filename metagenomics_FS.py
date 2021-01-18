@@ -93,26 +93,30 @@ def in_out_final_stats(path,in_f):
                 mtg_reads_dir=line[1]
                 drep_bins_dir=line[2]
 
+                in_sample = in_dir+'/'+sample_name
+                if not os.path.exists(in_sample):
+                    os.makedirs(in_sample)
+
                 # Define output files based on input.txt
                 output_files+=path+'/'+final_temp_dir+'/'+sample_name+'/'+sample_name+'.coverage_byMAG.txt '
 
                 # Define input dir
-                in1=in_dir+'/'+sample_name+'/metagenomic_reads'
+                in1=in_sample+'/metagenomic_reads'
                 # Check if input files already in desired dir
                 if os.path.exists(in1):
                     pass
                 else:
-                    mvreadsCmd = 'mkdir '+in1+' && cd '+mtg_reads_dir+' && cp *.fastq '+in1+''
+                    mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq '+in1+''
                     subprocess.Popen(mvreadsCmd, shell=True).wait()
 
 
                 # Define input dir
-                in2=in_dir+'/'+sample_name+'/dereplicated_bins'
+                in2=in_sample+'/dereplicated_bins'
                 # Check if input files already in desired dir
                 if os.path.exists(in2):
                     pass
                 else:
-                    mvbinsCmd = 'mkdir '+in2+' && cd '+drep_bins_dir+' && cp *.fa '+in2+''
+                    mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+''
                     subprocess.Popen(mvbinsCmd, shell=True).wait()
 
 
