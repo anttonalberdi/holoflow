@@ -129,8 +129,8 @@ if not (os.path.exists(str(out_dir))):
 
             # Calculate percentage of mapped reads from: (mapped reads/ total reads) * 100
         mapped_reads = np.array(mapped_reads).astype(int)
-        mapped_reads = mapped_reads / 2
         total_reads = np.array(total_reads).astype(int)
+        total_reads = total_reads * 2
         percentages = np.divide(mapped_reads,total_reads)
         percentages = (percentages*100).round(decimals=4).tolist() # true division
 
