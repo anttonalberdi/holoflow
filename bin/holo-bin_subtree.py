@@ -78,44 +78,5 @@ for i in range(len(in_paths)):
     file = os.path.dirname(sys.argv[0])
     curr_dir = os.path.abspath(file)
 
-    subtreeCmd='Rscript '+curr_dir+'/holo-bin_subtre.R --tips '+final_tips+' -in_tree '+tree_path+' -out_tree '+out_tree_path+''
+    subtreeCmd='module load tools gcc/5.4.0 intel/compiler/64/2018_update2 R/3.5.3-ICC-MKL && Rscript '+curr_dir+'/holo-bin_subtre.R --tips '+final_tips+' -in_tree '+tree_path+' -out_tree '+out_tree_path+''
     subprocess.Popen(subtreeCmd,shell=True).wait()
-
-
-
-
-
-
-
-# # Read archea tree
-# arc = "cervids_BINF2021/drep_joint/MDR_03-BinPhylogeny/across_CERVIDS/classify/gtdbtk.ar122.classify.tree"
-# arc_t = open(arc,'r')
-# arc_tree = str()
-# for line in arc_t.readlines():
-#     arc_tree+=line
-# arc_t.close()
-#
-# # Read bacteria tree
-# bac = "cervids_BINF2021/drep_joint/MDR_03-BinPhylogeny/across_CERVIDS/classify/gtdbtk.bac120.classify.tree"
-# bac_t = open(bac,'r')
-# bac_tree = str()
-# for line in bac_t.readlines():
-#     bac_tree+=line
-# bac_t.close()
-
-# # Find which USER bins are in tree
-# bins = list()
-# for ID in ID_list:
-#     match = re.findall(''+str(ID)+'[0-9]?.{1}[a-z]*_?[0-9]{4}|'+str(ID)+'[0-9]?.{1}[a-z]*_?[0-9]{3}|'+str(ID)+'[0-9]?.{1}[a-z]*_?[0-9]{2}',arc_tree) # creates a match object
-#     if match:
-#         bins = bins + match
-# Check if found bins exist (S and LS bins got confused...)
-# final_bins = list()
-# real_bins = [os.path.basename(x) for x in glob.glob(dir+'/MDR_01-BinDereplication/across_CERVIDS/dereplicated_genomes/*.fa')]
-#
-# for bin in bins:
-#
-#     if bin+'.fa' in real_bins:
-#         final_bins.append(bin)
-# print(final_bins)
-#

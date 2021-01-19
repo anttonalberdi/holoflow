@@ -85,7 +85,6 @@ if (os.path.isfile(str(IDXmag_catalogue_file))):
         read_name = re.sub('_[0-9]\.fastq','',read_name)
         samples.append(read_name)
     sample_list = sorted(set(samples))
-    print(sample_list)
 
     for sample in sample_list:
         # Map every sample to mag catalogue file (competitive mapping) - get one bam for every sample
@@ -109,7 +108,7 @@ if (os.path.isfile(str(IDXmag_catalogue_file))):
 
         # Get mapped number of reads and bases
         mappedCmd='module load tools samtools/1.9 && samtools flagstat '+out_bam+' | grep "mapped (" | cut -f1 -d"+" >> '+mapped_reads_tmp+''
-        subprocess.Popen(mappedCmd, shell=True).wait()
+        #subprocess.Popen(mappedCmd, shell=True).wait()
 
 
     ## Build stats file
@@ -122,16 +121,16 @@ if (os.path.isfile(str(IDXmag_catalogue_file))):
     with open(mapped_reads_tmp,'r+') as mapped_reads_file:
         mapped_reads = list()
         for line in mapped_reads_file.readlines():
-            mapped_reads.append(line.strip()+'\n')
-    os.remove(mapped_reads_tmp)
+            mapped_reads.append(line.strip())
+    #os.remove(mapped_reads_tmp)
 
     # Write number of mapped reads per sample
-    stats.write('Mapped Reads'+'\t'+('\t').join(mapped_reads))
+    stats.write('Mapped Reads'+'\t'+('\t').join(mapped_reads)+'\n')
 
         # Calculate percentage of mapped reads from: (mapped reads/ total reads) * 100
-    mapped_reads = np.array(mapped_reads)
+    mapped_reads = np.array(mapped_reads).astype(int)
     print(mapped_reads)
-    total_reads = np.array(total_reads)
+    total_reads = np.array(total_reads).astype(int)
     percentages = np.multiply(mapped_reads,total_reads)
     print(percentages)
     percentages = to.list(percentages/100) # true division
