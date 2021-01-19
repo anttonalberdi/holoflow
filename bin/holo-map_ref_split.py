@@ -49,7 +49,6 @@ subprocess.check_call(rmAllbamCmd, shell=True)
 mvstatsCmd= 'mv '+in_stats+' '+out_stats+''
 subprocess.check_call(mvstatsCmd, shell=True)
 
-
 reads = 0
 bases = 0
 with open(str(read1), 'rb') as read:

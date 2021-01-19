@@ -6,6 +6,7 @@ import os
 import glob
 import time
 import re
+import numpy as np
 
 
 #Argument parsing
@@ -28,59 +29,113 @@ threads=args.threads
 
 
 # Run
-if not (os.path.exists(str(out_dir))):
-    os.mkdir(str(out_dir))
+# if not (os.path.exists(str(out_dir))):
+#     os.mkdir(str(out_dir))
 
-    # Write to log
-    current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-    with open(str(log),'a+') as logi:
-        logi.write('\t\t'+current_time+'\tMAG Mapping step - '+ID+'\n')
-        logi.write('MAGs are being mapped to the original metagenomic read files to assess its coverage.\n\n')
-
-
-    # Create MAGs file --> competitive mapping for each sample
-    mag_catalogue_file=out_dir+'/'+ID+'_MAG_Catalogue.fa'
-
-    if not (os.path.isfile(str(mag_catalogue_file))):
-        with open(mag_catalogue_file,'w+') as magcat:
-
-            maglist = glob.glob(str(bin_dir)+"/*.fa")
-            for mag in maglist:
-                mag_name=os.path.basename(mag)
-                mag_name = mag_name.replace(".fa","")
-
-                with open(mag,'r') as mag_data:
-                    for line in mag_data.readlines():
-                        if line.startswith('>'):
-                            line=line.replace('>','>'+mag_name+'-')
-                            magcat.write(line)
-                        else:
-                            magcat.write(line)
+# Write to log
+current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
+with open(str(log),'a+') as logi:
+    logi.write('\t\t'+current_time+'\tMAG Mapping step - '+ID+'\n')
+    logi.write('MAGs are being mapped to the original metagenomic read files to assess its coverage.\n\n')
 
 
-    # Index MAG catalogue file
-    IDXmag_catalogue_file=out_dir+'/'+ID+'_MAG_Catalogue.fa.fai'
+# Create MAGs file --> competitive mapping for each sample
+mag_catalogue_file=out_dir+'/'+ID+'_MAG_Catalogue.fa'
 
-    if not (os.path.isfile(str(IDXmag_catalogue_file))):
-        idxsamCmd='module load tools samtools/1.9 && samtools faidx '+mag_catalogue_file+''
-        idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+mag_catalogue_file+''
+if not (os.path.isfile(str(mag_catalogue_file))):
+    with open(mag_catalogue_file,'w+') as magcat:
 
-        subprocess.Popen(idxbwaCmd, shell=True).wait()
-        subprocess.Popen(idxsamCmd, shell=True).wait()
+        maglist = glob.glob(str(bin_dir)+"/*.fa")
+        for mag in maglist:
+            mag_name=os.path.basename(mag)
+            mag_name = mag_name.replace(".fa","")
+
+            with open(mag,'r') as mag_data:
+                for line in mag_data.readlines():
+                    if line.startswith('>'):
+                        line=line.replace('>','>'+mag_name+'-')
+                        magcat.write(line)
+                    else:
+                        magcat.write(line)
 
 
-    if (os.path.isfile(str(IDXmag_catalogue_file))):
-        readlist = glob.glob(str(fq_dir)+"/*.fastq")
-        samples = list()
-        for file in readlist:
-            read_name=''
-            read_name=os.path.basename(file)
-            read_name = re.sub('_[0-9]\.fastq','',read_name)
-            samples.append(read_name)
+# Index MAG catalogue file
+IDXmag_catalogue_file=out_dir+'/'+ID+'_MAG_Catalogue.fa.fai'
 
-        sample_list = set(samples)
-        for sample in sample_list:
-            # Map every sample to mag catalogue file (competitive mapping) - get one bam for every sample
-            out_bam=out_dir+'/'+sample+'.bam'
-            mapbinCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+mag_catalogue_file+' '+fq_dir+'/'+sample+'_1.fastq '+fq_dir+'/'+sample+'_2.fastq | samtools view -b - | samtools sort -T '+ID+' -o '+out_bam+''
-            subprocess.Popen(mapbinCmd, shell=True).wait()
+if not (os.path.isfile(str(IDXmag_catalogue_file))):
+    idxsamCmd='module load tools samtools/1.9 && samtools faidx '+mag_catalogue_file+''
+    idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+mag_catalogue_file+''
+
+    #subprocess.Popen(idxbwaCmd, shell=True).wait()
+    #subprocess.Popen(idxsamCmd, shell=True).wait()
+
+
+# Initialize stats
+stats_file = out_dir+'/'+ID+'.MAG_mapping_stats.txt'
+sample_list = list()
+total_reads = list()
+mapped_reads_tmp = out_dir+'/'+ID+'.tmp_mappedreads.txt'
+
+if (os.path.isfile(str(IDXmag_catalogue_file))):
+    readlist = glob.glob(str(fq_dir)+"/*.fastq")
+    samples = list()
+    for file in readlist:
+        read_name=''
+        read_name=os.path.basename(file)
+        read_name = re.sub('_[0-9]\.fastq','',read_name)
+        samples.append(read_name)
+    sample_list = sorted(set(samples))
+    print(sample_list)
+
+    for sample in sample_list:
+        # Map every sample to mag catalogue file (competitive mapping) - get one bam for every sample
+        out_bam = out_dir+'/'+sample+'.bam'
+        read1 = fq_dir+'/'+sample+'_1.fastq'
+        read2 = fq_dir+'/'+sample+'_2.fastq'
+
+        mapbinCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+mag_catalogue_file+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+ID+' -o '+out_bam+''
+        #subprocess.Popen(mapbinCmd, shell=True).wait()
+
+
+        # Get total number of initial reads bases
+        reads = 0
+        with open(str(read1), 'rb') as read:
+            for id in read:
+                seq = next(read)
+                reads += 1
+                next(read)
+                next(read)
+        total_reads.append(reads)
+
+        # Get mapped number of reads and bases
+        mappedCmd='module load tools samtools/1.9 && samtools flagstat '+out_bam+' | grep "mapped (" | cut -f1 -d"+" >> '+mapped_reads_tmp+''
+        subprocess.Popen(mappedCmd, shell=True).wait()
+
+
+    ## Build stats file
+    # Write sample IDs
+    stats = open(stats_file,'w+')
+    sample_list.insert(0,'Sample_ID')
+    stats.write(('\t').join(sample_list)+'\n')
+
+        # Retrieve all numbers of mapped reads
+    with open(mapped_reads_tmp,'r+') as mapped_reads_file:
+        mapped_reads = list()
+        for line in mapped_reads_file.readlines():
+            mapped_reads.append(line.strip()+'\n')
+    os.remove(mapped_reads_tmp)
+
+    # Write number of mapped reads per sample
+    stats.write('Mapped Reads'+'\t'+('\t').join(mapped_reads))
+
+        # Calculate percentage of mapped reads from: (mapped reads/ total reads) * 100
+    mapped_reads = np.array(mapped_reads)
+    print(mapped_reads)
+    total_reads = np.array(total_reads)
+    percentages = np.multiply(mapped_reads,total_reads)
+    print(percentages)
+    percentages = to.list(percentages/100) # true division
+    print(percentages)
+
+    # Write percentages
+    stats.write('% Mapped Reads'+'\t'+('\t').join(percentages))
