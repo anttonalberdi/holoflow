@@ -65,12 +65,14 @@ if not os.path.exists(out_dir):
     for bam in bam_list:
         bam_ID = bam.replace(bam_dir+'/','')
         bam_ID = bam_ID.replace('.bam','')
+        if '_ref' in bam_ID:
+            bam_ID = bam_ID.replace('_ref','')
         print(bam_ID)
 
         # Index bam with picard
         if not os.path.isfile(bam+'.bai'):
-            idxCmd = 'module load tools java/1.8.0 && PICARD="/services/tools/picard-tools/2.20.2/picard.jar" && java -jar $PICARD BuildBamIndex I='+bam+' O='+bam+'.bai'
-            #subprocess.Popen(idxCmd,shell=True).wait()
+            idxCmd = 'module load tools samtools/1.9 && samtools index '+bam+''
+            subprocess.Popen(idxCmd,shell=True).wait()
 
 
         for CHR in chromosome_list:
