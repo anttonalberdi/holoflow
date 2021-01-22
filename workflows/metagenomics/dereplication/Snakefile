@@ -64,21 +64,21 @@ rule phylogeny:
         """
         python {rules.get_paths.input.holopath}/bin/holo-bin_phylogeny.py -genome_dir {input.drep_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
-
-
-##
-# GTDBTk phylogenetic subtree generation
-##
-rule subtree:
-    input:
-        tree_dir="{projectpath}/MDR_03-BinPhylogeny/{group}/classify",
-        drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}/dereplicated_genomes"
-    output:
-        bac_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}/classify/BAC_Holoflow.gtdbtk_sub.tree",
-        ar_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}/classify/AR_Holoflow.gtdbtk_sub.tree"
-    params:
-        group="{group}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_subtree.py -tree_dir {input.tree_dir} -bin_dir {input.drep_bin_dir} -bac_o {output.bac_subtree} -ar_o {output.ar_subtree} -ID {params.group} -log {rules.get_paths.input.logpath}
-        """
+#
+#
+# ##
+# # GTDBTk phylogenetic subtree generation
+# ##
+# rule subtree:
+#     input:
+#         tree_dir="{projectpath}/MDR_03-BinPhylogeny/{group}/classify",
+#         drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}/dereplicated_genomes"
+#     output:
+#         bac_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}/classify/BAC_Holoflow.gtdbtk_sub.tree",
+#         ar_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}/classify/AR_Holoflow.gtdbtk_sub.tree"
+#     params:
+#         group="{group}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-bin_subtree.py -tree_dir {input.tree_dir} -bin_dir {input.drep_bin_dir} -bac_o {output.bac_subtree} -ar_o {output.ar_subtree} -ID {params.group} -log {rules.get_paths.input.logpath}
+#         """
