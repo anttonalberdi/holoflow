@@ -12,8 +12,9 @@ The main *holoflow* directory contains a given number of Python scripts which wo
   - ***preprocessing.py***    - Data preprocessing from quality to duplicate sequences for further downstream analysis.
   - ***metagenomics_IB.py***  - Individual assembly-based analysis and metagenomics binning. 
   - ***metagenomics_CB.py***  - Coassembly-based analysis and metagenomics binning. 
-  - ***metagenomics_DR.py***  - Dereplication and annotation of metagenomic bins produced by either *metagenomics_IB* or *metagenomics_CB*. 
-  
+  - ***metagenomics_DR.py***  - Dereplication and Annotation of metagenomic bins produced by either *metagenomics_IB* or *metagenomics_CB*. 
+  - ***metagenomics_FS.py***  - Final statistical report of dereplicated bins obtained with *metagenomics_DR.py*. 
+
   
   
 These are designed to be called from the command line and require the following arguments (**{only in PREPROCESSING}**,**[optional arguments]**):  
@@ -101,8 +102,21 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
 | --- | --- | --- |
 | GroupA | /home/directory_samplesA |
 | GroupB | /home/directory_samplesB |
-
   
+
+##### *metagenomics_FS.py*
+
+  1. Coassembly group or sample group name.  
+  2. Input directory path where the group's/samples' in the group original metagenomic *_1.fastq* & *_2.fastq* files are.
+  3. Input directory path where all dereplicated *.fa* bins are.
+  
+- Example:
+
+|   |   |   |   |
+| --- | --- | --- | --- |
+| DrepGroup1 | /home/PPR_03-MappedToReference/DrepGroup1 | /home/MDR_01-BinDereplication/DrepGroup1 |  
+| DrepGroup2 | /home/PPR_03-MappedToReference/Sample1 | /home/MDR_01-BinDereplication/Sample1 |  
+| DrepGroup2 | /home/PPR_03-MappedToReference/Sample2 | /home/MDR_01-BinDereplication/Sample2 |   
  
 ### Workflows - Specific directories
 
@@ -140,7 +154,10 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   2. Bin Gene Annotation with **Prokka**
   3. Bin Taxonomic Classification with **GTDB-Tk**
 
-
+  
+#### Metagenomics - Final Statistics
+- *Snakefile* - which contains rules for:
+  1. 
 
 ## Usage in Computerome
 
