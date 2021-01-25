@@ -138,7 +138,7 @@ def in_out_metagenomics(path,in_f):
                             sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file1) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
 
                             read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
-                            cp1Cmd='cp '+file1+' '+read1+''
+                            cp1Cmd='ln -s '+file1+' '+read1+''
                             subprocess.Popen(cp1Cmd, shell=True).wait()
 
                         ### READ2
@@ -147,7 +147,7 @@ def in_out_metagenomics(path,in_f):
                             sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file2) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
 
                             read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
-                            cp2Cmd='cp '+file2+' '+read2+''
+                            cp2Cmd='ln -s '+file2+' '+read2+''
                             subprocess.Popen(cp2Cmd, shell=True).wait()
 
                             # If PPR_03-MappedToReference  exists
@@ -167,11 +167,11 @@ def in_out_metagenomics(path,in_f):
 
                         # If original .fastq not in PPR_03-MappedToReference
                             if not os.path.isfile(read1):
-                                cp1Cmd='cp '+file1+' '+coa_read1+''
+                                cp1Cmd='ln -s '+file1+' '+coa_read1+''
                                 subprocess.Popen(cp1Cmd, shell=True).wait()
                         # If original .fastq  in PPR_03-MappedToReference, move to coa group-specific for AssemblyMapping
                             if os.path.isfile(read1):
-                                mv1Cmd='mv '+read1+' '+coa_read1+''
+                                mv1Cmd='ln -s '+read1+' '+coa_read1+''
                                 subprocess.Popen(mv1Cmd, shell=True).wait()
 
                         ### READ2
@@ -186,11 +186,11 @@ def in_out_metagenomics(path,in_f):
 
                         # If original .fastq not in PPR_03-MappedToReference
                             if not os.path.isfile(read2):
-                                cp2Cmd='cp '+file2+' '+coa_read2+''
+                                cp2Cmd='ln -s '+file2+' '+coa_read2+''
                                 subprocess.Popen(cp2Cmd, shell=True).wait()
                         # If original .fastq  in PPR_03-MappedToReference, move to coa group-specific for AssemblyMapping
                             if os.path.isfile(read2):
-                                mv2Cmd='mv '+read2+' '+coa_read2+''
+                                mv2Cmd='ln -s '+read2+' '+coa_read2+''
                                 subprocess.Popen(mv2Cmd, shell=True).wait()
 
                     # Define Snakemake output files
@@ -239,7 +239,7 @@ def in_out_metagenomics(path,in_f):
                             sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file1) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
 
                             read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
-                            cp1Cmd='cp '+file1+' '+read1+''
+                            cp1Cmd='ln -s '+file1+' '+read1+''
                             subprocess.Popen(cp1Cmd, shell=True).wait()
 
                         ### READ2
@@ -248,7 +248,7 @@ def in_out_metagenomics(path,in_f):
                             sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file2) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
 
                             read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
-                            cp2Cmd='cp '+file2+' '+read2+''
+                            cp2Cmd='ln -s '+file2+' '+read2+''
                             subprocess.Popen(cp2Cmd, shell=True).wait()
 
                             # If PPR_03-MappedToReference  exists
@@ -268,11 +268,11 @@ def in_out_metagenomics(path,in_f):
 
                         # If original .fastq not in PPR_03-MappedToReference
                             if not os.path.isfile(read1):
-                                cp1Cmd='cp '+file1+' '+coa_read1+''
+                                cp1Cmd='ln -s '+file1+' '+coa_read1+''
                                 subprocess.Popen(cp1Cmd, shell=True).wait()
                         # If original .fastq  in PPR_03-MappedToReference, move to coa group-specific for AssemblyMapping
                             if os.path.isfile(read1):
-                                mv1Cmd='mv '+read1+' '+coa_read1+''
+                                mv1Cmd='ln -s '+read1+' '+coa_read1+''
                                 subprocess.Popen(mv1Cmd, shell=True).wait()
 
                         ### READ2
@@ -287,11 +287,11 @@ def in_out_metagenomics(path,in_f):
 
                         # If original .fastq not in PPR_03-MappedToReference
                             if not os.path.isfile(read2):
-                                cp2Cmd='cp '+file2+' '+coa_read2+''
+                                cp2Cmd='ln -s '+file2+' '+coa_read2+''
                                 subprocess.Popen(cp2Cmd, shell=True).wait()
                         # If original .fastq  in PPR_03-MappedToReference, move to coa group-specific for AssemblyMapping
                             if os.path.isfile(read2):
-                                mv2Cmd='mv '+read2+' '+coa_read2+''
+                                mv2Cmd='ln -s '+read2+' '+coa_read2+''
                                 subprocess.Popen(mv2Cmd, shell=True).wait()
 
 

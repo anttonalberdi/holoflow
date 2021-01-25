@@ -139,7 +139,7 @@ def merge_genomes(refg_IDs,refg_Paths,db_ID):
                 if genome.endswith('.gz'): # uncompress genome for editing
                                         # and save it in db_dir
 
-                    uncompressCmd='gunzip -c '+genome+' > '+db_dir+'/'+ID+'.fna'
+                    uncompressCmd='ln -s '+genome+' '+db_dir+'/'+ID+'.fna.gz && gunzip '+db_dir+'/'+ID+'.fna.gz'
                     subprocess.check_call(uncompressCmd, shell=True)
 
                     # edit ">" genome identifiers
@@ -150,7 +150,7 @@ def merge_genomes(refg_IDs,refg_Paths,db_ID):
 
                 else:
                     # move to project dir and edit ">" genome identifiers
-                    mvgenomeCmd='mv '+genome+' '+db_dir+'/'+ID+'.fna'
+                    mvgenomeCmd='ln -s '+genome+' '+db_dir+'/'+ID+'.fna'
                     subprocess.check_call(mvgenomeCmd, shell=True)
                     editgenomeCmd='sed -i "s/>/>'+str(ID)+'_/g" '+db_dir+'/'+ID+'.fna'
                     subprocess.check_call(editgenomeCmd, shell=True)
