@@ -71,11 +71,11 @@ rule phylogeny:
 ##
 rule subtree:
     input:
-        tree_dir="{projectpath}/MDR_03-BinPhylogeny/{group}/classify",
-        drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}/dereplicated_genomes"
+        tree_dir="{projectpath}/MDR_03-BinPhylogeny/{group}",
+        drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
     output:
-        bac_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}/classify/BAC_Holoflow.gtdbtk_sub.tree",
-        ar_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}/classify/AR_Holoflow.gtdbtk_sub.tree"
+        bac_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}_BAC_Holoflow.gtdbtk_sub.tree",
+        ar_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}_AR_Holoflow.gtdbtk_sub.tree"
     params:
         group="{group}"
     shell:

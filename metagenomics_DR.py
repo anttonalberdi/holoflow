@@ -109,15 +109,15 @@ def in_out_metagenomics(path,in_f):
                     #same as last output in Snakefile
                     group=str(dir[0])
                     final_temp_dir="MDR_03-BinPhylogeny"
-                    output_files+=(path+"/"+final_temp_dir+"/"+group+"/classify/BAC_Holoflow.gtdbtk_sub.tree ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+group+"/classify/AR_Holoflow.gtdbtk_sub.tree ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
 
                 if (line == last_line):
                     #same as last output in Snakefile
                     group=str(dir[0])
                     final_temp_dir="MDR_03-BinPhylogeny"
-                    output_files+=(path+"/"+final_temp_dir+"/"+group+"/classify/BAC_Holoflow.gtdbtk_sub.tree ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+group+"/classify/AR_Holoflow.gtdbtk_sub.tree ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
 
         return output_files
 

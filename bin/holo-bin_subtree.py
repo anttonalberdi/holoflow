@@ -19,8 +19,8 @@ parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
 
 
-tree_dir=args.tree_dir
-bin_dir=args.bin_dir
+tree_dir=args.tree_dir+'/classify'
+bin_dir=args.bin_dir+'/dereplicated_genomes'
 bac_o=args.bac_o
 ar_o=args.ar_o
 ID=args.ID
