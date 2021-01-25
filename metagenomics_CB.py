@@ -134,8 +134,8 @@ def in_out_metagenomics(path,in_f):
 
                         ### READ1
                         for file1 in list_read1:
-                            file1=os.path.basename(file1)
-                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file1) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
+                            file=os.path.basename(file1)
+                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
 
                             read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
                             cp1Cmd='ln -s '+file1+' '+read1+''
@@ -143,8 +143,8 @@ def in_out_metagenomics(path,in_f):
 
                         ### READ2
                         for file2 in list_read2:
-                            file2=os.path.basename(file2)
-                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file2) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
+                            file=os.path.basename(file2)
+                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
 
                             read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
                             cp2Cmd='ln -s '+file2+' '+read2+''
@@ -235,8 +235,8 @@ def in_out_metagenomics(path,in_f):
 
                         ### READ1
                         for file1 in list_read1:
-                            file1=os.path.basename(file1)
-                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file1) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
+                            file=os.path.basename(file1)
+                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
 
                             read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
                             cp1Cmd='ln -s '+file1+' '+read1+''
@@ -244,8 +244,8 @@ def in_out_metagenomics(path,in_f):
 
                         ### READ2
                         for file2 in list_read2:
-                            file2=os.path.basename(file2)
-                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file2) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
+                            file=os.path.basename(file2)
+                            sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
 
                             read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
                             cp2Cmd='ln -s '+file2+' '+read2+''

@@ -102,8 +102,10 @@ def in_out_metagenomics(path,in_f):
                             read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip '+in1+'.gz'
                             subprocess.Popen(read1Cmd, shell=True).wait()
                         else:
+                            print("LINKING For")
                             read1Cmd = 'ln -s '+in_for+' '+in1+''
                             subprocess.Popen(read1Cmd, shell=True).wait()
+
 
 
                 # Define input file
@@ -118,6 +120,7 @@ def in_out_metagenomics(path,in_f):
                             read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip '+in2+'.gz'
                             subprocess.Popen(read2Cmd, shell=True).wait()
                         else:
+                            print("LINKING REV")
                             read2Cmd = 'ln -s '+in_rev+' '+in2+''
                             subprocess.Popen(read2Cmd, shell=True).wait()
 

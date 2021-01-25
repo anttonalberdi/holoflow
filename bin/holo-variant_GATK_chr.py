@@ -45,7 +45,7 @@ if not os.path.exists(out_dir):
 
     # Run GATK
     for CHR in chromosome_list:
-        sample_map_name = vcf_dir+'/sample_map.'+CHR
+        sample_map_name = vcf_dir+'/sample_map.'+CHR+'.txt'
 
         # Define outputs
         my_database = out_dir+'/'+CHR+'_database'
@@ -53,11 +53,11 @@ if not os.path.exists(out_dir):
         variants_output = out_dir+'/'+ID+'_'+CHR+'_SNPs.vcf.gz'
 
         dbCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk GenomicsDBImport --java-options "-Xmx180g" --sample-name-map '+sample_map_name+' --genomicsdb-workspace-path '+my_database+' --reader-threads '+threads+' -L '+CHR+''
-        subrocess.Popen(dbCmd,shell=True).wait()
+        subprocess.Popen(dbCmd,shell=True).wait()
 
-        # If does not work -V gendb://my_database
-        genoCmd = 'gatk GenotypeGVCFs --java-options "Xmx180g" -R '+ref_g+' -L '+CHR+' -V '+my_database+' -O '+geno_output+''
-        subrocess.Popen(genoCmd,shell=True).wait()
+        # -V gendb://my_database
+        genoCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk GenotypeGVCFs --java-options "-Xmx180g" -R '+ref_g+' -L '+CHR+' -V gendb://'+my_database+' -O '+geno_output+''
+        subprocess.Popen(genoCmd,shell=True).wait()
 
-        variantsCmd = 'gatk SelectVariants -V '+geno_output+'  --select-type-to-include SNP -O '+variants_output+''
-        subrocess.Popen(variantsCmd,shell=True).wait()
+        variantsCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk SelectVariants -V '+geno_output+'  --select-type-to-include SNP -O '+variants_output+''
+        subprocess.Popen(variantsCmd,shell=True).wait()
