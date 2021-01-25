@@ -92,7 +92,7 @@ if not (os.path.exists(str(out_dir))):
             read1 = fq_dir+'/'+sample+'_1.fastq'
             read2 = fq_dir+'/'+sample+'_2.fastq'
 
-            mapbinCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+mag_catalogue_file+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+ID+' -o '+out_bam+''
+            mapbinCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+mag_catalogue_file+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+out_dir+'/'+ID+' -o '+out_bam+''
             subprocess.Popen(mapbinCmd, shell=True).wait()
 
 
