@@ -11,7 +11,9 @@ parser$add_argument('-out_tree', dest='out_tree', help='output subtree', require
 args <- parser$parse_args()
 
 # Define variables
-tips <- args$tips
+tips <- as.vector(strsplit(args$tips, ",")[[1]])
+tips
+
 in_tree <- args$in_tree
 out_tree <- args$out_tree
 

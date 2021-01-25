@@ -65,10 +65,12 @@ for i in range(len(in_paths)):
         if match:
             sample_tips = sample_tips + match
 
+
     # Re-assure pattern search (Sometimes some IDs include others, such as: sample ID LS includes sample ID S...)
     # Check if tip (pattern matched bin base-name), exists in bin dir
     final_tips = list ()
-    for tip in sample_tips:
+    for tip in set(sample_tips):
+        #print(tip)
         if (tip+'.fa' in bin_names):
             final_tips.append(tip)
         elif (tip+'_sub.fa' in bin_names):
@@ -76,10 +78,12 @@ for i in range(len(in_paths)):
     final_tips = (',').join('"{0}"'.format(tip) for tip in final_tips)
 
 
+
     # Call Rscript to generate sub-trees
     file = os.path.dirname(sys.argv[0])
     curr_dir = os.path.abspath(file)
 
-    print(tree_path)
-    subtreeCmd='module load tools gcc/5.4.0 intel/compiler/64/2018_update2 R/3.5.3-ICC-MKL && Rscript '+curr_dir+'/holo-bin_subtree.R --tips '+final_tips+' -in_tree '+tree_path+' -out_tree '+out_tree_path+''
-    subprocess.Popen(subtreeCmd,shell=True).wait()
+
+    if final_tips:
+        subtreeCmd='module load tools gcc/5.4.0 intel/compiler/64/2018_update2 R/3.5.3-ICC-MKL && Rscript '+curr_dir+'/holo-bin_subtree.R --tips '+final_tips+' -in_tree '+tree_path+' -out_tree '+out_tree_path+''
+        subprocess.Popen(subtreeCmd,shell=True).wait()
