@@ -73,8 +73,8 @@ if not (os.path.exists(str(out_dir))):
     # Initialize stats
     stats_file = out_dir+'/'+ID+'.MAG_mapping_stats.txt'
     sample_list = list()
-    total_reads = list()
-    mapped_reads_tmp = out_dir+'/'+ID+'.tmp_mappedreads.txt'
+    mapped_reads_tmp = out_dir+'/'+ID+'.tmp_mapped.reads.txt'
+    total_reads_tmp = out_dir+'/'+ID+'.tmp_total.reads.txt'
 
     if (os.path.isfile(str(IDXmag_catalogue_file))):
         readlist = glob.glob(str(fq_dir)+"/*.fastq")
@@ -96,18 +96,17 @@ if not (os.path.exists(str(out_dir))):
             subprocess.Popen(mapbinCmd, shell=True).wait()
 
 
-            # Get total number of initial reads bases
-            reads = 0
-            with open(str(read1), 'rb') as read:
-                for id in read:
-                    seq = next(read)
-                    reads += 1
-                    next(read)
-                    next(read)
-            total_reads.append(reads)
+    ######################## Stats ########################
 
-            # Get mapped number of reads and bases
-            mappedCmd='module load tools samtools/1.9 && samtools flagstat '+out_bam+' | grep "mapped (" | cut -f1 -d"+" >> '+mapped_reads_tmp+''
+            # Get total number of initial reads bases
+            # samtools view -c
+            totalCmd='module load tools samtools/1.9 && samtools view -c '+out_bam+' >> '+total_reads_tmp+''
+            subprocess.Popen(totalCmd, shell=True).wait()
+
+
+            # Get mapped number of reads
+            # samtools view -c -F 4
+            mappedCmd='module load tools samtools/1.9 && samtools view -c -F 4 '+out_bam+' >> '+mapped_reads_tmp+''
             subprocess.Popen(mappedCmd, shell=True).wait()
 
 
@@ -117,12 +116,20 @@ if not (os.path.exists(str(out_dir))):
         sample_list.insert(0,'Sample_ID')
         stats.write(('\t').join(sample_list)+'\n')
 
-            # Retrieve all numbers of mapped reads
+            # Retrieve all numbers of MAPPED reads
         with open(mapped_reads_tmp,'r+') as mapped_reads_file:
             mapped_reads = list()
             for line in mapped_reads_file.readlines():
                 mapped_reads.append(line.strip())
         os.remove(mapped_reads_tmp)
+
+            # Retrieve all numbers of TOTAL reads
+        with open(total_reads_tmp,'r+') as total_reads_file:
+            total_reads = list()
+            for line in total_reads_file.readlines():
+                total_reads.append(line.strip())
+        os.remove(total_reads_tmp)
+
 
         # Write number of mapped reads per sample
         stats.write('Mapped Reads'+'\t'+('\t').join(mapped_reads)+'\n')
@@ -130,9 +137,9 @@ if not (os.path.exists(str(out_dir))):
             # Calculate percentage of mapped reads from: (mapped reads/ total reads) * 100
         mapped_reads = np.array(mapped_reads).astype(int)
         total_reads = np.array(total_reads).astype(int)
-        total_reads = total_reads * 2
         percentages = np.divide(mapped_reads,total_reads)
-        percentages = (percentages*100).round(decimals=4).tolist() # true division
+        percentages = (percentages*100)
+        percentages = percentages.round(decimals=2).tolist() # true division
 
         # Write percentagesfinal_tips = (',').join('"{0}"'.format(tip) for tip in final_tips)
         stats.write('% Mapped Reads'+'\t'+('\t').join(str(perc) for perc in percentages))
