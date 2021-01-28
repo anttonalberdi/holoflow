@@ -98,7 +98,7 @@ def in_out_final_stats(path,in_f):
                     os.makedirs(in_sample)
 
                 # Define output files based on input.txt
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'.coverage_byMAG.txt '
+                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'/'+sample_name+'.coverage_byMAG.txt '
 
                 # Define input dir
                 in1=in_sample+'/metagenomic_reads'

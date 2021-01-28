@@ -39,6 +39,7 @@ with open(str(log),'a+') as logi:
 depth_contig=out_dir+'/'+ID+'.coverage_byContig.txt'
 getcoverageCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth '+depth_contig+' '+str(bam_dir)+'/*.bam'
 subprocess.check_call(getcoverageCmd, shell=True)
+out_dir = out_dir+'/'+ID
 
 # Generate aggregated coverage table  - BY MAG
     # MAGS X SAMPLES
