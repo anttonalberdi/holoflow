@@ -99,7 +99,7 @@ def in_out_metagenomics(path,in_f):
                     #If the file is not in the working directory, transfer it
                     if os.path.isfile(in_for):
                         if in_for.endswith('.gz'):
-                            read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip '+in1+'.gz'
+                            read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
                             subprocess.Popen(read1Cmd, shell=True).wait()
                         else:
                             print("LINKING For")
@@ -117,7 +117,7 @@ def in_out_metagenomics(path,in_f):
                     #If the file is not in the working directory, transfer it
                     if os.path.isfile(in_rev):
                         if in_for.endswith('.gz'):
-                            read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip '+in2+'.gz'
+                            read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip -c '+in2+'.gz > '+in2+''
                             subprocess.Popen(read2Cmd, shell=True).wait()
                         else:
                             print("LINKING REV")

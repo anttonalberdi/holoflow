@@ -139,7 +139,7 @@ def merge_genomes(refg_IDs,refg_Paths,db_ID):
                 if genome.endswith('.gz'): # uncompress genome for editing
                                         # and save it in db_dir
 
-                    uncompressCmd='ln -s '+genome+' '+db_dir+'/'+ID+'.fna.gz && gunzip '+db_dir+'/'+ID+'.fna.gz'
+                    uncompressCmd='ln -s '+genome+' '+db_dir+'/'+ID+'.fna.gz && gunzip -c '+db_dir+'/'+ID+'.fna.gz > '+db_dir+'/'+ID+'.fna'
                     subprocess.check_call(uncompressCmd, shell=True)
 
                     # edit ">" genome identifiers
