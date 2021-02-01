@@ -76,7 +76,6 @@ if not os.path.exists(out_dir):
 
     # Run BCFtools
     for CHR in chromosome_list:
-        print(CHR)
 
         mpileup_output = out_dir+'/'+ID+'.all_'+CHR+'.vcf.gz'
         view_output = out_dir+'/'+ID+'.SNPs_'+CHR+'.vcf.gz'
