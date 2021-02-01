@@ -94,11 +94,13 @@ Those lines starting by # won't be considered.
   2. Minimum contig length - minimum bp per contig in final assembly file.
 
 #### Metagenomics Dereplication & Annotation
+- *Snakefile* - which contains rules for:
   1. Bin Dereplication using **dRep**
   2. Bin Annotation with **prokka**
   3. Taxonomic classification and phylogenetic inference of bins **GTDB-Tk**
 
 #### Metagenomics Final Statistics
+- *Snakefile* - which contains rules for:
   1. Read mapping to MAGs
   2. MAG and contig coverage in reads 
 
