@@ -33,11 +33,11 @@ with open(str(log),'a+') as logi:
     logi.write('A .bam file is generated containing the mapped reads, and two .fastq files containing the metagenomic ones.\n\n')
 
 
-#refbam1Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' | samtools sort -T '+ID+' -o '+bam+''
-refbam1Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+'.notsorted && samtools sort -T '+bam+'.'+ID+' -o '+bam+' '+bam+'.notsorted && rm '+bam+'.notsorted'
+#refbam1Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' | samtools sort -T '+ID+' -o '+bam+''
+refbam1Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+'.notsorted && samtools sort -T '+bam+'.'+ID+' -o '+bam+' '+bam+'.notsorted && rm '+bam+'.notsorted'
 subprocess.check_call(refbam1Cmd, shell=True)
 
-refbam2Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -1 '+read1+' -2 '+read2+' -'
+refbam2Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -1 '+read1+' -2 '+read2+' -'
 subprocess.check_call(refbam2Cmd, shell=True)
 
 rmAllbamCmd = 'rm '+all_bam+'' # Change this if dark matter workflow

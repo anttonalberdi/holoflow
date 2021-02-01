@@ -31,7 +31,7 @@ with open(str(log),'a+') as log:
 
 
 if not (os.path.exists(str(idx_a))):
-    idxsamCmd='module load tools samtools/1.9 && samtools faidx '+a+''
+    idxsamCmd='module load tools samtools/1.11 && samtools faidx '+a+''
     idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+a+''
 
     subprocess.check_call(idxbwaCmd, shell=True)

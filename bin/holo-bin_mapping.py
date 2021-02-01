@@ -55,14 +55,14 @@ if not (os.path.exists(str(out_dir))):
         idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+bin+''
         subprocess.check_call(idxbwaCmd, shell=True)
 
-        idxsamCmd='module load tools samtools/1.9 && samtools faidx '+bin+''
+        idxsamCmd='module load tools samtools/1.11 && samtools faidx '+bin+''
         subprocess.check_call(idxsamCmd, shell=True)
 
 
-        mapCmd = 'module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+bin+' '+read1+' '+read2+' | samtools view -T '+bin+' -b - > '+obam+''
+        mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+bin+' '+read1+' '+read2+' | samtools view -T '+bin+' -b - > '+obam+''
         subprocess.check_call(mapCmd, shell=True)
 
-        fastqCmd = 'module load tools samtools/1.9 && samtools view -T '+bin+' -b -f12 '+obam+' | samtools fastq -1 '+oread1+' -2 '+oread2+' -'
+        fastqCmd = 'module load tools samtools/1.11 && samtools view -T '+bin+' -b -f12 '+obam+' | samtools fastq -1 '+oread1+' -2 '+oread2+' -'
         subprocess.check_call(fastqCmd, shell=True)
 
         rmvbamCmd = 'rm '+obam+' '+bin+'.*'

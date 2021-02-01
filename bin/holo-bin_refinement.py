@@ -60,12 +60,12 @@ if os.path.exists(str(dt_bd)):
         #index bam before filtering
     idx_bam = ''+bam+'.bai'
     if not (os.path.exists(str(idx_bam))):
-        idxbamCmd='module load tools samtools/1.9 && samtools index -b '+bam+''
+        idxbamCmd='module load tools samtools/1.11 && samtools index -b '+bam+''
         subprocess.check_call(idxbamCmd, shell=True)
 
 
         # filter bam - create a variable with the headers
-    filterbamCmd='module load tools samtools/1.9 && headers=$(<'+dt_bd+'/temp_headers.txt) && samtools view -h '+bam+' $headers > '+bam+'.filtered.sam && samtools view -S -b '+bam+'.filtered.sam > '+bam+'.filtered && rm '+bam+'.filtered.sam '+dt_bd+'/temp_headers.txt'
+    filterbamCmd='module load tools samtools/1.11 && headers=$(<'+dt_bd+'/temp_headers.txt) && samtools view -h '+bam+' $headers > '+bam+'.filtered.sam && samtools view -S -b '+bam+'.filtered.sam > '+bam+'.filtered && rm '+bam+'.filtered.sam '+dt_bd+'/temp_headers.txt'
     subprocess.check_call(filterbamCmd, shell=True)
 
     bam = ''+bam+'.filtered'
@@ -73,7 +73,7 @@ if os.path.exists(str(dt_bd)):
 
         #index bam before refineM
     idx_bam_f = ''+bam+'.bai'
-    idxbamCmd='module load tools samtools/1.9 && samtools index -b '+bam+''
+    idxbamCmd='module load tools samtools/1.11 && samtools index -b '+bam+''
     subprocess.check_call(idxbamCmd, shell=True)
 
     # RefineM

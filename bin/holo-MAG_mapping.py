@@ -63,7 +63,7 @@ if not (os.path.exists(str(out_dir))):
     IDXmag_catalogue_file=out_dir+'/'+ID+'_MAG_Catalogue.fa.fai'
 
     if not (os.path.isfile(str(IDXmag_catalogue_file))):
-        idxsamCmd='module load tools samtools/1.9 && samtools faidx '+mag_catalogue_file+''
+        idxsamCmd='module load tools samtools/1.11 && samtools faidx '+mag_catalogue_file+''
         idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+mag_catalogue_file+''
 
         subprocess.Popen(idxbwaCmd, shell=True).wait()
@@ -92,7 +92,7 @@ if not (os.path.exists(str(out_dir))):
             read1 = fq_dir+'/'+sample+'_1.fastq'
             read2 = fq_dir+'/'+sample+'_2.fastq'
 
-            mapbinCmd='module load tools samtools/1.9 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+mag_catalogue_file+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+out_dir+'/'+ID+' -o '+out_bam+''
+            mapbinCmd='module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+mag_catalogue_file+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+out_dir+'/'+ID+' -o '+out_bam+''
             subprocess.Popen(mapbinCmd, shell=True).wait()
 
 
@@ -100,13 +100,13 @@ if not (os.path.exists(str(out_dir))):
 
             # Get total number of initial reads bases
             # samtools view -c
-            totalCmd='module load tools samtools/1.9 && samtools view -c '+out_bam+' >> '+total_reads_tmp+''
+            totalCmd='module load tools samtools/1.11 && samtools view -c '+out_bam+' >> '+total_reads_tmp+''
             subprocess.Popen(totalCmd, shell=True).wait()
 
 
             # Get mapped number of reads
             # samtools view -c -F 4
-            mappedCmd='module load tools samtools/1.9 && samtools view -c -F 4 '+out_bam+' >> '+mapped_reads_tmp+''
+            mappedCmd='module load tools samtools/1.11 && samtools view -c -F 4 '+out_bam+' >> '+mapped_reads_tmp+''
             subprocess.Popen(mappedCmd, shell=True).wait()
 
 

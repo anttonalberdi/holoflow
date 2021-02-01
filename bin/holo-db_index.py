@@ -55,5 +55,5 @@ if os.path.exists(str(idx_smt)):
 
 else:
     # index
-    idxsamCmd='module load tools samtools/1.9 && samtools faidx '+decomp_db+''
+    idxsamCmd='module load tools samtools/1.11 && samtools faidx '+decomp_db+''
     subprocess.check_call(idxsamCmd, shell=True)
