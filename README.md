@@ -82,18 +82,26 @@ Those lines starting by # won't be considered.
   2. Mapping reads against reference genome(s) - reference genome(s) path(s), stringent level for mapping and other parameters. 
 
 
-#### Metagenomics (Individual Assembly so far)
+#### Metagenomics (Individual Assembly & Coassembly)
 - *Snakefile* - which contains rules for:
   1. Metagenomic assembly using **metaSpades** or **megahit**
   2. Read mapping to assembly using **bwa mem** 
-  3. Contig binning using **Metabat**, **MaxBin** (and **Concoct** #### NOT YET)
+  3. Contig binning using **Metabat**, **MaxBin** (and **Concoct** for coassembly)
   4. Binner result integration using **DasTool** 
-  5. Bin Dereplication using **dRep**
-  6. Bin assembly improvement (contig elongation and scaffolding) using SSPACE. ##### UNDER CONSTRUCTION
-
+  
 - Config file *config.yaml*, in which the user may be interested to customise:
   1. Metagenomic assembly - choose between the mentioned options by writing *megahit* or *spades*
   2. Minimum contig length - minimum bp per contig in final assembly file.
+
+#### Metagenomics Dereplication & Annotation
+  1. Bin Dereplication using **dRep**
+  2. Bin Annotation with **prokka**
+  3. Taxonomic classification and phylogenetic inference of bins **GTDB-Tk**
+
+#### Metagenomics Final Statistics
+  1. Read mapping to MAGs
+  2. MAG and contig coverage in reads 
+
 
 
 ## Exectute Holoflow *.py* workflow launchers
