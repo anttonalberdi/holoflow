@@ -16,7 +16,7 @@ rule get_paths:
 rule db_index:
     input:
         db_path=expand("{DB_path}", DB_path=config['DB_path'])
-    output: 
+    output:
         idx_db_bwa="{projectpath}/PRG/{db_ID}.fna.sa",
         idx_db_samtools="{projectpath}/PRG/{db_ID}.fna.fai"
     shell:
