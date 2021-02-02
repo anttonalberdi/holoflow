@@ -63,5 +63,5 @@ if not os.path.exists(out_dir):
         subprocess.Popen(variantsCmd,shell=True).wait()
 
         if CHR == chromosome_list[-1]:
-            rmCmd='rm '+vcf_dir+''
+            rmCmd='rm -rf '+vcf_dir+''
             subprocess.Popen(rmCmd,shell=True).wait()
