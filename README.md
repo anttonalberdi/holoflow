@@ -181,7 +181,7 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   
 #### Metagenomics - Final Statistics
 - *Snakefile* - which contains rules for:
-  1. Mapping metagenomic reads to dereplicated MAGs
+  1. Mapping metagenomic reads to dereplicated MAGs - number and % of mapped reads.
   2. Obtaining coverage statistics by MAG and contig to used samples.
   
   
