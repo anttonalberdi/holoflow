@@ -54,10 +54,14 @@ with open(str(config), 'w') as config_file:
     data['holopath'] = str(curr_dir)
     data['logpath'] = str(log)
 
-    # Retrieve ref genome from tar gz dir 
+    # Retrieve ref genome from tar gz dir
     if str(ref).endswith('.tar.gz'):
-        decompCmd='mkdir '+path+'/PRG && tar -xzvf '+ref+'-C '+path+'/PRG'
-        subprocess.Popen(decompCmd,shell=True).wait()
+        if not os.path.exists(path+'/PRG'):
+            decompCmd='mkdir '+path+'/PRG && tar -xzvf '+ref+' -C '+path+'/PRG'
+            subprocess.Popen(decompCmd,shell=True).wait()
+        else:
+            decompCmd='tar -xzvf '+ref+' -C '+path+'/PRG'
+            subprocess.Popen(decompCmd,shell=True).wait()
 
         ref_ID = os.path.basename(ref).replace('.tar.gz','')
         ref = path+'/PRG/'+ref_ID+'.fna'
