@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True)
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
 parser.add_argument('-g', help="reference genome path", dest="ref", required=True)
+parser.add_argument('-Q', help="Data quality: LD/HD", dest="Q", required=True)
 parser.add_argument('-vc', help="variant caller: 1 {bcftools/samtools}, 2 {GATK}, 3 {ANGSD}", dest="var_c", required=True)
 parser.add_argument('-c', help="config file", dest="config_file", required=False)
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
@@ -20,6 +21,7 @@ args = parser.parse_args()
 in_f=args.input_txt
 path=args.work_dir
 ref=args.ref
+Q=args.Q
 var_c=args.var_c
 cores=args.threads
 
@@ -62,6 +64,7 @@ with open(str(config), 'r') as config_file:
         data = {}
 
 with open(str(config), 'w') as config_file:
+    data['data_quality'] = str(Q)
     data['var_caller'] = str(var_c)
     data['reference_genome'] = str(ref)
     data['holopath'] = str(curr_dir)
@@ -94,6 +97,13 @@ def in_out_genomics(path,in_f):
 
         # Define variables
         output_files=''
+
+        # if Q == "HD":
+        #     final_temp_dir = "GNM_02-Phasing"
+        # if Q == "LD":
+        #     final_temp_dir = "GNM_03-Imputation"
+
+
         final_temp_dir="GNM_01-CalledVar"
 
         for line in lines:

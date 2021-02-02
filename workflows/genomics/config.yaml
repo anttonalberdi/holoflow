@@ -3,7 +3,7 @@
 # Chosen variant caller in initial command
 
 # Choose between HD - for high depth seqs OR LD - for low depth seqs
-sample_quality:
+data_quality:
   LD
 
 threads:
