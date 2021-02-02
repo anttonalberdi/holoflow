@@ -114,19 +114,19 @@ if config['var_caller'] == "gatk":
 
 ### Conditional HD
 
-if config['data_quality'] == "HD":
-
-    ### - PHASING
-
-    rule phasing:
-        input:
-        output:
-            directory("{projectpath}/GNM_02-Phasing/{group}")
-        params:
-        shell:
-            """
-            python {rules.get_paths.input.holopath}/bin/holo-phasing.py
-            """
+# if config['data_quality'] == "HD":
+#
+#     ### - PHASING
+#
+#     rule phasing:
+#         input:
+#         output:
+#             directory("{projectpath}/GNM_02-Phasing/{group}")
+#         params:
+#         shell:
+#             """
+#             python {rules.get_paths.input.holopath}/bin/holo-phasing.py
+#             """
 
 
 ### Conditional LD
