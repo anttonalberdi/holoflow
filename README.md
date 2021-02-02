@@ -193,23 +193,23 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   
 - Config file *config.yaml*, in which the user may be interested in customising:
   1. Variant calling - BCFtools
-    1. mpileup
-      * Coefficient for downgrading mapping quality for reads containing excessive mismatches - *degr_mapp_qual*. Default 50.
-      * Minimum mapping quality - *min_mapp_qual*. Default to 0.
-      * Minimum base quality - *min_base_qual*. Default to 13.
-      * Specific chromosome region. Default False.
-    2. call
+    - mpileup
+      * Coefficient for downgrading mapping quality for reads containing excessive mismatches - *degr_mapp_qual*. Default 50.  
+      * Minimum mapping quality - *min_mapp_qual*. Default to 0.  
+      * Minimum base quality - *min_base_qual*. Default to 13.  
+      * Specific chromosome region. Default False.  
+    - call
       * Multicaller mode: alternative model for multiallelic and rare-variant calling designed to overcome known limitations. 
       * Keep only variants and not indels. 
       
   2. Variant calling - GATK 
-    * Parameters to obtain more agressive variants: *min_pruning* and *min_dangling*.
+      * Parameters to obtain more agressive variants: *min_pruning* and *min_dangling*.
    
   3. Variant calling - ANGSD
-    * Choose model (1/2) between samtools or GATK.
-    * Output log genotype likelihoods to a file or not.
-    * How to estimate minor and major alleles (1/2): 1 = from likelihood data ; 2 = from count data.
-    * Estimate posterior genotype probability based on the allele frequency as a prior (True/False).
+      * Choose model (1/2) between samtools or GATK.
+      * Output log genotype likelihoods to a file or not.
+      * How to estimate minor and major alleles (1/2): 1 = from likelihood data ; 2 = from count data.
+      * Estimate posterior genotype probability based on the allele frequency as a prior (True/False).
 
 
 ## Usage in Computerome
