@@ -126,7 +126,6 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
 
 
 ##### *genomics.py*
-#GROUP_NAME PATH_TO_BAMS_DIR CHROMOSOME_LIST_FILE_PATH
 
   1. Sample group name to analyse.  
   2. Path to directory containing host reads BAM alignment sorted files - If *preprocessing.py* was used, these are the resulting *ref* BAMs path.   
@@ -156,7 +155,7 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   2. Duplicate read removal using **seqkit rmdup**
   3. Mapping reads against reference genome(s) using **bwa mem**
 
-- Config file *config.yaml*, in which the user may be interested to customise:
+- Config file *config.yaml*, in which the user may be interested in customising:
   1. Quality filtering - specific adapter sequences, minimum quality, character separating the mate read number.
 
 
@@ -167,7 +166,7 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   3. Contig binning using **Metabat**, **MaxBin**. In Coassembly also binning by **Concoct**.  
   4. Binner result integration using **DasTool** 
   
-- Config file *config.yaml*, in which the user may be interested to customise:
+- Config file *config.yaml*, in which the user may be interested in customising:
   1. Assembler - choose between the mentioned options by writing *megahit* or *spades*
   2. Minimum contig length - minimum bp per contig in final assembly file.
 
@@ -183,6 +182,35 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
 - *Snakefile* - which contains rules for:
   1. Mapping metagenomic reads to dereplicated MAGs
   2. Obtaining coverage statistics by MAG and contig to used samples.
+  
+  
+#### Genomics
+- *Snakefile* - which contains rules for:
+  1. Variant calling with **BCFtools**, **GATK** or **ANGSD** (## Latter UNDER CONSTRUCTION ##)
+  2. Phasing for *High depth sample groups* with ## UNDER CONSTRUCTION ##
+  3. Likelihoods update for *Low depth sample groups* with **Beagle** ## UNDER CONSTRUCTION ##
+  4. Genotype imputation for *Low depth sample groups* with **Beagle** ## UNDER CONSTRUCTION ##
+  
+- Config file *config.yaml*, in which the user may be interested in customising:
+  1. Variant calling - BCFtools
+    1. mpileup
+      * Coefficient for downgrading mapping quality for reads containing excessive mismatches - *degr_mapp_qual*. Default 50.
+      * Minimum mapping quality - *min_mapp_qual*. Default to 0.
+      * Minimum base quality - *min_base_qual*. Default to 13.
+      * Specific chromosome region. Default False.
+    2. call
+      * Multicaller mode: alternative model for multiallelic and rare-variant calling designed to overcome known limitations. 
+      * Keep only variants and not indels. 
+      
+  2. Variant calling - GATK 
+    * Parameters to obtain more agressive variants: *min_pruning* and *min_dangling*.
+   
+  3. Variant calling - ANGSD
+    * Choose model (1/2) between samtools or GATK.
+    * Output log genotype likelihoods to a file or not.
+    * How to estimate minor and major alleles (1/2): 1 = from likelihood data ; 2 = from count data.
+    * Estimate posterior genotype probability based on the allele frequency as a prior (True/False).
+
 
 ## Usage in Computerome
 
