@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True)
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
 parser.add_argument('-c', help="config file", dest="config_file", required=False)
-parser.add_argument('-g', help="reference genome", dest="ref", required=False)
+parser.add_argument('-g', help="reference genome path or path to .tar.gz data base", dest="ref", required=False)
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
@@ -53,10 +53,20 @@ with open(str(config), 'r') as config_file:
 with open(str(config), 'w') as config_file:
     data['holopath'] = str(curr_dir)
     data['logpath'] = str(log)
-    data['refgenomes'] = str(ref)
+
+    # Retrieve ref genome from tar gz dir 
+    if str(ref).endswith('.tar.gz'):
+        decompCmd='mkdir '+path+'/PRG && tar -xzvf '+ref+'-C '+path+'/PRG'
+        subprocess.Popen(decompCmd,shell=True).wait()
+
+        ref_ID = os.path.basename(ref).replace('.tar.gz','')
+        ref = path+'/PRG/'+ref_ID+'.fna'
+        data['refgenomes'] = str(ref)
+    else:
+        data['refgenomes'] = str(ref)
+
+
     dump = yaml.dump(data, config_file)
-
-
 
 
 ###########################
