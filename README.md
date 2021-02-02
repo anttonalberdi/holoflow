@@ -36,10 +36,10 @@ OPTIONAL ARGUMENTS:
 **{only in PREPROCESSING and GENOMICS}**, **[only in GENOMICS]**  
  
  
-#### Config files description
+### Config files description
 A template *config.yaml* file can be found in every workflow directory. 
 
-#### Input files description
+### Input files description
 A template *input.txt* file can be found in every workflow directory.  
 See *input.txt* file description for every workflow:
 In all cases, columns must be delimited by a simple space and **no blank lines should be found in the end of the file**.  
