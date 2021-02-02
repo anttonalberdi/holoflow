@@ -62,4 +62,6 @@ if not os.path.exists(out_dir):
         variantsCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk SelectVariants -V '+geno_output+'  --select-type-to-include SNP -O '+variants_output+''
         subprocess.Popen(variantsCmd,shell=True).wait()
 
-os.rmdir(vcf_dir)
+        if CHR == chromosome_list[-1]:
+            rmCmd='rm '+vcf_dir+''
+            subprocess.Popen(rmCmd,shell=True).wait()
