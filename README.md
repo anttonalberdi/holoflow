@@ -14,18 +14,23 @@ The main *holoflow* directory contains a given number of Python scripts which wo
   - ***metagenomics_CB.py***  - Coassembly-based analysis and metagenomics binning. 
   - ***metagenomics_DR.py***  - Dereplication and Annotation of metagenomic bins produced by either *metagenomics_IB* or *metagenomics_CB*. 
   - ***metagenomics_FS.py***  - Final statistical report of dereplicated bins obtained with *metagenomics_DR.py*. 
+  - ***genomics.py***         - Variant calling (Phasing,Imputation ##UNDER CONSTRUCTION##) with *genomics.py*. 
 
   
   
-These are designed to be called from the command line and require the following arguments (**{only in PREPROCESSING}**,**[optional arguments]**):  
+These are designed to be called from the command line and require the following arguments (**{only in PREPROCESSING and GENOMICS}**, **[only in GENOMICS]**):  
 ```bash
+REQUIRED ARGUMENTS:
   -f INPUT            File containing input information.
   -d WORK_DIR         Output directory.
   -t THREADS          Thread maximum number to be used by Snakemake.  
   {-g REF_GENOME}     Reference genome(s) file path to be used in read mapping.
-  [-k KEEP_TMP]       If present, keep temporal directories - NOT IN PREPAREGENOMES.
-  [-l LOG]            Desired pipeline log file path.
-  [-c CONFIG]         Configuration file full path.
+  [-vc VAR CALLER]    Variant caller to choose: 1 {bcftools/samtools}, 2 {GATK}, 3 {ANGSD}.
+
+OPTIONAL ARGUMENTS:
+  -k KEEP_TMP         If present, keep temporal directories - NOT IN PREPAREGENOMES.
+  -l LOG              Desired pipeline log file path.
+  -c CONFIG           Configuration file full path.
   
 ```  
 
