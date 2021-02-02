@@ -18,7 +18,7 @@ The main *holoflow* directory contains a given number of Python scripts which wo
 
   
   
-These are designed to be called from the command line and require the following arguments (**{only in PREPROCESSING and GENOMICS}**, **[only in GENOMICS]**):  
+These are designed to be called from the command line and require the following arguments:  
 ```bash
 REQUIRED ARGUMENTS:
   -f INPUT            File containing input information.
@@ -33,7 +33,8 @@ OPTIONAL ARGUMENTS:
   -c CONFIG           Configuration file full path.
   
 ```  
-
+**{only in PREPROCESSING and GENOMICS}**, **[only in GENOMICS]**  
+ 
  
 #### Config files description
 A template *config.yaml* file can be found in every workflow directory. 
@@ -122,6 +123,24 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
 | DrepGroup1 | /home/PPR_03-MappedToReference/DrepGroup1 | /home/MDR_01-BinDereplication/DrepGroup1 |  
 | DrepGroup2 | /home/PPR_03-MappedToReference/Sample1 | /home/MDR_01-BinDereplication/Sample1 |  
 | DrepGroup2 | /home/PPR_03-MappedToReference/Sample2 | /home/MDR_01-BinDereplication/Sample2 |   
+
+
+##### *genomics.py*
+#GROUP_NAME PATH_TO_BAMS_DIR CHROMOSOME_LIST_FILE_PATH
+
+  1. Sample group name to analyse.  
+  2. Path to directory containing host reads BAM alignment sorted files - If *preprocessing.py* was used, these are the resulting *ref* BAMs path.   
+  3. Chromosome list. This should be a text file with a single column depicting chromosome IDs. Note that **the given chromosome IDs should be in accordance with the provided reference genome**, otherwise these won't be detected by Holoflow.  
+  
+- Example:  
+
+|   |   |   |
+| --- | --- | --- |
+| Chicken_samples   | /home/path/to/chicken/bams      |  /home/path/to/chicken_chrlist.txt  |
+| Cervid_samples   | /home/path/to/cervid/PPR_03-MappedToReference   | /home/path/to/cervid_chrlist.txt  |
+| Cavia_samples | /home/path/to/cavia/bams     | /home/path/to/cavia_chrlist.txt  |
+
+
  
 ### Workflows - Specific directories
 
@@ -162,7 +181,8 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   
 #### Metagenomics - Final Statistics
 - *Snakefile* - which contains rules for:
-  1. 
+  1. Mapping metagenomic reads to dereplicated MAGs
+  2. Obtaining coverage statistics by MAG and contig to used samples.
 
 ## Usage in Computerome
 
