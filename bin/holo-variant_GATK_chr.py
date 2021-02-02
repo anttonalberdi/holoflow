@@ -49,8 +49,9 @@ if not os.path.exists(out_dir):
 
         # Define outputs
         my_database = out_dir+'/'+CHR+'_database'
-        geno_output = out_dir+'/'+ID+'_'+CHR+'.combined.raw.vcf'
-        variants_output = out_dir+'/'+ID+'_'+CHR+'_SNPs.vcf.gz'
+        geno_output = out_dir+'/'+ID+'.combined_'+CHR+'.raw.vcf'
+        variants_output = out_dir+'/'+ID+'.SNPs_'+CHR+'.vcf.gz'
+
 
         dbCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk GenomicsDBImport --java-options "-Xmx180g" --sample-name-map '+sample_map_name+' --genomicsdb-workspace-path '+my_database+' --reader-threads '+threads+' -L '+CHR+''
         subprocess.Popen(dbCmd,shell=True).wait()

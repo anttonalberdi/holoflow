@@ -90,7 +90,7 @@ if config['var_caller'] == "gatk":
 
 # ANGSD as variant caller
 
-# if config['var_caller'] == "angsd": ### AND LOW DEPTH
+#if (config['var_caller'] == "angsd") and (config['sample_quality'] == "LD"):
 #
 #     ##
 #     # call variants with ANGSD
@@ -120,24 +120,33 @@ if config['var_caller'] == "gatk":
 ### Conditional LD
 #Reference panel in config has to be defined
 
-# module load java/1.8.0
-# module load bcftools/1.9
-# module load anaconda3/4.4.0
+if config['sample_quality'] == "LD" and (config['ref_panel_HD']):
+
 
     ### - LIKELIHOOD UPDATE
 
-## update likelihoods
-# java -Xmxg -jar /services/tools/beagle/4.1/beagle.27Jul16.86a.jar gl=LD.vcf.gz ref=panel.vcf.gz chrom=${CHROM} gprobs=true out=${CHROM}_probs
-# bcftools index ${CHROM}_prob.vcf.gz
-# bcftools +setGT ${CHROM}_prob.vcf.gz -- -t q -n . -e'FORMAT/GP>=0.99' > ${CHROM}_prob_filt.vcf
-# bgzip ${CHROM}_prob_filt.vcf
+    ##
+    rule likelihoods:
+        input:
+            "{projectpath}/GNM_01-CalledVar/{group}"
+        output:
+            directory("{projectpath}/GNM_02-LLUpdate/{group}")
+        params:
+            var_caller = expand("{var_caller}", var_caller=config['var_caller']),
+            ref_panel_HD = expand("{ref_panel_HD}", ref_panel_HD=config['ref_panel_HD'])
+        shell:
+            """
+            python {rules.get_paths.input.holopath}/bin/holo-likelihoods_upd.py
+            """
 
-#### - Input can be .vcf or beagle file : GATK,BCF//ANGSD
-##### - gl= sample.chr name FILE
-##### - ref=panel.vcf.gz is ref panel from filtering HD
-##### bcftools -e'FORMAT/GP>=0.99' --> Those variants with likelihoods higher than 0.99, set as genotypes from which imputation the rest + refpanel
+
+
 
     ### - IMPUTATION
+
+# module load java/1.8.0
+# module load bcftools/1.9
+# module load anaconda3/4.4.0
 
 ## Genotype imputation
 # java -Xmxg -jar /services/tools/beagle/5.1/beagle-5.1.jar gt=${CHROM}_probs ref=panel.vcf.gz chrom=${CHROM} gp=true out=${CHROM}_imputed

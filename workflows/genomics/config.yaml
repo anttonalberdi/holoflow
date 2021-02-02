@@ -1,10 +1,16 @@
 ###### 15.12.20
 # Variant Calling parameters
 # Chosen variant caller in initial command
+
+# Choose between HD - for high depth seqs OR LD - for low depth seqs
+sample_quality:
+  LD
+
 threads:
   40
 
-# Example humans
+
+################################### VARIANT CALLING ###################################
 
 #######################
 # BCFTools - High and low depth samples
@@ -81,3 +87,15 @@ major_minor:
 # Estimate posterior genotype probability based on the allele frequency as a prior (True/False)
 do_Post:
   True
+
+
+
+################################### PHASING - Ref panel generation ###################################
+
+
+
+
+################################### LIKELIHOOD UPDATE AND IMPUTATION LD ###################################
+# Write path to high quality reference panel generated on a HD data set with the phasing step
+ref_panel_HD:
+  path/bla/bla
