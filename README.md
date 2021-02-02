@@ -14,26 +14,32 @@ The main *holoflow* directory contains a given number of Python scripts which wo
   - ***metagenomics_CB.py***  - Coassembly-based analysis and metagenomics binning. 
   - ***metagenomics_DR.py***  - Dereplication and Annotation of metagenomic bins produced by either *metagenomics_IB* or *metagenomics_CB*. 
   - ***metagenomics_FS.py***  - Final statistical report of dereplicated bins obtained with *metagenomics_DR.py*. 
+  - ***genomics.py***         - Variant calling (Phasing,Imputation ##UNDER CONSTRUCTION##) with *genomics.py*. 
 
   
   
-These are designed to be called from the command line and require the following arguments (**{only in PREPROCESSING}**,**[optional arguments]**):  
+These are designed to be called from the command line and require the following arguments:  
 ```bash
+REQUIRED ARGUMENTS:
   -f INPUT            File containing input information.
   -d WORK_DIR         Output directory.
   -t THREADS          Thread maximum number to be used by Snakemake.  
   {-g REF_GENOME}     Reference genome(s) file path to be used in read mapping.
-  [-k KEEP_TMP]       If present, keep temporal directories - NOT IN PREPAREGENOMES.
-  [-l LOG]            Desired pipeline log file path.
-  [-c CONFIG]         Configuration file full path.
+  [-vc VAR CALLER]    Variant caller to choose: 1 {bcftools/samtools}, 2 {GATK}, 3 {ANGSD}.
+
+OPTIONAL ARGUMENTS:
+  -k KEEP_TMP         If present, keep temporal directories - NOT IN PREPAREGENOMES.
+  -l LOG              Desired pipeline log file path.
+  -c CONFIG           Configuration file full path.
   
 ```  
-
+**{only in PREPROCESSING and GENOMICS}**, **[only in GENOMICS]**  
  
-#### Config files description
+ 
+### Config files description
 A template *config.yaml* file can be found in every workflow directory. 
 
-#### Input files description
+### Input files description
 A template *input.txt* file can be found in every workflow directory.  
 See *input.txt* file description for every workflow:
 In all cases, columns must be delimited by a simple space and **no blank lines should be found in the end of the file**.  
@@ -117,6 +123,23 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
 | DrepGroup1 | /home/PPR_03-MappedToReference/DrepGroup1 | /home/MDR_01-BinDereplication/DrepGroup1 |  
 | DrepGroup2 | /home/PPR_03-MappedToReference/Sample1 | /home/MDR_01-BinDereplication/Sample1 |  
 | DrepGroup2 | /home/PPR_03-MappedToReference/Sample2 | /home/MDR_01-BinDereplication/Sample2 |   
+
+
+##### *genomics.py*
+
+  1. Sample group name to analyse.  
+  2. Path to directory containing host reads BAM alignment sorted files - If *preprocessing.py* was used, these are the resulting *ref* BAMs path.   
+  3. Chromosome list. This should be a text file with a single column depicting chromosome IDs. Note that **the given chromosome IDs should be in accordance with the provided reference genome**, otherwise these won't be detected by Holoflow.  
+  
+- Example:  
+
+|   |   |   |
+| --- | --- | --- |
+| Chicken_samples   | /home/path/to/chicken/bams      |  /home/path/to/chicken_chrlist.txt  |
+| Cervid_samples   | /home/path/to/cervid/PPR_03-MappedToReference   | /home/path/to/cervid_chrlist.txt  |
+| Cavia_samples | /home/path/to/cavia/bams     | /home/path/to/cavia_chrlist.txt  |
+
+
  
 ### Workflows - Specific directories
 
@@ -132,7 +155,7 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   2. Duplicate read removal using **seqkit rmdup**
   3. Mapping reads against reference genome(s) using **bwa mem**
 
-- Config file *config.yaml*, in which the user may be interested to customise:
+- Config file *config.yaml*, in which the user may be interested in customising:
   1. Quality filtering - specific adapter sequences, minimum quality, character separating the mate read number.
 
 
@@ -143,7 +166,7 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   3. Contig binning using **Metabat**, **MaxBin**. In Coassembly also binning by **Concoct**.  
   4. Binner result integration using **DasTool** 
   
-- Config file *config.yaml*, in which the user may be interested to customise:
+- Config file *config.yaml*, in which the user may be interested in customising:
   1. Assembler - choose between the mentioned options by writing *megahit* or *spades*
   2. Minimum contig length - minimum bp per contig in final assembly file.
 
@@ -157,7 +180,37 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   
 #### Metagenomics - Final Statistics
 - *Snakefile* - which contains rules for:
-  1. 
+  1. Mapping metagenomic reads to dereplicated MAGs
+  2. Obtaining coverage statistics by MAG and contig to used samples.
+  
+  
+#### Genomics
+- *Snakefile* - which contains rules for:
+  1. Variant calling with **BCFtools**, **GATK** or **ANGSD** (## Latter UNDER CONSTRUCTION ##)
+  2. Phasing for *High depth sample groups* with ## UNDER CONSTRUCTION ##
+  3. Likelihoods update for *Low depth sample groups* with **Beagle** ## UNDER CONSTRUCTION ##
+  4. Genotype imputation for *Low depth sample groups* with **Beagle** ## UNDER CONSTRUCTION ##
+  
+- Config file *config.yaml*, in which the user may be interested in customising:
+  1. Variant calling - BCFtools
+    - mpileup
+      * Coefficient for downgrading mapping quality for reads containing excessive mismatches - *degr_mapp_qual*. Default 50.  
+      * Minimum mapping quality - *min_mapp_qual*. Default to 0.  
+      * Minimum base quality - *min_base_qual*. Default to 13.  
+      * Specific chromosome region. Default False.  
+    - call
+      * Multicaller mode: alternative model for multiallelic and rare-variant calling designed to overcome known limitations. 
+      * Keep only variants and not indels. 
+      
+  2. Variant calling - GATK 
+      * Parameters to obtain more agressive variants: *min_pruning* and *min_dangling*.
+   
+  3. Variant calling - ANGSD
+      * Choose model (1/2) between samtools or GATK.
+      * Output log genotype likelihoods to a file or not.
+      * How to estimate minor and major alleles (1/2): 1 = from likelihood data ; 2 = from count data.
+      * Estimate posterior genotype probability based on the allele frequency as a prior (True/False).
+
 
 ## Usage in Computerome
 
