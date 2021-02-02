@@ -25,6 +25,7 @@ REQUIRED ARGUMENTS:
   -d WORK_DIR         Output directory.
   -t THREADS          Thread maximum number to be used by Snakemake.  
   {-g REF_GENOME}     Reference genome(s) file path to be used in read mapping.
+  [-Q DATA QUALITY]   Low depth (LD) or High depth (HD) data set.
   [-vc VAR CALLER]    Variant caller to choose: 1 {bcftools/samtools}, 2 {GATK}, 3 {ANGSD}.
 
 OPTIONAL ARGUMENTS:
