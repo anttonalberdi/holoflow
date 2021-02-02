@@ -192,7 +192,8 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   4. Genotype imputation for *Low depth sample groups* with **Beagle** ## UNDER CONSTRUCTION ##
   
 - Config file *config.yaml*, in which the user may be interested in customising:
-  1. Variant calling - BCFtools
+  1. Choose between HD - for high depth seqs OR LD - for low depth seqs.
+  2. Variant calling - BCFtools
     - mpileup
       * Coefficient for downgrading mapping quality for reads containing excessive mismatches - *degr_mapp_qual*. Default 50.  
       * Minimum mapping quality - *min_mapp_qual*. Default to 0.  
@@ -202,10 +203,10 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
       * Multicaller mode: alternative model for multiallelic and rare-variant calling designed to overcome known limitations. 
       * Keep only variants and not indels. 
       
-  2. Variant calling - GATK 
+  3. Variant calling - GATK 
       * Parameters to obtain more agressive variants: *min_pruning* and *min_dangling*.
    
-  3. Variant calling - ANGSD
+  4. Variant calling - ANGSD
       * Choose model (1/2) between samtools or GATK.
       * Output log genotype likelihoods to a file or not.
       * How to estimate minor and major alleles (1/2): 1 = from likelihood data ; 2 = from count data.
