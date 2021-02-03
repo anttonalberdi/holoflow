@@ -24,7 +24,7 @@ REQUIRED ARGUMENTS:
   -f INPUT            File containing input information.
   -d WORK_DIR         Output directory.
   -t THREADS          Thread maximum number to be used by Snakemake.  
-  {-g REF_GENOME}     Reference genome(s) file path to be used in read mapping.
+  [{-g REF_GENOME}]     Reference genome(s) file path to be used in read mapping.
   [-Q DATA QUALITY]   Low depth (LD) or High depth (HD) data set.
   [-vc VAR CALLER]    Variant caller to choose: 1 {bcftools/samtools}, 2 {GATK}, 3 {ANGSD}.
 
@@ -34,7 +34,7 @@ OPTIONAL ARGUMENTS:
   -c CONFIG           Configuration file full path.
   
 ```  
-**{only in PREPROCESSING and GENOMICS}**, **[only in GENOMICS]**  
+**{only in PREPROCESSING}**, **[only in GENOMICS]**  
  
  
 ### Config files description
@@ -181,7 +181,7 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   
 #### Metagenomics - Final Statistics
 - *Snakefile* - which contains rules for:
-  1. Mapping metagenomic reads to dereplicated MAGs
+  1. Mapping metagenomic reads to dereplicated MAGs - number and % of mapped reads.
   2. Obtaining coverage statistics by MAG and contig to used samples.
   
   
