@@ -53,6 +53,7 @@ with open(str(config), 'r') as config_file:
         data = {}
 
 with open(str(config), 'w') as config_file:
+    data['threads'] = str(cores)
     data['holopath'] = str(curr_dir)
     data['logpath'] = str(log)
     dump = yaml.dump(data, config_file)

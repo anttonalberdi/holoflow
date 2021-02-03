@@ -53,6 +53,7 @@ with open(str(config), 'r') as config_file:
 with open(str(config), 'w') as config_file:
     data['holopath'] = str(curr_dir)
     data['logpath'] = str(log)
+    data['threads'] = str(cores)
 
     # Retrieve ref genome from tar gz dir
     if str(ref).endswith('.tar.gz'):
