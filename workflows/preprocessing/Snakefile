@@ -100,6 +100,7 @@ rule map_ref:
         read2="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_2.fastq"
     output:
         "{projectpath}/PPR_03-MappedToReference/{sample}_all.bam"
+    threads: 40 
     params:
         refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
         t=expand("{t}", t=config['t']),

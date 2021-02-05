@@ -108,7 +108,6 @@ def in_out_metagenomics(path,in_f):
 
                 if coa_group and not (coa_group == line[1]): # When the coa group is defined and changes, define output files for previous group and finish input
 
-
                     ###### Create merged files
                     coa1_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_1.fastq')
                     coa2_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_2.fastq')
