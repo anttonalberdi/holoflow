@@ -101,7 +101,7 @@ def set_up_preparegenomes(path,in_f):
                 if not (refg[2] == db_ID):
                     # call merging function
                     db_paths+=''+merge_genomes(ref_genomes_IDs,ref_genomes_paths,db_ID)+' '
-                    output_files+=''+path+'/'+db_ID+'.fna.tar.gz'
+                    output_files+=''+path+'/'+db_ID+'.tar.gz'
                     db_ID = refg[2]
                     ref_genomes_IDs=list()
                     ref_genomes_paths=list()
@@ -113,7 +113,7 @@ def set_up_preparegenomes(path,in_f):
                     db_ID = refg[2]
                     # call merging function
                     db_paths+=''+merge_genomes(ref_genomes_IDs,ref_genomes_paths,db_ID)+' '
-                    output_files+=''+path+'/'+db_ID+'.fna.tar.gz'
+                    output_files+=''+path+'/'+db_ID+'.tar.gz'
 
                 else:
                     pass
