@@ -127,7 +127,7 @@ def set_up_preparegenomes(path,in_f):
 
 def merge_genomes(refg_IDs,refg_Paths,db_ID):
 
-    db_dir = path
+    db_dir = os.path.join(path,"PRG")
 
     if not (os.path.exists(str(''+db_dir+'/'+db_ID+'.fna'))):
         for i in range(len(refg_Paths)):
