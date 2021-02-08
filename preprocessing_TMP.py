@@ -112,8 +112,8 @@ def in_out_preprocessing(path,in_f):
                 in_rev=line[2]
 
                 # Define output files based on input.txt
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq '
+                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq.gz '
+                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq.gz '
 
 
                 # Define input file
