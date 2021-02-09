@@ -39,4 +39,4 @@ with open(str(log),'a+') as log:
 
 if not os.path.exists(str(obam)):
     mappingCmd='module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+a+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+obam+'.'+ID+' -o '+obam+''
-    subprocess.check_call(mappingCmd, shell=True)
+    subprocess.Popen(mappingCmd, shell=True).wait()
