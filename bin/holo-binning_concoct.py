@@ -5,9 +5,7 @@ import argparse
 import os
 import glob
 import time
-import sys
 
-sys.setdefaultencoding('utf-8')
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
