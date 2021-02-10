@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 #20.05.2020 - Holoflow 0.1.
 
 import subprocess
@@ -44,7 +46,7 @@ output_path=bb.replace('/'+ID+'.cct','')
 if not glob.glob(output_path+"/*.fa"):
     if not os.path.isfile(''+bb+'_PCA_components_data_gt1500.csv'):
         concoct1Cmd='module load tools && concoct --coverage_file '+d+' --no_original_data --composition_file '+a+' -b '+bb+' -l '+l+' -t '+t+' -r '+r+' '
-        subprocess.Popen(concoct1Cmd.encode('utf-8'), shell=True).wait()
+        subprocess.Popen(concoct1Cmd, shell=True).wait()
     else:
         pass
 
