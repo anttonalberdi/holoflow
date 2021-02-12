@@ -7,6 +7,7 @@ import sys
 import glob
 import time
 import gzip
+import numpy as np
 
 
 #Argument parsing
@@ -88,52 +89,82 @@ except:
 ## Handle coverage and IDs
 
 # Read KO_db into a dictionary [Uniprot]=KO
-with gzip.open(KO_db,'r') as kos_db:
+with gzip.open(KO_db,'rt') as kos_db:
     KO_database = {}
     for line in kos_db:
         (key,val) = line.split()
         KO_database[key] = val
 
 
-sample_list = 'KO '
 ## Get coverage of annotated genes
 for mag in mag_list:
+    sample_list = 'KO\t'
+    KO_times = {}
+    n = 0
+
     mag_ID = os.path.basename(mag).replace('.fa','')
     mag_annot = annot_dir+'/'+mag_ID+'.gtf'
-    mag_counts_tmp = out_dir+'/'+mag_ID+'_counts.txt_tmp'
+    mag_counts_tmp = out_dir+'/'+mag_ID+'_counts_temp.txt'
 
     mag_bams_list = glob.glob(out_dir+'/'+mag_ID+'_*.bam')
     mag_bams = ''
     for bam in mag_bams_list:
         mag_bams+=bam+' '
-        sample = os.path.basename(bam).replace('.bam','')
-        sample_list+=sample+' '
+        sample = os.path.basename(bam).replace('.bam','').replace(mag_ID+'_','')
+        sample_list+=sample+'\t'
 
     htseqCountsCmd='module load tools && htseq-count -t CDS -r pos -f bam '+mag_bams+' '+mag_annot+' > '+mag_counts_tmp+'' ## ?? --nonunique all ??
-    subprocess.Popen(htseqCountsCmd,shell=True).wait()
+#    subprocess.Popen(htseqCountsCmd,shell=True).wait()
 
 
 ## Reformat - Translate annotation in counts file UniProt -> KO
     mag_counts = out_dir+'/'+mag_ID+'_counts.txt'
-    KO_counts = out_dir+'/'+mag_ID+'_KO_counts.txt'
-    with open(mag_counts_tmp,'r+') as tmp_counts, open(mag_counts,'w+') as final_counts, open(KO_counts,'w+') as ko_counts:
-        data = tmp_counts.readlines()
+    with open(mag_counts_tmp,'r') as tmp_counts, open(mag_counts,'w+') as final_counts:
         final_counts.write(sample_list+'\n')
 
-        for line in data:
+        for line in tmp_counts.readlines():
             line=line.split('\t',1) # max number of splits 1
             uniprot=line[0]
             counts=line[1]
-            KO = KO_database[str(uniprot).strip()]
-            print(KO)
 
-            # Write new data to final counts
-            final_counts.write(KO+'\t'+counts+'\n')
+            try:
+                KO = KO_database[str(uniprot).strip()]
+                print(KO)
+                # Write new data to final counts
+                final_counts.write(KO+'\t'+counts)
+
+                ## Generate file ONLY for KO counts in the list
+                with open(KO_genes,'r') as ko_genes:
+                    for line in ko_genes.readlines():
+                        if KO in line:
+                        # Write new data to ko counts
+                            if not KO in KO_times.keys():
+                                KO_times[KO] = []
+                                KO_times[KO].append(counts.split('\t'))
+                            else:
+                                KO_times[KO].append(counts.split('\t'))
+            except:
+                pass
 
 
-## Generate file ONLY for KO counts in the list
-            with open(KO_genes,'r') as ko_genes:
-                ko_counts.write(sample_list+'\n')
-                if str(KO).strip() in ko_genes:
-                    # Write new data to ko counts
-                    ko_counts.write(KO+'\t'+counts+'\n')
+    KO_counts = out_dir+'/'+mag_ID+'_KO_counts.txt'
+    with open(KO_counts,'w+') as ko_counts:
+        sample_list = sample_list.split('\t')[:-1]
+        sample_list.insert(len(sample_list),'N')
+        sample_list = ('\t').join(sample_list)
+        ko_counts.write(sample_list+'\n')
+
+        for key in KO_times.keys():
+            print(KO_times.keys())
+            n = len(KO_times[key])
+            print(n)
+            counts_sum = np.array(KO_times[key]).astype(int)
+            print(counts_sum)
+            counts_sum = np.sum(counts_sum,axis=0)
+            print(counts_sum)
+
+            ko_counts.write(KO+'\t'+str(counts)+'\t'+str(n))
+
+
+
+#os.remove(mag_counts_tmp)
