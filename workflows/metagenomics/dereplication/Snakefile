@@ -97,3 +97,23 @@ rule subtree:
 #         """
 #         python {rules.get_paths.input.holopath}/bin/holo-bin_quality.py -bin_dir {input.drep_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
 #         """
+
+##
+# Get MAG coverage on KOs
+##
+# rule coverage_genes:
+#     input:
+#         prokka_output="{projectpath}/MDR_02-BinAnnotation/{group}"
+#     output:
+#         directory("{projectpath}/MFS_05-KOAbundances/{group}")
+#     params:
+#         threads=expand("{threads}", threads=config['threads']),
+#         KO_DB=expand("{KO_DB}", KO_DB=config['KO_DB']),
+#         KO_list="{rules.get_paths.input.holopath}/workflows/metagenomics/dereplication/KO_list.txt",
+#         group="{group}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-
+#         """
+
+        # Add DB path to launcher.py to be added to config.yaml

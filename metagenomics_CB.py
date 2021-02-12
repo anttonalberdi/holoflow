@@ -108,21 +108,6 @@ def in_out_metagenomics(path,in_f):
 
                 if coa_group and not (coa_group == line[1]): # When the coa group is defined and changes, define output files for previous group and finish input
 
-                    ###### Create merged files
-                    coa1_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_1.fastq')
-                    coa2_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_2.fastq')
-
-                    if not (os.path.exists(coa1_filename) and os.path.exists(coa2_filename)):
-                        # merge all .fastq for coassembly
-                        merge1Cmd='cat '+read1_files+' > '+coa1_filename+''
-                        subprocess.Popen(merge1Cmd, shell=True).wait()
-
-                        merge2Cmd='cat '+read2_files+' > '+coa2_filename+''
-                        subprocess.Popen(merge2Cmd, shell=True).wait()
-
-                    else:
-                        pass
-
                     ###### Handle individual sample files
                     list_read1=read1_files.strip().split(' ')
                     list_read2=read2_files.strip().split(' ')
@@ -137,7 +122,11 @@ def in_out_metagenomics(path,in_f):
                             file=os.path.basename(file1)
                             sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
 
-                            read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
+                            if file1.endswith('.gz'):
+                                read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq.gz'
+                            else:
+                                read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
+
                             cp1Cmd='ln -s '+file1+' '+read1+''
                             subprocess.Popen(cp1Cmd, shell=True).wait()
 
@@ -146,7 +135,11 @@ def in_out_metagenomics(path,in_f):
                             file=os.path.basename(file2)
                             sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
 
-                            read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
+                            if file2.endswith('.gz'):
+                                read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq.gz'
+                            else:
+                                read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
+
                             cp2Cmd='ln -s '+file2+' '+read2+''
                             subprocess.Popen(cp2Cmd, shell=True).wait()
 
@@ -160,10 +153,16 @@ def in_out_metagenomics(path,in_f):
                             file=os.path.basename(file1)
                             sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file)
 
-                            # How the reads should look like coming from preprocessing
-                            read1=in_dir+'/'+sampleID+'_1.fastq'
-                            # How reads will look like for coassembly
-                            coa_read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
+                            if file1.endswith('.gz'):
+                                # How the reads should look like coming from preprocessing
+                                read1=in_dir+'/'+sampleID+'_1.fastq.gz'
+                                # How reads will look like for coassembly
+                                coa_read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq.gz'
+                            else:
+                                # How the reads should look like coming from preprocessing
+                                read1=in_dir+'/'+sampleID+'_1.fastq'
+                                # How reads will look like for coassembly
+                                coa_read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
 
                         # If original .fastq not in PPR_03-MappedToReference
                             if not os.path.isfile(read1):
@@ -179,10 +178,16 @@ def in_out_metagenomics(path,in_f):
                             file=os.path.basename(file2)
                             sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file)
 
-                            # How the reads should look like coming from preprocessing
-                            read2=in_dir+'/'+sampleID+'_2.fastq'
-                            # How reads will look like for coassembly
-                            coa_read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
+                            if file2.endswith('.gz'):
+                                # How the reads should look like coming from preprocessing
+                                read2=in_dir+'/'+sampleID+'_2.fastq.gz'
+                                # How reads will look like for coassembly
+                                coa_read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq.gz'
+                            else:
+                                # How the reads should look like coming from preprocessing
+                                read2=in_dir+'/'+sampleID+'_2.fastq'
+                                # How reads will look like for coassembly
+                                coa_read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
 
                         # If original .fastq not in PPR_03-MappedToReference
                             if not os.path.isfile(read2):
@@ -192,6 +197,28 @@ def in_out_metagenomics(path,in_f):
                             if os.path.isfile(read2):
                                 mv2Cmd='ln -s '+read2+' '+coa_read2+''
                                 subprocess.Popen(mv2Cmd, shell=True).wait()
+
+
+                    ###### Create coassembly files data
+                    coa1_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_1.fastq')
+                    coa2_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_2.fastq')
+
+                    files1 = glob.glob(in_dir+'/'+coa_group+'/*_1.fastq*')
+
+                    for file1 in files1:
+                        with open(coa1_filename,'a+') as coa1, open(coa2_filename,'a+') as coa2:
+                            if file1 == files1[-1]:
+                                coa1.write(file1.strip())
+
+                                file2 = file1.strip().replace('1.fastq','2.fastq')
+                                coa2.write(file2.strip())
+                            else:
+                                coa1.write(file1.strip()+',')
+
+                                file2 = file1.strip().replace('1.fastq','2.fastq')
+                                coa2.write(file2.strip()+',')
+
+
 
                     # Define Snakemake output files
                     output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_DASTool_files ")
@@ -208,21 +235,6 @@ def in_out_metagenomics(path,in_f):
 
 
                 if line == last_line:
-                  # Define Snakemake input files
-                    ###### Create merged files
-                    coa1_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_1.fastq')
-                    coa2_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_2.fastq')
-
-                    if not (os.path.exists(coa1_filename) and os.path.exists(coa2_filename)):
-                        # merge all .fastq for coassembly
-                        merge1Cmd='cat '+read1_files+' > '+coa1_filename+''
-                        subprocess.Popen(merge1Cmd, shell=True).wait()
-
-                        merge2Cmd='cat '+read2_files+' > '+coa2_filename+''
-                        subprocess.Popen(merge2Cmd, shell=True).wait()
-
-                    else:
-                        pass
 
                     ###### Handle individual sample files
                     list_read1=read1_files.strip().split(' ')
@@ -238,7 +250,10 @@ def in_out_metagenomics(path,in_f):
                             file=os.path.basename(file1)
                             sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
 
-                            read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
+                            if file1.endswith('.gz'):
+                                read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq.gz'
+                            else:
+                                read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
                             cp1Cmd='ln -s '+file1+' '+read1+''
                             subprocess.Popen(cp1Cmd, shell=True).wait()
 
@@ -247,7 +262,11 @@ def in_out_metagenomics(path,in_f):
                             file=os.path.basename(file2)
                             sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file) # remove .1.fa .1.fastq _1.fq.gz _1.fastq.gz ...
 
-                            read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
+                            if file2.endswith('.gz'):
+                                read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq.gz'
+                            else:
+                                read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
+
                             cp2Cmd='ln -s '+file2+' '+read2+''
                             subprocess.Popen(cp2Cmd, shell=True).wait()
 
@@ -261,10 +280,16 @@ def in_out_metagenomics(path,in_f):
                             file=os.path.basename(file1)
                             sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file)
 
-                            # How the reads should look like coming from preprocessing
-                            read1=in_dir+'/'+sampleID+'_1.fastq'
-                            # How reads will look like for coassembly
-                            coa_read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
+                            if file1.endswith('.gz'):
+                                # How the reads should look like coming from preprocessing
+                                read1=in_dir+'/'+sampleID+'_1.fastq.gz'
+                                # How reads will look like for coassembly
+                                coa_read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq.gz'
+                            else:
+                                # How the reads should look like coming from preprocessing
+                                read1=in_dir+'/'+sampleID+'_1.fastq'
+                                # How reads will look like for coassembly
+                                coa_read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
 
                         # If original .fastq not in PPR_03-MappedToReference
                             if not os.path.isfile(read1):
@@ -280,10 +305,16 @@ def in_out_metagenomics(path,in_f):
                             file=os.path.basename(file2)
                             sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file)
 
-                            # How the reads should look like coming from preprocessing
-                            read2=in_dir+'/'+sampleID+'_2.fastq'
-                            # How reads will look like for coassembly
-                            coa_read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
+                            if file2.endswith('.gz'):
+                                # How the reads should look like coming from preprocessing
+                                read2=in_dir+'/'+sampleID+'_2.fastq.gz'
+                                # How reads will look like for coassembly
+                                coa_read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq.gz'
+                            else:
+                                # How the reads should look like coming from preprocessing
+                                read2=in_dir+'/'+sampleID+'_2.fastq'
+                                # How reads will look like for coassembly
+                                coa_read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
 
                         # If original .fastq not in PPR_03-MappedToReference
                             if not os.path.isfile(read2):
@@ -293,6 +324,25 @@ def in_out_metagenomics(path,in_f):
                             if os.path.isfile(read2):
                                 mv2Cmd='ln -s '+read2+' '+coa_read2+''
                                 subprocess.Popen(mv2Cmd, shell=True).wait()
+
+                    ###### Create coassembly files data
+                    coa1_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_1.fastq')
+                    coa2_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_2.fastq')
+
+                    files1 = glob.glob(in_dir+'/'+coa_group+'/*_1.fastq*')
+
+                    for file1 in files1:
+                        with open(coa1_filename,'a+') as coa1, open(coa2_filename,'a+') as coa2:
+                            if file1 == files1[-1]:
+                                coa1.write(file1.strip())
+
+                                file2 = file1.strip().replace('1.fastq','2.fastq')
+                                coa2.write(file2.strip())
+                            else:
+                                coa1.write(file1.strip()+',')
+
+                                file2 = file1.strip().replace('1.fastq','2.fastq')
+                                coa2.write(file2.strip()+',')
 
 
                     # Define Snakemake output files
