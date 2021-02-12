@@ -107,7 +107,7 @@ def in_out_final_stats(path,in_f):
                 if os.path.exists(in1):
                     pass
                 else:
-                    mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq '+in1+''
+                    mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
                     subprocess.Popen(mvreadsCmd, shell=True).wait()
 
 

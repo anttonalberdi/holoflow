@@ -52,7 +52,7 @@ if not os.path.exists(out_dir):
         in_file_base = var_dir+'/'+ID+'.SNPs_'+CHR+in_extension
         bgl_out_base = out_dir+'/'+ID+'.probs_'+CHR
 
-        bglCmd = 'module load java/1.8.0 anaconda3/4.4.0 && java  -jar /services/tools/beagle/4.1/beagle.27Jul16.86a.jar gl='+in_file_base+' ref='+ref_panel+' chrom='+CHR+' gprobs=true out='+bgl_out_base+''
+        bglCmd = 'module load java/1.8.0 anaconda3/4.4.0 && java  -jar /services/tools/beagle/4.1/beagle.27Jul16.86a.jar gl='+in_file_base+' ref='+ref_panel+' chrom='+CHR+' gprobs=true out='+bgl_out_base+' t='+threads+''
         subprocess.Popen(bglCmd,shell=True).wait()
 
         # Index and set genotypes in output

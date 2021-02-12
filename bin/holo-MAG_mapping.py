@@ -77,20 +77,30 @@ if not (os.path.exists(str(out_dir))):
     total_reads_tmp = out_dir+'/'+ID+'.tmp_total.reads.txt'
 
     if (os.path.isfile(str(IDXmag_catalogue_file))):
-        readlist = glob.glob(str(fq_dir)+"/*.fastq")
+        readlist = glob.glob(str(fq_dir)+"/*.fastq*")
         samples = list()
         for file in readlist:
             read_name=''
             read_name=os.path.basename(file)
-            read_name = re.sub('_[0-9]\.fastq','',read_name)
+            if file.endswith('.gz'):
+                extension = '.gz'
+                read_name = re.sub('_[0-9]\.fastq.gz','',read_name)
+            else:
+                extension = ''
+                read_name = re.sub('_[0-9]\.fastq','',read_name)
             samples.append(read_name)
         sample_list = sorted(set(samples))
 
         for sample in sample_list:
             # Map every sample to mag catalogue file (competitive mapping) - get one bam for every sample
             out_bam = out_dir+'/'+sample+'.bam'
-            read1 = fq_dir+'/'+sample+'_1.fastq'
-            read2 = fq_dir+'/'+sample+'_2.fastq'
+
+            if extension == '.gz':
+                read1 = fq_dir+'/'+sample+'_1.fastq.gz'
+                read2 = fq_dir+'/'+sample+'_2.fastq.gz'
+            else:
+                read1 = fq_dir+'/'+sample+'_1.fastq'
+                read2 = fq_dir+'/'+sample+'_2.fastq'
 
             mapbinCmd='module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+mag_catalogue_file+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+out_dir+'/'+ID+' -o '+out_bam+''
             subprocess.Popen(mapbinCmd, shell=True).wait()
