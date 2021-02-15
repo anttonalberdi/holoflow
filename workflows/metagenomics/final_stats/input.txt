@@ -1,2 +1,2 @@
-#SAMPLE_GROUP PREPROCESSING_MTG_READS_DIR DREP_BIN_DIR
+#SAMPLE_GROUP PREPROCESSING_MTG_READS_DIR DREP_BIN_DIR ANNOTATION_DIRECTORY(GFF FILES)
 Bats_groupA /home/projects/ku-cbd/people/nurher/PPR_03-MappedToReference/final_Stats_test /home/projects/ku-cbd/people/nurher/MDR_01-BinDereplication/Bats_groupA/dereplicated_genomes

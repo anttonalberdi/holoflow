@@ -1,8 +1,6 @@
 # 08.10.20
 # Metagenomics dereplication
 
-configfile:"/home/projects/ku-cbd/people/nurher//holoflow/workflows/metagenomics/final_stats/config.yaml"
-
 rule get_paths:
     input:
         holopath=expand("{holopath}", holopath=config['holopath']),
@@ -49,3 +47,27 @@ rule coverage:
         """
         python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py -bam_dir {input.bam_MAGs} -mag_dir {input.drep_bin_dir}  -out_dir {params.out_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
+
+
+##
+# Get MAG coverage on KOs
+##
+rule genes_coverage:
+    input:
+        drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
+        annot_dir="{projectpath}/MFS_00-InputData/{group}/annotation",
+        bam_dir="{projectpath}/MFS_01-MAGMapping/{group}"
+    output:
+        directory("{projectpath}/MFS_03-KOAbundances/{group}")
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        KO_DB=expand("{KO_DB}", KO_DB=config['KO_DB']),
+        KO_list="{rules.get_paths.input.holopath}/workflows/metagenomics/dereplication/KO_list.txt",
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-MAG_map_split.py -mag_dir {input.drep_bin_dir} -bam_dir {input.bam_dir} -annot_dir {input.annot_dir} -out_dir {output} -KO_db {params.KO_DB} -KO_list {params.KO_list} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """
+
+        # Add DB path, list to launcher.py to be added to config.yaml
+        # Add annotation directory to input.txt

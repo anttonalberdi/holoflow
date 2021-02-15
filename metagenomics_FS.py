@@ -52,6 +52,8 @@ with open(str(config), 'w') as config_file:
     data['threads'] = str(cores)
     data['holopath'] = str(curr_dir)
     data['logpath'] = str(log)
+    data['KO_DB'] = str('/home/databases/ku-cbd/aalberdi/prokka2kegg/idmapping_KO.tab.gz')
+    data['KO_list'] = str(curr_dir+'/workflows/metagenomics/final_stats/KO_list.txt')
     dump = yaml.dump(data, config_file)
 
 
@@ -83,7 +85,7 @@ def in_out_final_stats(path,in_f):
 
         # Define variables
         output_files=''
-        final_temp_dir="MFS_02-MAGCoverage"
+        final_temp_dir="MFS_03-KOAbundances"
 
         for line in lines:
             ### Skip line if starts with # (comment line)
@@ -93,13 +95,14 @@ def in_out_final_stats(path,in_f):
                 sample_name=line[0]
                 mtg_reads_dir=line[1]
                 drep_bins_dir=line[2]
+                annot_dir=line[3]
 
                 in_sample = in_dir+'/'+sample_name
                 if not os.path.exists(in_sample):
                     os.makedirs(in_sample)
 
                 # Define output files based on input.txt
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'/'+sample_name+'.coverage_byMAG.txt '
+                output_files+=path+'/'+final_temp_dir+'/'+sample_name+' '
 
                 # Define input dir
                 in1=in_sample+'/metagenomic_reads'
@@ -120,6 +123,14 @@ def in_out_final_stats(path,in_f):
                     mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+''
                     subprocess.Popen(mvbinsCmd, shell=True).wait()
 
+                # Define input dir
+                in3=in_sample+'/annotation'
+                # Check if input files already in desired dir
+                if os.path.exists(in3):
+                    pass
+                else:
+                    mvgffCmd = 'mkdir '+in3+' && ln -s '+annot_dir+'/*.gff '+in3+''
+                    subprocess.Popen(mvgffCmd, shell=True).wait()
 
         return output_files
 
