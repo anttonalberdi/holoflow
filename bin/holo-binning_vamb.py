@@ -19,12 +19,15 @@ args = parser.parse_args()
 
 a=args.a
 bb=args.bb
+d=args.d
 bt=args.bt
 ID=args.ID
 log=args.log
 
 
 # Run
+
+bin_base = bb+ID+'.vmb'
 
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
@@ -35,34 +38,46 @@ with open(str(log),'a+') as logi:
 
 
 if not glob.glob(str(bb)+"*.fa"):
-    vambCmd='module unload gcc && module load tools module load tools perl/5.20.2 metabat/2.12.1 vamb/20181215 && vamb  -o _ --outdir '+bb+' --fasta '+a+' --jgi '+d+' --minfasta 200000'
-    subprocess.check_call(vambCmd, shell=True)
+    vambCmd='module unload gcc && module load tools anaconda3/4.4.0 perl/5.20.2 metabat/2.12.1 && vamb  -o _ --outdir '+bb+' --fasta '+a+' --jgi '+d+' --minfasta 200000'
+    #subprocess.check_call(vambCmd, shell=True)
 
-#         # Modify bin names and create contig to bin table
-#     renamebinsCmd='binlist=$(ls '+bb+'*.fasta | sed "s/.*mxb\.//" | sed "s/\.fasta//") && for bin in $binlist; do bin2=$((10#$bin)) ; mv '+bb+'.${bin}.fasta '+bb+'${bin2}.fa; done'
-#     subprocess.Popen(renamebinsCmd, shell=True).wait()
-#
-#
-#         #Fill contig to bin table
-#     binlist=glob.glob(str(bb)+"*.fa")
-#     bintable = open(str(bt),"a+")
-#
-#     for bin in binlist:
-#         binname = os.path.splitext(os.path.basename(bin))[0]+''
-#         with open(bin, 'r') as binfile:
-#            for line in binfile:
-#                 if line.startswith('>'):
-#                     contig = line.strip()
-#                     contig = contig.replace(">", "")
-#                     bintable.write("{0}\t{1}\r\n".format(contig,binname))
-#     bintable.close()
-#
-#
-# # check
-#     if binlist: # if bin list not empty, which means bin table exists
-#         with open(bb+'_checked_bins','w+') as check:
-#             check.write('True Vamb vmb')
-#
-#     else:
-#         with open(bb+'_checked_bins','w+') as check:
-#             check.write('False Vamb vmb')
+        # Modify bin names and create contig to bin table
+
+binlist=glob.glob(str(bb)+"bins/*.fna")
+n = 0
+
+for bin in binlist:
+    full_bin=os.path.abspath(bin)
+    new_bin=bin_base+str(n)+'.fa'
+    print(bin)
+
+    renameBinCmd='mv '+full_bin+' '+new_bin+''
+    subprocess.Popen(renameBinCmd, shell=True).wait()
+    n +=1
+
+    #Fill contig to bin table
+binlist=glob.glob(str(bb)+"*.fa")
+bintable = open(str(bt),"a+")
+
+for bin in binlist:
+    binname = os.path.splitext(os.path.basename(bin))[0]+''
+    with open(bin, 'r') as binfile:
+       for line in binfile:
+            if line.startswith('>'):
+                contig = line.strip()
+                contig = contig.replace(">", "")
+                bintable.write("{0}\t{1}\r\n".format(contig,binname))
+bintable.close()
+
+
+# check
+if binlist: # if bin list not empty, which means bin table exists
+    with open(bin_base+'_checked_bins','w+') as check:
+        check.write('True Vamb vmb')
+
+else:
+    with open(bin_base+'_checked_bins','w+') as check:
+        check.write('False Vamb vmb')
+
+
+os.rmdir(bb+'bins')
