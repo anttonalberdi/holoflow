@@ -116,14 +116,15 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   1. Coassembly group or sample group name.  
   2. Input directory path where the group's/samples' in the group original metagenomic *_1.fastq* & *_2.fastq* files are.
   3. Input directory path where all dereplicated *.fa* bins are.
+  4. Input directory path where .gff annotation files respective to each dereplicated bin is found.
   
 - Example:
 
 |   |   |   |   |
 | --- | --- | --- | --- |
-| DrepGroup1 | /home/PPR_03-MappedToReference/DrepGroup1 | /home/MDR_01-BinDereplication/DrepGroup1/dereplicated_genomes |  
-| DrepGroup2 | /home/PPR_03-MappedToReference/Sample1 | /home/MDR_01-BinDereplication/Sample1/dereplicated_genomes |  
-| DrepGroup2 | /home/PPR_03-MappedToReference/Sample2 | /home/MDR_01-BinDereplication/Sample2/dereplicated_genomes |   
+| DrepGroup1 | /home/PPR_03-MappedToReference/DrepGroup1 | /home/MDR_01-BinDereplication/DrepGroup1/dereplicated_genomes | /home/MDR_02-BinAnnotation/DrepGroup1/bin_funct_annotations |
+| DrepGroup2 | /home/PPR_03-MappedToReference/Sample1 | /home/MDR_01-BinDereplication/Sample1/dereplicated_genomes | /home/MDR_02-BinAnnotation/DrepGroup2/bin_funct_annotations | 
+| DrepGroup2 | /home/PPR_03-MappedToReference/Sample2 | /home/MDR_01-BinDereplication/Sample2/dereplicated_genomes | /home/MDR_02-BinAnnotation/DrepGroup2/bin_funct_annotations |
 
 
 ##### *genomics.py*
