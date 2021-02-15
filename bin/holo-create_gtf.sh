@@ -3,7 +3,7 @@
 infile=$1
 
 if [ "$infile" == "" ] ; then
-    echo "Usage: prokkagff2gtf.sh <PROKKA gff file>"
+    echo "Usage: holo-create_gtf.sh <PROKKA gff file>"
     exit 0
 fi
 

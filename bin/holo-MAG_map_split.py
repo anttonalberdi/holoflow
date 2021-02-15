@@ -54,6 +54,7 @@ if not os.path.exists(out_dir):
         mag_ID = os.path.basename(mag).replace('.fa','')
 
 
+
         for bam in bam_list:
             sample = os.path.basename(bam).replace('.bam','')
             new_bam = out_dir+'/'+mag_ID+'_'+sample+'.bam'
