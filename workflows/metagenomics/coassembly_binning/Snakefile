@@ -225,7 +225,8 @@ rule check_bins:
     input:
         check_mxb="{projectpath}/MCB_03-Binning/{group}_maxbin/{group}.mxb_checked_bins",
         check_mtb="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.mtb_checked_bins",
-        check_cct="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.cct_checked_bins"
+        check_cct="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.cct_checked_bins",
+        check_vamb="{projectpath}/MCB_03-Binning/{group}_vamb/{group}.vmb_checked_bins"
     output:
         "{projectpath}/MCB_03-Binning/{group}_checked_bins.txt"
     params:
@@ -233,7 +234,7 @@ rule check_bins:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-check_bins.py --check_cct {input.check_cct} -check_mtb {input.check_mtb} -check_mxb {input.check_mxb} -binning_dir {params.binning_dir} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-check_bins.py --check_vmb {input.check_vmb} --check_cct {input.check_cct} -check_mtb {input.check_mtb} -check_mxb {input.check_mxb} -binning_dir {params.binning_dir} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 
