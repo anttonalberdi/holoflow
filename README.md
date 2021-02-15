@@ -124,7 +124,7 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
 | --- | --- | --- | --- |
 | DrepGroup1 | /home/PPR_03-MappedToReference/DrepGroup1 | /home/MDR_01-BinDereplication/DrepGroup1/dereplicated_genomes | /home/MDR_02-BinAnnotation/DrepGroup1/bin_funct_annotations |
 | DrepGroup2 | /home/PPR_03-MappedToReference/Sample1 | /home/MDR_01-BinDereplication/Sample1/dereplicated_genomes | /home/MDR_02-BinAnnotation/DrepGroup2/bin_funct_annotations | 
-| DrepGroup2 | /home/PPR_03-MappedToReference/Sample2 | /home/MDR_01-BinDereplication/Sample2/dereplicated_genomes | /home/MDR_02-BinAnnotation/DrepGroup2/bin_funct_annotations |
+| DrepGroup2 | /home/PPR_03-MappedToReference/Sample2 | /home/MDR_01-BinDereplication/Sample2/dereplicated_genomes | /home/MDR_02-BinAnnotation/DrepGroup3/bin_funct_annotations |
 
 
 ##### *genomics.py*
