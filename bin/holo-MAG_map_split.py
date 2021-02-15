@@ -155,15 +155,13 @@ for mag in mag_list:
         ko_counts.write(sample_list+'\n')
 
         for key in KO_times.keys():
-            print(KO_times.keys())
             n = len(KO_times[key])
-            print(n)
             counts_sum = np.array(KO_times[key]).astype(int)
-            print(counts_sum)
             counts_sum = np.sum(counts_sum,axis=0)
-            print(counts_sum)
+            counts_sum = counts_sum.tolist()
+            counts_sum = '\t'.join(str(v) for v in counts_sum)
 
-            ko_counts.write(KO+'\t'+str(counts)+'\t'+str(n))
+            ko_counts.write(key+'\t'+str(counts_sum)+'\t'+str(n)+'\n')
 
 
 

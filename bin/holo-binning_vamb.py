@@ -10,6 +10,7 @@ import re
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-a', help="assembly file", dest="a", required=True)
+parser.add_argument('-d', help="depth file", dest="d", required=True)
 parser.add_argument('-bb', help="bin base ID", dest="bb", required=True)
 parser.add_argument('-bt', help="bin table output", dest="bt", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
@@ -33,36 +34,35 @@ with open(str(log),'a+') as logi:
 
 
 
-
 if not glob.glob(str(bb)+"*.fa"):
-    vambCmd='module unload gcc && module load tools module load tools perl/5.20.2 metabat/2.12.1 vamb/20181215 && vamb  -o _ --outdir '+bb+' --fasta '+a+' --jgi --minfasta 200000'
+    vambCmd='module unload gcc && module load tools module load tools perl/5.20.2 metabat/2.12.1 vamb/20181215 && vamb  -o _ --outdir '+bb+' --fasta '+a+' --jgi '+d+' --minfasta 200000'
     subprocess.check_call(vambCmd, shell=True)
 
-        # Modify bin names and create contig to bin table
-    #renamebinsCmd='binlist=$(ls '+bb+'*.fasta | sed "s/.*mxb\.//" | sed "s/\.fasta//") && for bin in $binlist; do bin2=$((10#$bin)) ; mv '+bb+'.${bin}.fasta '+bb+'${bin2}.fa; done'
-    #subprocess.Popen(renamebinsCmd, shell=True).wait()
-
-
-        #Fill contig to bin table
-    binlist=glob.glob(str(bb)+"*.fa")
-    bintable = open(str(bt),"a+")
-
-    for bin in binlist:
-        binname = os.path.splitext(os.path.basename(bin))[0]+''
-        with open(bin, 'r') as binfile:
-           for line in binfile:
-                if line.startswith('>'):
-                    contig = line.strip()
-                    contig = contig.replace(">", "")
-                    bintable.write("{0}\t{1}\r\n".format(contig,binname))
-    bintable.close()
-
-
-# check
-    if binlist: # if bin list not empty, which means bin table exists
-        with open(bb+'_checked_bins','w+') as check:
-            check.write('True Vamb vmb')
-
-    else:
-        with open(bb+'_checked_bins','w+') as check:
-            check.write('False Vamb vmb')
+#         # Modify bin names and create contig to bin table
+#     renamebinsCmd='binlist=$(ls '+bb+'*.fasta | sed "s/.*mxb\.//" | sed "s/\.fasta//") && for bin in $binlist; do bin2=$((10#$bin)) ; mv '+bb+'.${bin}.fasta '+bb+'${bin2}.fa; done'
+#     subprocess.Popen(renamebinsCmd, shell=True).wait()
+#
+#
+#         #Fill contig to bin table
+#     binlist=glob.glob(str(bb)+"*.fa")
+#     bintable = open(str(bt),"a+")
+#
+#     for bin in binlist:
+#         binname = os.path.splitext(os.path.basename(bin))[0]+''
+#         with open(bin, 'r') as binfile:
+#            for line in binfile:
+#                 if line.startswith('>'):
+#                     contig = line.strip()
+#                     contig = contig.replace(">", "")
+#                     bintable.write("{0}\t{1}\r\n".format(contig,binname))
+#     bintable.close()
+#
+#
+# # check
+#     if binlist: # if bin list not empty, which means bin table exists
+#         with open(bb+'_checked_bins','w+') as check:
+#             check.write('True Vamb vmb')
+#
+#     else:
+#         with open(bb+'_checked_bins','w+') as check:
+#             check.write('False Vamb vmb')

@@ -56,7 +56,11 @@ if not (os.path.exists(str(empty_o)) or os.path.exists(str(temp_a)) or os.path.e
 
     if (args.assembler == "megahit") or (args.coassembly):
 
-        megahitCmd = 'module load tools megahit/1.2.9 && megahit -1 '+read1+' -2 '+read2+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
+        with open(read1,'r') as f1, open(read2,'r') as f2:
+            read1_paths = f1.readline()
+            read2_paths = f2.readline()
+
+        megahitCmd = 'module load tools megahit/1.2.9 && megahit -1 '+read1_paths+' -2 '+read2_paths+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
         subprocess.check_call(megahitCmd, shell=True)
 
         mv_megahitCmd = 'mv '+out+'/final.contigs.fa '+out+'/temp_assembly.fa'
