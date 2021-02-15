@@ -39,45 +39,45 @@ with open(str(log),'a+') as logi:
 
 if not glob.glob(str(bb)+"*.fa"):
     vambCmd='module unload gcc && module load tools anaconda3/4.4.0 perl/5.20.2 metabat/2.12.1 && vamb  -o _ --outdir '+bb+' --fasta '+a+' --jgi '+d+' --minfasta 200000'
-    #subprocess.check_call(vambCmd, shell=True)
+    subprocess.check_call(vambCmd, shell=True)
 
         # Modify bin names and create contig to bin table
 
-binlist=glob.glob(str(bb)+"bins/*.fna")
-n = 0
+    binlist=glob.glob(str(bb)+"bins/*.fna")
+    n = 0
 
-for bin in binlist:
-    full_bin=os.path.abspath(bin)
-    new_bin=bin_base+str(n)+'.fa'
-    print(bin)
+    for bin in binlist:
+        full_bin=os.path.abspath(bin)
+        new_bin=bin_base+str(n)+'.fa'
+        print(bin)
 
-    renameBinCmd='mv '+full_bin+' '+new_bin+''
-    subprocess.Popen(renameBinCmd, shell=True).wait()
-    n +=1
+        renameBinCmd='mv '+full_bin+' '+new_bin+''
+        subprocess.Popen(renameBinCmd, shell=True).wait()
+        n +=1
 
-    #Fill contig to bin table
-binlist=glob.glob(str(bb)+"*.fa")
-bintable = open(str(bt),"a+")
+        #Fill contig to bin table
+    binlist=glob.glob(str(bb)+"*.fa")
+    bintable = open(str(bt),"a+")
 
-for bin in binlist:
-    binname = os.path.splitext(os.path.basename(bin))[0]+''
-    with open(bin, 'r') as binfile:
-       for line in binfile:
-            if line.startswith('>'):
-                contig = line.strip()
-                contig = contig.replace(">", "")
-                bintable.write("{0}\t{1}\r\n".format(contig,binname))
-bintable.close()
-
-
-# check
-if binlist: # if bin list not empty, which means bin table exists
-    with open(bin_base+'_checked_bins','w+') as check:
-        check.write('True Vamb vmb')
-
-else:
-    with open(bin_base+'_checked_bins','w+') as check:
-        check.write('False Vamb vmb')
+    for bin in binlist:
+        binname = os.path.splitext(os.path.basename(bin))[0]+''
+        with open(bin, 'r') as binfile:
+           for line in binfile:
+                if line.startswith('>'):
+                    contig = line.strip()
+                    contig = contig.replace(">", "")
+                    bintable.write("{0}\t{1}\r\n".format(contig,binname))
+    bintable.close()
 
 
-os.rmdir(bb+'bins')
+    # check
+    if binlist: # if bin list not empty, which means bin table exists
+        with open(bin_base+'_checked_bins','w+') as check:
+            check.write('True Vamb vmb')
+
+    else:
+        with open(bin_base+'_checked_bins','w+') as check:
+            check.write('False Vamb vmb')
+
+
+    os.rmdir(bb+'bins')
