@@ -26,6 +26,8 @@ log=args.log
 
 
 # Run
+if os.path.exists(bb) and (len(os.listdir(bb)) == 0):
+    os.rmdir(bb)
 
 bin_base = bb+ID+'.vmb'
 

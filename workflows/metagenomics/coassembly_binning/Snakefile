@@ -122,13 +122,12 @@ rule depth_table:
     output:
         metabat_depth_file="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.depth.txt",
         maxbin_depth_file="{projectpath}/MCB_03-Binning/{group}_maxbin/{group}.depth.txt",
-        concoct_depth_file="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.depth.txt",
-        vamb_depth_file="{projectpath}/MCB_03-Binning/{group}_vamb/{group}.depth.txt"
+        concoct_depth_file="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.depth.txt"
     params:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-depth_files_coa.py -bam_p {input.mapped_bams} -vmb {output.vamb_depth_file} -cct {output.concoct_depth_file} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-depth_files_coa.py -bam_p {input.mapped_bams} -cct {output.concoct_depth_file} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 
@@ -204,7 +203,7 @@ rule binning_concoct:
 rule binning_vamb:
     input:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        depth_table="{projectpath}/MCB_03-Binning/{group}_vamb/{group}.depth.txt"
+        depth_table="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.depth.txt"
     output:
         check_vamb="{projectpath}/MCB_03-Binning/{group}_vamb/{group}.vmb_checked_bins"
     params:
