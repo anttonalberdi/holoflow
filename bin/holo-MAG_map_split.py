@@ -131,7 +131,6 @@ if not os.path.exists(out_dir):
 
                 try:
                     KO = KO_database[str(uniprot).strip()]
-                    print(KO)
                     # Write new data to final counts
                     final_counts.write(KO+'\t'+counts)
 
