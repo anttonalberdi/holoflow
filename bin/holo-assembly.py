@@ -54,7 +54,7 @@ if not (os.path.exists(str(empty_o)) or os.path.exists(str(temp_a)) or os.path.e
     subprocess.check_call(emptytouchCmd, shell=True)
 
 
-    if (args.assembler == "megahit")
+    if (args.assembler == "megahit"):
 
         if (args.coassembly):
 
