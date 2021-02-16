@@ -204,7 +204,7 @@ rule binning_concoct:
 rule binning_vamb:
     input:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        depth_table="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.depth.txt"
+        depth_table="{projectpath}/MCB_03-Binning/{group}_vamb/{group}.depth.txt"
     output:
         check_vamb="{projectpath}/MCB_03-Binning/{group}_vamb/{group}.vmb_checked_bins"
     params:
