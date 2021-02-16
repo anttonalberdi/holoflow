@@ -54,7 +54,7 @@ if os.path.exists(temp_a):
         emptytouchCmd='touch '+empty_o+''
         subprocess.check_call(emptytouchCmd, shell=True)
 
-else:
+if not os.path.exists(temp_a):
 
     if (args.assembler == "megahit"):
 
