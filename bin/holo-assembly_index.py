@@ -30,7 +30,8 @@ with open(str(log),'a+') as log:
     log.write('The assembly file needs to be indexed so the original read files can be mapped to it.\n\n')
 
 
-if not (os.path.exists(str(idx_a))):
+if not os.path.exists(idx_a):
+
     idxsamCmd='module load tools samtools/1.11 && samtools faidx '+a+''
     idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+a+''
 

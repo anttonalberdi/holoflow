@@ -84,7 +84,7 @@ rule assembly_mapping:
         samtools="{projectpath}/MCB_01-Assembly/{group}.fa.fai",
         fq_path="{projectpath}/PPR_03-MappedToReference/{group}"
     output:
-        directory("{projectpath}/MCB_02-AssemblyMapping/{group}")
+         directory("{projectpath}/MCB_02-AssemblyMapping/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"

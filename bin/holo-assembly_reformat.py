@@ -28,7 +28,11 @@ log=args.log
 
 
 # Run
+if os.path.exists(str(out_a)):
+    pass
+
 if not os.path.exists(str(out_a)):
+
     # Write to log
     current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
     with open(str(log),'a+') as log:
