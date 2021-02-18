@@ -13,6 +13,7 @@ parser.add_argument('-c', help="config file", dest="config_file", required=False
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
+parser.add_argument('-R', help="threads", dest="RERUN", action='store_true')
 args = parser.parse_args()
 
 in_f=args.input_txt
@@ -83,42 +84,78 @@ def in_out_metagenomics(path,in_f):
         lines = list(filter(None, list(all_lines)))
 
         last_line = lines[-1]
-        for line in lines:
 
-            if not (line.startswith('#')):
-                dir = line.strip('\n').split(' ') # Create a list of each line
+        if not args.RERUN: # RE RUN FROM SCRATCH
 
-                # the input will be a directory, where all bins for all samples will be contained
-                # If Bins from different samples are in different directories, create input Dir
-                # and move them all there
+            if os.path.exists(in_dir):
+                os.rmdir(in_dir)
+                os.makedirs(in_dir)
 
-                desired_input=(str(in_dir)+'/'+str(dir[0])) # desired input dir path
-                current_input_dir=os.path.dirname(dir[1])
+            for line in lines:
 
-                #if bins not in desired input dir, copy them there
-                if not desired_input == current_input_dir:
-                    if not (os.path.exists(str(desired_input))):
-                        copyfilesCmd='mkdir '+desired_input+' && find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
-                        subprocess.check_call(copyfilesCmd, shell=True)
+                if not (line.startswith('#')):
+                    dir = line.strip('\n').split(' ') # Create a list of each line
 
-                else:
-                    pass
+                    # the input will be a directory, where all bins for all samples will be contained
+                    # If Bins from different samples are in different directories, create input Dir
+                    # and move them all there
 
-                    # write output files
+                    desired_input=(str(in_dir)+'/'+str(dir[0])) # desired input dir path
+                    current_input_dir=os.path.dirname(dir[1])
 
-                if (not (group == dir[0])): # when the group changes, define output files for previous group
-                    #same as last output in Snakefile
-                    group=str(dir[0])
-                    final_temp_dir="MDR_03-BinPhylogeny"
-                    output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
+                    #if bins not in desired input dir, copy them there
+                    if not desired_input == current_input_dir:
+                        if not (os.path.exists(str(desired_input))):
+                            copyfilesCmd='mkdir '+desired_input+' && find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
+                            subprocess.check_call(copyfilesCmd, shell=True)
 
-                if (line == last_line):
-                    #same as last output in Snakefile
-                    group=str(dir[0])
-                    final_temp_dir="MDR_03-BinPhylogeny"
-                    output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
+                    else:
+                        pass
+
+                        # write output files
+
+                    if (not (group == dir[0])): # when the group changes, define output files for previous group
+                        #same as last output in Snakefile
+                        group=str(dir[0])
+                        final_temp_dir="MDR_03-BinPhylogeny"
+                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
+                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
+
+                    if (line == last_line):
+                        #same as last output in Snakefile
+                        group=str(dir[0])
+                        final_temp_dir="MDR_03-BinPhylogeny"
+                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
+                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
+
+
+        if args.RERUN: ## RERUN FROM LAST RUN RULE
+
+            for line in lines:
+                if not (line.startswith('#')):
+                    dir = line.strip('\n').split(' ') # Create a list of each line
+
+                    # the input will be a directory, where all bins for all samples will be contained
+                    # If Bins from different samples are in different directories, create input Dir
+                    # and move them all there
+
+                    desired_input=(str(in_dir)+'/'+str(dir[0])) # desired input dir path
+                    current_input_dir=os.path.dirname(dir[1])
+
+                    if (not (group == dir[0])): # when the group changes, define output files for previous group
+                        #same as last output in Snakefile
+                        group=str(dir[0])
+                        final_temp_dir="MDR_03-BinPhylogeny"
+                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
+                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
+
+                    if (line == last_line):
+                        #same as last output in Snakefile
+                        group=str(dir[0])
+                        final_temp_dir="MDR_03-BinPhylogeny"
+                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
+                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
+
 
         return output_files
 

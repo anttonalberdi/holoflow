@@ -94,10 +94,10 @@ def in_out_metagenomics(path,in_f):
         lines = list(filter(None, list(all_lines)))
         last_line = lines[-1].split(' ')
 
-        if args.RERUN: # RE RUN FROM SCRATCH
+        if not args.RERUN: # RE RUN FROM SCRATCH
 
             if os.path.exists(merged_in_dir):
-                os.remove(merged_in_dir)
+                os.rmdir(merged_in_dir)
                 os.makedirs(merged_in_dir)
 
             for line in lines:
@@ -358,7 +358,7 @@ def in_out_metagenomics(path,in_f):
 
 
 
-        else: ## RERUN FROM LAST RUN RULE
+        if args.RERUN: ## RERUN FROM LAST RUN RULE
             for line in lines:
 
                 if not (line.startswith('#')):
