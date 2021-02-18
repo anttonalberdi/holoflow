@@ -13,6 +13,7 @@ parser.add_argument('-c', help="config file", dest="config_file", required=False
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
+parser.add_argument('-R', help="threads", dest="RERUN", action='store_true')
 args = parser.parse_args()
 
 in_f=args.input_txt
@@ -87,50 +88,71 @@ def in_out_final_stats(path,in_f):
         output_files=''
         final_temp_dir="MFS_03-KOAbundances"
 
-        for line in lines:
-            ### Skip line if starts with # (comment line)
-            if not (line.startswith('#')):
+        if not args.RERUN:
+            if os.path.exists(in_dir):
+                rmCmd='rm -rf '+in_dir+''
+                subprocess.Popen(rmCmd,shell=True).wait()
+                os.makedirs(in_dir)
 
-                line = line.strip('\n').split(' ') # Create a list of each line
-                sample_name=line[0]
-                mtg_reads_dir=line[1]
-                drep_bins_dir=line[2]
-                annot_dir=line[3]
+            for line in lines:
+                ### Skip line if starts with # (comment line)
+                if not (line.startswith('#')):
 
-                in_sample = in_dir+'/'+sample_name
-                if not os.path.exists(in_sample):
-                    os.makedirs(in_sample)
+                    line = line.strip('\n').split(' ') # Create a list of each line
+                    sample_name=line[0]
+                    mtg_reads_dir=line[1]
+                    drep_bins_dir=line[2]
+                    annot_dir=line[3]
 
-                # Define output files based on input.txt
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+' '
+                    in_sample = in_dir+'/'+sample_name
+                    if not os.path.exists(in_sample):
+                        os.makedirs(in_sample)
 
-                # Define input dir
-                in1=in_sample+'/metagenomic_reads'
-                # Check if input files already in desired dir
-                if os.path.exists(in1):
-                    pass
-                else:
-                    mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
-                    subprocess.Popen(mvreadsCmd, shell=True).wait()
+                    # Define output files based on input.txt
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+' '
+
+                    # Define input dir
+                    in1=in_sample+'/metagenomic_reads'
+                    # Check if input files already in desired dir
+                    if os.path.exists(in1):
+                        pass
+                    else:
+                        mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
+                        subprocess.Popen(mvreadsCmd, shell=True).wait()
 
 
-                # Define input dir
-                in2=in_sample+'/dereplicated_bins'
-                # Check if input files already in desired dir
-                if os.path.exists(in2):
-                    pass
-                else:
-                    mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+''
-                    subprocess.Popen(mvbinsCmd, shell=True).wait()
+                    # Define input dir
+                    in2=in_sample+'/dereplicated_bins'
+                    # Check if input files already in desired dir
+                    if os.path.exists(in2):
+                        pass
+                    else:
+                        mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+''
+                        subprocess.Popen(mvbinsCmd, shell=True).wait()
 
-                # Define input dir
-                in3=in_sample+'/annotation'
-                # Check if input files already in desired dir
-                if os.path.exists(in3):
-                    pass
-                else:
-                    mvgffCmd = 'mkdir '+in3+' && ln -s '+annot_dir+'/*.gff '+in3+''
-                    subprocess.Popen(mvgffCmd, shell=True).wait()
+                    # Define input dir
+                    in3=in_sample+'/annotation'
+                    # Check if input files already in desired dir
+                    if os.path.exists(in3):
+                        pass
+                    else:
+                        mvgffCmd = 'mkdir '+in3+' && ln -s '+annot_dir+'/*.gff '+in3+''
+                        subprocess.Popen(mvgffCmd, shell=True).wait()
+
+        if args.RERUN:
+
+            for line in lines:
+                ### Skip line if starts with # (comment line)
+                if not (line.startswith('#')):
+
+                    line = line.strip('\n').split(' ') # Create a list of each line
+                    sample_name=line[0]
+                    mtg_reads_dir=line[1]
+                    drep_bins_dir=line[2]
+                    annot_dir=line[3]
+
+                    # Define output files based on input.txt
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+' '
 
         return output_files
 

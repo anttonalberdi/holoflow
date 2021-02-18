@@ -102,55 +102,82 @@ def in_out_preprocessing(path,in_f):
         output_files=''
         final_temp_dir="PPR_03-MappedToReference"
 
-        for line in lines:
-            ### Skip line if starts with # (comment line)
-            if not (line.startswith('#')):
 
-                line = line.strip('\n').split(' ') # Create a list of each line
-                sample_name=line[0]
-                in_for=line[1]
-                in_rev=line[2]
-
-                # Define output files based on input.txt
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq '
+        if not args.RERUN:
+            if os.path.exists(in_dir):
+                rmCmd='rm -rf '+in_dir+''
+                subprocess.Popen(rmCmd,shell=True).wait()
+                os.makedirs(in_dir)
 
 
-                # Define input file
-                in1=in_dir+'/'+sample_name+'_1.fastq.tmp'
-                # Check if input files already in desired dir
-                if os.path.isfile(in1):
-                    pass
-                else:
-                    #If the file is not in the working directory, transfer it
-                    if os.path.isfile(in_for) and not (os.path.isfile(in1)):
-                        if in_for.endswith('.gz'):
-                            read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
-                            subprocess.Popen(read1Cmd, shell=True).wait()
-                        else:
-                            read1Cmd = 'ln -s '+in_for+' '+in1+''
-                            subprocess.Popen(read1Cmd, shell=True).wait()
+            for line in lines:
+                ### Skip line if starts with # (comment line)
+                if not (line.startswith('#')):
+
+                    line = line.strip('\n').split(' ') # Create a list of each line
+                    sample_name=line[0]
+                    in_for=line[1]
+                    in_rev=line[2]
+
+                    # Define output files based on input.txt
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq '
 
 
-                # Define input file
-                in2=in_dir+'/'+sample_name+'_2.fastq.tmp'
-                # Check if input files already in desired dir
-                if os.path.isfile(in2):
-                    pass
-                else:
-                    #If the file is not in the working directory, transfer it
-                    if os.path.isfile(in_rev) and not (os.path.isfile(in2)):
-                        if in_for.endswith('.gz'):
-                            read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip -c '+in2+'.gz > '+in2+''
-                            subprocess.Popen(read2Cmd, shell=True).wait()
-                        else:
-                            read2Cmd = 'ln -s '+in_rev+' '+in2+''
-                            subprocess.Popen(read2Cmd, shell=True).wait()
+                    # Define input file
+                    in1=in_dir+'/'+sample_name+'_1.fastq.tmp'
+                    # Check if input files already in desired dir
+                    if os.path.isfile(in1):
+                        pass
+                    else:
+                        #If the file is not in the working directory, transfer it
+                        if os.path.isfile(in_for) and not (os.path.isfile(in1)):
+                            if in_for.endswith('.gz'):
+                                read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
+                                subprocess.Popen(read1Cmd, shell=True).wait()
+                            else:
+                                read1Cmd = 'ln -s '+in_for+' '+in1+''
+                                subprocess.Popen(read1Cmd, shell=True).wait()
 
 
-                # Add stats and bam output files only once per sample
-                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ")
-                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
+                    # Define input file
+                    in2=in_dir+'/'+sample_name+'_2.fastq.tmp'
+                    # Check if input files already in desired dir
+                    if os.path.isfile(in2):
+                        pass
+                    else:
+                        #If the file is not in the working directory, transfer it
+                        if os.path.isfile(in_rev) and not (os.path.isfile(in2)):
+                            if in_for.endswith('.gz'):
+                                read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip -c '+in2+'.gz > '+in2+''
+                                subprocess.Popen(read2Cmd, shell=True).wait()
+                            else:
+                                read2Cmd = 'ln -s '+in_rev+' '+in2+''
+                                subprocess.Popen(read2Cmd, shell=True).wait()
+
+
+                    # Add stats and bam output files only once per sample
+                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
+
+        if args.RERUN:
+            for line in lines:
+                ### Skip line if starts with # (comment line)
+                if not (line.startswith('#')):
+
+                    line = line.strip('\n').split(' ') # Create a list of each line
+                    sample_name=line[0]
+                    in_for=line[1]
+                    in_rev=line[2]
+
+                    # Define output files based on input.txt
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq '
+
+                    # Add stats and bam output files only once per sample
+                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
+
 
         return output_files
 

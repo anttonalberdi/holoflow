@@ -13,6 +13,7 @@ parser.add_argument('-c', help="config file", dest="config_file", required=False
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
+parser.add_argument('-R', help="threads", dest="RERUN", action='store_true')
 args = parser.parse_args()
 
 in_f=args.input_txt
@@ -81,50 +82,67 @@ def in_out_metagenomics(path,in_f):
         all_lines = map(lambda s: s.strip(), all_lines)
         lines = list(filter(None, list(all_lines)))
 
-        for line in lines:
-            ### Skip line if starts with # (comment line)
-            if not (line.startswith('#')):
+        if not args.RERUN:
+            if os.path.exists(in_dir):
+                rmCmd='rm -rf '+in_dir+''
+                subprocess.Popen(rmCmd,shell=True).wait()
+                os.makedirs(in_dir)
 
-                line = line.strip('\n').split(' ') # Create a list of each line
-                sample_name=line[0]
-                in_for=line[1]
-                in_rev=line[2]
+            for line in lines:
+                ### Skip line if starts with # (comment line)
+                if not (line.startswith('#')):
 
-
-                # Define input file
-                in1=in_dir+'/'+sample_name+'_1.fastq'
-                # Check if input files already in desired dir
-                if os.path.isfile(in1) or os.path.isfile(in1+'.gz'):
-                    pass
-                else:
-                    #If the file is not in the working directory, transfer it
-                    if os.path.isfile(in_for):
-                        if in_for.endswith('.gz'):
-                            read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
-                            subprocess.Popen(read1Cmd, shell=True).wait()
-                        else:
-                            print("LINKING For")
-                            read1Cmd = 'ln -s '+in_for+' '+in1+''
-                            subprocess.Popen(read1Cmd, shell=True).wait()
+                    line = line.strip('\n').split(' ') # Create a list of each line
+                    sample_name=line[0]
+                    in_for=line[1]
+                    in_rev=line[2]
 
 
+                    # Define input file
+                    in1=in_dir+'/'+sample_name+'_1.fastq'
+                    # Check if input files already in desired dir
+                    if os.path.isfile(in1) or os.path.isfile(in1+'.gz'):
+                        pass
+                    else:
+                        #If the file is not in the working directory, transfer it
+                        if os.path.isfile(in_for):
+                            if in_for.endswith('.gz'):
+                                read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
+                                subprocess.Popen(read1Cmd, shell=True).wait()
+                            else:
+                                read1Cmd = 'ln -s '+in_for+' '+in1+''
+                                subprocess.Popen(read1Cmd, shell=True).wait()
 
-                # Define input file
-                in2=in_dir+'/'+sample_name+'_2.fastq'
-                # Check if input files already in desired dir
-                if os.path.isfile(in2) or os.path.isfile(in2+'.gz'):
-                    pass
-                else:
-                    #If the file is not in the working directory, transfer it
-                    if os.path.isfile(in_rev):
-                        if in_for.endswith('.gz'):
-                            read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip -c '+in2+'.gz > '+in2+''
-                            subprocess.Popen(read2Cmd, shell=True).wait()
-                        else:
-                            print("LINKING REV")
-                            read2Cmd = 'ln -s '+in_rev+' '+in2+''
-                            subprocess.Popen(read2Cmd, shell=True).wait()
 
+
+                    # Define input file
+                    in2=in_dir+'/'+sample_name+'_2.fastq'
+                    # Check if input files already in desired dir
+                    if os.path.isfile(in2) or os.path.isfile(in2+'.gz'):
+                        pass
+                    else:
+                        #If the file is not in the working directory, transfer it
+                        if os.path.isfile(in_rev):
+                            if in_for.endswith('.gz'):
+                                read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip -c '+in2+'.gz > '+in2+''
+                                subprocess.Popen(read2Cmd, shell=True).wait()
+                            else:
+                                read2Cmd = 'ln -s '+in_rev+' '+in2+''
+                                subprocess.Popen(read2Cmd, shell=True).wait()
+
+
+                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
+
+                
+        if args.RERUN:
+            for line in lines:
+                ### Skip line if starts with # (comment line)
+                if not (line.startswith('#')):
+
+                    line = line.strip('\n').split(' ') # Create a list of each line
+                    sample_name=line[0]
+                    in_for=line[1]
+                    in_rev=line[2]
 
                 output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
 
