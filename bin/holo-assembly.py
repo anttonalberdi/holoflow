@@ -79,7 +79,6 @@ if not os.path.exists(temp_a):
             subprocess.check_call(mv_megahitCmd, shell=True)
 
 
-
     if args.assembler == "spades":
 
         spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''

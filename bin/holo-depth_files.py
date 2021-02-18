@@ -37,5 +37,5 @@ if not (os.path.isfile(mtb)):
     subprocess.check_call(metabatCmd, shell=True)
 
 # Maxbin
-maxbinCmd='cp '+mtb+' '+mxb+''
+maxbinCmd='cut -f1,3 '+mtb+' | tail -n+2 > '+mxb+''
 subprocess.check_call(maxbinCmd, shell=True)
