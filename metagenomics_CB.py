@@ -97,7 +97,8 @@ def in_out_metagenomics(path,in_f):
         if not args.RERUN: # RE RUN FROM SCRATCH
 
             if os.path.exists(merged_in_dir):
-                os.rmdir(merged_in_dir)
+                rmCmd='rm -rf '+merged_in_dir+''
+                subprocess.Popen(rmCmd,shell=True).wait()
                 os.makedirs(merged_in_dir)
 
             for line in lines:
