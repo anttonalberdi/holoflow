@@ -29,6 +29,9 @@ log=args.log
 
 # Run
 
+if os.path.exists(obam_b):
+    pass
+
 if not os.path.exists(obam_b):
     os.makedirs(obam_b)
 

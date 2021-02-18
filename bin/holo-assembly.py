@@ -49,10 +49,7 @@ with open(str(log),'a+') as log:
 
 
 if os.path.exists(temp_a):
-
-    if not os.path.exists(empty_o):
-        emptytouchCmd='touch '+empty_o+''
-        subprocess.check_call(emptytouchCmd, shell=True)
+    pass
 
 if not os.path.exists(temp_a):
 
