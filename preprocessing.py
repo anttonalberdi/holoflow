@@ -14,6 +14,7 @@ parser.add_argument('-g', help="reference genome path or path to .tar.gz data ba
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
+parser.add_argument('-R', help="threads", dest="RERUN", action='store_true')
 args = parser.parse_args()
 
 in_f=args.input_txt
