@@ -23,7 +23,8 @@ These are designed to be called from the command line and require the following 
 REQUIRED ARGUMENTS:
   -f INPUT            File containing input information.
   -d WORK_DIR         Output directory.
-  -t THREADS          Thread maximum number to be used by Snakemake.  
+  -t THREADS          Thread maximum number to be used by Snakemake.
+  -R RERUN            Wants to re-run the worfklow from an intermediate step keeping the completed outputs. - NOT IN PREPAREGENOMES.
   [{-g REF_GENOME}]     Reference genome(s) file path to be used in read mapping.
   [-Q DATA QUALITY]   Low depth (LD) or High depth (HD) data set.
   [-vc VAR CALLER]    Variant caller to choose: 1 {bcftools/samtools}, 2 {GATK}, 3 {ANGSD}.
