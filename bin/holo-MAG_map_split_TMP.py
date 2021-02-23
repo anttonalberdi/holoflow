@@ -86,7 +86,7 @@ if not os.path.exists(out_dir):
     #Some files will be empty -> remove them
     try:
         rmCmd='find '+out_dir+' -size 0 -delete'
-        #subprocess.Popen(rmCmd,shell=True).wait()
+        subprocess.Popen(rmCmd,shell=True).wait()
     except:
         pass
 
@@ -120,9 +120,9 @@ if not os.path.exists(out_dir):
         pasteCmd='infiles="'+counts_string+'" && for i in $infiles; do sed -i -E "s/^.*\t//" $i; done && cut -f1 '+counts_list[0]+' > UNIPROT && paste UNIPROT '+counts_string+' > '+mag_counts_tmp+' && rm UNIPROT'
         subprocess.Popen(pasteCmd,shell=True).wait()
 
+
+
         mag_counts = out_dir+'/'+mag_ID+'_counts.txt'
-
-
     # Reformat - Translate annotation in counts file UniProt -> KO
         with open(mag_counts_tmp,'r') as tmp_counts, open(mag_counts,'w+') as final_counts:
             final_counts.write(sample_list+'\n')
