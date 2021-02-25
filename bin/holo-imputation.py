@@ -37,15 +37,19 @@ if not os.path.exists(out_dir):
         logi.write('\t\t'+current_time+'\tGenotypes are being imputed using updated likelihoods with Beagle for Low Depth samples step - '+ID+'\n')
         logi.write(' \n\n')
 
+    chromosome_list = list()
+    with open(chr_list,'r+') as chr_data:
+        for chr in chr_data.readlines():
+            chromosome_list.append(chr.strip())
 
-    for CHR in chr_list:
+    for CHR in chromosome_list:
 
         in_file = upd_dir+'/'+ID+'.probs_'+CHR+'.vcf.gz'
         bgl_out_base = out_dir+'/'+ID+'.imputed_'+CHR
 
         # Run imputation
 
-        bglCmd = 'module load java/1.8.0 anaconda3/4.4.0 && java -Xmx180g -jar /services/tools/beagle/5.1/beagle-5.1.jar gt='+in_file_base+' ref='+ref_panel+' chrom='+CHR+' gp=true out='+bgl_out_base+''
+        bglCmd = 'module load java/1.8.0 anaconda3/4.4.0 && java -Xmx180g -jar /services/tools/beagle/5.1/beagle-5.1.jar gt='+in_file+' ref='+ref_panel+' chrom='+CHR+' gp=true out='+bgl_out_base+''
         subprocess.Popen(bglCmd,shell=True).wait()
 
         bgl_out = bgl_out_base+'.vcf.gz'

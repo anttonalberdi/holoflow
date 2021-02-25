@@ -132,7 +132,7 @@ if config['var_caller'] == "gatk":
 ### Conditional LD
 #Reference panel in config has to be defined
 
-if config['data_quality'] == "LD" and (config['ref_panel_HD']):
+if (config['data_quality'] == "LD") and (config['ref_panel_HD'] != ''):
 
     ### - LIKELIHOOD UPDATE
 

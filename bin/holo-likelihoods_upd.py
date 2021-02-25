@@ -47,17 +47,26 @@ if not os.path.exists(out_dir):
 
 
     # Run Beagle per chromosome
-    for CHR in chr_list:
+    chromosome_list = list()
+    with open(chr_list,'r+') as chr_data:
+        for chr in chr_data.readlines():
+            chromosome_list.append(chr.strip())
 
-        in_file_base = var_dir+'/'+ID+'.SNPs_'+CHR+in_extension
-        bgl_out_base = out_dir+'/'+ID+'.probs_'+CHR
+    for CHR in chromosome_list:
+        try:
 
-        bglCmd = 'module load java/1.8.0 anaconda3/4.4.0 && java  -jar /services/tools/beagle/4.1/beagle.27Jul16.86a.jar gl='+in_file_base+' ref='+ref_panel+' chrom='+CHR+' gprobs=true out='+bgl_out_base+' t='+threads+''
-        subprocess.Popen(bglCmd,shell=True).wait()
+            in_file_base = var_dir+'/'+ID+'.SNPs_'+CHR+in_extension
+            bgl_out_base = out_dir+'/'+ID+'.probs_'+CHR
 
-        # Index and set genotypes in output
-        bgl_out = bgl_out_base+'.vcf.gz'
-        filt_out = out_dir+'/'+ID+'.probs_filt.vcf'
+            bglCmd = 'module load java/1.8.0 anaconda3/4.4.0 && java  -jar /services/tools/beagle/4.1/beagle.27Jul16.86a.jar gl='+in_file_base+' ref='+ref_panel+' chrom='+CHR+' gprobs=true out='+bgl_out_base+''
+            subprocess.Popen(bglCmd,shell=True).wait()
 
-        bcfCmd = 'module load tools bcftools/1.11 && bcftools index '+bgl_out+' && bcftools +setGT '+bgl_out+' -- -t -q -n . -e "FORMAT/GP>=0.99" > '+filt_out+' && bgzip '+filt_out+''
-        subprocess.Popen(bcfCmd,shell=True).wait()
+            # Index and set genotypes in output
+            bgl_out = bgl_out_base+'.vcf.gz'
+            filt_out = out_dir+'/'+ID+'.probs_filt.vcf'
+
+            bcfCmd = 'module load tools bcftools/1.11 && bcftools index '+bgl_out+' && bcftools +setGT '+bgl_out+' -- -t -q -n . -e "FORMAT/GP>=0.99" > '+filt_out+' && bgzip '+filt_out+''
+            subprocess.Popen(bcfCmd,shell=True).wait()
+        except:
+            lnsCmd='ln -s '+in_file_base+' '+out_dir+'' # likelihoods were not updated, keep original
+            subprocess.Popen(lnsCmd,shell=True).wait()

@@ -72,15 +72,19 @@ if not os.path.exists(out_dir):
             new_bam = out_dir+'/'+mag_ID+'_'+sample+'.bam'
             sample_counts_tmp = out_dir+'/'+mag_ID+'_'+sample+'.counts.txt'
 
-            if not os.path.isfile(new_bam):
-            # Split bams into MAGs
-            # Now BAM headers are only the contig ID - Removed MAG_ID-
-                samtoolsCmd='module load tools samtools/1.11 && samtools view -h '+bam+' | grep "'+mag_ID+'-" | sed "s/'+mag_ID+'-//" | samtools view -bS - | htseq-count -t CDS -r pos -f bam - '+gtf+' > '+sample_counts_tmp+''
-                subprocess.Popen(samtoolsCmd,shell=True).wait()
-
+            if os.path.isfile(sample_counts_tmp):
+                pass
             else:
-                htseqCountsCmd='module load tools && htseq-count -t CDS -r pos -f bam '+new_bam+' '+gtf+' > '+sample_counts_tmp+'' ## ?? --nonunique all ??
-                subprocess.Popen(htseqCountsCmd,shell=True).wait()
+
+                if not os.path.isfile(new_bam):
+                # Split bams into MAGs
+                # Now BAM headers are only the contig ID - Removed MAG_ID-
+                    samtoolsCmd='module load tools samtools/1.11 && samtools view -h '+bam+' | grep "'+mag_ID+'-" | sed "s/'+mag_ID+'-//" | samtools view -bS - | htseq-count -t CDS -r pos -f bam - '+gtf+' > '+sample_counts_tmp+''
+                    subprocess.Popen(samtoolsCmd,shell=True).wait()
+
+                else:
+                    htseqCountsCmd='module load tools && htseq-count -t CDS -r pos -f bam '+new_bam+' '+gtf+' > '+sample_counts_tmp+'' ## ?? --nonunique all ??
+                    subprocess.Popen(htseqCountsCmd,shell=True).wait()
 
 
     #Some files will be empty -> remove them
