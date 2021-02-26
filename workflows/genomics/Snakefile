@@ -50,7 +50,7 @@ if config['var_caller'] == "bcftools":
         #         input:
         #             "{projectpath}/GNM_01-CalledVar/{group}"
         #         output:
-        #             directory("{projectpath}/GNM_02-Phasing/{group}")
+        #             directory("{projectpath}/GNM_02-Filtering/{group}")
         #         params:
         #             chr_list=expand("{chr_list}", chr_list=config['chr_list']),
         #             group="{group}",
@@ -111,7 +111,7 @@ if config['var_caller'] == "gatk":
         #         input:
         #             "{projectpath}/GNM_01-CalledVar/{group}"
         #         output:
-        #             directory("{projectpath}/GNM_02-Phasing/{group}")
+        #             directory("{projectpath}/GNM_02-Filtering/{group}")
         #         params:
         #             QUAL=expand("{QUAL}", QUAL=config['QUAL']),
         #             QD=expand("{QD}", QD=config['QD']),
@@ -123,6 +123,25 @@ if config['var_caller'] == "gatk":
         #             """
         #             python {rules.get_paths.input.holopath}/bin/holo-filter_GATK.py -var_dir {input} -out_dir {output} -chr_list {params.chr_list} -QUAL {params.QUAL} -QD {params.QD} -FS {params.FS} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         #             """
+
+
+# ## HD Phasing
+# if config['data_quality'] == "HD":
+#
+#     rule phasing:
+#         input:
+#             "{projectpath}/GNM_02-Filtering/{group}"
+#         output:
+#             "{projectpath}/GNM_03-Phasing/{group}"
+#         params:
+#             gmap=expand("{gmap}", gmap=config['gmap']),
+#             chr_list=expand("{chr_list}", chr_list=config['chr_list']),
+#             group="{group}",
+#             threads=expand("{threads}", threads=config['threads'])
+#         shell:
+#             """
+#             python {rules.get_paths.input.holopath}/bin/holo-phasing.py -filt_dir {input} -out_dir {output} -chr_list {params.chr_list} -gmap {params.gmap} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+#             """
 
 
 # ANGSD as variant caller

@@ -46,9 +46,8 @@ if not os.path.exists(out_dir):
         input = filt_dir+'/'+ID+'.HD_SNPs_'+CHR+'.vcf.gz'
         output = out_dir+'/'+ID+'_'+CHR+'.filt_phased.vcf.gz'
 
-        output =${CHROM}_filt_phased.vcf.gz
 
-        if not (gmap == ''):
+        if not (gmap == 'False'):
             phasingCmd= 'module load shapeit4/4.1.3 && shapeit4 --input '+input+' --map '+gmap+' --region '+CHR+' --thread '+threads+' --output '+output+' --sequencing'
             subprocess.Popen(phasingCmd,shell=True).wait()
 
