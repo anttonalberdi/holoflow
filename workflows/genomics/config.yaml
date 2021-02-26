@@ -91,7 +91,21 @@ do_Post:
 
 
 ################################### PHASING - Ref panel generation ###################################
+## Filtering ##
+# BCFTOOLS
 
+
+# GATK
+QD:
+  2.0
+
+QUAL:
+  30.0
+
+FS:
+  60.0
+
+## Final Phasing ##
 
 
 
