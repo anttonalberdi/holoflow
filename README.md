@@ -30,6 +30,7 @@ REQUIRED ARGUMENTS:
   [-vc VAR CALLER]    Variant caller to choose: 1 {bcftools/samtools}, 2 {GATK}, 3 {ANGSD}.
 
 OPTIONAL ARGUMENTS:
+  [-r REF_PANEL]      Reference panel necessary for likelihoods update and imputation of LD variants.
   -k KEEP_TMP         If present, keep temporal directories - NOT IN PREPAREGENOMES.
   -l LOG              Desired pipeline log file path.
   -c CONFIG           Configuration file full path.
