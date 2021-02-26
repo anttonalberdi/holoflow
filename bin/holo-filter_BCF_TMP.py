@@ -35,7 +35,6 @@ if not os.path.exists(out_dir):
         logi.write('\t\t'+current_time+'\tFiltering of HD data with BCFtools - '+ID+'\n')
         logi.write(' \n\n')
 
-
     chromosome_list = list()
     with open(chr_list,'r+') as chr_data:
         for chr in chr_data.readlines():
