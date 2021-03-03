@@ -47,6 +47,7 @@ if not (os.path.isfile(bac_o)):
     ##### Subtract group's tree tips - omit gtdbtk's entries
     for i in range(len(in_paths)):
         tree_path = in_paths[i]
+        print(tree_path)
         out_tree_path = out_paths[i]
         tree_data = str()
         sample_tips = list()
@@ -61,7 +62,7 @@ if not (os.path.isfile(bac_o)):
             # Find between 1 and unlimited case insensitive letters (ID), this can include numbers or not.
             # After that a . followed by three lower-case letters (mtb,cct,mxb) followed by 1,2,3 or 4 numbers (binner bin number)
             # followed by ".fa"
-            match = re.findall(str(ID)+'[a-zA-Z]+[0-9]*\.{1}[a-z]{3}[0-9]{1}|[a-zA-Z]+[0-9]*\.{1}[a-z]{3}[0-9]{2}|[a-zA-Z]+[0-9]*\.{1}[a-z]{3}[0-9]{3}|[a-zA-Z]+[0-9]*\.{1}[a-z]{3}[0-9]{4}',tree_data)
+            match = re.findall(str(ID)+'[a-zA-Z]+[0-9]*\.{1}[a-z]{3}[0-9]{4}|[a-zA-Z]+[0-9]*\.{1}[a-z]{3}[0-9]{3}|[a-zA-Z]+[0-9]*\.{1}[a-z]{3}[0-9]{2}|[a-zA-Z]+[0-9]*\.{1}[a-z]{3}[0-9]{1}',tree_data)
             if match:
                 sample_tips = sample_tips + match
 

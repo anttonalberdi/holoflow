@@ -52,9 +52,12 @@ if not os.path.exists(out_dir):
     for i in range(len(mag_list)):
         mag = mag_list[i]
         mag_ID = os.path.basename(mag).replace('.fa','')
+        print(mag_ID)
 
         # Reformat GFF > GTF
-        gff = gff_list[i]
+        #gff = gff_list[i]
+        gff = annot_dir+'/'+mag_ID+'.gff'
+        print(gff)
         gtf = gff.replace('.gff','.gtf')
         tmp_prokka = gff.replace('.gff','_tmp_prokka')
         tmp_uniprot = gff.replace('.gff','_tmp_uniprot')
