@@ -57,6 +57,7 @@ if not os.path.exists(out_dir):
         # Reformat GFF > GTF
         #gff = gff_list[i]
         gff = annot_dir+'/'+mag_ID+'.gff'
+
         print(gff)
         gtf = gff.replace('.gff','.gtf')
         tmp_prokka = gff.replace('.gff','_tmp_prokka')
