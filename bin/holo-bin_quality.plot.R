@@ -3,7 +3,7 @@ library("ggplot2")
 library("tidyverse")
 
 # Parse inputs
-parser <-  ArgumentParser(description='Runs Chimp Ancestry.')
+parser <-  ArgumentParser(description='Runs Holoflow.')
 parser$add_argument('-cov_data', dest='cov', help='coverage data', required=TRUE)
 parser$add_argument('-qual_data', dest='qual', help='quality data', required=TRUE)
 parser$add_argument('-ID', dest='ID', help='ID', required=TRUE)
