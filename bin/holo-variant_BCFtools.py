@@ -18,7 +18,7 @@ parser.add_argument('-min_mapp_qual', help="minimum mapping quality", dest="min_
 parser.add_argument('-min_base_qual', help="minimum base quality", dest="min_bqual", required=True)
 parser.add_argument('-chr_region', help="specific chromosome region", dest="chr_region", required=True)
 parser.add_argument('-multicaller', help="multicaller option", dest="multicaller", required=True)
-#parser.add_argument('-not_indels', help="only variants not indels", dest="not_indels", required=True)
+parser.add_argument('-Dquality', help="data quality", dest="Dquality", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
@@ -34,7 +34,7 @@ min_mqual=args.min_mqual
 min_bqual=args.min_bqual
 chr_region=args.chr_region
 multicaller=args.multicaller
-#not_indels=args.not_indels
+Dquality=args.Dquality
 ID=args.ID
 log=args.log
 threads=args.threads
@@ -78,32 +78,48 @@ if not os.path.exists(out_dir):
     for CHR in chromosome_list:
 
         mpileup_output = out_dir+'/'+ID+'.all_'+CHR+'.vcf.gz'
-        view_output = out_dir+'/'+ID+'.SNPs_'+CHR+'.vcf.gz'
+        view_output = out_dir+'/'+ID+'.LD_SNPs_'+CHR+'.vcf.gz'
 
         if not (chr_region == 'False'):
 
             if not (multicaller == 'False'):
                 bcf1Cmd = 'module load bcftools/1.11 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' -r '+chr_region+' | bcftools call -m -v -Oz -o '+mpileup_output+''
                 subprocess.Popen(bcf1Cmd,shell=True).wait()
-                bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
-                subprocess.Popen(bcf2Cmd,shell=True).wait()
+
+                if Dquality == 'LD':
+                    bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                    subprocess.Popen(bcf2Cmd,shell=True).wait()
+                else:
+                    pass
 
             else:
                 bcf1Cmd = 'module load bcftools/1.11 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' -r '+chr_region+' | bcftools call -v -Oz -o '+mpileup_output+''
                 subprocess.Popen(bcf1Cmd,shell=True).wait()
-                bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
-                subprocess.Popen(bcf2Cmd,shell=True).wait()
+
+                if Dquality == 'LD':
+                    bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                    subprocess.Popen(bcf2Cmd,shell=True).wait()
+                else:
+                    pass
 
 
         else:
             if not (multicaller == 'False'):
                 bcf1Cmd = 'module load bcftools/1.11 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -m -v -Oz -o '+mpileup_output+''
                 subprocess.Popen(bcf1Cmd,shell=True).wait()
-                bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
-                subprocess.Popen(bcf2Cmd,shell=True).wait()
+
+                if Dquality == 'LD':
+                    bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                    subprocess.Popen(bcf2Cmd,shell=True).wait()
+                else:
+                    pass
 
             else:
                 bcf1Cmd = 'module load bcftools/1.11 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -v -Oz -o '+mpileup_output+''
                 subprocess.Popen(bcf1Cmd,shell=True).wait()
-                bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
-                subprocess.Popen(bcf2Cmd,shell=True).wait()
+
+                if Dquality == 'LD':
+                    bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                    subprocess.Popen(bcf2Cmd,shell=True).wait()
+                else:
+                    pass

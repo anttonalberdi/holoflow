@@ -47,7 +47,7 @@ if not os.path.exists(out_dir):
             chromosome_list.append(chr.strip())
 
     for CHR in chromosome_list:
-        variants_input = out_dir+'/'+ID+'.SNPs_'+CHR+'.vcf.gz'
+        geno_input = var_dir+'/'+ID+'.combined_'+CHR+'.raw.vcf'
         filter_output = out_dir+'/'+ID+'.HD_filt_'+CHR+'.vcf.gz'
         select_output = out_dir+'/'+ID+'.HD_SNPs_'+CHR+'.vcf.gz'
 

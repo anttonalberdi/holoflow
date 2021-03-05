@@ -34,11 +34,12 @@ if config['var_caller'] == "bcftools":
             not_indels=expand("{not_indels}", not_indels=config['not_indels']),
             ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
             chr_list=expand("{chr_list}", chr_list=config['chr_list']),
+            data_quality=expand("{data_quality}", data_quality=config['data_quality']),
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
             """
-            python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -chr_region {params.chr_region} -multicaller {params.multicaller} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+            python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -Dquality {params.data_quality} -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -chr_region {params.chr_region} -multicaller {params.multicaller} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
             """
         #python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -chr_region {params.chr_region} -multicaller {params.multicaller} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath} #-not_indels {params.not_indels}
 
@@ -97,11 +98,12 @@ if config['var_caller'] == "gatk":
         params:
             ref_genome=expand("{reference_genome}", reference_genome=config['reference_genome']),
             chr_list=expand("{chr_list}", chr_list=config['chr_list']),
+            data_quality=expand("{data_quality}", data_quality=config['data_quality']),
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
             """
-            python {rules.get_paths.input.holopath}/bin/holo-variant_GATK_chr.py -vcf_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
+            python {rules.get_paths.input.holopath}/bin/holo-variant_GATK_chr.py -Dquality {params.data_quality} -vcf_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
             """
 
         # ## HD Filtering

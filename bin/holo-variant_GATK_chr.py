@@ -13,6 +13,7 @@ parser.add_argument('-vcf_dir', help="individual vcf files directory", dest="vcf
 parser.add_argument('-out_dir', help="main output directory", dest="out_dir", required=True)
 parser.add_argument('-ref_g', help="reference genome", dest="ref_g", required=True)
 parser.add_argument('-chr_list', help="chromosome list file path", dest="chr_list", required=True)
+parser.add_argument('-Dquality', help="data quality", dest="Dquality", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
@@ -23,6 +24,7 @@ vcf_dir=args.vcf_dir
 out_dir=args.out_dir
 ref_g=args.ref_g
 chr_list=args.chr_list
+Dquality=args.Dquality
 ID=args.ID
 log=args.log
 threads=args.threads
@@ -50,7 +52,7 @@ if not os.path.exists(out_dir):
         # Define outputs
         my_database = out_dir+'/'+CHR+'_database'
         geno_output = out_dir+'/'+ID+'.combined_'+CHR+'.raw.vcf'
-        variants_output = out_dir+'/'+ID+'.SNPs_'+CHR+'.vcf.gz'
+        variants_output = out_dir+'/'+ID+'.LD_SNPs_'+CHR+'.vcf.gz'
 
 
         dbCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk GenomicsDBImport --java-options "-Xmx180g" --sample-name-map '+sample_map_name+' --genomicsdb-workspace-path '+my_database+' --reader-threads '+threads+' -L '+CHR+''
@@ -60,8 +62,11 @@ if not os.path.exists(out_dir):
         genoCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk GenotypeGVCFs --java-options "-Xmx180g" -R '+ref_g+' -L '+CHR+' -V gendb://'+my_database+' -O '+geno_output+''
         subprocess.Popen(genoCmd,shell=True).wait()
 
-        variantsCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk SelectVariants -V '+geno_output+'  --select-type-to-include SNP -O '+variants_output+''
-        subprocess.Popen(variantsCmd,shell=True).wait()
+        if Dquality == 'LD':
+            variantsCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk SelectVariants -V '+geno_output+'  --select-type-to-include SNP -O '+variants_output+''
+            subprocess.Popen(variantsCmd,shell=True).wait()
+        else:
+            pass
 
         if CHR == chromosome_list[-1]:
             rmCmd='rm -rf '+vcf_dir+''
