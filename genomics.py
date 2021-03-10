@@ -103,7 +103,7 @@ def in_out_genomics(path,in_f):
         output_files=''
 
         if Q == "HD":
-            final_temp_dir = "GNM_02-Phasing"
+            final_temp_dir = "GNM_03-Phasing"
         if Q == "LD":
              final_temp_dir = "GNM_03-Imputation"
 

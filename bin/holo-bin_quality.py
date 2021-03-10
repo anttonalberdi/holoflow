@@ -41,7 +41,7 @@ if not (os.path.exists(str(out_dir))):
 
     bin_dir=bin_dir+'/dereplicated_genomes'
 
-    checkmCmd = 'module load anaconda2/4.0.0 hmmer/3.2.1  prodigal/2.6.3 pplacer/1.1.alpha17 && checkm lineage_wf -t '+threads+' -x fa '+bin_dir+' '+out_dir+' -f '+out_dir+'/'+ID+'_binQuality.txt'
+    checkmCmd = 'module load anaconda2/4.0.0 hmmer/3.2.1 prodigal/2.6.3 pplacer/1.1.alpha17 && checkm lineage_wf -t '+threads+' -x fa '+bin_dir+' '+out_dir+' -f '+out_dir+'/'+ID+'_binQuality.txt'
     subprocess.Popen(checkmCmd,shell=True).wait()
 
     rearraneoutCmd =' sed -i "s/--//g" '+out_dir+'/'+ID+'_binQuality.txt && sed -i "s/ \+ /\t/g" '+out_dir+'/'+ID+'_binQuality.txt'
