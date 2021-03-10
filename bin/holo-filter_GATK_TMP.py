@@ -47,11 +47,11 @@ if not os.path.exists(out_dir):
             chromosome_list.append(chr.strip())
 
     for CHR in chromosome_list:
-        geno_input = var_dir+'/'+ID+'.combined_'+CHR+'.raw.vcf'
+        geno_input = var_dir+'/'+ID+'.all_'+CHR+'.vcf'
         filter_output = out_dir+'/'+ID+'.HD_filt_'+CHR+'.vcf.gz'
         select_output = out_dir+'/'+ID+'.HD_SNPs_'+CHR+'.vcf.gz'
 
-        filterCmd = 'gatk VariantFiltration -V '+variants_input+' -filter "QD < '+QD+'" --filter-name "QD" -filter "QUAL < '+QUAL+'" --filter-name "QUAL" -filter "FS > '+FS+'" --filter-name "FS" -O '+filter_output+''
+        filterCmd = 'gatk VariantFiltration -V '+geno_input+' -filter "QD < '+QD+'" --filter-name "QD" -filter "QUAL < '+QUAL+'" --filter-name "QUAL" -filter "FS > '+FS+'" --filter-name "FS" -O '+filter_output+''
         subprocess.Popen(filterCmd,shell=True).wait()
 
         selectCmd = 'gatk SelectVariants -V '+filter_output+' --exclude-filtered --select-type-to-include SNP -O '+select_output+''

@@ -186,7 +186,6 @@ def run_genomics(in_f, path, config, cores):
     log_file.close()
 
     genomics_snk_Cmd = 'module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
-    print(genomics_snk_Cmd)
     subprocess.Popen(genomics_snk_Cmd, shell=True).wait()
 
     log_file = open(str(log),'a+')
