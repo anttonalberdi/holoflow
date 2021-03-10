@@ -51,11 +51,15 @@ if not os.path.exists(out_dir):
         filter_output = out_dir+'/'+ID+'.HD_filt_'+CHR+'.vcf.gz'
         select_output = out_dir+'/'+ID+'.HD_SNPs_'+CHR+'.vcf.gz'
 
-        filterCmd = 'gatk VariantFiltration -V '+geno_input+' -filter "QD < '+QD+'" --filter-name "QD" -filter "QUAL < '+QUAL+'" --filter-name "QUAL" -filter "FS > '+FS+'" --filter-name "FS" -O '+filter_output+''
+        filterCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk VariantFiltration -V '+geno_input+' -filter "QD < '+QD+'" --filter-name "QD" -filter "QUAL < '+QUAL+'" --filter-name "QUAL" -filter "FS > '+FS+'" --filter-name "FS" -O '+filter_output+''
         subprocess.Popen(filterCmd,shell=True).wait()
 
-        selectCmd = 'gatk SelectVariants -V '+filter_output+' --exclude-filtered --select-type-to-include SNP -O '+select_output+''
+        selectCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk SelectVariants -V '+filter_output+' --exclude-filtered --select-type-to-include SNP -O '+select_output+''
         subprocess.Popen(selectCmd,shell=True).wait()
+
+        if not os.path.isfile(select_output+'.tbi'):
+            indexCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk IndexFeatureFile -F '+select_output+''
+            subprocess.Popen(indexCmd,shell=True).wait()
 
 
 ########## TO CONFIG:
