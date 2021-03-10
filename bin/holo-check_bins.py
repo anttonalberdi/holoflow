@@ -63,6 +63,7 @@ if args.check_cct:
             os.remove(check_mxb)
             os.remove(check_mtb)
             os.remove(args.check_cct)
+            os.remove(args.check_vmb)
             os.mknod(final_check)
             pass
 
