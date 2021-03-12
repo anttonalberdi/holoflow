@@ -135,7 +135,7 @@ if config['data_quality'] == "HD":
         input:
             "{projectpath}/GNM_02-Filtering/{group}"
         output:
-            "{projectpath}/GNM_03-Phasing/{group}"
+            directory("{projectpath}/GNM_03-Phasing/{group}")
         params:
             gmap=expand("{gmap}", gmap=config['gmap']),
             chr_list=expand("{chr_list}", chr_list=config['chr_list']),
