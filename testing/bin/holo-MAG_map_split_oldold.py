@@ -8,8 +8,6 @@ import glob
 import time
 import gzip
 import numpy as np
-import multiprocessing as mp
-
 
 
 #Argument parsing
@@ -48,20 +46,31 @@ if not os.path.exists(out_dir):
 
     # Prepare mag, bam data and ID
     mag_list=glob.glob(str(mag_dir)+'/*.fa')
+    bam_list=glob.glob(str(bam_dir)+'/*.bam')
+    gff_list = glob.glob(annot_dir+'/*.gff')
 
-    def counts(mag):#,bam_dir,annot_dir,out_dir):
-        bam_list=glob.glob(str(bam_dir)+'/*.bam')
-
+    for i in range(len(mag_list)):
+        mag = mag_list[i]
         mag_ID = os.path.basename(mag).replace('.fa','')
-        print(mag_ID)
+
+
+
+        for bam in bam_list:
+            sample = os.path.basename(bam).replace('.bam','')
+            new_bam = out_dir+'/'+mag_ID+'_'+sample+'.bam'
+
+            if not os.path.isfile(new_bam):
+            # Split bams into MAGs
+            # Now BAM headers are only the contig ID - Removed MAG_ID-
+                samtoolsCmd='module load tools samtools/1.11 && samtools view -h '+bam+' | grep "'+mag_ID+'-" | sed "s/'+mag_ID+'-//" | samtools view -bS - > '+new_bam+''
+                subprocess.Popen(samtoolsCmd,shell=True).wait()
 
         # Reformat GFF > GTF
-        gff = annot_dir+'/'+mag_ID+'.gff'
-
-        print(gff)
+        gff = gff_list[i]
         gtf = gff.replace('.gff','.gtf')
         tmp_prokka = gff.replace('.gff','_tmp_prokka')
         tmp_uniprot = gff.replace('.gff','_tmp_uniprot')
+
 
             # retrieve current directory
         file = os.path.dirname(sys.argv[0])
@@ -71,43 +80,14 @@ if not os.path.exists(out_dir):
         subprocess.Popen(gtfCmd,shell=True).wait()
 
 
-        for bam in bam_list:
-            sample = os.path.basename(bam).replace('.bam','')
-            new_bam = out_dir+'/'+mag_ID+'_'+sample+'.bam'
-            sample_counts_tmp = out_dir+'/'+mag_ID+'_'+sample+'.counts.txt'
-
-            if os.path.isfile(sample_counts_tmp):
-                pass
-            else:
-
-                if not os.path.isfile(new_bam):
-                # Split bams into MAGs
-                # Now BAM headers are only the contig ID - Removed MAG_ID-
-                    samtoolsCmd='module load tools samtools/1.11 && samtools view -h '+bam+' | grep "'+mag_ID+'-" | sed "s/'+mag_ID+'-//" | samtools view -bS - | htseq-count -t CDS -r pos -f bam - '+gtf+' > '+sample_counts_tmp+''
-                    subprocess.Popen(samtoolsCmd,shell=True).wait()
-
-                else:
-                    htseqCountsCmd='module load tools && htseq-count -t CDS -r pos -f bam '+new_bam+' '+gtf+' > '+sample_counts_tmp+'' ## ?? --nonunique all ??
-                    subprocess.Popen(htseqCountsCmd,shell=True).wait()
-
-
-
-    # Parallelize by MAG the count creation
-    N = mp.cpu_count()
-
-    mag_list = glob.glob(str(mag_dir)+'/*.fa')
-
-    with mp.Pool(processes = N) as p:
-
-        p.map(counts,[mag for mag in mag_list])#,bam_dir,annot_dir,out_dir)
-
-
-    #Some files will be empty -> remove them
+    # Some bam files will be empty -> remove them
     try:
         rmCmd='find '+out_dir+' -size 0 -delete'
         subprocess.Popen(rmCmd,shell=True).wait()
     except:
         pass
+
+
 
     ## Handle coverage and IDs
 
@@ -127,22 +107,20 @@ if not os.path.exists(out_dir):
 
         mag_ID = os.path.basename(mag).replace('.fa','')
         mag_annot = annot_dir+'/'+mag_ID+'.gtf'
-        mag_counts_tmp = out_dir+'/'+mag_ID+'_counts_tmp.txt'
+        mag_counts_tmp = out_dir+'/'+mag_ID+'_counts_temp.txt'
 
-        counts_list = glob.glob(out_dir+'/'+mag_ID+'_*.counts.txt')
-        counts_string = ''
-        for file in counts_list:
-            counts_string+=file.strip()+' '
-            sample = os.path.basename(file).replace('.counts.txt','').replace(mag_ID+'_','')
+        mag_bams_list = glob.glob(out_dir+'/'+mag_ID+'_*.bam')
+        mag_bams = ''
+        for bam in mag_bams_list:
+            mag_bams+=bam+' '
+            sample = os.path.basename(bam).replace('.bam','').replace(mag_ID+'_','')
             sample_list+=sample+'\t'
 
-        pasteCmd='infiles="'+counts_string+'" && for i in $infiles; do sed -i -E "s/^.*\t//" $i; done && cut -f1 '+counts_list[0]+' > UNIPROT && paste UNIPROT '+counts_string+' > '+mag_counts_tmp+' && rm UNIPROT'
-        subprocess.Popen(pasteCmd,shell=True).wait()
+        htseqCountsCmd='module load tools && htseq-count -t CDS -r pos -f bam '+mag_bams+' '+mag_annot+' > '+mag_counts_tmp+'' ## ?? --nonunique all ??
+        subprocess.Popen(htseqCountsCmd,shell=True).wait()
 
-
-
+    ## Reformat - Translate annotation in counts file UniProt -> KO
         mag_counts = out_dir+'/'+mag_ID+'_counts.txt'
-    # Reformat - Translate annotation in counts file UniProt -> KO
         with open(mag_counts_tmp,'r') as tmp_counts, open(mag_counts,'w+') as final_counts:
             final_counts.write(sample_list+'\n')
 
