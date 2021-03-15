@@ -103,6 +103,6 @@ if not (os.path.exists(str(read1o))):
                 pass
 
 
-if (os.path.exists(read2o)):
-    os.remove(read1i)
-    os.remove(read2i)
+# if (os.path.exists(read2o)):
+#     os.remove(read1i)
+#     os.remove(read2i)
