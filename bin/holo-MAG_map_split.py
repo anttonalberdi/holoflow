@@ -11,7 +11,6 @@ import numpy as np
 import multiprocessing as mp
 
 
-
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-bam_dir', help="input bam from mapped MAGs to .fastq directory", dest="bam_dir", required=True)
@@ -84,22 +83,30 @@ if not os.path.exists(out_dir):
                 # Split bams into MAGs
                 # Now BAM headers are only the contig ID - Removed MAG_ID-
                     samtoolsCmd='module load tools samtools/1.11 && samtools view -h '+bam+' | grep "'+mag_ID+'-" | sed "s/'+mag_ID+'-//" | samtools view -bS - | htseq-count -t CDS -r pos -f bam - '+gtf+' > '+sample_counts_tmp+''
+                    print(samtoolsCmd)
                     subprocess.Popen(samtoolsCmd,shell=True).wait()
 
                 else:
                     htseqCountsCmd='module load tools && htseq-count -t CDS -r pos -f bam '+new_bam+' '+gtf+' > '+sample_counts_tmp+'' ## ?? --nonunique all ??
+                    print(htseqCountsCmd)
                     subprocess.Popen(htseqCountsCmd,shell=True).wait()
 
 
-
-    # Parallelize by MAG the count creation
-    N = mp.cpu_count()
-
+    # # Parallelize by MAG the count creation
+    procs = []
     mag_list = glob.glob(str(mag_dir)+'/*.fa')
+    #ating process with arguments
+    for mag in mag_list:
+        proc = mp.Process(target=counts, args=(mag,))
+        procs.append(proc)
+        proc.start()
+        time.sleep(0.5)
 
-    with mp.Pool(processes = N) as p:
 
-        p.map(counts,[mag for mag in mag_list])#,bam_dir,annot_dir,out_dir)
+    # complete the processes
+    for proc in procs:
+        proc.join()
+
 
 
     #Some files will be empty -> remove them
