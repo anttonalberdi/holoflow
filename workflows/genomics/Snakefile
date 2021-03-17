@@ -139,13 +139,12 @@ if config['data_quality'] == "HD":
         params:
             gmap=expand("{gmap}", gmap=config['gmap']),
             chr_list=expand("{chr_list}", chr_list=config['chr_list']),
-            set_missing_var_ids=expand("{set_missing_var_ids}", set_missing_var_ids=config['set_missing_var_ids']),
             geno=expand("{geno}", geno=config['geno']),
             group="{group}",
             threads=expand("{threads}", threads=config['threads'])
         shell:
             """
-            python {rules.get_paths.input.holopath}/bin/holo-phasing.py -filt_dir {input} -out_dir {output} -chr_list {params.chr_list} -gmap {params.gmap} -set_missingvars {params.set_missing_var_ids} -geno {params.geno} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+            python {rules.get_paths.input.holopath}/bin/holo-phasing.py -filt_dir {input} -out_dir {output} -chr_list {params.chr_list} -gmap {params.gmap} -geno {params.geno} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
             """
 
 

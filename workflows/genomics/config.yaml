@@ -106,9 +106,6 @@ FS:
 
 ## Final Phasing ##
  # How to name the missing SNPS
-set_missing_var_ids:
-'@:#[{genome code}]\$1,\$2'
-
 # From 0 to 1
 geno:
   0

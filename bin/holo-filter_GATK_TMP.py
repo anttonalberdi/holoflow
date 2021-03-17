@@ -57,11 +57,6 @@ if not os.path.exists(out_dir):
         selectCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk SelectVariants -V '+filter_output+' --exclude-filtered --select-type-to-include SNP -O '+select_output+''
         subprocess.Popen(selectCmd,shell=True).wait()
 
-        if not os.path.isfile(select_output+'.tbi'):
-            indexCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk IndexFeatureFile -F '+select_output+''
-            subprocess.Popen(indexCmd,shell=True).wait()
-
-
 ########## TO CONFIG:
 # QD < --
 # QUAL < --
