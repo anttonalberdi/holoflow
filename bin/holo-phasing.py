@@ -11,6 +11,8 @@ parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-filt_dir', help="filtered variants directory", dest="filt_dir", required=True)
 parser.add_argument('-out_dir', help="main output directory", dest="out_dir", required=True)
 parser.add_argument('-chr_list', help="chromosome list file path", dest="chr_list", required=True)
+parser.add_argument('-set_missingvars', help="set ids of missing variants", dest="set_missing_var_ids", required=True)
+parser.add_argument('-geno', help="number of missing genotypes allowed", dest="geno", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
@@ -21,6 +23,8 @@ args = parser.parse_args()
 filt_dir=args.filt_dir
 out_dir=args.out_dir
 chr_list=args.chr_list
+set_missing_var_ids=args.set_missing_var_ids
+geno=args.geno
 ID=args.ID
 log=args.log
 threads=args.threads
@@ -44,15 +48,24 @@ if not os.path.exists(out_dir):
 
     for CHR in chromosome_list:
         input = filt_dir+'/'+ID+'.HD_SNPs_'+CHR+'.vcf.gz'
+        plink_tmp_output_base = filt_dir+'/'+ID+'.plink_tmp.HD_SNPs_'+CHR
+        plink_output_base = filt_dir+'/'+ID+'.plink.HD_SNPs_'+CHR
         output = out_dir+'/'+ID+'_'+CHR+'.filt_phased.vcf.gz'
 
+        # Plink filtration of SNPs before phasing
+
+        plink1Cmd='module load plink2/1.90beta6.17 && plink --vcf '+input+' --double-id --make-bed --allow-extra-chr --keep-allele-order  --real-ref-alleles --set-missing-var-ids '+set_missing_var_ids+' --out '+plink_tmp_output_base+''
+        subprocess.Popen(plink1Cmd,shell=True).wait()
+
+        plink2Cmd='plink --bfile '+plink_tmp_output_base+' --double-id --allow-extra-chr --keep-allele-order  --real-ref-alleles --geno '+geno+' --recode vcf-iid bgz --out '+plink_output_base+''
+        subprocess.Popen(plink2Cmd,shell=True).wait()
 
         if not (gmap == 'False'):
-            phasingCmd= 'module load shapeit4/4.1.3 && shapeit4 --input '+input+' --map '+gmap+' --region '+CHR+' --thread '+threads+' --output '+output+' --sequencing'
+            phasingCmd= 'module load shapeit4/4.1.3 && shapeit4 --input '+plink_output_base+'.vcf --map '+gmap+' --region '+CHR+' --thread '+threads+' --output '+output+' --sequencing'
             subprocess.Popen(phasingCmd,shell=True).wait()
 
         else:
-            phasingCmd= 'module load shapeit4/4.1.3 && shapeit4 --input '+input+' --region '+CHR+' --thread '+threads+' --output '+output+' --sequencing'
+            phasingCmd= 'module load shapeit4/4.1.3 && shapeit4 --input '+plink_output_base+'.vcf --region '+CHR+' --thread '+threads+' --output '+output+' --sequencing'
             subprocess.Popen(phasingCmd,shell=True).wait()
 
         # Index phased panel
