@@ -11,6 +11,8 @@ parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
 parser.add_argument('-c', help="config file", dest="config_file", required=False)
 parser.add_argument('-g', help="reference genome path or path to .tar.gz data base", dest="ref", required=False)
+parser.add_argument('-adapter1', help="adapter 1 sequence", dest="adapter1", action='store_true')
+parser.add_argument('-adapter2', help="adapter 2 sequence", dest="adapter2", action='store_true')
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
@@ -20,6 +22,8 @@ args = parser.parse_args()
 in_f=args.input_txt
 path=args.work_dir
 ref=args.ref
+adapter1=args.adapter1
+adapter2=args.adapter2
 cores=args.threads
 
     # retrieve current directory
@@ -55,6 +59,8 @@ with open(str(config), 'w') as config_file:
     data['holopath'] = str(curr_dir)
     data['logpath'] = str(log)
     data['threads'] = str(cores)
+    data['adapter1'] = str(adapter1)
+    data['adapter2'] = str(adapter2)
 
     # Retrieve ref genome from tar gz dir
     if str(ref).endswith('.tar.gz'):
