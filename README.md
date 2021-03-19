@@ -238,7 +238,7 @@ projectpath=/full/path/project1
 #Declare full path to holoflow
 holoflowpath=/full/path/holoflow
 #Run holoflow
-python ${holoflowpath}/preprocessing.py -f ${projectpath}/input.txt -d ${projectpath}/workdir -g ${projectpath}/reference_genomes.fna -c ${projectpath}/config.yaml -l ${projectpath}/log_file.log -t 40
+python ${holoflowpath}/preprocessing.py -f ${projectpath}/input.txt -d ${projectpath}/workdir -g ${projectpath}/reference_genomes.fna -adapter1 'ATGCT' -adapter2 'CTTGATG' -c ${projectpath}/config.yaml -l ${projectpath}/log_file.log -t 40
 ```
 
 - *job execution* in Computerome2 example:
