@@ -20,7 +20,7 @@ args = parser.parse_args()
 in_f=args.input_txt
 path=args.work_dir
 cores=args.threads
-
+job=args.job
 
     # retrieve current directory
 file = os.path.dirname(sys.argv[0])
@@ -100,7 +100,6 @@ def in_out_metagenomics(path,in_f):
 
         else: # already exists and don't want to rewrite
             pass
-
 
         # If directory is empty, do all - otherwise, just save output names
         if len(os.listdir(in_dir) ) == 0:
