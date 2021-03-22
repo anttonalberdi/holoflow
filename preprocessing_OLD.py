@@ -16,8 +16,7 @@ parser.add_argument('-adapter2', help="adapter 2 sequence", dest="adapter2", req
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
-parser.add_argument('-N', help="JOB ID", dest="job", required=True)
-parser.add_argument('-W', help="rewrite everything", dest="REWRITE", action='store_true')
+parser.add_argument('-R', help="threads", dest="RERUN", action='store_true')
 args = parser.parse_args()
 
 in_f=args.input_txt
@@ -26,7 +25,6 @@ ref=args.ref
 adapter1=args.adapter1
 adapter2=args.adapter2
 cores=args.threads
-job=args.job
 
     # retrieve current directory
 file = os.path.dirname(sys.argv[0])
@@ -96,8 +94,10 @@ def in_out_preprocessing(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
     # Define input directory and create it if not exists "00-InputData"
-    in_dir_0 = os.path.join(path,"PPR_00-InputData")
+    in_dir = os.path.join(path,"PPR_00-InputData")
 
+    if not os.path.exists(in_dir):
+        os.makedirs(in_dir)
 
     with open(in_f,'r') as in_file:
         all_lines = in_file.readlines() # Read input.txt lines
@@ -105,112 +105,18 @@ def in_out_preprocessing(path,in_f):
         all_lines = map(lambda s: s.strip(), all_lines)
         lines = list(filter(None, list(all_lines)))
 
-    # Define variables
-    output_files=''
-    final_temp_dir="PPR_03-MappedToReference"
+        # Define variables
+        output_files=''
+        final_temp_dir="PPR_03-MappedToReference"
 
 
-    if os.path.exists(in_dir_0):  # Already run for: same job (wants to continue/Rewrite), for another job
-
-        # Define job dir
-        in_dir=in_dir_0+'/'+job
-        final_temp_dir=final_temp_dir+'/'+job
-
-        if args.REWRITE:
+        if not args.RERUN:
             if os.path.exists(in_dir):
                 rmCmd='rm -rf '+in_dir+''
                 subprocess.Popen(rmCmd,shell=True).wait()
-
-        if not os.path.exists(in_dir) or args.REWRITE:
-            os.makedirs(in_dir)
-
-        else: # already exists and don't want to rewrite
-            pass
+                os.makedirs(in_dir)
 
 
-        # If directory is empty, do all - otherwise, just save output names
-        if len(os.listdir(in_dir) ) == 0:
-
-            for line in lines:
-                ### Skip line if starts with # (comment line)
-                if not (line.startswith('#')):
-
-                    line = line.strip('\n').split(' ') # Create a list of each line
-                    sample_name=line[0]
-                    in_for=line[1]
-                    in_rev=line[2]
-
-                    #Define output files based on input.txt
-                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
-                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq '
-
-
-                    # Define input file
-                    in1=in_dir+'/'+sample_name+'_1.fastq.tmp'
-                    # Check if input files already in desired dir
-                    if os.path.isfile(in1):
-                        pass
-                    else:
-                        #If the file is not in the working directory, transfer it
-                        if os.path.isfile(in_for) and not (os.path.isfile(in1)):
-                            if in_for.endswith('.gz'):
-                                read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
-                                subprocess.Popen(read1Cmd, shell=True).wait()
-                            else:
-                                read1Cmd = 'ln -s '+in_for+' '+in1+''
-                                subprocess.Popen(read1Cmd, shell=True).wait()
-
-
-                    # Define input file
-                    in2=in_dir+'/'+sample_name+'_2.fastq.tmp'
-                    # Check if input files already in desired dir
-                    if os.path.isfile(in2):
-                        pass
-                    else:
-                        #If the file is not in the working directory, transfer it
-                        if os.path.isfile(in_rev) and not (os.path.isfile(in2)):
-                            if in_for.endswith('.gz'):
-                                read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip -c '+in2+'.gz > '+in2+''
-                                subprocess.Popen(read2Cmd, shell=True).wait()
-                            else:
-                                read2Cmd = 'ln -s '+in_rev+' '+in2+''
-                                subprocess.Popen(read2Cmd, shell=True).wait()
-
-
-                    # Add stats and bam output files only once per sample
-                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
-
-
-        else:
-            for line in lines:
-                ### Skip line if starts with # (comment line)
-                if not (line.startswith('#')):
-
-                    line = line.strip('\n').split(' ') # Create a list of each line
-                    sample_name=line[0]
-                    in_for=line[1]
-                    in_rev=line[2]
-
-                    # Define output files based on input.txt
-                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
-                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq '
-
-                    # Add stats and bam output files only once per sample
-                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
-
-
-
-    if not os.path.exists(in_dir_0): # IF IT DOES NOT EXIST, start from 0 - never run before
-            os.makedirs(in_dir_0)
-
-            # Define sent job dir
-            in_dir=in_dir_0+'/'+job
-            final_temp_dir=final_temp_dir+'/'+job
-            os.makedirs(in_dir)
-
-            # Do everything
             for line in lines:
                 ### Skip line if starts with # (comment line)
                 if not (line.startswith('#')):
@@ -261,8 +167,26 @@ def in_out_preprocessing(path,in_f):
                     output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ")
                     output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
 
+        if args.RERUN:
+            for line in lines:
+                ### Skip line if starts with # (comment line)
+                if not (line.startswith('#')):
 
-    return output_files
+                    line = line.strip('\n').split(' ') # Create a list of each line
+                    sample_name=line[0]
+                    in_for=line[1]
+                    in_rev=line[2]
+
+                    # Define output files based on input.txt
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq '
+
+                    # Add stats and bam output files only once per sample
+                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ")
+                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
+
+
+        return output_files
 
 
 
@@ -282,7 +206,7 @@ def run_preprocessing(in_f, path, config, cores):
     log_file.close()
 
     prep_snk_Cmd = 'module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
-    #subprocess.Popen(prep_snk_Cmd, shell=True).wait()
+    subprocess.Popen(prep_snk_Cmd, shell=True).wait()
 
     log_file = open(str(log),'a+')
     log_file.write("\n\t\tHOLOFOW Preprocessing has finished :)")
