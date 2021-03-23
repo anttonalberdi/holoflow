@@ -106,22 +106,21 @@ def in_out_metagenomics(path,in_f):
 
                     #if bins not in desired input dir, copy them there
                     if not desired_input == current_input_dir:
+
                         if not (os.path.exists(str(desired_input))):
                             copyfilesCmd='mkdir '+desired_input+' && find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
                             subprocess.check_call(copyfilesCmd, shell=True)
-                        else:
+
+                        if (os.path.exists(str(desired_input))):
                             try:
                                 copyfilesCmd='find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
                                 subprocess.check_call(copyfilesCmd, shell=True)
-                            else:
+                            except:
                                 pass
-                    else:
-                        pass
 
                         # write output files
 
-                    if (not (group == dir[0])): # when the group changes, define output files for previous group
-                        #same as last output in Snakefile
+                    if not (group == dir[0]): # when the group changes, define output files for previous group#same as last output in Snakefile
                         group=str(dir[0])
                         final_temp_dir="MDR_03-BinPhylogeny"
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
@@ -133,6 +132,7 @@ def in_out_metagenomics(path,in_f):
                         final_temp_dir="MDR_03-BinPhylogeny"
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
                         output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
+
 
 
         if args.RERUN: ## RERUN FROM LAST RUN RULE
@@ -183,7 +183,7 @@ def run_metagenomics(in_f, path, config, cores):
     log_file.close()
 
     mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
-    subprocess.Popen(mtg_snk_Cmd, shell=True).wait()
+    #subprocess.Popen(mtg_snk_Cmd, shell=True).wait()
 
     log_file = open(str(log),'a+')
     log_file.write("\n\t\tHOLOFOW Metagenomics - Dereplication has finished :)")
