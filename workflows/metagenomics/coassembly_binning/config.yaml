@@ -7,6 +7,9 @@ coassembly:
 threads:
   40
 
+assembler:
+  megahit
+
 #should be higher than 100 if spades wants to be used
 
 klist_megahit:

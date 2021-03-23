@@ -24,6 +24,7 @@ rule assembly:
         coassembly=expand("{coassembly}", coassembly=config['coassembly']),
         klist_megahit=expand("{klist_megahit}", klist_megahit=config['klist_megahit']),
         threads=expand("{threads}", threads=config['threads']),
+        assembler=expand("{assembler}", assembler=config['assembler']),
         out_dir="{projectpath}/MCB_01-Assembly/{group}_assembly",
         temp_assembly="{projectpath}/MCB_01-Assembly/{group}_assembly/temp_assembly.fa",
         group="{group}"

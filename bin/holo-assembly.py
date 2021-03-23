@@ -35,9 +35,9 @@ ID=args.ID
 log=args.log
 
 
-if (args.coassembly):
-    args.assembler='megahit'
-    assembler=args.assembler
+# if (args.coassembly):
+#     args.assembler='megahit'
+#     assembler=args.assembler
 
 # Run
 
