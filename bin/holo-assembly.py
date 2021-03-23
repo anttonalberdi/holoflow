@@ -40,13 +40,14 @@ log=args.log
 #     assembler=args.assembler
 
 # Run
-
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-with open(str(log),'a+') as log:
-    log.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\tMetagenomic Data Assembly step - '+ID+'\n')
-    log.write('The .fastq files coming from Holoflow Preprocessing, are those which could not be mapped to a \nreference genome. These contain the metagenomic reads; as no reference genome exists to them,\n they have to be assembled de novo. This is done by '+args.assembler+' here, which sorts the reads together into\ncontigs or scaffolds giving out one only assembly fasta file.\n\n')
+with open(str(log),'a+') as logi:
+    logi.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\tMetagenomic Data Assembly step - '+ID+'\n')
+    logi.write('The .fastq files coming from Holoflow Preprocessing, are those which could not be mapped to a \nreference genome. These contain the metagenomic reads; as no reference genome exists to them,\n they have to be assembled de novo. This is done by '+args.assembler+' here, which sorts the reads together into\ncontigs or scaffolds giving out one only assembly fasta file.\n\n')
 
+if not os.path.exists(out):
+    os.makedirs(out)
 
 if os.path.exists(temp_a):
     pass
@@ -81,19 +82,29 @@ if not os.path.exists(temp_a):
         if (args.coassembly):
 
             with open(read1,'r') as f1, open(read2,'r') as f2:
-                read1_paths = f1.readline()
-                read2_paths = f2.readline()
+                read1_paths = f1.readline().strip().split(',')
+                read1_paths = (' ').join(read1_paths)
+                read2_paths = f2.readline().strip().split(',')
+                read2_paths = (' ').join(read2_paths)
 
             # Merge all read1, read2's content into 1 file each
-            read1_coa = read1.replace('_1.fastq','merged_1.fastq')
-            read2_coa = read1.replace('_2.fastq','merged_2.fastq')
+            if '.gz' in read1_paths:
+                read1_coa = out+'/'+ID+'.merged_1.fastq.gz'
+                read2_coa = out+'/'+ID+'.merged_2.fastq.gz'
 
-            mergeCmd = 'cat '+read1_paths+' > '+read1_coa+' && cat '+read2_paths+' > '+read2_coa+''
-            subprocess.check_call(mergeCmd, shell=True)
+                mergeCmd = 'zcat '+read1_paths+' > '+read1_coa+' && zcat '+read2_paths+' > '+read2_coa+''
+                subprocess.Popen(mergeCmd, shell=True).wait()
+
+            else:
+                read1_coa = out+'/'+ID+'.merged_1.fastq'
+                read2_coa = out+'/'+ID+'.merged_2.fastq'
+
+                mergeCmd = 'cat '+read1_paths+' > '+read1_coa+' && cat '+read2_paths+' > '+read2_coa+''
+                subprocess.Popen(mergeCmd, shell=True).wait()
 
             # Run spades on merged files
             spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1_coa+' -2 '+read2_coa+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
-            subprocess.check_call(spadesCmd, shell=True)
+            subprocess.Popen(spadesCmd, shell=True).wait()
 
             mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
             subprocess.check_call(mv_spadesCmd, shell=True)

@@ -7,6 +7,7 @@ coassembly:
 threads:
   40
 
+# spades/megahit
 assembler:
   megahit
 
@@ -14,6 +15,9 @@ assembler:
 
 klist_megahit:
   "21,29,39,59,79,99,119,141"
+
+klist_spades:
+  "21,29,39,59,79,99,119"
 
 # reformat assembly options
 min_contig_len:
