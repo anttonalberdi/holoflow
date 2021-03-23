@@ -23,7 +23,6 @@ parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
 
-
 read1=args.read1
 read2=args.read2
 out=args.out
@@ -63,18 +62,18 @@ if not os.path.exists(temp_a):
                 read2_paths = f2.readline()
 
             megahitCmd = 'module load tools megahit/1.2.9 && megahit -1 '+read1_paths+' -2 '+read2_paths+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
-            subprocess.check_call(megahitCmd, shell=True)
+            subprocess.Popen(megahitCmd, shell=True).wait()
 
             mv_megahitCmd = 'mv '+out+'/final.contigs.fa '+out+'/temp_assembly.fa'
-            subprocess.check_call(mv_megahitCmd, shell=True)
+            subprocess.Popen(mv_megahitCmd, shell=True).wait()
 
         else:
 
             megahitCmd = 'module load tools megahit/1.2.9 && megahit -1 '+read1+' -2 '+read2+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
-            subprocess.check_call(megahitCmd, shell=True)
+            subprocess.Popen(megahitCmd, shell=True).wait()
 
             mv_megahitCmd = 'mv '+out+'/final.contigs.fa '+out+'/temp_assembly.fa'
-            subprocess.check_call(mv_megahitCmd, shell=True)
+            subprocess.Popen(mv_megahitCmd, shell=True).wait()
 
 
     if args.assembler == "spades":
@@ -92,32 +91,34 @@ if not os.path.exists(temp_a):
                 read1_coa = out+'/'+ID+'.merged_1.fastq.gz'
                 read2_coa = out+'/'+ID+'.merged_2.fastq.gz'
 
-                mergeCmd = 'zcat '+read1_paths+' > '+read1_coa+' && zcat '+read2_paths+' > '+read2_coa+''
-                subprocess.Popen(mergeCmd, shell=True).wait()
+                if not os.path.isfile(read1_coa):
+                    mergeCmd = 'zcat '+read1_paths+' > '+read1_coa+' && zcat '+read2_paths+' > '+read2_coa+''
+                    subprocess.Popen(mergeCmd, shell=True).wait()
 
             else:
                 read1_coa = out+'/'+ID+'.merged_1.fastq'
                 read2_coa = out+'/'+ID+'.merged_2.fastq'
 
-                mergeCmd = 'cat '+read1_paths+' > '+read1_coa+' && cat '+read2_paths+' > '+read2_coa+''
-                subprocess.Popen(mergeCmd, shell=True).wait()
+                if not os.path.isfile(read1_coa):
+                    mergeCmd = 'cat '+read1_paths+' > '+read1_coa+' && cat '+read2_paths+' > '+read2_coa+''
+                    subprocess.Popen(mergeCmd, shell=True).wait()
 
             # Run spades on merged files
-            spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1_coa+' -2 '+read2_coa+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
+            spadesCmd = 'module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1_coa+' -2 '+read2_coa+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
             subprocess.Popen(spadesCmd, shell=True).wait()
 
             mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
-            subprocess.check_call(mv_spadesCmd, shell=True)
+            subprocess.Popen(mv_spadesCmd, shell=True).wait()
 
 
         else:
 
-            spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
-            subprocess.check_call(spadesCmd, shell=True)
+            spadesCmd = 'module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
+            subprocess.Popen(spadesCmd, shell=True).wait()
 
             mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
-            subprocess.check_call(mv_spadesCmd, shell=True)
+            subprocess.Popen(mv_spadesCmd, shell=True).wait()
 
 
     emptytouchCmd='touch '+empty_o+''
-    subprocess.check_call(emptytouchCmd, shell=True)
+    subprocess.Popen(emptytouchCmd, shell=True).wait()

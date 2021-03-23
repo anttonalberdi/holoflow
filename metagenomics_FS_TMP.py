@@ -107,41 +107,51 @@ def in_out_final_stats(path,in_f):
 
             if not os.path.exists(in_sample): # if dir not exists either because of REWRITE or bc first time, DO EVERYTHING
                 os.makedirs(in_sample)
+            else:
+                pass
 
-                # Define output files based on input.txt
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+' '
+            # Define output files based on input.txt
+            output_files+=path+'/'+final_temp_dir+'/'+sample_name+' '
 
-                # Define input dir
-                in1=in_sample+'/metagenomic_reads'
-                # Check if input files already in desired dir
-                if os.path.exists(in1):
-                    pass
-                else:
-                    mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
+            # Define input dir
+            in1=in_sample+'/metagenomic_reads'
+            # Check if input files already in desired dir
+            if os.path.exists(in1):
+                try:
+                    mvreadsCmd = 'ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
                     subprocess.Popen(mvreadsCmd, shell=True).wait()
-
-
-                # Define input dir
-                in2=in_sample+'/dereplicated_bins'
-                # Check if input files already in desired dir
-                if os.path.exists(in2):
+                except:
                     pass
-                else:
-                    mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+''
+            else:
+                mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
+                subprocess.Popen(mvreadsCmd, shell=True).wait()
+
+
+            # Define input dir
+            in2=in_sample+'/dereplicated_bins'
+            # Check if input files already in desired dir
+            if os.path.exists(in2):
+                try:
+                    mvbinsCmd = 'ln -s '+drep_bins_dir+'/*.fa '+in2+''
                     subprocess.Popen(mvbinsCmd, shell=True).wait()
-
-                # Define input dir
-                in3=in_sample+'/annotation'
-                # Check if input files already in desired dir
-                if os.path.exists(in3):
+                except:
                     pass
-                else:
-                    mvgffCmd = 'mkdir '+in3+' && ln -s '+annot_dir+'/*.gff '+in3+''
-                    subprocess.Popen(mvgffCmd, shell=True).wait()
+            else:
+                mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+''
+                subprocess.Popen(mvbinsCmd, shell=True).wait()
 
-            else: # directory exists and don't want to REWRITE
-                # Define output files based on input.txt
-                output_files+=path+'/'+final_temp_dir+'/'+sample_name+' '
+            # Define input dir
+            in3=in_sample+'/annotation'
+            # Check if input files already in desired dir
+            if os.path.exists(in3):
+                try:
+                    mvgffCmd = 'ln -s '+annot_dir+'/*.gff '+in3+''
+                    subprocess.Popen(mvgffCmd, shell=True).wait()
+                except:
+                    pass
+            else:
+                mvgffCmd = 'mkdir '+in3+' && ln -s '+annot_dir+'/*.gff '+in3+''
+                subprocess.Popen(mvgffCmd, shell=True).wait()
 
 
     return output_files
