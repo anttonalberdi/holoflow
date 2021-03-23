@@ -78,11 +78,34 @@ if not os.path.exists(temp_a):
 
     if args.assembler == "spades":
 
-        spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
-        subprocess.check_call(spadesCmd, shell=True)
+        if (args.coassembly):
 
-        mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
-        subprocess.check_call(mv_spadesCmd, shell=True)
+            with open(read1,'r') as f1, open(read2,'r') as f2:
+                read1_paths = f1.readline()
+                read2_paths = f2.readline()
+
+                # Merge all read1, read2's content into 1 file each
+                read1_coa = read1.replace('_1.fastq','merged_1.fastq')
+                read2_coa = read1.replace('_2.fastq','merged_2.fastq')
+
+                mergeCmd = 'cat '+read1_paths+' > '+read1_coa+' && cat '+read2_paths+' > '+read2_coa+''
+                subprocess.check_call(mergeCmd, shell=True)
+
+                # Run spades on merged files
+                spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1_coa+' -2 '+read2_coa+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
+                subprocess.check_call(spadesCmd, shell=True)
+
+                mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
+                subprocess.check_call(mv_spadesCmd, shell=True)
+
+
+        else:
+
+            spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
+            subprocess.check_call(spadesCmd, shell=True)
+
+            mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
+            subprocess.check_call(mv_spadesCmd, shell=True)
 
 
     emptytouchCmd='touch '+empty_o+''
