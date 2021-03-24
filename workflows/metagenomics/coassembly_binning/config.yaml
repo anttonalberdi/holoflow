@@ -11,6 +11,9 @@ threads:
 assembler:
   megahit
 
+memory:
+  180
+
 #should be higher than 100 if spades wants to be used
 
 klist_megahit:
