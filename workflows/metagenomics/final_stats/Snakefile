@@ -80,7 +80,7 @@ rule genes_coverage:
     params:
         threads=expand("{threads}", threads=config['threads']),
         KO_DB=expand("{KO_DB}", KO_DB=config['KO_DB']),
-        KO_list="{rules.get_paths.input.holopath}/workflows/metagenomics/dereplication/KO_list.txt",
+        KO_list="{rules.get_paths.input.holopath}/workflows/metagenomics/final_stats/KO_list.txt",
         group="{group}"
     shell:
         """
