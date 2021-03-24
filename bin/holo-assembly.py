@@ -45,8 +45,6 @@ with open(str(log),'a+') as logi:
     logi.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\tMetagenomic Data Assembly step - '+ID+'\n')
     logi.write('The .fastq files coming from Holoflow Preprocessing, are those which could not be mapped to a \nreference genome. These contain the metagenomic reads; as no reference genome exists to them,\n they have to be assembled de novo. This is done by '+args.assembler+' here, which sorts the reads together into\ncontigs or scaffolds giving out one only assembly fasta file.\n\n')
 
-if not os.path.exists(out):
-    os.makedirs(out)
 
 if os.path.exists(temp_a):
     pass
@@ -77,6 +75,9 @@ if not os.path.exists(temp_a):
 
 
     if args.assembler == "spades":
+        
+        if not os.path.exists(out):
+            os.makedirs(out)
 
         if (args.coassembly):
 
