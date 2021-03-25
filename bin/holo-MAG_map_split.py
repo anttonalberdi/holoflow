@@ -52,12 +52,10 @@ if not os.path.exists(out_dir):
         bam_list=glob.glob(str(bam_dir)+'/*.bam')
 
         mag_ID = os.path.basename(mag).replace('.fa','')
-        print(mag_ID)
 
         # Reformat GFF > GTF
         gff = annot_dir+'/'+mag_ID+'.gff'
 
-        print(gff)
         gtf = gff.replace('.gff','.gtf')
         tmp_prokka = gff.replace('.gff','_tmp_prokka')
         tmp_uniprot = gff.replace('.gff','_tmp_uniprot')
@@ -143,15 +141,16 @@ if not os.path.exists(out_dir):
             sample = os.path.basename(file).replace('.counts.txt','').replace(mag_ID+'_','')
             sample_list+=sample+'\t'
 
-        pasteCmd='infiles="'+counts_string+'" && for i in $infiles; do sed -i -E "s/^.*\t//" $i; done && cut -f1 '+counts_list[0]+' > UNIPROT && paste UNIPROT '+counts_string+' > '+mag_counts_tmp+' && rm UNIPROT'
+        #pasteCmd='infiles="'+counts_string+'" && for i in $infiles; do sed -i -E "s/^.*\t//" $i; done && cut -f1 '+counts_list[0]+' > UNIPROT && paste UNIPROT '+counts_string+' > '+mag_counts_tmp+' && rm UNIPROT'
+        ## ERROR FIRST COLUMN DUP -fixed:
+        pasteCmd='infiles="'+counts_string+'" && cut -f1 '+counts_list[0]+' > UNIPROT && for i in $infiles; do sed -i -E "s/^.*\t//" $i; done && paste UNIPROT '+counts_string+' > '+mag_counts_tmp+' && rm UNIPROT'
         subprocess.Popen(pasteCmd,shell=True).wait()
-
-
 
         mag_counts = out_dir+'/'+mag_ID+'_counts.txt'
     # Reformat - Translate annotation in counts file UniProt -> KO
         with open(mag_counts_tmp,'r') as tmp_counts, open(mag_counts,'w+') as final_counts:
             final_counts.write(sample_list+'\n')
+
 
             for line in tmp_counts.readlines():
                 line=line.split('\t',1) # max number of splits 1

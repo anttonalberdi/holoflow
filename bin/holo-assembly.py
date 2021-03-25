@@ -75,7 +75,7 @@ if not os.path.exists(temp_a):
 
 
     if args.assembler == "spades":
-        
+
         if not os.path.exists(out):
             os.makedirs(out)
 
