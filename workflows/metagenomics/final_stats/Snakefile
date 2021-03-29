@@ -1,4 +1,4 @@
->>>>>># 08.10.20
+# 08.10.20
 # Metagenomics dereplication
 
 rule get_paths:
