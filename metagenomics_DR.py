@@ -69,9 +69,6 @@ def in_out_metagenomics(path,in_f):
     input files where snakemake expects to find them if necessary."""
     in_dir = os.path.join(path,"MDR_00-InputBins")
 
-    if not os.path.exists(in_dir):
-        os.makedirs(in_dir)
-
     with open(in_f,'r') as in_file:
         # Paste desired output file names from input.txt
         group = ''
@@ -85,82 +82,57 @@ def in_out_metagenomics(path,in_f):
 
         last_line = lines[-1]
 
-        if not args.RERUN: # RE RUN FROM SCRATCH   # OUT
+    if args.REWRITE:
+        if os.path.exists(in_dir):
+            rmCmd='rm -rf '+in_dir+''
+            subprocess.Popen(rmCmd,shell=True).wait()
 
-            if os.path.exists(in_dir):                  # OUT  - see metagenomics FS
-                rmCmd='rm -rf '+in_dir+''
-                subprocess.Popen(rmCmd,shell=True).wait()
-                os.makedirs(in_dir)
+    if not os.path.exists(in_dir): # either because of rewrite or because first time
+        os.makedirs(in_dir)
+    else:
+        pass # re-running without removing anything
 
-            for line in lines:
+    for line in lines:
 
-                if not (line.startswith('#')):
-                    dir = line.strip('\n').split(' ') # Create a list of each line
+        if not (line.startswith('#')):
+            dir = line.strip('\n').split(' ') # Create a list of each line
 
-                    # the input will be a directory, where all bins for all samples will be contained
-                    # If Bins from different samples are in different directories, create input Dir
-                    # and move them all there
+            # the input will be a directory, where all bins for all samples will be contained
+            # If Bins from different samples are in different directories, create input Dir
+            # and move them all there
 
-                    desired_input=(str(in_dir)+'/'+str(dir[0])) # desired input dir path
-                    current_input_dir=os.path.dirname(dir[1])
+            desired_input=(str(in_dir)+'/'+str(dir[0])) # desired input dir path
+            current_input_dir=os.path.dirname(dir[1])
 
-                    #if bins not in desired input dir, copy them there
-                    if not desired_input == current_input_dir:
+            #if bins not in desired input dir, copy them there
+            if not desired_input == current_input_dir:
 
-                        if not (os.path.exists(str(desired_input))):
-                            copyfilesCmd='mkdir '+desired_input+' && find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
-                            subprocess.check_call(copyfilesCmd, shell=True)
+                if not (os.path.exists(str(desired_input))):
+                    copyfilesCmd='mkdir '+desired_input+' && find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
+                    subprocess.check_call(copyfilesCmd, shell=True)
 
-                        if (os.path.exists(str(desired_input))):
-                            try:
-                                copyfilesCmd='find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
-                                subprocess.check_call(copyfilesCmd, shell=True)
-                            except:
-                                pass
+                if (os.path.exists(str(desired_input))):
+                    try:
+                        copyfilesCmd='find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
+                        subprocess.check_call(copyfilesCmd, shell=True)
+                    except: # if re-running, these links are already created, so these steps will be skipped
+                        pass
 
-                        # write output files
+                # write output files
 
-                    if not (group == dir[0]): # when the group changes, define output files for previous group#same as last output in Snakefile
-                        group=str(dir[0])
-                        final_temp_dir="MDR_03-BinPhylogeny"
-                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
-                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
+            if not (group == dir[0]): # when the group changes, define output files for previous group#same as last output in Snakefile
+                group=str(dir[0])
+                final_temp_dir="MDR_03-BinPhylogeny"
+                output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
+                output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
 
-                    if (line == last_line):
-                        #same as last output in Snakefile
-                        group=str(dir[0])
-                        final_temp_dir="MDR_03-BinPhylogeny"
-                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
-                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
+            if (line == last_line):
+                #same as last output in Snakefile
+                group=str(dir[0])
+                final_temp_dir="MDR_03-BinPhylogeny"
+                output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
+                output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
 
-
-
-        if args.RERUN: ## RERUN FROM LAST RUN RULE
-
-            for line in lines:
-                if not (line.startswith('#')):
-                    dir = line.strip('\n').split(' ') # Create a list of each line
-
-                    # the input will be a directory, where all bins for all samples will be contained
-                    # If Bins from different samples are in different directories, create input Dir
-                    # and move them all there
-
-                    desired_input=(str(in_dir)+'/'+str(dir[0])) # desired input dir path
-                    current_input_dir=os.path.dirname(dir[1])
-
-                    if (not (group == dir[0])): # when the group changes, define output files for previous group
-                        #same as last output in Snakefile
-                        group=str(dir[0])
-                        final_temp_dir="MDR_03-BinPhylogeny"
-                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
-                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
-
-                    if (line == last_line):
-                        #same as last output in Snakefile
-                        group=str(dir[0])
-                        final_temp_dir="MDR_03-BinPhylogeny"
-                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_BAC_Holoflow.gtdbtk_sub.tree ")
-                        output_files+=(path+"/"+final_temp_dir+"/"+group+"_AR_Holoflow.gtdbtk_sub.tree ")
 
 
         return output_files
@@ -183,6 +155,7 @@ def run_metagenomics(in_f, path, config, cores):
     log_file.close()
 
     mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
+    print(mtg_snk_Cmd)
     #subprocess.Popen(mtg_snk_Cmd, shell=True).wait()
 
     log_file = open(str(log),'a+')
