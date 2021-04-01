@@ -13,7 +13,7 @@ parser.add_argument('-c', help="config file", dest="config_file", required=False
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
-parser.add_argument('-R', help="threads", dest="RERUN", action='store_true')
+parser.add_argument('-W', help="rewrite everything", dest="REWRITE", action='store_true')
 args = parser.parse_args()
 
 in_f=args.input_txt
@@ -85,9 +85,9 @@ def in_out_metagenomics(path,in_f):
 
         last_line = lines[-1]
 
-        if not args.RERUN: # RE RUN FROM SCRATCH
+        if not args.RERUN: # RE RUN FROM SCRATCH   # OUT
 
-            if os.path.exists(in_dir):
+            if os.path.exists(in_dir):                  # OUT  - see metagenomics FS
                 rmCmd='rm -rf '+in_dir+''
                 subprocess.Popen(rmCmd,shell=True).wait()
                 os.makedirs(in_dir)
