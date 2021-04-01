@@ -223,6 +223,15 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
       * Output log genotype likelihoods to a file or not.
       * How to estimate minor and major alleles (1/2): 1 = from likelihood data ; 2 = from count data.
       * Estimate posterior genotype probability based on the allele frequency as a prior (True/False).
+  5. HD Filtering - BCFtools 
+      * Quality of SNPs that want to be kept. Default to 30.
+  6. HD Filtering - GATK
+      * Quality of SNPs that want to be kept. Default to 30.
+      * QD
+      * FS
+
+  7. HD Phasing 
+      * --geno filters out all variants with missing call rates exceeding the provided value to be removed. Default to 0.
 
 
 ## Usage in Computerome
