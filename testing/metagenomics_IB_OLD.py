@@ -13,14 +13,13 @@ parser.add_argument('-c', help="config file", dest="config_file", required=False
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
-parser.add_argument('-N', help="JOB ID", dest="job", required=True)
-parser.add_argument('-W', help="rewrite everything", dest="REWRITE", action='store_true')
+parser.add_argument('-R', help="threads", dest="RERUN", action='store_true')
 args = parser.parse_args()
 
 in_f=args.input_txt
 path=args.work_dir
 cores=args.threads
-job=args.job
+
 
     # retrieve current directory
 file = os.path.dirname(sys.argv[0])
@@ -68,10 +67,10 @@ with open(str(config), 'w') as config_file:
 def in_out_metagenomics(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
-    in_dir_0 = os.path.join(path,"PPR_03-MappedToReference")
+    in_dir = os.path.join(path,"PPR_03-MappedToReference")
 
-    if not os.path.exists(in_dir_0):
-        os.makedirs(in_dir_0)
+    if not os.path.exists(in_dir):
+        os.makedirs(in_dir)
 
     with open(in_f,'r') as in_file:
         # Define variables
@@ -83,26 +82,11 @@ def in_out_metagenomics(path,in_f):
         all_lines = map(lambda s: s.strip(), all_lines)
         lines = list(filter(None, list(all_lines)))
 
-
-    if os.path.exists(in_dir_0):  # Already run before for: same job (wants to continue/Rewrite), for another job
-
-        # Define job dir
-        in_dir=in_dir_0+'/'+job
-        final_temp_dir=final_temp_dir+'/'+job
-
-        if args.REWRITE:
+        if not args.RERUN:
             if os.path.exists(in_dir):
                 rmCmd='rm -rf '+in_dir+''
                 subprocess.Popen(rmCmd,shell=True).wait()
-
-        if not os.path.exists(in_dir) or args.REWRITE:
-            os.makedirs(in_dir)
-
-        else: # already exists and don't want to rewrite
-            pass
-
-        # If directory is empty, do all - otherwise, just save output names
-        if len(os.listdir(in_dir) ) == 0:
+                os.makedirs(in_dir)
 
             for line in lines:
                 ### Skip line if starts with # (comment line)
@@ -150,7 +134,7 @@ def in_out_metagenomics(path,in_f):
                 output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
 
 
-        else:
+        if args.RERUN:
             for line in lines:
                 ### Skip line if starts with # (comment line)
                 if not (line.startswith('#')):
@@ -161,59 +145,6 @@ def in_out_metagenomics(path,in_f):
                     in_rev=line[2]
 
                 output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
-
-
-
-    if not os.path.exists(in_dir_0): # IF IT DOES NOT EXIST, start from 0 - never run before
-            os.makedirs(in_dir_0)
-
-            # Define sent job dir
-            in_dir=in_dir_0+'/'+job
-            final_temp_dir=final_temp_dir+'/'+job
-            os.makedirs(in_dir)
-
-            # Do everything
-            for line in lines:
-                ### Skip line if starts with # (comment line)
-                if not (line.startswith('#')):
-
-                    # Define input file
-                    in1=in_dir+'/'+sample_name+'_1.fastq'
-                    # Check if input files already in desired dir
-                    if os.path.isfile(in1) or os.path.isfile(in1+'.gz'):
-                        pass
-                    else:
-                        #If the file is not in the working directory, transfer it
-                        if os.path.isfile(in_for):
-                            if in_for.endswith('.gz'):
-                                read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
-                                subprocess.Popen(read1Cmd, shell=True).wait()
-                            else:
-                                read1Cmd = 'ln -s '+in_for+' '+in1+''
-                                subprocess.Popen(read1Cmd, shell=True).wait()
-
-
-
-                    # Define input file
-                    in2=in_dir+'/'+sample_name+'_2.fastq'
-                    # Check if input files already in desired dir
-                    if os.path.isfile(in2) or os.path.isfile(in2+'.gz'):
-                        pass
-                    else:
-                        #If the file is not in the working directory, transfer it
-                        if os.path.isfile(in_rev):
-                            if in_for.endswith('.gz'):
-                                read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip -c '+in2+'.gz > '+in2+''
-                                subprocess.Popen(read2Cmd, shell=True).wait()
-                            else:
-                                read2Cmd = 'ln -s '+in_rev+' '+in2+''
-                                subprocess.Popen(read2Cmd, shell=True).wait()
-
-
-            output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
-
-
-
 
         return output_files
 

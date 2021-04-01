@@ -13,13 +13,14 @@ parser.add_argument('-c', help="config file", dest="config_file", required=False
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
-parser.add_argument('-R', help="threads", dest="RERUN", action='store_true')
+parser.add_argument('-N', help="JOB ID", dest="job", required=True)
+parser.add_argument('-W', help="rewrite everything", dest="REWRITE", action='store_true')
 args = parser.parse_args()
 
 in_f=args.input_txt
 path=args.work_dir
 cores=args.threads
-
+job=args.job
 
     # retrieve current directory
 file = os.path.dirname(sys.argv[0])
@@ -67,10 +68,10 @@ with open(str(config), 'w') as config_file:
 def in_out_metagenomics(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
-    in_dir = os.path.join(path,"PPR_03-MappedToReference")
+    in_dir_0 = os.path.join(path,"PPR_03-MappedToReference")
 
-    if not os.path.exists(in_dir):
-        os.makedirs(in_dir)
+    if not os.path.exists(in_dir_0):
+        os.makedirs(in_dir_0)
 
     with open(in_f,'r') as in_file:
         # Define variables
@@ -82,11 +83,25 @@ def in_out_metagenomics(path,in_f):
         all_lines = map(lambda s: s.strip(), all_lines)
         lines = list(filter(None, list(all_lines)))
 
-        if not args.RERUN:
+
+    if os.path.exists(in_dir_0):  # Already run before for: same job (wants to continue/Rewrite), for another job
+        # Define job dir
+        in_dir=in_dir_0+'/'+job
+        final_temp_dir=final_temp_dir+'/'+job
+
+        if args.REWRITE:
             if os.path.exists(in_dir):
                 rmCmd='rm -rf '+in_dir+''
                 subprocess.Popen(rmCmd,shell=True).wait()
-                os.makedirs(in_dir)
+
+        if not os.path.exists(in_dir):
+            os.makedirs(in_dir)
+
+        else: # already exists and don't want to rewrite
+            pass
+
+        # If directory is empty, do all - otherwise, just save output names
+        if len(os.listdir(in_dir) ) == 0:
 
             for line in lines:
                 ### Skip line if starts with # (comment line)
@@ -134,7 +149,7 @@ def in_out_metagenomics(path,in_f):
                 output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
 
 
-        if args.RERUN:
+        else:
             for line in lines:
                 ### Skip line if starts with # (comment line)
                 if not (line.startswith('#')):
@@ -146,7 +161,9 @@ def in_out_metagenomics(path,in_f):
 
                 output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
 
-        return output_files
+
+
+    return output_files
 
 
 
