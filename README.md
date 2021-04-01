@@ -232,6 +232,7 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
 
   7. HD Phasing 
       * --geno filters out all variants with missing call rates exceeding the provided value to be removed. Default to 0.
+      * Provide a Genetic map. Default to False, else provide path.
 
 
 ## Usage in Computerome
