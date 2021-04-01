@@ -1,5 +1,6 @@
 import argparse
 import subprocess
+import glob
 import os
 import sys
 
@@ -95,15 +96,20 @@ def in_out_final_stats(path,in_f):
             line = line.strip('\n').split(' ') # Create a list of each line
             sample_name=line[0]
             mtg_reads_dir=line[1]
+            mtg_files = ''.join(glob.glob(mtg_reads_dir+'/*')[1])
             drep_bins_dir=line[2]
             annot_dir=line[3]
 
             in_sample = in_dir+'/'+sample_name
+            if os.path.exists(in_sample):
+                in_mtg_files = os.listdir(in_sample+'/metagenomic_reads')
 
             if args.REWRITE:    # if rewrite, remove directory
-                if os.path.exists(in_sample):
+                if os.path.basename(mtg_files) in in_mtg_files: # the directory has not been yet removed: this group's files already exist in dir
                     rmCmd='rm -rf '+in_sample+''
                     subprocess.Popen(rmCmd,shell=True).wait()
+                else:                              # the directory has been  removed already by a previous line in the input file
+                    pass                           # belonging to the same group, this is the fill-up round
 
             if not os.path.exists(in_sample): # if dir not exists either because of REWRITE or bc first time, DO EVERYTHING
                 os.makedirs(in_sample)
@@ -174,7 +180,7 @@ def run_final_stats(in_f, path, config, cores):
     log_file.close()
 
     final_stats_snk_Cmd = 'module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
-    subprocess.Popen(final_stats_snk_Cmd, shell=True).wait()
+    #subprocess.Popen(final_stats_snk_Cmd, shell=True).wait()
 
     log_file = open(str(log),'a+')
     log_file.write("\n\t\tHOLOFOW Final Stats has finished :)")

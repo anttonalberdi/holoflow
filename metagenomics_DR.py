@@ -1,6 +1,7 @@
 import argparse
 import subprocess
 import os
+import glob
 import sys
 
 ###########################
@@ -69,6 +70,9 @@ def in_out_metagenomics(path,in_f):
     input files where snakemake expects to find them if necessary."""
     in_dir = os.path.join(path,"MDR_00-InputBins")
 
+    if not os.path.exists(in_dir): # either because of rewrite or because first time
+        os.makedirs(in_dir)
+
     with open(in_f,'r') as in_file:
         # Paste desired output file names from input.txt
         group = ''
@@ -82,16 +86,6 @@ def in_out_metagenomics(path,in_f):
 
         last_line = lines[-1]
 
-    if args.REWRITE:
-        if os.path.exists(in_dir):
-            rmCmd='rm -rf '+in_dir+''
-            subprocess.Popen(rmCmd,shell=True).wait()
-
-    if not os.path.exists(in_dir): # either because of rewrite or because first time
-        os.makedirs(in_dir)
-    else:
-        pass # re-running without removing anything
-
     for line in lines:
 
         if not (line.startswith('#')):
@@ -101,15 +95,22 @@ def in_out_metagenomics(path,in_f):
             # If Bins from different samples are in different directories, create input Dir
             # and move them all there
 
-            desired_input=(str(in_dir)+'/'+str(dir[0])) # desired input dir path
             current_input_dir=os.path.dirname(dir[1])
+            current_in_files = ''.join(glob.glob(dir[1]+'/*')[1])
+
+            desired_input=(str(in_dir)+'/'+str(dir[0])) # desired input dir path
+            if os.path.exists(desired_input):
+                desired_in_files = os.listdir(desired_input)
+
+            if args.REWRITE:
+                if os.path.basename(current_in_files) in desired_in_files: # the directory has not been yet removed: this group's files already exist in dir
+                    rmCmd='rm -rf '+desired_input+''
+                    subprocess.Popen(rmCmd,shell=True).wait()
+                else:                              # the directory has been  removed already by a previous line in the input file
+                    pass
 
             #if bins not in desired input dir, copy them there
             if not desired_input == current_input_dir:
-
-                if not (os.path.exists(str(desired_input))):
-                    copyfilesCmd='mkdir '+desired_input+' && find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
-                    subprocess.check_call(copyfilesCmd, shell=True)
 
                 if (os.path.exists(str(desired_input))):
                     try:
@@ -117,6 +118,10 @@ def in_out_metagenomics(path,in_f):
                         subprocess.check_call(copyfilesCmd, shell=True)
                     except: # if re-running, these links are already created, so these steps will be skipped
                         pass
+
+                if not (os.path.exists(str(desired_input))):
+                    copyfilesCmd='mkdir '+desired_input+' && find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
+                    subprocess.check_call(copyfilesCmd, shell=True)
 
                 # write output files
 
@@ -135,7 +140,7 @@ def in_out_metagenomics(path,in_f):
 
 
 
-        return output_files
+    return output_files
 
 
 
