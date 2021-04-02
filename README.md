@@ -24,12 +24,13 @@ REQUIRED ARGUMENTS:
   -f INPUT            File containing input information.
   -d WORK_DIR         Output directory.
   -t THREADS          Thread maximum number to be used by Snakemake.
-  -R RERUN            Wants to re-run the worfklow from an intermediate step keeping the completed outputs. - NOT IN PREPAREGENOMES.
+  -W REWRITE          Wants to re-run the worfklow from scratch: remove all directories previous runs. - NOT IN PREPAREGENOMES.
   [{-g REF_GENOME}]   Reference genome(s) file path to be used in read mapping.
   {-adapter1 ADAPTER1} Adapter sequence 1 for removal.
   {-adapter2 ADAPTER2} Adapter sequence 2 for removal.
-  [-Q DATA QUALITY]   Low depth (LD) or High depth (HD) data set.
-  [-vc VAR CALLER]    Variant caller to choose: 1 {bcftools/samtools}, 2 {GATK}, 3 {ANGSD}.
+  [-Q DATA QUALITY]    Low depth (LD) or High depth (HD) data set.
+  [-vc VAR CALLER]     Variant caller to choose: 1 {bcftools/samtools}, 2 {GATK}, 3 {ANGSD}.
+  ([-N JOB ID])        ID of the sent job, so another different-N-job can be run simultaneously.
 
 OPTIONAL ARGUMENTS:
   [-r REF_PANEL]      Reference panel necessary for likelihoods update and imputation of LD variants.
@@ -38,7 +39,7 @@ OPTIONAL ARGUMENTS:
   -c CONFIG           Configuration file full path.
   
 ```  
-**{only in PREPROCESSING}**, **[only in GENOMICS]**  
+**{only in PREPROCESSING}**, **[only in GENOMICS]**, **(only in METAGENOMICS INDIVIDUAL BINNING)**
  
  
 ### Config files description
@@ -191,11 +192,16 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   
   
 #### Genomics
-- *Snakefile* - which contains rules for:
-  1. Variant calling with **BCFtools**, **GATK** or **ANGSD** (## Latter UNDER CONSTRUCTION ##)
-  2. Phasing for *High depth sample groups* with ## UNDER CONSTRUCTION ##
-  3. Likelihoods update for *Low depth sample groups* with **Beagle** ## UNDER CONSTRUCTION ##
-  4. Genotype imputation for *Low depth sample groups* with **Beagle** ## UNDER CONSTRUCTION ##
+- *Snakefile* - which contains rules for:  
+ a. Variant calling with **BCFtools**, **GATK** or **ANGSD** (## Latter UNDER CONSTRUCTION ##)  
+
+  -> *High depth samples*  
+ b. Filtering with **BCFtools** or **GATK**  
+ c. Phasing with **shapeit4**  
+
+  -> *Low depth samples*  
+ b. Likelihoods update with **Beagle** using a high-depth reference panel  
+ c. Genotype imputation with **Beagle**   
   
 - Config file *config.yaml*, in which the user may be interested in customising:
   1. Choose between HD - for high depth seqs OR LD - for low depth seqs.
@@ -217,6 +223,16 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
       * Output log genotype likelihoods to a file or not.
       * How to estimate minor and major alleles (1/2): 1 = from likelihood data ; 2 = from count data.
       * Estimate posterior genotype probability based on the allele frequency as a prior (True/False).
+  5. HD Filtering - BCFtools 
+      * Quality of SNPs that want to be kept. Default to 30.
+  6. HD Filtering - GATK
+      * Quality of SNPs that want to be kept. Default to 30.
+      * QD
+      * FS
+
+  7. HD Phasing 
+      * --geno filters out all variants with missing call rates exceeding the provided value to be removed. Default to 0.
+      * Provide a Genetic map. Default to False, else provide path.
 
 
 ## Usage in Computerome
@@ -238,7 +254,7 @@ projectpath=/full/path/project1
 #Declare full path to holoflow
 holoflowpath=/full/path/holoflow
 #Run holoflow
-python ${holoflowpath}/preprocessing.py -f ${projectpath}/input.txt -d ${projectpath}/workdir -g ${projectpath}/reference_genomes.fna -adapter1 'ATGCT' -adapter2 'CTTGATG' -c ${projectpath}/config.yaml -l ${projectpath}/log_file.log -t 40
+python ${holoflowpath}/preprocessing.py -f ${projectpath}/input.txt -d ${projectpath}/workdir -g ${projectpath}/reference_genomes.fna -adapter1 'ATGCT' -adapter2 'CTTGATG' -c ${projectpath}/config.yaml -l ${projectpath}/log_file.log -t 40 -N First_job
 ```
 
 - *job execution* in Computerome2 example:
