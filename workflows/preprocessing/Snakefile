@@ -1,4 +1,4 @@
-
+ 
 rule get_paths:
     input:
         holopath=expand("{holopath}", holopath=config['holopath']),

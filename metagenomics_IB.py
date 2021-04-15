@@ -6,6 +6,7 @@ import sys
 ###########################
 #Argument parsing
 ###########################
+# Gather input files and variables from command line
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True)
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
@@ -26,12 +27,12 @@ job=args.job
 file = os.path.dirname(sys.argv[0])
 curr_dir = os.path.abspath(file)
 
-
+# If the user does not specify a config file, provide default file in GitHub
 if not (args.config_file):
     config = os.path.join(os.path.abspath(curr_dir),"workflows/metagenomics/individual_binning/config.yaml")
 else:
     config=args.config_file
-
+# If the user does not specify a log file, provide default path
 if not (args.log):
     log = os.path.join(path,"Holoflow_individualA_metagenomics.log")
 else:
@@ -43,6 +44,7 @@ loaddepCmd='module unload gcc && module load tools anaconda3/4.4.0'
 subprocess.Popen(loaddepCmd,shell=True).wait()
 
     #Append current directory to .yaml config for standalone calling
+    # see preprocessing.py for verbose description
 import ruamel.yaml
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
@@ -84,34 +86,35 @@ def in_out_metagenomics(path,in_f):
         lines = list(filter(None, list(all_lines)))
 
 
-    if os.path.exists(in_dir_0):  # Already run before for: same job (wants to continue/Rewrite), for another job
-        # Define job dir
+    if os.path.exists(in_dir_0):  # Already run for: same job (wants to continue/Rewrite), for another job
+        # Define specific job dir
         in_dir=in_dir_0+'/'+job
+        # Define specific job final output dir - for snakemake (needs output files)
         final_temp_dir=final_temp_dir+'/'+job
 
+        # If user wants to remove previous runs' data and run from scratch
         if args.REWRITE:
             if os.path.exists(in_dir):
                 rmCmd='rm -rf '+in_dir+''
                 subprocess.Popen(rmCmd,shell=True).wait()
 
-        if not os.path.exists(in_dir):
+        if not os.path.exists(in_dir): # if specific job input directory does not exist
             os.makedirs(in_dir)
 
-        else: # already exists and don't want to rewrite
+        else: # already exists and don't want to rewrite, then pass
             pass
 
         # If directory is empty, do all - otherwise, just save output names
         if len(os.listdir(in_dir) ) == 0:
 
-            for line in lines:
+            for line in lines:# for line in lines in input file, do:
                 ### Skip line if starts with # (comment line)
                 if not (line.startswith('#')):
 
                     line = line.strip('\n').split(' ') # Create a list of each line
                     sample_name=line[0]
-                    in_for=line[1]
-                    in_rev=line[2]
-
+                    in_for=line[1]# input for (read1) file
+                    in_rev=line[2] # input reverse (read2) file
 
                     # Define input file
                     in1=in_dir+'/'+sample_name+'_1.fastq'
@@ -119,9 +122,9 @@ def in_out_metagenomics(path,in_f):
                     if os.path.isfile(in1) or os.path.isfile(in1+'.gz'):
                         pass
                     else:
-                        #If the file is not in the working directory, transfer it
+                        #If the file is not in the working directory, create soft link in it
                         if os.path.isfile(in_for):
-                            if in_for.endswith('.gz'):
+                            if in_for.endswith('.gz'):# if compressed, decompress in standard dir with std ID
                                 read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
                                 subprocess.Popen(read1Cmd, shell=True).wait()
                             else:
@@ -149,7 +152,7 @@ def in_out_metagenomics(path,in_f):
                 output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
 
 
-        else:
+        else: # the input directory already exists and is full, don't want to create it again, just re-run from last step
             for line in lines:
                 ### Skip line if starts with # (comment line)
                 if not (line.startswith('#')):

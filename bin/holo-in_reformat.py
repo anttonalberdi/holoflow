@@ -1,5 +1,4 @@
 #16.04.2020 - Holoflow 0.1.
-
 import subprocess
 import argparse
 import time
@@ -104,5 +103,5 @@ if not (os.path.exists(str(read1o))):
 
 
 # if (os.path.exists(read2o)):
-#     os.remove(read1i)
-#     os.remove(read2i)
+#     compressCmd='gzip '+read1i+' '+read2i+''
+#     subprocess.Popen(compressCmd,shell=True).wait()

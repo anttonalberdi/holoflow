@@ -7,6 +7,7 @@ import sys
 ###########################
 #Argument parsing
 ###########################
+# Gather input files and variables from command line
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True)
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
@@ -23,12 +24,13 @@ cores=args.threads
 file = os.path.dirname(sys.argv[0])
 curr_dir = os.path.abspath(file)
 
-
+# If the user does not specify a config file, provide default file in GitHub
 if not (args.config_file):
     config = os.path.join(os.path.abspath(curr_dir),"workflows/preparegenomes/config.yaml")
 else:
     config=args.config_file
 
+# If the user does not specify a log file, provide default path
 if not (args.log):
     log = os.path.join(path,"Holoflow_preparegenomes.log")
 else:
@@ -41,6 +43,7 @@ subprocess.Popen(loaddepCmd,shell=True).wait()
 
 
     #Append current directory to .yaml config for standalone calling
+    # see preprocessing.py for verbose description
 import ruamel.yaml
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
