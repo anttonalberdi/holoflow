@@ -227,8 +227,8 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
       * Quality of SNPs that want to be kept. Default to 30.
   6. HD Filtering - GATK
       * Quality of SNPs that want to be kept. Default to 30.
-      * QD
-      * FS
+      * QD: Quality by depth. Find more information [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035890471-Hard-filtering-germline-short-variants).
+      * FS: Fisher strand. Find more information [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035890471-Hard-filtering-germline-short-variants).
 
   7. HD Phasing 
       * --geno filters out all variants with missing call rates exceeding the provided value to be removed. Default to 0.
