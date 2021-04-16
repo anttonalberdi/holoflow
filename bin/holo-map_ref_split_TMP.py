@@ -33,14 +33,15 @@ ID=args.ID
 with open(str(log),'a+') as logi:
     logi.write('A .bam file is generated containing the mapped reads, and two .fastq files containing the metagenomic ones.\n\n')
 
-
-#refbam1Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' | samtools sort -T '+ID+' -o '+bam+''
+# sort bam for genomics
 refbam1Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+'.notsorted && samtools sort -T '+bam+'.'+ID+' -o '+bam+' '+bam+'.notsorted && rm '+bam+'.notsorted'
 subprocess.check_call(refbam1Cmd, shell=True)
 
+# extract not-mapped to the reference genome reads + keep reference bam
 refbam2Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -1 '+read1+' -2 '+read2+' -'
 subprocess.check_call(refbam2Cmd, shell=True)
 
+# remove general bam 
 rmAllbamCmd = 'rm '+all_bam+'' # Change this if dark matter workflow
 subprocess.check_call(rmAllbamCmd, shell=True)
 
@@ -52,7 +53,7 @@ subprocess.check_call(mvstatsCmd, shell=True)
 
 reads = 0
 bases = 0
-with gzip.open(str(read1), 'rt') as read: # outputs are compressed files: .gz extension 
+with gzip.open(str(read1), 'rt') as read: # outputs are compressed files: .gz extension
     for id in read:
         seq = next(read)
         reads += 1

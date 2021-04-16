@@ -86,8 +86,10 @@ with open(str(log),'a+') as log:
 
 # Run AdapterRemoval
 # output --gzip files
+# use a diferent separator of reads 
 if not (msep == "default"):
     if not os.path.exists(str(read1o)):
+        # different adapters than default
         if not ((a1 == "default") and (a2 == "default")):
             qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --mate-separator '+msep+' --output1 '+read1o+' --output2 '+read2o+' --gzip --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
             subprocess.check_call(qualfiltCmd, shell=True)

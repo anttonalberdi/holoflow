@@ -45,9 +45,8 @@ if (os.path.exists(read1)):
     read1 = read1.replace('.gz','')
     read2 = read2.replace('.gz','')
 
-
+# all different conditions for different variables in config that can be used, modified or not used at all. Not very optimal
 if by_seq == 'True':
-
     if (not file_to_dups == 'False') and (ignore == 'True'):
         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -i -D '+file_to_dups+' -o '+ output_dir+''
 
