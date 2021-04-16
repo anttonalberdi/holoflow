@@ -89,7 +89,7 @@ Those lines starting by # won't be considered.
 ##### *metagenomics_CB.py*
 
   1. Sample name.  
-  2. Coassembly group.  
+  2. Coassembly group: **assumed to be the same as in preprocessing -N job if preprocessing has been run (PPR_03-MappedToReference job directory ID)**.  
   3. Original full path/name of **FORWARD** input file.  
   4. Original full path/name of **REVERSE** input file.  
 Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference, the last preprocessing step.
