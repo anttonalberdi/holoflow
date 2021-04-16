@@ -45,7 +45,8 @@ loaddepCmd='module unload gcc && module load tools anaconda3/4.4.0'
 subprocess.Popen(loaddepCmd,shell=True).wait()
 
 
-    #Append current directory to .yaml config for standalone calling
+        #Append current directory to .yaml config for standalone calling
+        # see preprocessing.py for verbose description
 import ruamel.yaml
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True

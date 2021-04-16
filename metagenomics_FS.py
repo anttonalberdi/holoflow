@@ -44,6 +44,7 @@ subprocess.Popen(loaddepCmd,shell=True).wait()
 
 
     #Append current directory to .yaml config for standalone calling
+    # see preprocessing.py for verbose description
 import ruamel.yaml
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
@@ -98,13 +99,13 @@ def in_out_final_stats(path,in_f):
             line = line.strip('\n').split(' ') # Create a list of each line
             sample_name=line[0]
             mtg_reads_dir=line[1]
-            mtg_files = ''.join(glob.glob(mtg_reads_dir+'/*')[1])
+            mtg_files = ''.join(glob.glob(mtg_reads_dir+'/*')[1]) # keep only second metagenomic file
             drep_bins_dir=line[2]
             annot_dir=line[3]
 
             in_sample = in_dir+'/'+sample_name
             if os.path.exists(in_sample):
-                in_mtg_files = os.listdir(in_sample+'/metagenomic_reads')
+                in_mtg_files = os.listdir(in_sample+'/metagenomic_reads') # if the dir already exists, save names of files inside
 
             if args.REWRITE:    # if rewrite, remove directory
                 if os.path.basename(mtg_files) in in_mtg_files: # the directory has not been yet removed: this group's files already exist in dir
@@ -125,15 +126,16 @@ def in_out_final_stats(path,in_f):
             in1=in_sample+'/metagenomic_reads'
             # Check if input files already in desired dir
             if os.path.exists(in1):
-                try:
+                try:    # try to create the link - if the link already exists ... -> TRY/Except is to avoid exception errors
                     mvreadsCmd = 'ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
                     subprocess.Popen(mvreadsCmd, shell=True).wait()
-                except:
+                except: # ... it won't be created, but pass
                     pass
             else:
                 mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
                 subprocess.Popen(mvreadsCmd, shell=True).wait()
 
+# same for the two other directories that have to be created for input
 
             # Define input dir
             in2=in_sample+'/dereplicated_bins'

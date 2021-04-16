@@ -58,7 +58,8 @@ elif var_c == str(2):
 elif var_c == str(3):
     var_c = 'angsd'
 
-    #Append current directory to .yaml config for standalone calling
+        #Append current directory to .yaml config for standalone calling
+        # see preprocessing.py for verbose description
 import ruamel.yaml
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True

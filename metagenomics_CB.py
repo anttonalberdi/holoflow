@@ -46,20 +46,20 @@ loaddepCmd='module unload gcc && module load tools anaconda3/4.4.0'
 subprocess.Popen(loaddepCmd,shell=True).wait()
 
 
-    #Append current directory to .yaml config for standalone calling
+    #Append variables to .yaml config file for Snakefile calling standalone files
 import ruamel.yaml
-yaml = ruamel.yaml.YAML()
+yaml = ruamel.yaml.YAML() # create yaml obj
 yaml.explicit_start = True
 with open(str(config), 'r') as config_file:
-    data = yaml.load(config_file)
-    if data == None:
+    data = yaml.load(config_file)# get data found now in config - as dictionary
+    if data == None: # if config is empty, create dictionary
         data = {}
 
 with open(str(config), 'w') as config_file:
     data['threads'] = str(cores)
     data['holopath'] = str(curr_dir)
     data['logpath'] = str(log)
-    dump = yaml.dump(data, config_file)
+    dump = yaml.dump(data, config_file) # load updated dictionary to config file
 
 
 ###########################
@@ -75,19 +75,20 @@ def in_out_metagenomics(path,in_f):
     in_dir = os.path.join(path,"PPR_03-MappedToReference")
     merged_in_dir = os.path.join(path,"MCB_00-MergedData")
 
-    if not os.path.exists(in_dir):
+    if not os.path.exists(in_dir): # create dir with all files to input to co-assembly
         os.makedirs(in_dir)
     else:
         pass
 
+    # create dir for merged files (2 files containing data of all inputted files)
     if not os.path.exists(merged_in_dir):
         os.makedirs(merged_in_dir)
     else:
         pass
 
     with open(in_f,'r') as in_file:
-        # Define variables
-        coa_group = False
+        # Define necessary variables
+        coa_group = False # coassembly group ID still not defined
         coa1_filename=''
         coa2_filename=''
         read1_files=''
@@ -100,8 +101,8 @@ def in_out_metagenomics(path,in_f):
         all_lines = in_file.readlines() # Read input.txt lines
         # remove empty lines
         all_lines = map(lambda s: s.strip(), all_lines)
-        lines = list(filter(None, list(all_lines)))
-        last_line = lines[-1].split(' ')
+        lines = list(filter(None, list(all_lines))) # save input file content withput blank lines in "lines"
+        last_line = lines[-1].split(' ') # last line of input file
 
 
     for line in lines:
@@ -123,23 +124,27 @@ def in_out_metagenomics(path,in_f):
                 # Fill in PPR_03 of uniformely renamed files
                 input_dir = in_dir+'/'+coa_group
                 if os.path.exists(input_dir):
-                    if args.REWRITE:
+                    if args.REWRITE: # If user wants to remove previous runs' data and run from scratch
                         rmCmd='rm -rf '+input_dir+''
                         subprocess.Popen(rmCmd,shell=True).wait()
                     else:
                         pass
-                if not os.path.exists(input_dir):
+                if not os.path.exists(input_dir): # if input directory does not exist
                     os.makedirs(input_dir)
 
 
-                ###### Handle individual sample files
+                ###### Handle individual sample files before merging them
                 list_read1=read1_files.strip().split(' ')
                 list_read2=read2_files.strip().split(' ')
 
                 for file1 in list_read1:
                     file=os.path.basename(file1)
+                    # fastq inputted files to coassembly can have various nomenclatures
+                    # _1.fastq, _1.fq, .1.fastq, .1.fq, etc.
+                    #This command retrieves the file ID without format and for/rev number
                     sampleID=re.sub('(\.|_)[0-9]{1}\.f[aA-zZ]*\.?.*','',file)
 
+                    # create a standardized directory with standardized IDs to coassemble
                     if file1.endswith('.gz'):
                         read1=input_dir+'/'+sampleID+'_1.fastq.gz'
                     else:
@@ -166,20 +171,25 @@ def in_out_metagenomics(path,in_f):
                     except:
                         pass
 
-            ###### Create coassembly files data
+            ###### Create coassembly merged files from all individual samples
                 coa1_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_1.fastq')
                 coa2_filename=(str(merged_in_dir)+'/'+str(coa_group)+'_2.fastq')
 
+                # if the forward read merged file exists, choose if rewrite or not
                 if os.path.isfile(coa1_filename):
-                    if args.REWRITE:
+                    if args.REWRITE: # If user wants to remove previous runs' data and run from scratch
                         rmCmd='rm '+coa1_filename+' '+coa2_filename+''
                         subprocess.Popen(rmCmd,shell=True).wait()
-                    else:
+                    else: #user wants to continue from rpevious run
                         pass
 
                 if not os.path.isfile(coa1_filename):
                     files1 = glob.glob(in_dir+'/'+coa_group+'/*_1.fastq*')
                     for file1 in files1:
+                        # Create a files called ".fastq", but actually fill them with a comma-separarted
+                        # string of all the files that want to be considered for the coassembly
+                        # MEGAHIT accepts this string as input, while MetaSpades will require the actual
+                        #  merging of the files into 1 file: done in holo-assembly file -> only for SMALL coassemblies!
                         with open(coa1_filename,'a+') as coa1, open(coa2_filename,'a+') as coa2:
                             if file1 == files1[-1]:
                                 coa1.write(file1.strip())
@@ -205,7 +215,7 @@ def in_out_metagenomics(path,in_f):
                 list_read2=list()
 
 
-            if line == last_line:
+            if line == last_line: # in this case it is as if the coassembly group was changing, finish
                 # Fill in PPR_03 of uniformely renamed files
                 input_dir = in_dir+'/'+coa_group
                 if os.path.exists(input_dir):
