@@ -1,13 +1,11 @@
 #16.04.2020 - Holoflow 0.1.
-
 import subprocess
 import argparse
 import time
 import os
-import gzip
 
 #Argument parsing
-parser = argparse.ArgumentParser(description='Runs holoflow pipestr(line).')
+parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-r1i', help="read1 input", dest="read1i", required=True)
 parser.add_argument('-r2i', help="read2 input", dest="read2i", required=True)
 parser.add_argument('-r1o', help="read1 output", dest="read1o", required=True)
@@ -33,6 +31,11 @@ if not (os.path.exists(str(read1o))):
         log.write('\t\t'+current_time+'\tInput Files Reformat step - '+ID+'\n')
         log.write('The headers of the .fastq input files are being reformatted.\n\n')
 
+    if (os.path.exists(read1i)):
+        compressCmd1='gunzip '+read1i+' '+read2i+''
+        subprocess.Popen(compressCmd1,shell=True).wait()
+        read1i = read1i.replace('.gz','')
+        read2i = read2i.replace('.gz','')
 
     for i in range(2):
         i+=1
@@ -43,7 +46,7 @@ if not (os.path.exists(str(read1o))):
             r_i=read2i
             r_o=read2o
 
-        with gzip.open(str(r_i),'rb') as r_input, gzip.open(str(r_o), 'wt') as r_output:
+        with open(str(r_i),'r') as r_input, open(str(r_o), 'w') as r_output:
             n = 1
             read_n=''
             seq1 = ''
@@ -52,11 +55,10 @@ if not (os.path.exists(str(read1o))):
             qual_id=''
 
             for line in r_input:
-
-                if str(line).startswith('@'):
+                if line.startswith('@'):
 
                     if seq1 and not (seq2): # If no seq2, means quality string starts with @
-                        seq2+= str(line).strip()
+                        seq2+= line.strip()
 
                     if seq1 and seq2:
                         read_n= str(n).zfill(14)
@@ -71,10 +73,10 @@ if not (os.path.exists(str(read1o))):
                     else:
                         pass
 
-                if str(line).startswith('+'):
+                if line.startswith('+'):
 
                     if qual_id: # If qual_id, means quality string starts with +
-                        seq2+=str(line).strip()
+                        seq2+=line.strip()
 
                     if seq1 and (not qual_id): # This is the ID of the quality string
                         qual_id = ('+')
@@ -82,12 +84,12 @@ if not (os.path.exists(str(read1o))):
                     else:
                         pass
 
-                if seq1 and (not (str(line).startswith('+') or str(line).startswith('@'))):
-                    seq2+= str(line).strip()
+                if seq1 and (not (line.startswith('+') or line.startswith('@'))):
+                    seq2+= line.strip()
 
 
-                if not (str(line).startswith('@') or str(line).startswith('+') or seq2):
-                    seq1+= str(line).strip()
+                if not (line.startswith('@') or line.startswith('+') or seq2):
+                    seq1+= line.strip()
 
 
             if seq1:
@@ -106,5 +108,5 @@ if not (os.path.exists(str(read1o))):
 
 
 if (os.path.exists(read2o)):
-    os.remove(read1i)
-    os.remove(read2i)
+    compressCmd2='gzip '+read1i+' '+read2i+' '+read1o+' '+read2o+''
+    subprocess.Popen(compressCmd2,shell=True).wait()

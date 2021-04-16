@@ -100,8 +100,3 @@ if not (os.path.exists(str(read1o))):
 
             else:
                 pass
-
-
-# if (os.path.exists(read2o)):
-#     compressCmd='gzip '+read1i+' '+read2i+''
-#     subprocess.Popen(compressCmd,shell=True).wait()
