@@ -36,6 +36,8 @@ if not (os.path.exists(str(read1o))):
         subprocess.Popen(compressCmd1,shell=True).wait()
         read1i = read1i.replace('.gz','')
         read2i = read2i.replace('.gz','')
+        read1o = read1o.replace('.gz','')
+        read2o = read2o.replace('.gz','')
 
     for i in range(2):
         i+=1
@@ -45,7 +47,7 @@ if not (os.path.exists(str(read1o))):
         if i == 2:
             r_i=read2i
             r_o=read2o
-        # Reformat input file so all reads contain the sample ID in the name + standard digit format 
+        # Reformat input file so all reads contain the sample ID in the name + standard digit format
         with open(str(r_i),'r') as r_input, open(str(r_o), 'w') as r_output:
             n = 1
             read_n=''

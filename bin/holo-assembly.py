@@ -51,7 +51,7 @@ if os.path.exists(temp_a):
 
 if not os.path.exists(temp_a):
 
-    if (args.assembler == "megahit"): # MEGAHIT is OK with compressed input 
+    if (args.assembler == "megahit"): # MEGAHIT is OK with compressed input
 
         if (args.coassembly):
 

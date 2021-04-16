@@ -29,6 +29,8 @@ if (os.path.exists(input_file)):
     compressCmd1='gunzip '+input_file+''
     subprocess.Popen(compressCmd1,shell=True).wait()
     input_file = input_file.replace('.gz','')
+    read1 = read1.replace('.gz','')
+    read2 = read2.replace('.gz','')
 
 # split not dup sequences into reads again
 cut1Cmd = 'cut --delimiter='+str(separator)+' -f1 '+input_file+' > '+read1+' && gzip '+read1+''
