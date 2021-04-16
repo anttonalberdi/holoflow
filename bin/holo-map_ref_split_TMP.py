@@ -2,8 +2,8 @@
 
 import subprocess
 import argparse
-import gzip
 import time
+import gzip
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
@@ -52,7 +52,7 @@ subprocess.check_call(mvstatsCmd, shell=True)
 
 reads = 0
 bases = 0
-with gzip.open(str(read1), 'rb') as read:
+with gzip.open(str(read1), 'rt') as read: # outputs are compressed files: .gz extension 
     for id in read:
         seq = next(read)
         reads += 1

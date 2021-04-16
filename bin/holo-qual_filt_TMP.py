@@ -108,7 +108,7 @@ else:
 
 
 #Get stats after quality filtering
-# read --gzip files 
+# read --gzip files
 reads = 0
 bases = 0
 with gzip.open(str(read1o), 'rt') as read:
@@ -122,7 +122,10 @@ with gzip.open(str(read1o), 'rt') as read:
         except:
             break
 
-
+# re-compress inputs
+if (os.path.exists(read1o)):
+    compressCmd2='gzip '+read1i+' '+read2i+''
+    subprocess.Popen(compressCmd2,shell=True).wait()
 
 #Print stats to stats file
 statsfile=open(str(str(stats)),"a+")
