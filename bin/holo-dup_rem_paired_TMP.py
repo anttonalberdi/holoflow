@@ -3,12 +3,14 @@
 import subprocess
 import argparse
 import time
+import os
+
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-1', help="path1", dest="read1", required=True)
 parser.add_argument('-2', help="path2", dest="read2", required=True)
-parser.add_argument('-o ', help="output directory", dest="output_dir", required=True)
+parser.add_argument('-o ', help="output directory", dest="output", required=True)
 parser.add_argument('-sep', help="sep", dest="separator", required=True)
 parser.add_argument('-D', help="file to save number and list of dup seqs", dest="file_to_dups",required=True)
 parser.add_argument('-s', help="by seq", dest="by_seq", required=True)
@@ -18,7 +20,7 @@ parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-i', help="ignore case", dest="ignore", required=True)
 args = parser.parse_args()
 
-output_dir=args.output_dir
+output=args.output
 read1=args.read1
 read2=args.read2
 separator=args.separator
@@ -44,42 +46,40 @@ if (os.path.exists(read1)):
     subprocess.Popen(compressCmd1,shell=True).wait()
     read1 = read1.replace('.gz','')
     read2 = read2.replace('.gz','')
+    output = output.replace('.gz','')
 
 # all different conditions for different variables in config that can be used, modified or not used at all. Not very optimal
 if by_seq == 'True':
     if (not file_to_dups == 'False') and (ignore == 'True'):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -i -D '+file_to_dups+' -o '+ output_dir+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -i -D '+file_to_dups+' -o '+ output+''
 
     elif (not file_to_dups == 'False') and (ignore == 'False'):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -D '+file_to_dups+' -o '+ output_dir+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -D '+file_to_dups+' -o '+ output+''
 
     elif (file_to_dups == 'False') and (ignore == 'True'):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -i -o '+ output_dir+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -i -o '+ output+''
 
     else:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -o '+ output_dir+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -o '+ output+''
 
 
 
 if by_name == 'True':
     if (not file_to_dups == 'False') and (ignore == 'True'):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -i -D '+file_to_dups+' -o '+ output_dir+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -i -D '+file_to_dups+' -o '+output+''
 
     elif (not file_to_dups == 'False') and (ignore == 'False'):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -D '+file_to_dups+' -o '+ output_dir+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -D '+file_to_dups+' -o '+output+''
 
     elif (file_to_dups == 'False') and (ignore == 'True'):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -i -o '+ output_dir+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -i -o '+output+''
 
     else:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -o '+ output_dir+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -o '+output+''
 
 subprocess.check_call(seqkitCmd, shell=True)
 
 
-# re -compress inputs
-output = glob.glob(output_dir+'/*merged.fastq.gz')[0]
-print(output)
-if (os.path.isfile(output)):
+if (os.path.isfile(output)): # it's actually a file
     compressCmd2='gzip '+read1+' '+read2+' '+output+''
     subprocess.Popen(compressCmd2,shell=True).wait()

@@ -3,6 +3,7 @@
 import subprocess
 import argparse
 import gzip
+import os
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
