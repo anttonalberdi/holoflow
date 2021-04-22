@@ -38,4 +38,4 @@ labs(colour= "Total Average Depth", size="Total Average Depth")
 
 
 dpi <- 96
-ggsave(plot = qual,filename = paste0(out_path,'/',ID,'_quality.coverage_Plot.pdf'), width = 2000 / dpi, height = 1100 / dpi,dpi = dpi)
+ggsave(plot = qual,filename = paste0(out_path,'/',ID,'_quality.coverage_Plot.pdf'), width = 1800 / dpi, height = 900 / dpi,dpi = dpi)
