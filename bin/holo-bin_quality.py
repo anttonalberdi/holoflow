@@ -4,6 +4,7 @@ import subprocess
 import argparse
 import time
 import sys
+import os
 
 
 #Argument parsing
@@ -39,8 +40,6 @@ if not (os.path.exists(str(out_dir))):
 
     ## RUN
 
-    bin_dir=bin_dir+'/dereplicated_genomes'
-
     checkmCmd = 'module load anaconda2/4.0.0 hmmer/3.2.1 prodigal/2.6.3 pplacer/1.1.alpha17 && checkm lineage_wf -t '+threads+' -x fa '+bin_dir+' '+out_dir+' -f '+out_dir+'/'+ID+'_binQuality.txt'
     subprocess.Popen(checkmCmd,shell=True).wait()
 
@@ -51,9 +50,9 @@ if not (os.path.exists(str(out_dir))):
     file = os.path.dirname(sys.argv[0])
     curr_dir = os.path.abspath(file)
 
-
-    plotCmd = 'module load tools gcc/5.4.0 intel/compiler/64/2018_update2 R/3.5.3-ICC-MKL && Rscript '+curr_dir+'/holo-bin_quality.plot.R -cov_data '+cov_file+' -qual_data '+out_dir+'/'+ID+'_binQuality.txt -ID '+ID+' -out_path '+out_dir+''
-    subprocess.Popen(plotCmd,shell=True).wait()
+    if os.path.isfile(out_dir+'/'+ID+'_binQuality.txt'):
+        plotCmd = 'module load tools gcc/5.4.0 intel/compiler/64/2018_update2 R/3.5.3-ICC-MKL && Rscript '+curr_dir+'/holo-bin_quality.plot.R -cov_data '+cov_file+' -qual_data '+out_dir+'/'+ID+'_binQuality.txt -ID '+ID+' -out_path '+out_dir+''
+        subprocess.Popen(plotCmd,shell=True).wait()
 
 
     # Run summary table
@@ -62,5 +61,6 @@ if not (os.path.exists(str(out_dir))):
     summary_table_tmp = out_dir+'/'+ID+'_binQuality_Info.tmp.csv'
     summary_table = out_dir+'/'+ID+'_binQuality_Info.csv'
 
-    summaryCmd = 'bash '+curr_dir+'/holo-bin_quality_table.sh '+input_drep_table+' '+input_checkM_table+' '+summary_table_tmp+' '+summary_table+''
-    subprocess.Popen(summaryCmd,shell=True).wait()
+    if os.path.isfile(out_dir+'/'+ID+'_binQuality.txt'):
+        summaryCmd = 'bash '+curr_dir+'/holo-bin_quality_table.sh '+input_drep_table+' '+input_checkM_table+' '+summary_table_tmp+' '+summary_table+''
+        subprocess.Popen(summaryCmd,shell=True).wait()

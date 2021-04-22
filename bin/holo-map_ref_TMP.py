@@ -3,6 +3,7 @@
 import subprocess
 import argparse
 import time
+import os
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
