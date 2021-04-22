@@ -54,3 +54,13 @@ if not (os.path.exists(str(out_dir))):
 
     plotCmd = 'module load tools gcc/5.4.0 intel/compiler/64/2018_update2 R/3.5.3-ICC-MKL && Rscript '+curr_dir+'/holo-bin_quality.plot.R -cov_data '+cov_file+' -qual_data '+out_dir+'/'+ID+'_binQuality.txt -ID '+ID+' -out_path '+out_dir+''
     subprocess.Popen(plotCmd,shell=True).wait()
+
+
+    # Run summary table
+    input_drep_table = bin_dir+'/final_bins_Info.csv'
+    input_checkM_table = out_dir+'/'+ID+'_binQuality.txt'
+    summary_table_tmp = out_dir+'/'+ID+'_binQuality_Info.tmp.csv'
+    summary_table = out_dir+'/'+ID+'_binQuality_Info.csv'
+
+    summaryCmd = 'bash '+curr_dir+'/holo-bin_quality_table.sh '+input_drep_table+' '+input_checkM_table+' '+summary_table_tmp+' '+summary_table+''
+    subprocess.Popen(summaryCmd,shell=True).wait()
