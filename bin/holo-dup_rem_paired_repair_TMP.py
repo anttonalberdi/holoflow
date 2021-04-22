@@ -46,7 +46,8 @@ subprocess.check_call(rmCmd, shell=True)
 mvstatsCmd= 'mv '+in_stats+' '+out_stats+''
 subprocess.check_call(mvstatsCmd, shell=True)
 
-
+read1 = read1+'.gz'
+read2 = read2+'.gz'
 reads = 0
 bases = 0
 with gzip.open(str(read1), 'rt') as read:
