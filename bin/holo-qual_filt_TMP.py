@@ -43,7 +43,7 @@ current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 statsfile.write("Statistic\tValue \r\n".format(current_time))
 
 if (os.path.exists(read1i)):
-    compressCmd1='gunzip '+read1i+' '+read2i+''
+    compressCmd1='gunzip '+read1i+' & gunzip '+read2i+''
     subprocess.Popen(compressCmd1,shell=True).wait()
     read1i = read1i.replace('.gz','')
     read2i = read2i.replace('.gz','')
@@ -86,7 +86,7 @@ with open(str(log),'a+') as log:
 
 # Run AdapterRemoval
 # output --gzip files
-# use a diferent separator of reads 
+# use a diferent separator of reads
 if not (msep == "default"):
     if not os.path.exists(str(read1o)):
         # different adapters than default
@@ -126,7 +126,7 @@ with gzip.open(str(read1o), 'rt') as read:
 
 # re-compress inputs
 if (os.path.exists(read1o)):
-    compressCmd2='gzip '+read1i+' '+read2i+''
+    compressCmd2='gzip '+read1i+' & gzip '+read2i+''
     subprocess.Popen(compressCmd2,shell=True).wait()
 
 #Print stats to stats file

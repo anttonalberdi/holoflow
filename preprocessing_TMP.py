@@ -156,7 +156,7 @@ def in_out_preprocessing(path,in_f):
                         pass
                     else:
                         #If the file is not in the working directory, create soft link in it
-                        if os.path.isfile(in_for) and not (os.path.isfile(in1)):
+                        if (not (os.path.isfile(in1)) and os.path.isfile(in_for)):
                             if in_for.endswith('.gz'): # if compressed, decompress in standard dir with std ID
                                 read1Cmd = 'ln -s '+in_for+' '+in1+''
                                 subprocess.Popen(read1Cmd, shell=True).wait()
@@ -172,7 +172,7 @@ def in_out_preprocessing(path,in_f):
                         pass
                     else:
                         #If the file is not in the working directory, transfer it
-                        if os.path.isfile(in_rev) and not (os.path.isfile(in2)):
+                        if (not (os.path.isfile(in2)) and os.path.isfile(in_rev)):
                             if in_for.endswith('.gz'):
                                 read2Cmd = 'ln -s '+in_rev+' '+in2+''
                                 subprocess.Popen(read2Cmd, shell=True).wait()
@@ -236,7 +236,7 @@ def in_out_preprocessing(path,in_f):
                         pass
                     else:
                         #If the file is not in the working directory, create soft link in it
-                        if os.path.isfile(in_for) and not (os.path.isfile(in1)):
+                        if (not (os.path.isfile(in1)) and os.path.isfile(in_for)):
                             if in_for.endswith('.gz'): # if compressed, decompress in standard dir with std ID
                                 read1Cmd = 'ln -s '+in_for+' '+in1+''
                                 subprocess.Popen(read1Cmd, shell=True).wait()
@@ -252,7 +252,7 @@ def in_out_preprocessing(path,in_f):
                         pass
                     else:
                         #If the file is not in the working directory, transfer it
-                        if os.path.isfile(in_rev) and not (os.path.isfile(in2)):
+                        if (not (os.path.isfile(in2)) and os.path.isfile(in_rev)):
                             if in_for.endswith('.gz'):
                                 read2Cmd = 'ln -s '+in_rev+' '+in2+''
                                 subprocess.Popen(read2Cmd, shell=True).wait()

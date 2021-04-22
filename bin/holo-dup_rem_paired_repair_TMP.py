@@ -35,9 +35,9 @@ if (os.path.exists(input_file)):
 
 # split not dup sequences into reads again
 cut1Cmd = 'cut --delimiter='+str(separator)+' -f1 '+input_file+' > '+read1+' && gzip '+read1+''
-subprocess.check_call(cut1Cmd, shell=True)
+subprocess.Popen(cut1Cmd, shell=True).wait()
 cut2Cmd = 'cut --delimiter='+str(separator)+' -f2 '+input_file+' > '+read2+' && gzip '+read2+''
-subprocess.check_call(cut2Cmd, shell=True)
+subprocess.Popen(cut2Cmd, shell=True).wait()
 rmCmd = 'rm '+input_file+''
 subprocess.check_call(rmCmd, shell=True)
 

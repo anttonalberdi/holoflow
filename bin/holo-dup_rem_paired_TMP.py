@@ -42,7 +42,7 @@ with open(str(log),'a+') as log:
 
 # de -compress inputs
 if (os.path.exists(read1)):
-    compressCmd1='gunzip '+read1+' '+read2+''
+    compressCmd1='gunzip '+read1+' & gunzip '+read2+''
     subprocess.Popen(compressCmd1,shell=True).wait()
     read1 = read1.replace('.gz','')
     read2 = read2.replace('.gz','')
@@ -81,5 +81,5 @@ subprocess.check_call(seqkitCmd, shell=True)
 
 
 if (os.path.isfile(output)): # it's actually a file
-    compressCmd2='gzip '+read1+' '+read2+' '+output+''
+    compressCmd2='gzip '+read1+' & gzip '+read2+' & gzip '+output+''
     subprocess.Popen(compressCmd2,shell=True).wait()
