@@ -3,7 +3,6 @@
 import subprocess
 import argparse
 import time
-import os
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
@@ -53,15 +52,8 @@ with open(str(log),'a+') as log:
     log.write('\t\t'+current_time+'\tMapping To Reference Genomes step - '+ID+'\n')
     log.write('All the reads are being mapped to the reference genome(s).\n')
 
-#de- compress inputs
-if (os.path.exists(read1)):
-    compressCmd1='gunzip '+read1+' & gunzip '+read2+''
-    subprocess.Popen(compressCmd1,shell=True).wait()
-    read1 = read1.replace('.gz','')
-    read2 = read2.replace('.gz','')
 
-# not very optimal
-if (k == "loose"): # -k 19
+if (k == "loose"):
     if not (picard == 'False'):
         mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -M -t '+t+' -k 19 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+ref_gen+' '+read1+' '+read2+' | samtools view -T '+ref_gen+' -b - > '+all_bam+''
         subprocess.check_call(mapCmd, shell=True)
@@ -70,7 +62,7 @@ if (k == "loose"): # -k 19
         subprocess.check_call(mapCmd, shell=True)
 
 
-if (k == "semistringent"): # -k 30
+if (k == "semistringent"):
     if not (picard == 'False'):
         mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -M -t '+t+' -k 30 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+ref_gen+' '+read1+' '+read2+' | samtools view -T '+ref_gen+' -b - > '+all_bam+''
         subprocess.check_call(mapCmd, shell=True)
@@ -79,7 +71,7 @@ if (k == "semistringent"): # -k 30
         subprocess.check_call(mapCmd, shell=True)
 
 
-if (k == "superstringent"): # -k 50
+if (k == "superstringent"):
     if not (picard == 'False'):
         mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -M -t '+t+' -k 50 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+ref_gen+' '+read1+' '+read2+' | samtools view -T '+ref_gen+' -b - > '+all_bam+''
         subprocess.check_call(mapCmd, shell=True)
@@ -89,8 +81,3 @@ if (k == "superstringent"): # -k 50
 
 if not ((k == "loose") or (k == "semistringent") or (k == "superstringent")):
     print(''+k+' is not a valid value, k = loose/semistringent/stringent - See config.yaml')
-
-# re -compress inputs
-if (os.path.isfile(all_bam)):
-    compressCmd2='gzip '+read1+' & gzip '+read2+''
-    subprocess.Popen(compressCmd2,shell=True).wait()

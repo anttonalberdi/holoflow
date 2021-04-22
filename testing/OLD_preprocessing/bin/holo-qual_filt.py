@@ -42,12 +42,6 @@ statsfile=open(str(stats),"w+")
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 statsfile.write("Statistic\tValue \r\n".format(current_time))
 
-if (os.path.exists(read1i)):
-    compressCmd1='gunzip '+read1i+' & gunzip '+read2i+''
-    subprocess.Popen(compressCmd1,shell=True).wait()
-    read1i = read1i.replace('.gz','')
-    read2i = read2i.replace('.gz','')
-
 
 #Get initial stats
 reads = 0
@@ -85,35 +79,31 @@ with open(str(log),'a+') as log:
 
 
 # Run AdapterRemoval
-# output --gzip files
-# use a diferent separator of reads
 if not (msep == "default"):
     if not os.path.exists(str(read1o)):
-        # different adapters than default
         if not ((a1 == "default") and (a2 == "default")):
-            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --mate-separator '+msep+' --output1 '+read1o+' --output2 '+read2o+' --gzip --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
+            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --mate-separator '+msep+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
             subprocess.check_call(qualfiltCmd, shell=True)
 
         else: # default Illumina adapters will be used
-            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --mate-separator '+msep+' --output1 '+read1o+' --output2 '+read2o+' --gzip --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+''
+            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --mate-separator '+msep+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+''
             subprocess.check_call(qualfiltCmd, shell=True)
 else:
     if not os.path.exists(str(read1o)):
         if not ((a1 == "default") and (a2 == "default")):
-            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --gzip --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
+            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
             subprocess.check_call(qualfiltCmd, shell=True)
 
         else: # default Illumina adapters will be used
-            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --gzip --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+''
+            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+''
             subprocess.check_call(qualfiltCmd, shell=True)
 
 
 
 #Get stats after quality filtering
-# read --gzip files
 reads = 0
 bases = 0
-with gzip.open(str(read1o), 'rt') as read:
+with open(str(read1o), 'rb') as read:
     for id in read:
         try:
             seq = next(read)
@@ -124,10 +114,7 @@ with gzip.open(str(read1o), 'rt') as read:
         except:
             break
 
-# re-compress inputs
-if (os.path.exists(read1o)):
-    compressCmd2='gzip '+read1i+' & gzip '+read2i+''
-    subprocess.Popen(compressCmd2,shell=True).wait()
+
 
 #Print stats to stats file
 statsfile=open(str(str(stats)),"a+")

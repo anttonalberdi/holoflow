@@ -4,6 +4,7 @@ rule get_paths:
         logpath=expand("{logpath}", logpath=config['logpath'])
 
 
+
 ################################################################################################################
 ############################################       PREPROCESSING     ###########################################
 ################################################################################################################
@@ -12,11 +13,11 @@ rule get_paths:
 ##
 rule in_reformat:
     input:
-        read1i="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.tmp",
-        read2i="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq.tmp"
+        read1i="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.tmp.gz",
+        read2i="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq.tmp.gz"
     output:
-        read1o="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq",
-        read2o="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq"
+        read1o="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.gz",
+        read2o="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq.gz"
     params:
         sample="{sample}"
     shell:
@@ -30,12 +31,12 @@ rule in_reformat:
 
 rule qual_filt:
     input:
-        read1="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq",
-        read2="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq"
+        read1="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.gz",
+        read2="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq.gz"
     threads: 10
     output:
-        read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq",
-        read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq",
+        read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq.gz",
+        read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz",
         stats_file="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.stats"
     params:
         adapter1=expand("{adapter1}", adapter1=config['adapter1']),
@@ -53,10 +54,10 @@ rule qual_filt:
 
 rule dup_rem_paired:
     input:
-      read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq",
-      read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq"
+      read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq.gz",
+      read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz"
     output:
-      out="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.merged.fastq"
+      out="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.merged.fastq.gz"
     threads: 10
     params:
         separator=expand("{separator}", separator=config['separator']),
@@ -73,11 +74,11 @@ rule dup_rem_paired:
 
 rule dup_rem_paired_repair:
     input:
-      in_file="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.merged.fastq",
+      in_file="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.merged.fastq.gz",
       in_stats="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.stats"
     output:
-      read1="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_1.fastq",
-      read2="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_2.fastq",
+      read1="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_1.fastq.gz",
+      read2="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_2.fastq.gz",
       out_stats="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.stats"
     threads: 10
     params:
@@ -94,8 +95,8 @@ rule dup_rem_paired_repair:
 
 rule map_ref:
     input:
-        read1="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_1.fastq",
-        read2="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_2.fastq"
+        read1="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_1.fastq.gz",
+        read2="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_2.fastq.gz"
     output:
         "{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam"
     threads: 40
@@ -123,8 +124,8 @@ rule map_ref_split:
         stats_in="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.stats"
     output:
         ref="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_ref.bam",
-        read1="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_1.fastq",
-        read2="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_2.fastq",
+        read1="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_1.fastq.gz",
+        read2="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_2.fastq.gz",
         stats_out="{projectpath}/PPR_03-MappedToReference/{job}/{sample}.stats"
     params:
         refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
