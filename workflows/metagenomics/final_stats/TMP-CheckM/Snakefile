@@ -64,7 +64,7 @@ rule checkm:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_quality.py -bin_dir {input.drep_bin_dir} -out_dir {params.out_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_quality.py -cov_file {input.cov} -bin_dir {input.drep_bin_dir} -out_dir {params.out_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 

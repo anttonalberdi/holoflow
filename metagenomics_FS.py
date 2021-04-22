@@ -147,7 +147,7 @@ def in_out_final_stats(path,in_f):
                 except:
                     pass
             else:
-                mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa ''
+                mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa''
                 subprocess.Popen(mvbinsCmd, shell=True).wait()
 
             # Define input dir

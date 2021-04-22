@@ -142,12 +142,12 @@ def in_out_final_stats(path,in_f):
             # Check if input files already in desired dir
             if os.path.exists(in2):
                 try:
-                    mvbinsCmd = 'ln -s '+drep_bins_dir+'/*.fa '+in2+' && cp '+drep_bins_dir+'/../final_bins_Info.csv '+in2+''
+                    mvbinsCmd = 'ln -s '+drep_bins_dir+'/*.fa '+in2+' && cp '+drep_bins_dir+'/../final_bins_Info.csv '+in2+' && cp '+drep_bins_dir+'/../data_tables/Widb.csv '+in2+''
                     subprocess.Popen(mvbinsCmd, shell=True).wait()
                 except:
                     pass
             else:
-                mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+' && cp '+drep_bins_dir+'/../final_bins_Info.csv '+in2+''
+                mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+' && cp '+drep_bins_dir+'/../final_bins_Info.csv '+in2+' && cp '+drep_bins_dir+'/../data_tables/Widb.csv '+in2+''
                 subprocess.Popen(mvbinsCmd, shell=True).wait()
 
             # Define input dir

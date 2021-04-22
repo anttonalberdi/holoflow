@@ -58,7 +58,7 @@ if not (os.path.exists(str(out_dir))):
 
     # Run summary table
     input_drep_table = bin_dir+'/final_bins_Info.csv'
-    input_checkM_table = out_dir+'/'+ID+'_binQuality.txt'
+    input_checkM_table = bin_dir+'/Widb.csv'
     summary_table_tmp = out_dir+'/'+ID+'_binQuality_Info.tmp.csv'
     summary_table = out_dir+'/'+ID+'_binQuality_Info.csv'
 
