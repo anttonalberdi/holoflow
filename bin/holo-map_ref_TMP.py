@@ -54,12 +54,12 @@ with open(str(log),'a+') as log:
 
 #de- compress inputs
 if (os.path.exists(read1)):
-    compressCmd1='gunzip '+read1+' '+read2+''
+    compressCmd1='gunzip '+read1+' & gunzip '+read2+''
     subprocess.Popen(compressCmd1,shell=True).wait()
     read1 = read1.replace('.gz','')
     read2 = read2.replace('.gz','')
 
-# not very optimal 
+# not very optimal
 if (k == "loose"): # -k 19
     if not (picard == 'False'):
         mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -M -t '+t+' -k 19 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+ref_gen+' '+read1+' '+read2+' | samtools view -T '+ref_gen+' -b - > '+all_bam+''
@@ -91,5 +91,5 @@ if not ((k == "loose") or (k == "semistringent") or (k == "superstringent")):
 
 # re -compress inputs
 if (os.path.isfile(all_bam)):
-    compressCmd2='gzip '+read1+' '+read2+''
+    compressCmd2='gzip '+read1+' & gzip '+read2+''
     subprocess.Popen(compressCmd2,shell=True).wait()

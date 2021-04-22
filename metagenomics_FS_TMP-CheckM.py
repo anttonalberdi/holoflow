@@ -90,7 +90,7 @@ def in_out_final_stats(path,in_f):
 
         # Define variables
         output_files=''
-        final_temp_dir="MFS_03-KOAbundances"
+        final_temp_dir="MFS_04-KOAbundances"
 
     for line in lines:
         ### Skip line if starts with # (comment line)
@@ -142,12 +142,12 @@ def in_out_final_stats(path,in_f):
             # Check if input files already in desired dir
             if os.path.exists(in2):
                 try:
-                    mvbinsCmd = 'ln -s '+drep_bins_dir+'/*.fa '+in2+''
+                    mvbinsCmd = 'ln -s '+drep_bins_dir+'/*.fa '+in2+' && cp '+drep_bins_dir+'/../final_bins_Info.csv '+in2+''
                     subprocess.Popen(mvbinsCmd, shell=True).wait()
                 except:
                     pass
             else:
-                mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa ''
+                mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+' && cp '+drep_bins_dir+'/../final_bins_Info.csv '+in2+''
                 subprocess.Popen(mvbinsCmd, shell=True).wait()
 
             # Define input dir

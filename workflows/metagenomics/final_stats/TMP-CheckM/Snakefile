@@ -49,35 +49,36 @@ rule coverage:
         python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py -bam_dir {input.bam_MAGs} -mag_dir {input.drep_bin_dir}  -out_dir {params.out_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
-# ##
-# # CheckM quality of MAGs + generate summary table
-# # #
-# rule checkm:
-#     input:
-#         cov="{projectpath}/MFS_02-MAGCoverage/{group}/{group}.coverage_byMAG.txt",
-#         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
-#     output:
-#         "{projectpath}/MFS_03-BinQuality/{group}/{group}_binQuality_Info.csv"
-#     params:
-#         group="{group}",
-#         out_dir="{projectpath}/MFS_03-BinQuality/{group}"
-#     shell:
-#         """
-#         python {rules.get_paths.input.holopath}/bin/holo-bin_quality.py -bin_dir {input.drep_bin_dir} -out_dir {params.out_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
-#         """
-#
+##
+# CheckM quality of MAGs + generate summary table
+# #
+rule checkm:
+    input:
+        cov="{projectpath}/MFS_02-MAGCoverage/{group}/{group}.coverage_byMAG.txt",
+        drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
+    output:
+        "{projectpath}/MFS_03-BinQuality/{group}/{group}_binQuality_Info.csv"
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        out_dir="{projectpath}/MFS_03-BinQuality/{group}",
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-bin_quality.py -bin_dir {input.drep_bin_dir} -out_dir {params.out_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """
+
 
 ##
 # Get MAG coverage on SELECTED KOs (single-copy core genes: https://github.com/anttonalberdi/metafunk/blob/master/files/USiCGs.txt)
 ##
 rule genes_coverage:
     input:
-        MAG_cov="{projectpath}/MFS_02-MAGCoverage/{group}/{group}.coverage_byMAG.txt", # unnecessary for this rule, necessary for creating dependence
+        quality="{projectpath}/MFS_03-BinQuality/{group}/{group}_binQuality_Info.csv", # unnecessary for this rule, necessary for creating dependence
         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
         annot_dir="{projectpath}/MFS_00-InputData/{group}/annotation",
         bam_dir="{projectpath}/MFS_01-MAGMapping/{group}"
     output:
-        directory("{projectpath}/MFS_03-KOAbundances/{group}")
+        directory("{projectpath}/MFS_04-KOAbundances/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
         KO_DB=expand("{KO_DB}", KO_DB=config['KO_DB']),
