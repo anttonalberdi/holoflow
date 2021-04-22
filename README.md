@@ -180,15 +180,18 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   
 #### Metagenomics - Dereplication
 - *Snakefile* - which contains rules for:
-  1. Bin Dereplication using **dRep**
-  2. Bin Gene Annotation with **Prokka**
-  3. Bin Taxonomic Classification with **GTDB-Tk**
+  1. Bin Dereplication using **dRep**.
+  2. Bin Gene Annotation with **Prokka**.
+  3. Bin Taxonomic Classification with **GTDB-Tk**.
+  4. Obtain GTDB phylogenetic subtree of MAGs.
 
   
 #### Metagenomics - Final Statistics
 - *Snakefile* - which contains rules for:
   1. Mapping metagenomic reads to dereplicated MAGs - number and % of mapped reads.
-  2. Obtaining coverage statistics by MAG and contig to used samples.
+  2. Obtaining coverage statistics of contigs and MAGs in used samples.
+  3. Retrieve quality statistics (CheckM) and summary plot of the MAGs.
+  4. Get coverage of KEGG KO single-copy core genes in MAGs. 
   
   
 #### Genomics
