@@ -41,11 +41,11 @@ with open(str(log),'a+') as logi:
 ## RUN
 input_checkM_table = bin_dir+'/Widb.csv'
 if not os.path.isfile(out_dir+'/'+ID+'_binQuality.txt'):
-    # checkmCmd = 'module load anaconda2/4.0.0 hmmer/3.2.1 prodigal/2.6.3 pplacer/1.1.alpha17 && checkm lineage_wf -t '+threads+' -x fa '+bin_dir+' '+out_dir+' -f '+out_dir+'/'+ID+'_binQuality.txt'
-    # subprocess.Popen(checkmCmd,shell=True).wait()
-    #
-    # rearrangeoutCmd =' sed -i "s/--//g" '+out_dir+'/'+ID+'_binQuality.txt && sed -i "s/ \+ /\t/g" '+out_dir+'/'+ID+'_binQuality.txt'
-    # subprocess.Popen(rearrangeoutCmd,shell=True).wait()
+    checkmCmd = 'module load anaconda2/4.0.0 hmmer/3.2.1 prodigal/2.6.3 pplacer/1.1.alpha17 && checkm lineage_wf -t '+threads+' -x fa '+bin_dir+' '+out_dir+' -f '+out_dir+'/'+ID+'_binQuality.txt'
+    subprocess.Popen(checkmCmd,shell=True).wait()
+
+    rearrangeoutCmd =' sed -i "s/--//g" '+out_dir+'/'+ID+'_binQuality.txt && sed -i "s/ \+ /\t/g" '+out_dir+'/'+ID+'_binQuality.txt'
+    subprocess.Popen(rearrangeoutCmd,shell=True).wait()
 
 # Plot quality - coverage
 file = os.path.dirname(sys.argv[0])
