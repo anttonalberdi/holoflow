@@ -36,8 +36,8 @@ with open(str(log),'a+') as log:
     log.write('\t\t'+current_time+'\tAssembly Mapping step - '+ID+'\n')
     log.write('The original metagenomic reads are being mapped to the indexed assembly so coverage info can be retrieved.\n\n')
 
-
-if not os.path.exists(obam):
+# if output bam does not exist, continue
+if not os.path.isfile(obam):
 
     unzCmd='gunzip '+a+' '+read1+' '+read2+''
     subprocess.check_call(unzCmd, shell=True)
@@ -45,5 +45,6 @@ if not os.path.exists(obam):
     read1 = read1.replace('.gz','')
     read2 = read2.replace('.gz','')
 
+    # map metagenomic reads to assembly to retrieve contigs' depth info for binning later
     mappingCmd='module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+a+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+obam+'.'+ID+' -o '+obam+''
     subprocess.Popen(mappingCmd, shell=True).wait()

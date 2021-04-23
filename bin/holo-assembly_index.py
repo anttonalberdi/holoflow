@@ -29,11 +29,12 @@ with open(str(log),'a+') as log:
     log.write('\t\t'+current_time+'\tAssembly Indexing step - '+ID+'\n')
     log.write('The assembly file needs to be indexed so the original read files can be mapped to it.\n\n')
 
+# if the .fai indexed assembly file does not exist, continue
+if not os.path.isfile(idx_a):
 
-if not os.path.exists(idx_a):
-
+    # index assembly with samtools and bwa, both necessary for further steps
     idxsamCmd='module load tools samtools/1.11 && samtools faidx '+a+''
     idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+a+''
 
-    subprocess.check_call(idxbwaCmd, shell=True)
-    subprocess.check_call(idxsamCmd, shell=True)
+    subprocess.Popen(idxbwaCmd, shell=True).wait()
+    subprocess.Popen(idxsamCmd, shell=True).wait()

@@ -34,11 +34,12 @@ ID=args.ID
 log=args.log
 
 
-# if (args.coassembly):
-#     args.assembler='megahit'
-#     assembler=args.assembler
 
 # Run
+# Same assembly script for individual assembly and co-assembly
+# generates temp assembly file before reformatting
+
+
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
@@ -49,13 +50,17 @@ with open(str(log),'a+') as logi:
 if os.path.exists(temp_a):
     pass
 
+# if temp assembly has not been created yet, continue
 if not os.path.exists(temp_a):
 
-    if (args.assembler == "megahit"): # MEGAHIT is OK with compressed input
+    if (args.assembler == "megahit"):
 
         if (args.coassembly):
+            # If coassembly, metagenomics_CB.py will have inputted to Snakemake two files which actually
+            # contain a comma-delimited string of paths of the files to be coassembled -> megahit input
 
             with open(read1,'r') as f1, open(read2,'r') as f2:
+                # save these paths into variables
                 read1_paths = f1.readline()
                 read2_paths = f2.readline()
 
@@ -66,7 +71,7 @@ if not os.path.exists(temp_a):
             subprocess.Popen(mv_megahitCmd, shell=True).wait()
 
         else:
-
+            # If individual assembly, the inputs to Snakemake are actually .fastq (or gz) files with genomic data
             megahitCmd = 'module load tools megahit/1.2.9 && megahit -1 '+read1+' -2 '+read2+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
             subprocess.Popen(megahitCmd, shell=True).wait()
 
@@ -80,7 +85,12 @@ if not os.path.exists(temp_a):
             os.makedirs(out)
 
         if (args.coassembly):
+            # As before, metagenomics_CB.py has generated two files containing comma-delimited paths of files to co-assemble.
+            # Spades input CAN'T be a string of paths, but has to be a file containing the MERGED SEQUENCES of all files to co-assemble.
 
+
+            # The string of paths is read and after that, the paths of the future MERGED sequences files are defined and
+            # created by either zcat (fastq.gz) or cat (.fastq) the files to co-assemble
             with open(read1,'r') as f1, open(read2,'r') as f2:
                 read1_paths = f1.readline().strip().split(',')
                 read1_paths = (' ').join(read1_paths)
@@ -113,6 +123,7 @@ if not os.path.exists(temp_a):
 
 
         else:
+            # Same as before, if inidividual assembly, the input files are truly .fastq (or gz) files containing genetic data
 
             spadesCmd = 'module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
             subprocess.Popen(spadesCmd, shell=True).wait()

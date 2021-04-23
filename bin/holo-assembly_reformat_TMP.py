@@ -48,26 +48,36 @@ if not os.path.exists(str(out_a)):
 
     with open(str(in_a)) as f_input, open(str(out_a), 'w') as f_output:
         seq = ''
+        # create list with six-digit numbers: 000001 -> 100000
+        # to re-enumerate the contigs
         contig_n = (["%06d" % x for x in range(1000000)])
         n = 0
 
+        # the assembly has two lines per contig : > ID and sequence
         for line in f_input:
             if line.startswith('>'):
+                # If the line corresponds to the ID, create new ID with 6-digit numeration + group ID
+                # for the PREVIOUS contig. This loop only stores in variables the SEQUENCES, so for
+                # every sequence, a new contig ID is generated
 
                 if seq:
+                    # Carry on only if the sequence paired with this ID is longer than the minimum contig length
+                    # provided by the user - default 1500bp, otherwise continue and omit this contig
                     if len(seq) > int(min_cl):
                         n += 1
                         contig_id = (">"+str(ID)+"_"+str(contig_n[n]))
+                        # add new line after sequence
                         seq += ('\n')
-
+                        # Write to new assembly reformatted file
                         f_output.write(contig_id + '\n' + seq)
+                        # un-define sequence, and continue to next
                         seq = ''
 
                     else:
                         seq = ''
             else:
                 seq += line.strip()
-
+        # Last line - the loop has finished but the last contig has not yet been reformatted + written
         if seq:
             if len(seq) > int(min_cl):
                 n += 1
