@@ -14,7 +14,7 @@ The main *holoflow* directory contains a given number of Python scripts which wo
   - ***metagenomics_CB.py***  - Coassembly-based analysis and metagenomics binning. 
   - ***metagenomics_DR.py***  - Dereplication and Annotation of metagenomic bins produced by either *metagenomics_IB* or *metagenomics_CB*. 
   - ***metagenomics_FS.py***  - Final statistical report of dereplicated bins obtained with *metagenomics_DR.py*. 
-  - ***genomics.py***         - Variant calling (Phasing,Imputation ##UNDER CONSTRUCTION##) with *genomics.py*. 
+  - ***genomics.py***         - Variant calling, Phasing (for HD) and Imputation (for LD) with *genomics.py*. 
 
   
   
