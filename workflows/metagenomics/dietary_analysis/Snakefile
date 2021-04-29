@@ -1,5 +1,58 @@
 
-# WOKRKFLOW 1 - Functional annotation on coassembly directly
-- DRAM software implementation - directly on coassembly seems
-# Run DRAM
-# Ask Bent petersen to download dbs for us
+ # 30.06.20
+
+rule get_paths:
+    input:
+        holopath=expand("{holopath}", holopath=config['holopath']),
+        logpath=expand("{logpath}", logpath=config['logpath'])
+
+
+################################################################################################################
+ ##############################################       DIET     #################################################
+################################################################################################################
+
+
+# ANNOTATE
+# 1. Extract contigs not in MAGs (grep -v contigs in MAG in coassembly.fa) --- FOR NOW USE COASSEMBLY.FA FILE [INPUT 1]
+
+# 2. Predict ORFs with Prodigal
+rule predict:
+    input:
+        assembly="{projectpath}/MDI_00-InputData/{group}/{group}.fa"
+    output:
+        directory("{projectpath}/MDI_01-Predict/{group}")
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+    """
+    python {rules.get_paths.input.holopath}/bin/holo-assembly.py       -log {rules.get_paths.input.logpath}
+    """
+
+# 3. Diamond map these orfs to UNIPROT {Only eukaryotic entries . Lasse }
+rule annotate:
+    input:
+        gene_prediction="{projectpath}/MDI_01-Predict/{group}/?????"
+    output:
+        directory("{projectpath}/MDI_02-Annotate/{group}")
+    params:
+    shell:
+    """
+    python {rules.get_paths.input.holopath}/bin/holo-assembly.py       -log {rules.get_paths.input.logpath}
+    """
+
+
+# QUANITFY
+# 1. In metagenomics_CB extract fastq (same as map_ref_split in preprocessing) with reads that are NOT in MAGs - MAG_Mapping step add fastq [INPUT 2]
+# Map each sample .fastq to Predicted ORFs -> Get number of mapped reads per GENE
+rule quantify_diet:
+    input:
+        gene_annotation="{projectpath}/MDI_02-Annotate/{group}"
+        in_dir="{projectpath}/MDI_00-InputData/{group}/umapped_toMAG",
+    output:
+        "{projectpath}/MDI_03-Quantify/{group}"
+    params:
+    shell:
+    """
+    python {rules.get_paths.input.holopath}/bin/holo-assembly.py       -log {rules.get_paths.input.logpath}
+    """
