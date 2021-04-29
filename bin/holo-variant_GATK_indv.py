@@ -67,7 +67,6 @@ if not os.path.exists(out_dir):
         bam_ID = bam_ID.replace('.bam','')
         if '_ref' in bam_ID:
             bam_ID = bam_ID.replace('_ref','')
-        print(bam_ID)
 
         # Index bam with picard
         if not os.path.isfile(bam+'.bai'):

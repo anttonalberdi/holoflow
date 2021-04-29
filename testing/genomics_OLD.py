@@ -16,7 +16,7 @@ parser.add_argument('-r', help="reference panel for LD data", dest="ref_panel")
 parser.add_argument('-vc', help="variant caller: 1 {bcftools/samtools}, 2 {GATK}, 3 {ANGSD}", dest="var_c", required=True)
 parser.add_argument('-c', help="config file", dest="config_file", required=False)
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
-parser.add_argument('-W', help="rewrite everything", dest="REWRITE", action='store_true')
+parser.add_argument('-R', help="rerun workflow", dest="RERUN", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 args = parser.parse_args()
@@ -93,7 +93,9 @@ def in_out_genomics(path,in_f):
     # Define input directory and create it if not exists "00-InputData"
     in_dir = os.path.join(path,"GNM_00-InputBams")
 
-    # read input file
+    if not os.path.exists(in_dir):
+        os.makedirs(in_dir)
+
     with open(in_f,'r') as in_file:
         all_lines = in_file.readlines() # Read input.txt lines
         # remove empty lines
@@ -103,48 +105,34 @@ def in_out_genomics(path,in_f):
         # Define variables
         output_files=''
 
-    if not os.path.exists(in_dir): # IF IT DOES NOT EXIST, start from 0 - never run before
-            os.makedirs(in_dir) # create general input directory
-            print('NO')
-
-    if os.path.exists(in_dir):
-        print('YES')
-
-        # define output dir - for snakemake (needs output files ID)
         if Q == "HD":
             final_temp_dir = "GNM_03-Phasing"
         if Q == "LD":
              final_temp_dir = "GNM_03-Imputation"
 
-        # generate input-otupts
-        for line in lines:
-            ### Skip line if starts with # (comment line)
-            if not (line.startswith('#')):
 
-                line = line.strip('\n').split(' ') # Create a list of each line
-                group=line[0]
-                in_bam_path=line[1]
-                chromosome_list = line[2]
+        if not args.RERUN:
+            for line in lines:
+                ### Skip line if starts with # (comment line)
+                if not (line.startswith('#')):
 
-                # Define output files based on input.txt
-                output_files+=path+'/'+final_temp_dir+'/'+group+' '
+                    line = line.strip('\n').split(' ') # Create a list of each line
+                    group=line[0]
+                    in_bam_path=line[1]
+                    chromosome_list = line[2]
 
-                # Define input dir
-                in1=in_dir+'/'+group+''
+                    # Define output files based on input.txt
+                    output_files+=path+'/'+final_temp_dir+'/'+group+' '
 
-                # Check if input files already in desired dir
-                if os.path.exists(in1):
-                    if args.REWRITE: # If user wants to remove previous runs' data and run from scratch
-                        rmCmd='rm -rf '+in1+''
-                        subprocess.Popen(rmCmd,shell=True).wait()
-                    else:
+                    # Define input dir
+                    in1=in_dir+'/'+group+''
+
+                    # Check if input files already in desired dir
+                    if os.path.exists(in1):
                         pass
-
-                if not os.path.exists(in1) or args.REWRITE: # if job input directory does not exist
-                    os.makedirs(in1)
-
-                    linkbamsCmd = 'ln -s '+in_bam_path+'/*.bam '+in1+'' # Create soft link for files to be linked to new dir
-                    subprocess.Popen(linkbamsCmd, shell=True).wait()
+                    else:
+                        linkbamsCmd = 'mkdir '+in1+' && ln -s '+in_bam_path+'/*.bam '+in1+'' # Create soft link for files to be linked to new dir
+                        subprocess.Popen(linkbamsCmd, shell=True).wait()
 
                     # Append chromosome list path to config
                     yaml = ruamel.yaml.YAML()
@@ -155,7 +143,32 @@ def in_out_genomics(path,in_f):
                         data['chr_list'] = str(chromosome_list)
                         dump = yaml.dump(data, config_file)
 
-    return output_files
+        if args.RERUN:
+            for line in lines:
+                ### Skip line if starts with # (comment line)
+                if not (line.startswith('#')):
+
+                    line = line.strip('\n').split(' ') # Create a list of each line
+                    group=line[0]
+                    in_bam_path=line[1]
+                    chromosome_list = line[2]
+
+                    # Define output files based on input.txt
+                    output_files+=path+'/'+final_temp_dir+'/'+group+' '
+
+                    # Define input dir
+                    in1=in_dir+'/'+group+''
+
+                    # Append chromosome list path to config
+                    yaml = ruamel.yaml.YAML()
+                    yaml.explicit_start = True
+                    with open(str(config), 'r') as config_file:
+                        data = yaml.load(config_file)
+                    with open(str(config), 'w') as config_file:
+                        data['chr_list'] = str(chromosome_list)
+                        dump = yaml.dump(data, config_file)
+
+        return output_files
 
 
 
