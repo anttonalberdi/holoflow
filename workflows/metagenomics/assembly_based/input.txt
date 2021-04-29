@@ -1,0 +1,3 @@
+# JOB ID,path to assembly
+Bat_assembly  /home/my/directory1/assembly_bats.fa
+Cavia_assembly /home/my/directory1/assembly_bats.gz

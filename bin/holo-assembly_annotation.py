@@ -11,6 +11,8 @@ parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-a', help="assembly file", dest="a", required=True)
 parser.add_argument('-out_dir', help="output directory", dest="out_dir", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
+parser.add_argument('-t', help="threads", dest="t", required=True)
+parser.add_argument('-min_c_size', help="minimum contig size", dest="min_c_size", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
 
@@ -19,6 +21,8 @@ a=args.a
 out_dir=args.out_dir
 ID=args.ID
 log=args.log
+t=args.t
+min_c_size=args.min_c_size
 
 
 # Run
@@ -31,7 +35,7 @@ with open(str(log),'a+') as log:
 
 # Run annotation
 if os.path.isfile(a):
-    dram1Cmd='module load dram/1.2.0 && DRAM.py annotate -i '+a+' -o '+out_dir+''
+    dram1Cmd='module load dram/1.2.0 && DRAM.py annotate -i '+a+' -o '+out_dir+' --threads '+t+' --min_contig_size '+min_c_size+''
     subprocess.Popen(dram1Cmd,shell=True).wait()
 
 # In the output annotation folder there will be various files. genes.faa and genes.fna are fasta files with all genes called by prodigal
