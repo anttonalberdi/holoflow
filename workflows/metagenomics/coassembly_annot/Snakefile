@@ -1,0 +1,37 @@
+
+# WOKRKFLOW 1 - Functional annotation on coassembly directly
+# Run DRAM
+# Ask Bent petersen to download dbs for us
+
+#28.04.21
+
+rule get_paths:
+   input:
+       holopath=expand("{holopath}", holopath=config['holopath']),
+       logpath=expand("{logpath}", logpath=config['logpath'])
+
+
+################################################################################################################
+############################################       COASSEMBLY     ############################################
+################################################################################################################
+
+##
+# Assembly
+##
+rule assembly:
+   input:
+       read1="{projectpath}/MCA_00-InputData/{group}.fastq",
+   output:
+       directory"{projectpath}/MCA_01-Annotation/{group}"
+   params:
+       threads=expand("{threads}", threads=config['threads']),
+       group="{group}"
+
+   shell:
+       """
+       python {rules.get_paths.input.holopath}/bin/holo-assembly_annotation.py -a {input} -out_dir {output} -ID {params.group} -log {rules.get_paths.input.logpath}
+       """
+
+
+module load dram/1.2.0
+DRAM.py annotate -i 'my_bins/*.fa' -o annotation

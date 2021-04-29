@@ -95,9 +95,9 @@ with open(depth_mag, 'w+') as cov_mag:
         # Vector with MAG length
         MAG_Len=np.sum(contig_Len,axis=0)
         # Get MAG coverage
-            #Multiply coverageS for every contig with its Length
+            #Multiply coverageS for every contig to its Length
         MAG_coverages=coverageS*contig_Len[:,np.newaxis]
-            #Sum all contig coverages for given sample
+            #Sum all contig (coverages*length) in that MAG for given sample
         MAG_coverages=np.sum(MAG_coverages,axis=0)
             # Divide by MAG length to normalize
         MAG_coverages=MAG_coverages/MAG_Len
