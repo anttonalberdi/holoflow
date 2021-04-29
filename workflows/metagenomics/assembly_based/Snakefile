@@ -18,16 +18,17 @@ rule get_paths:
 ##
 # Assembly
 ##
-rule assembly:
+rule assembly_annot:
    input:
-       read1="{projectpath}/MAB_00-InputData/{group}.fastq",
+       read1="{projectpath}/MAB_00-InputData/{job}/{group}.fastq",
    output:
-       directory"{projectpath}/MAB_01-Annotation/{group}"
+       directory"{projectpath}/MAB_01-Annotation/{job}/{group}"
    params:
        threads=expand("{threads}", threads=config['threads']),
+       min_c_size=expand("{min_c_size}", threads=config['min_c_size']),
        group="{group}"
 
    shell:
        """
-       python {rules.get_paths.input.holopath}/bin/holo-assembly_annotation.py -a {input} -out_dir {output} -ID {params.group} -log {rules.get_paths.input.logpath}
+       python {rules.get_paths.input.holopath}/bin/holo-assembly_annotation.py -a {input} -out_dir {output} -min_c_size {params.min_c_size} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
        """

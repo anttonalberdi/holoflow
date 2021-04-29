@@ -11,7 +11,6 @@ parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True)
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
 parser.add_argument('-c', help="config file", dest="config_file", required=False)
-parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 parser.add_argument('-N', help="JOB ID", dest="job", required=True)
@@ -29,12 +28,12 @@ curr_dir = os.path.abspath(file)
 
 # If the user does not specify a config file, provide default file in GitHub
 if not (args.config_file):
-    config = os.path.join(os.path.abspath(curr_dir),"workflows/metagenomics/individual_binning/config.yaml")
+    config = os.path.join(os.path.abspath(curr_dir),"workflows/metagenomics/assembly_based/config.yaml")
 else:
     config=args.config_file
 # If the user does not specify a log file, provide default path
 if not (args.log):
-    log = os.path.join(path,"Holoflow_individualA_metagenomics.log")
+    log = os.path.join(path,"Holoflow_AssemblyBased_metagenomics.log")
 else:
     log=args.log
 
@@ -70,7 +69,7 @@ with open(str(config), 'w') as config_file:
 def in_out_metagenomics(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
-    in_dir_0 = os.path.join(path,"PPR_03-MappedToReference")
+    in_dir_0 = os.path.join(path,"MAB_00-InputData")
 
     if not os.path.exists(in_dir_0):
         os.makedirs(in_dir_0)
@@ -78,7 +77,7 @@ def in_out_metagenomics(path,in_f):
     with open(in_f,'r') as in_file:
         # Define variables
         output_files=''
-        final_temp_dir="MIB_04-BinMerging"
+        final_temp_dir="MAB_01-Annotation"
         all_lines = in_file.readlines() # Read input.txt lines
 
         # remove empty lines
@@ -112,44 +111,26 @@ def in_out_metagenomics(path,in_f):
                 if not (line.startswith('#')):
 
                     line = line.strip('\n').split(' ') # Create a list of each line
-                    sample_name=line[0]
-                    in_for=line[1]# input for (read1) file
-                    in_rev=line[2] # input reverse (read2) file
+                    assembly_id=line[0]
+                    assembly_path=line[1]# input for (read1) file
 
                     # Define input file
-                    in1=in_dir+'/'+sample_name+'_1.fastq'
+                    in1=in_dir+'/'+assembly_id+'.fastq'
                     # Check if input files already in desired dir
                     if os.path.isfile(in1) or os.path.isfile(in1+'.gz'):
                         pass
                     else:
                         #If the file is not in the working directory, create soft link in it
-                        if os.path.isfile(in_for):
+                        if os.path.isfile(assembly_path):
                             if in_for.endswith('.gz'):# if compressed, decompress in standard dir with std ID
-                                read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
+                                read1Cmd = 'ln -s '+assembly_path+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
                                 subprocess.Popen(read1Cmd, shell=True).wait()
                             else:
-                                read1Cmd = 'ln -s '+in_for+' '+in1+''
+                                read1Cmd = 'ln -s '+assembly_path+' '+in1+''
                                 subprocess.Popen(read1Cmd, shell=True).wait()
 
 
-
-                    # Define input file
-                    in2=in_dir+'/'+sample_name+'_2.fastq'
-                    # Check if input files already in desired dir
-                    if os.path.isfile(in2) or os.path.isfile(in2+'.gz'):
-                        pass
-                    else:
-                        #If the file is not in the working directory, transfer it
-                        if os.path.isfile(in_rev):
-                            if in_for.endswith('.gz'):
-                                read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip -c '+in2+'.gz > '+in2+''
-                                subprocess.Popen(read2Cmd, shell=True).wait()
-                            else:
-                                read2Cmd = 'ln -s '+in_rev+' '+in2+''
-                                subprocess.Popen(read2Cmd, shell=True).wait()
-
-
-                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
+                output_files+=(path+"/"+final_temp_dir+"/"+assembly_id+" ")
 
 
         else: # the input directory already exists and is full, don't want to create it again, just re-run from last step
@@ -158,11 +139,10 @@ def in_out_metagenomics(path,in_f):
                 if not (line.startswith('#')):
 
                     line = line.strip('\n').split(' ') # Create a list of each line
-                    sample_name=line[0]
-                    in_for=line[1]
-                    in_rev=line[2]
+                    assembly_id=line[0]
+                    assembly_path=line[1]
 
-                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
+                output_files+=(path+"/"+final_temp_dir+"/"+assembly_id+" ")
 
 
 
@@ -178,18 +158,18 @@ def run_metagenomics(in_f, path, config, cores):
     out_files = in_out_metagenomics(path,in_f)
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
-    path_snkf = os.path.join(holopath,'workflows/metagenomics/individual_binning/Snakefile')
+    path_snkf = os.path.join(holopath,'workflows/metagenomics/assembly_based/Snakefile')
 
     # Run snakemake
     log_file = open(str(log),'w+')
-    log_file.write("Have a nice run!\n\t\tHOLOFOW Metagenomics-IndividualBinning starting")
+    log_file.write("Have a nice run!\n\t\tHOLOFOW Metagenomics-AssemblyBased starting")
     log_file.close()
 
     mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(mtg_snk_Cmd, shell=True)
 
     log_file = open(str(log),'a+')
-    log_file.write("\n\t\tHOLOFOW Metagenomics-IndividualBinning has finished :)")
+    log_file.write("\n\t\tHOLOFOW Metagenomics-AssemblyBased has finished :)")
     log_file.close()
 
     # Keep temp dirs / remove all
@@ -201,7 +181,7 @@ def run_metagenomics(in_f, path, config, cores):
             exist.append(os.path.isfile(file))
 
         if all(exist): # all output files exist
-            rmCmd='cd '+path+' | grep -v '+final_temp_dir+' | xargs rm -rf && mv '+final_temp_dir+' MIB_Holoflow'
+            rmCmd='cd '+path+' | grep -v '+final_temp_dir+' | xargs rm -rf && mv '+final_temp_dir+' MAB_Holoflow'
             subprocess.Popen(rmCmd,shell=True).wait()
 
         else:   # all expected output files don't exist: keep tmp dirs

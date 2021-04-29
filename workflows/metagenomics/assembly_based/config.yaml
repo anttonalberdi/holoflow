@@ -1,0 +1,5 @@
+min_c_size:
+  1500
+
+threads:
+  40
