@@ -145,12 +145,12 @@ def in_out_preprocessing(path,in_f):
                     in_rev=line[2] # input reverse (read2) file
 
                     #Define output files based on input.txt for snakemake
-                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
-                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq '
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq.gz '
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq.gz '
 
 
                     # Define specific input file for the Snakefile -> create standardized input from user's
-                    in1=in_dir+'/'+sample_name+'_1.fastq.tmp'
+                    in1=in_dir+'/'+sample_name+'_1.fastq.tmp.gz'
                     # Check if input files already in desired/standard input dir
                     if os.path.isfile(in1):
                         pass
@@ -158,15 +158,15 @@ def in_out_preprocessing(path,in_f):
                         #If the file is not in the working directory, create soft link in it
                         if (not (os.path.isfile(in1)) and os.path.isfile(in_for)):
                             if in_for.endswith('.gz'): # if compressed, decompress in standard dir with std ID
-                                read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
+                                read1Cmd = 'ln -s '+in_for+' '+in1+''
                                 subprocess.Popen(read1Cmd, shell=True).wait()
                             else:
-                                read1Cmd = 'ln -s '+in_for+' '+in1+''
+                                read1Cmd = 'gzip -c '+in_for+' > '+in1+''
                                 subprocess.Popen(read1Cmd, shell=True).wait()
 
 
                     # Define input file
-                    in2=in_dir+'/'+sample_name+'_2.fastq.tmp'
+                    in2=in_dir+'/'+sample_name+'_2.fastq.tmp.gz'
                     # Check if input files already in desired dir
                     if os.path.isfile(in2):
                         pass
@@ -174,10 +174,10 @@ def in_out_preprocessing(path,in_f):
                         #If the file is not in the working directory, transfer it
                         if (not (os.path.isfile(in2)) and os.path.isfile(in_rev)):
                             if in_for.endswith('.gz'):
-                                read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip -c '+in2+'.gz > '+in2+''
+                                read2Cmd = 'ln -s '+in_rev+' '+in2+''
                                 subprocess.Popen(read2Cmd, shell=True).wait()
                             else:
-                                read2Cmd = 'ln -s '+in_rev+' '+in2+''
+                                read2Cmd = 'gzip -c '+in_rev+' > '+in2+''
                                 subprocess.Popen(read2Cmd, shell=True).wait()
 
 
@@ -197,8 +197,8 @@ def in_out_preprocessing(path,in_f):
                     in_rev=line[2]
 
                     # Define output files based on input.txt
-                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
-                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq '
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq.gz '
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq.gz '
 
                     # Add stats and bam output files only once per sample
                     output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ")
@@ -225,28 +225,28 @@ def in_out_preprocessing(path,in_f):
                     in_rev=line[2]
 
                     # Define output files based on input.txt
-                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq '
-                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq '
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_1.fastq.gz '
+                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+'_2.fastq.gz '
 
 
                     # Define input file
-                    in1=in_dir+'/'+sample_name+'_1.fastq.tmp'
+                    in1=in_dir+'/'+sample_name+'_1.fastq.tmp.gz'
                     # Check if input files already in desired dir
                     if os.path.isfile(in1):
                         pass
                     else:
-                        #If the file is not in the working directory, transfer it
+                        #If the file is not in the working directory, create soft link in it
                         if (not (os.path.isfile(in1)) and os.path.isfile(in_for)):
-                            if in_for.endswith('.gz'):
-                                read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
+                            if in_for.endswith('.gz'): # if compressed, decompress in standard dir with std ID
+                                read1Cmd = 'ln -s '+in_for+' '+in1+''
                                 subprocess.Popen(read1Cmd, shell=True).wait()
                             else:
-                                read1Cmd = 'ln -s '+in_for+' '+in1+''
+                                read1Cmd = 'gzip -c '+in_for+' > '+in1+''
                                 subprocess.Popen(read1Cmd, shell=True).wait()
 
 
                     # Define input file
-                    in2=in_dir+'/'+sample_name+'_2.fastq.tmp'
+                    in2=in_dir+'/'+sample_name+'_2.fastq.tmp.gz'
                     # Check if input files already in desired dir
                     if os.path.isfile(in2):
                         pass
@@ -254,10 +254,10 @@ def in_out_preprocessing(path,in_f):
                         #If the file is not in the working directory, transfer it
                         if (not (os.path.isfile(in2)) and os.path.isfile(in_rev)):
                             if in_for.endswith('.gz'):
-                                read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip -c '+in2+'.gz > '+in2+''
+                                read2Cmd = 'ln -s '+in_rev+' '+in2+''
                                 subprocess.Popen(read2Cmd, shell=True).wait()
                             else:
-                                read2Cmd = 'ln -s '+in_rev+' '+in2+''
+                                read2Cmd = 'gzip -c '+in_rev+' > '+in2+''
                                 subprocess.Popen(read2Cmd, shell=True).wait()
 
 

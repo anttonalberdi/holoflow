@@ -12,7 +12,7 @@ rule get_paths:
 
 
 ################################################################################################################
-############################################       COASSEMBLY     ############################################
+####################################      Annotation of assembly file     ######################################
 ################################################################################################################
 
 ##
@@ -20,9 +20,9 @@ rule get_paths:
 ##
 rule assembly:
    input:
-       read1="{projectpath}/MCA_00-InputData/{group}.fastq",
+       read1="{projectpath}/MAB_00-InputData/{group}.fastq",
    output:
-       directory"{projectpath}/MCA_01-Annotation/{group}"
+       directory"{projectpath}/MAB_01-Annotation/{group}"
    params:
        threads=expand("{threads}", threads=config['threads']),
        group="{group}"
@@ -31,7 +31,3 @@ rule assembly:
        """
        python {rules.get_paths.input.holopath}/bin/holo-assembly_annotation.py -a {input} -out_dir {output} -ID {params.group} -log {rules.get_paths.input.logpath}
        """
-
-
-module load dram/1.2.0
-DRAM.py annotate -i 'my_bins/*.fa' -o annotation
