@@ -47,9 +47,9 @@ refgenomes:
 t:
   40
   # Either: loose / semistringent / superstringent. Correspond to 19, 30, 50 respectively.
-  # Default semistringent{30}
+  # Default loose{19}
 k:
-  'semistringent'
+  'loose'
 w:
   100
 d:
