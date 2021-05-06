@@ -25,7 +25,7 @@ REQUIRED ARGUMENTS:
   -d WORK_DIR         Output directory.
   -t THREADS          Thread maximum number to be used by Snakemake.
   -W REWRITE          Wants to re-run the worfklow from scratch: remove all directories previous runs. - NOT IN PREPAREGENOMES.
-  [{-g REF_GENOME}]   Reference genome(s) file path to be used in read mapping.
+  [{-g REF_GENOME}]   Reference genome(s) file path to be used in read mapping. Unzipped for genomics.
   {-adapter1 ADAPTER1} Adapter sequence 1 for removal.
   {-adapter2 ADAPTER2} Adapter sequence 2 for removal.
   [-Q DATA QUALITY]    Low depth (LD) or High depth (HD) data set.
