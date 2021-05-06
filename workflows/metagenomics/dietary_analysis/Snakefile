@@ -77,5 +77,5 @@ rule quantify_diet:
         group="{group}"
     shell:
     """
-    python {rules.get_paths.input.holopath}/bin/holo-diet_quantify.py       -log {rules.get_paths.input.logpath}
+    python {rules.get_paths.input.holopath}/bin/holo-diet_quantify.py -annot_dir {input.annot_dir} -bam_dir {input.bam_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
     """
