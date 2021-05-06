@@ -26,19 +26,23 @@ rule predict:
         group="{group}"
     shell:
     """
-    python {rules.get_paths.input.holopath}/bin/holo-assembly.py       -log {rules.get_paths.input.logpath}
+    python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_pred.py -a {input.assembly} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
     """
 
 # 3. Diamond map these orfs to UNIPROT {Only eukaryotic entries . Lasse }
 rule annotate:
     input:
-        gene_prediction="{projectpath}/MDI_01-Predict/{group}/?????"
+        "{projectpath}/MDI_01-Predict/{group}/{group}.ptranslations.faa"
     output:
         directory("{projectpath}/MDI_02-Annotate/{group}")
     params:
+        annot_db=expand("{annot_db}", annot_db=config['annot_db']), # plants, invertebrates ... UNDERSQUARE SPLIT
+        db_dir=expand("{db_dir}", db_dir=config['db_dir']), # this should be added to config by .py launcher
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
     shell:
     """
-    python {rules.get_paths.input.holopath}/bin/holo-assembly.py       -log {rules.get_paths.input.logpath}
+    python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_annot.py -faa {input} -out_dir {output} -db_names {params.annot_db} -db_dir {params.db_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
     """
 
 
