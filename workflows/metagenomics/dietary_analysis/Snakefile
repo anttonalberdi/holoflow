@@ -51,16 +51,16 @@ rule annotate:
 # Map each sample .fastq to Predicted ORFs .fna
 rule map_diet:
     input:
-        fna_orf="{projectpath}/MDI_01-Predict/{group}/{group}.ptranslations.faa"
+        fna_orf="{projectpath}/MDI_01-Predict/{group}/{group}.predORFs.fna'" # works as gene catalogue
         fq_dir="{projectpath}/MDI_00-InputData/{group}/mag_unmapped_fq" # directory to be created in .py launcher
     output:
-        "{projectpath}/MDI_03-MapToGC/{group}"
+        directory("{projectpath}/MDI_03-MapToGC/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
     """
-    python {rules.get_paths.input.holopath}/bin/holo-assembly.py -fna {input.fna_orf} -fq_dir {input.fq_dir} -out_dir {output} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
+    python {rules.get_paths.input.holopath}/bin/holo-diet_map_GC.py -fna {input.fna_orf} -fq_dir {input.fq_dir} -out_dir {output} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
     """
 
 
@@ -68,12 +68,14 @@ rule map_diet:
 # Get number of mapped reads per GENE
 rule quantify_diet:
     input:
-        gene_annotation="{projectpath}/MDI_02-Annotate/{group}"
-        in_dir="{projectpath}/MDI_00-InputData/{group}/umapped_toMAG",
+        annot_dir="{projectpath}/MDI_02-Annotate/{group}"
+        bam_dir="{projectpath}/MDI_03-MapToGC/{group}"
     output:
-        "{projectpath}/MDI_03-Quantify/{group}"
+        directory("{projectpath}/MDI_03-Quantify/{group}")
     params:
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
     shell:
     """
-    python {rules.get_paths.input.holopath}/bin/holo-assembly.py       -log {rules.get_paths.input.logpath}
+    python {rules.get_paths.input.holopath}/bin/holo-diet_quantify.py       -log {rules.get_paths.input.logpath}
     """

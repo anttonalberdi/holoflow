@@ -89,7 +89,6 @@ if not os.path.exists(out_dir):
         mpileup_output = out_dir+'/'+ID+'.all_'+CHR+'.vcf.gz'
         view_output = out_dir+'/'+ID+'.LD_SNPs_'+CHR+'.vcf.gz'
 
-        print(all_genome_atonce)
 
         if all_genome_atonce : # No chromosomes specified in genome
 
