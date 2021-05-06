@@ -40,7 +40,7 @@ if config['var_caller'] == "bcftools":
             """
             python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -Dquality {params.data_quality} -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -multicaller {params.multicaller} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
             """
-        #python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -chr_region {params.chr_region} -multicaller {params.multicaller} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath} #-not_indels {params.not_indels}
+        #python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual}  -multicaller {params.multicaller} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath} #-not_indels {params.not_indels}
 
 
     ## HD Filtering
