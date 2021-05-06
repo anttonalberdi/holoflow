@@ -31,12 +31,6 @@ min_mapp_qual:
 min_base_qual:
   13
 
-# Only generate mpileup output in given regions.
-# Set to False if all included, specify region instead if desired
-# -r, --regions CHR|CHR:POS|CHR:FROM-TO|CHR:FROM-[,…]
-chr_region:
-  False
-
   # call parameters
 
 # Multicaller mode: alternative model for multiallelic and rare-variant calling designed to overcome known limitations
