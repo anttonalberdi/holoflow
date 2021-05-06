@@ -105,10 +105,8 @@ def in_out_genomics(path,in_f):
 
     if not os.path.exists(in_dir): # IF IT DOES NOT EXIST, start from 0 - never run before
             os.makedirs(in_dir) # create general input directory
-            print('NO')
 
     if os.path.exists(in_dir):
-        print('YES')
 
         # define output dir - for snakemake (needs output files ID)
         if Q == "HD":

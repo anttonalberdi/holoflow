@@ -51,11 +51,11 @@ if not os.path.exists(out_dir):
     # if the reference genome is not split by chromosomes but by scaffolds (for example)
     # remove -r region option and analyse all at once.
     # For this, chr_list will have only ONE row with 'ALL'
-    all_genome_atonce = ''
+    all_genome_atonce = False
     with open(chr_list,'r+') as chr_data:
         for chr in chr_data.readlines():
-            if chr == 'ALL':
-                all_genome_atonce = 'True'
+            if chr.strip() == 'ALL':
+                all_genome_atonce = True 
             else:
                 pass
             chromosome_list.append(chr.strip())

@@ -53,11 +53,12 @@ if not os.path.exists(out_dir):
     # if the reference genome is not split by chromosomes but by scaffolds (for example)
     # remove -r region option and analyse all at once.
     # For this, chr_list will have only ONE row with 'ALL'
-    all_genome_atonce = ''
+    all_genome_atonce = False
     with open(chr_list,'r+') as chr_data:
         for chr in chr_data.readlines():
-            if chr == 'ALL':
-                all_genome_atonce = 'True'
+            print(chr)
+            if chr.strip() == 'ALL':
+                all_genome_atonce = True
             else:
                 pass
             chromosome_list.append(chr.strip())
@@ -76,7 +77,7 @@ if not os.path.exists(out_dir):
 
 
             if not os.path.isfile(bam+'.bai'): # If not indexed, index bam - Theoretically these are sorted from preprocessing
-                idxbamCmd = 'module load tools samtools/1.11 && samtools index '+bam+''
+                idxbamCmd = 'module load tools samtools/1.12 && samtools index '+bam+''
                 subprocess.Popen(idxbamCmd,shell=True).wait()
 
             else:
@@ -88,46 +89,51 @@ if not os.path.exists(out_dir):
         mpileup_output = out_dir+'/'+ID+'.all_'+CHR+'.vcf.gz'
         view_output = out_dir+'/'+ID+'.LD_SNPs_'+CHR+'.vcf.gz'
 
+        print(all_genome_atonce)
 
-        if not all_genome_atonce: # Chromosomes specified
+        if all_genome_atonce : # No chromosomes specified in genome
 
             if not (multicaller == 'False'):
-                bcf1Cmd = 'module load bcftools/1.11 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -m -v -Oz -o '+mpileup_output+''
+                bcf1Cmd = 'module load bcftools/1.12 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -b '+bam_list_file+' | bcftools call -m -v -Oz -o '+mpileup_output+''
                 subprocess.Popen(bcf1Cmd,shell=True).wait()
 
                 if Dquality == 'LD':
-                    bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                    bcf2Cmd = 'module load bcftools/1.12 && bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
                     subprocess.Popen(bcf2Cmd,shell=True).wait()
                 else:
                     pass
 
             else:
-                bcf1Cmd = 'module load bcftools/1.11 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -v -Oz -o '+mpileup_output+''
+                bcf1Cmd = 'module load bcftools/1.12 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -b '+bam_list_file+' | bcftools call -v -Oz -o '+mpileup_output+''
                 subprocess.Popen(bcf1Cmd,shell=True).wait()
 
                 if Dquality == 'LD':
-                    bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                    bcf2Cmd = 'module load bcftools/1.12 && bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
                     subprocess.Popen(bcf2Cmd,shell=True).wait()
                 else:
                     pass
 
-        if all_genome_atonce: # No chromosomes specified in genome
 
-            bcf1Cmd = 'module load bcftools/1.11 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -b '+bam_list_file+' | bcftools call -m -v -Oz -o '+mpileup_output+''
-            subprocess.Popen(bcf1Cmd,shell=True).wait()
+        else: # Chromosomes specified
 
-            if Dquality == 'LD':
-                bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
-                subprocess.Popen(bcf2Cmd,shell=True).wait()
+            print('This should not be printed')
+
+            if not (multicaller == 'False'):
+                bcf1Cmd = 'module load bcftools/1.12 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -m -v -Oz -o '+mpileup_output+''
+                subprocess.Popen(bcf1Cmd,shell=True).wait()
+
+                if Dquality == 'LD':
+                    bcf2Cmd = 'module load bcftools/1.12 && bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                    subprocess.Popen(bcf2Cmd,shell=True).wait()
+                else:
+                    pass
+
             else:
-                pass
+                bcf1Cmd = 'module load bcftools/1.12 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -v -Oz -o '+mpileup_output+''
+                subprocess.Popen(bcf1Cmd,shell=True).wait()
 
-        else:
-            bcf1Cmd = 'module load bcftools/1.11 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -b '+bam_list_file+' | bcftools call -v -Oz -o '+mpileup_output+''
-            subprocess.Popen(bcf1Cmd,shell=True).wait()
-
-            if Dquality == 'LD':
-                bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
-                subprocess.Popen(bcf2Cmd,shell=True).wait()
-            else:
-                pass
+                if Dquality == 'LD':
+                    bcf2Cmd = 'module load bcftools/1.12 && bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                    subprocess.Popen(bcf2Cmd,shell=True).wait()
+                else:
+                    pass

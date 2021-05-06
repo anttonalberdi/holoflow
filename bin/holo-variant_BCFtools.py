@@ -67,7 +67,7 @@ if not os.path.exists(out_dir):
 
 
             if not os.path.isfile(bam+'.bai'): # If not indexed, index bam - Theoretically these are sorted from preprocessing
-                idxbamCmd = 'module load tools samtools/1.11 && samtools index '+bam+''
+                idxbamCmd = 'module load tools samtools/1.12 && samtools index '+bam+''
                 subprocess.Popen(idxbamCmd,shell=True).wait()
 
             else:
@@ -81,21 +81,21 @@ if not os.path.exists(out_dir):
 
 
         if not (multicaller == 'False'):
-            bcf1Cmd = 'module load bcftools/1.11 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -m -v -Oz -o '+mpileup_output+''
+            bcf1Cmd = 'module load bcftools/1.12 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -m -v -Oz -o '+mpileup_output+''
             subprocess.Popen(bcf1Cmd,shell=True).wait()
 
             if Dquality == 'LD':
-                bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                bcf2Cmd = 'module load bcftools/1.12 && bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
                 subprocess.Popen(bcf2Cmd,shell=True).wait()
             else:
                 pass
 
         else:
-            bcf1Cmd = 'module load bcftools/1.11 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -v -Oz -o '+mpileup_output+''
+            bcf1Cmd = 'module load bcftools/1.12 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -v -Oz -o '+mpileup_output+''
             subprocess.Popen(bcf1Cmd,shell=True).wait()
 
             if Dquality == 'LD':
-                bcf2Cmd = 'bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
+                bcf2Cmd = 'module load bcftools/1.12 &&  bcftools view -m2 -M2 -v snps -Oz -o '+view_output+' '+mpileup_output+''
                 subprocess.Popen(bcf2Cmd,shell=True).wait()
             else:
                 pass
