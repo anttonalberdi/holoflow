@@ -46,9 +46,26 @@ rule annotate:
     """
 
 
-# QUANITFY
+# MAP
 # 1. In metagenomics_CB extract fastq (same as map_ref_split in preprocessing) with reads that are NOT in MAGs - MAG_Mapping step add fastq [INPUT 2]
-# Map each sample .fastq to Predicted ORFs -> Get number of mapped reads per GENE
+# Map each sample .fastq to Predicted ORFs .fna
+rule map_diet:
+    input:
+        fna_orf="{projectpath}/MDI_01-Predict/{group}/{group}.ptranslations.faa"
+        fq_dir="{projectpath}/MDI_00-InputData/{group}/mag_unmapped_fq" # directory to be created in .py launcher
+    output:
+        "{projectpath}/MDI_03-MapToGC/{group}"
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+    """
+    python {rules.get_paths.input.holopath}/bin/holo-assembly.py -fna {input.fna_orf} -fq_dir {input.fq_dir} -out_dir {output} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
+    """
+
+
+# QUANITFY
+# Get number of mapped reads per GENE
 rule quantify_diet:
     input:
         gene_annotation="{projectpath}/MDI_02-Annotate/{group}"
