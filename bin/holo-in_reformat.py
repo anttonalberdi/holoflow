@@ -32,7 +32,7 @@ if not (os.path.exists(str(read1o))):
         log.write('The headers of the .fastq input files are being reformatted.\n\n')
 
     if (os.path.exists(read1i)):
-        compressCmd1='gunzip '+read1i+' '+read2i+''
+        compressCmd1='gunzip -c '+read1i+' > '+read1i.replace('.gz','')+' & gunzip -c '+read2i+' > '+read2i.replace('.gz','')+''
         subprocess.Popen(compressCmd1,shell=True).wait()
         read1i = read1i.replace('.gz','')
         read2i = read2i.replace('.gz','')
@@ -110,5 +110,5 @@ if not (os.path.exists(str(read1o))):
 
 
 if (os.path.exists(read2o)):
-    compressCmd2='gzip '+read1i+' '+read2i+' '+read1o+' '+read2o+''
+    compressCmd2='rm '+read1i+' '+read2i+' && gzip '+read1o+' '+read2o+''
     subprocess.Popen(compressCmd2,shell=True).wait()
