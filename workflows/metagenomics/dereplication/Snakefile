@@ -71,16 +71,18 @@ rule phylogeny:
 ##
 rule subtree:
     input:
-        tree_dir="{projectpath}/MDR_03-BinPhylogeny/{group}",
-        drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}"
+        tree_dir_base="{projectpath}/MDR_03-BinPhylogeny/{group}",
+        drep_bin_dir_base="{projectpath}/MDR_01-BinDereplication/{group}"
     output:
         bac_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}_BAC_Holoflow.gtdbtk_sub.tree",
         ar_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}_AR_Holoflow.gtdbtk_sub.tree"
     params:
-        group="{group}"
+        group="{group}",
+        tree_dir="{projectpath}/MDR_03-BinPhylogeny/{group}/classify", # if I specify these paths in input, Snakemake complains child direcotry error
+        drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}/dereplicated_genomes"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_subtree.py -tree_dir {input.tree_dir} -bin_dir {input.drep_bin_dir} -bac_o {output.bac_subtree} -ar_o {output.ar_subtree} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_subtree.py -tree_dir {params.tree_dir} -bin_dir {params.drep_bin_dir} -bac_o {output.bac_subtree} -ar_o {output.ar_subtree} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 ##
