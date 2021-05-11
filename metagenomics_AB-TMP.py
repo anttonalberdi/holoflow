@@ -53,6 +53,10 @@ with open(str(config), 'r') as config_file:
         data = {}
 
 with open(str(config), 'w') as config_file:
+    # config file to be loaded by DRAM to find the databases installed by Bent Petersen
+    data['DRAM_config'] = str('/home/databases/ku-cbd/DRAM/20210705/20210705.dram.config')
+    # provided conda environment file by DRAM developers  -> run DRAM in conda env - module way tries to modify internal paths
+    data['conda_env_file'] = str(curr_dir+'/workflows/metagenomics/assembly_based/environment.yaml')
     data['threads'] = str(cores)
     data['holopath'] = str(curr_dir)
     data['logpath'] = str(log)
@@ -122,7 +126,7 @@ def in_out_metagenomics(path,in_f):
                     else:
                         #If the file is not in the working directory, create soft link in it
                         if os.path.isfile(assembly_path):
-                            if in_for.endswith('.gz'):# if compressed, decompress in standard dir with std ID
+                            if assembly_path.endswith('.gz'):# if compressed, decompress in standard dir with std ID
                                 read1Cmd = 'ln -s '+assembly_path+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
                                 subprocess.Popen(read1Cmd, shell=True).wait()
                             else:
@@ -165,30 +169,12 @@ def run_metagenomics(in_f, path, config, cores):
     log_file.write("Have a nice run!\n\t\tHOLOFOW Metagenomics-AssemblyBased starting")
     log_file.close()
 
-    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
+    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+' -n -r'
     subprocess.check_call(mtg_snk_Cmd, shell=True)
 
     log_file = open(str(log),'a+')
     log_file.write("\n\t\tHOLOFOW Metagenomics-AssemblyBased has finished :)")
     log_file.close()
-
-    # Keep temp dirs / remove all
-    if args.keep: # If -k, True: keep
-        pass
-    else: # If not -k, keep only last dir
-        exist=list()
-        for file in out_files.split(" "):
-            exist.append(os.path.isfile(file))
-
-        if all(exist): # all output files exist
-            rmCmd='cd '+path+' | grep -v '+final_temp_dir+' | xargs rm -rf && mv '+final_temp_dir+' MAB_Holoflow'
-            subprocess.Popen(rmCmd,shell=True).wait()
-
-        else:   # all expected output files don't exist: keep tmp dirs
-            log_file = open(str(log),'a+')
-            log_file.write("Looks like something went wrong...\n\t\t The temporal directories have been kept, you should have a look...")
-            log_file.close()
-
 
 
 ###########################

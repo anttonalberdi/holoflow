@@ -3,3 +3,9 @@ min_c_size:
 
 threads:
   40
+
+conda_env_file:
+
+
+DRAM_config:
+  
