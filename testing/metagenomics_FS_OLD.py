@@ -1,11 +1,13 @@
 import argparse
 import subprocess
+import glob
 import os
 import sys
 
 ###########################
 #Argument parsing
 ###########################
+# Gather input files and variables from command line
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True)
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
@@ -13,7 +15,7 @@ parser.add_argument('-c', help="config file", dest="config_file", required=False
 parser.add_argument('-k', help="keep tmp directories", dest="keep", action='store_true')
 parser.add_argument('-l', help="pipeline log file", dest="log", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
-parser.add_argument('-R', help="threads", dest="RERUN", action='store_true')
+parser.add_argument('-W', help="rewrite everything", dest="REWRITE", action='store_true')
 args = parser.parse_args()
 
 in_f=args.input_txt
@@ -24,12 +26,13 @@ cores=args.threads
 file = os.path.dirname(sys.argv[0])
 curr_dir = os.path.abspath(file)
 
-
+# If the user does not specify a config file, provide default file in GitHub
 if not (args.config_file):
     config = os.path.join(os.path.abspath(curr_dir),"workflows/metagenomics/final_stats/config.yaml")
 else:
     config=args.config_file
 
+# If the user does not specify a log file, provide default path
 if not (args.log):
     log = os.path.join(path,"Holoflow_final_stats.log")
 else:
@@ -41,6 +44,7 @@ subprocess.Popen(loaddepCmd,shell=True).wait()
 
 
     #Append current directory to .yaml config for standalone calling
+    # see preprocessing.py for verbose description
 import ruamel.yaml
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
@@ -88,73 +92,79 @@ def in_out_final_stats(path,in_f):
         output_files=''
         final_temp_dir="MFS_03-KOAbundances"
 
-        if not args.RERUN:
-            if os.path.exists(in_dir):
-                rmCmd='rm -rf '+in_dir+''
-                subprocess.Popen(rmCmd,shell=True).wait()
-                os.makedirs(in_dir)
+    for line in lines:
+        ### Skip line if starts with # (comment line)
+        if not (line.startswith('#')):
 
-            for line in lines:
-                ### Skip line if starts with # (comment line)
-                if not (line.startswith('#')):
+            line = line.strip('\n').split(' ') # Create a list of each line
+            sample_name=line[0]
+            mtg_reads_dir=line[1]
+            mtg_files = ''.join(glob.glob(mtg_reads_dir+'/*')[1]) # keep only second metagenomic file
+            drep_bins_dir=line[2]
+            annot_dir=line[3]
 
-                    line = line.strip('\n').split(' ') # Create a list of each line
-                    sample_name=line[0]
-                    mtg_reads_dir=line[1]
-                    drep_bins_dir=line[2]
-                    annot_dir=line[3]
+            in_sample = in_dir+'/'+sample_name
+            if os.path.exists(in_sample):
+                in_mtg_files = os.listdir(in_sample+'/metagenomic_reads') # if the dir already exists, save names of files inside
 
-                    in_sample = in_dir+'/'+sample_name
-                    if not os.path.exists(in_sample):
-                        os.makedirs(in_sample)
+            if args.REWRITE:    # if rewrite, remove directory
+                if os.path.basename(mtg_files) in in_mtg_files: # the directory has not been yet removed: this group's files already exist in dir
+                    rmCmd='rm -rf '+in_sample+''
+                    subprocess.Popen(rmCmd,shell=True).wait()
+                else:                              # the directory has been  removed already by a previous line in the input file
+                    pass                           # belonging to the same group, this is the fill-up round
 
-                    # Define output files based on input.txt
-                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+' '
+            if not os.path.exists(in_sample): # if dir not exists either because of REWRITE or bc first time, DO EVERYTHING
+                os.makedirs(in_sample)
+            else:
+                pass
 
-                    # Define input dir
-                    in1=in_sample+'/metagenomic_reads'
-                    # Check if input files already in desired dir
-                    if os.path.exists(in1):
-                        pass
-                    else:
-                        mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
-                        subprocess.Popen(mvreadsCmd, shell=True).wait()
+            # Define output files based on input.txt
+            output_files+=path+'/'+final_temp_dir+'/'+sample_name+' '
+
+            # Define input dir
+            in1=in_sample+'/metagenomic_reads'
+            # Check if input files already in desired dir
+            if os.path.exists(in1):
+                try:    # try to create the link - if the link already exists ... -> TRY/Except is to avoid exception errors
+                    mvreadsCmd = 'ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
+                    subprocess.Popen(mvreadsCmd, shell=True).wait()
+                except: # ... it won't be created, but pass
+                    pass
+            else:
+                mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
+                subprocess.Popen(mvreadsCmd, shell=True).wait()
+
+# same for the two other directories that have to be created for input
+
+            # Define input dir
+            in2=in_sample+'/dereplicated_bins'
+            # Check if input files already in desired dir
+            if os.path.exists(in2):
+                try:
+                    mvbinsCmd = 'ln -s '+drep_bins_dir+'/*.fa '+in2+''
+                    subprocess.Popen(mvbinsCmd, shell=True).wait()
+                except:
+                    pass
+            else:
+                mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa''
+                subprocess.Popen(mvbinsCmd, shell=True).wait()
+
+            # Define input dir
+            in3=in_sample+'/annotation'
+            # Check if input files already in desired dir
+            if os.path.exists(in3):
+                try:
+                    mvgffCmd = 'ln -s '+annot_dir+'/*.gff '+in3+''
+                    subprocess.Popen(mvgffCmd, shell=True).wait()
+                except:
+                    pass
+            else:
+                mvgffCmd = 'mkdir '+in3+' && ln -s '+annot_dir+'/*.gff '+in3+''
+                subprocess.Popen(mvgffCmd, shell=True).wait()
 
 
-                    # Define input dir
-                    in2=in_sample+'/dereplicated_bins'
-                    # Check if input files already in desired dir
-                    if os.path.exists(in2):
-                        pass
-                    else:
-                        mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+''
-                        subprocess.Popen(mvbinsCmd, shell=True).wait()
-
-                    # Define input dir
-                    in3=in_sample+'/annotation'
-                    # Check if input files already in desired dir
-                    if os.path.exists(in3):
-                        pass
-                    else:
-                        mvgffCmd = 'mkdir '+in3+' && ln -s '+annot_dir+'/*.gff '+in3+''
-                        subprocess.Popen(mvgffCmd, shell=True).wait()
-
-        if args.RERUN:
-
-            for line in lines:
-                ### Skip line if starts with # (comment line)
-                if not (line.startswith('#')):
-
-                    line = line.strip('\n').split(' ') # Create a list of each line
-                    sample_name=line[0]
-                    mtg_reads_dir=line[1]
-                    drep_bins_dir=line[2]
-                    annot_dir=line[3]
-
-                    # Define output files based on input.txt
-                    output_files+=path+'/'+final_temp_dir+'/'+sample_name+' '
-
-        return output_files
+    return output_files
 
 
 

@@ -8,8 +8,10 @@ out_dir=$4
 threads=$5
 min_c_size=$6
 
-module load anaconda3/4.4.0
+module load miniconda3/4.10.1
 conda env create -f $env_file -n DRAM
+wait
+#conda init bash
 conda activate DRAM
 DRAM-setup.py import_config --config_loc $config_dbs
 DRAM.py annotate -i $assembly -o $out_dir --threads $threads --min_contig_size $min_c_size
@@ -21,3 +23,6 @@ trna="${out_dir}/trnas.tsv"
 rrna="${out_dir}/rrnas.tsv"
 
 DRAM.py distill -i $in -o $out --trna_path $trna --rrna_path $rrna
+wait
+wait
+conda deactivate
