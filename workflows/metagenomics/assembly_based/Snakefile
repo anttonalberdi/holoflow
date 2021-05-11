@@ -27,7 +27,7 @@ rule assembly_annot:
         conda_env_file=expand("{conda_env_file}", conda_env_file=config['conda_env_file']), ## ENVIRONMENT file to create conda env. Add to config.yaml in launcher file
         DRAM_config=expand("{DRAM_config}", DRAM_config=config['DRAM_config']), ## Add to config.yaml in launcher file
         threads=expand("{threads}", threads=config['threads']),
-        min_c_size=expand("{min_c_size}", threads=config['min_c_size']),
+        min_c_size=expand("{min_c_size}", min_c_size=config['min_c_size']),
         group="{group}"
     shell:
         """
