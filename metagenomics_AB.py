@@ -160,6 +160,7 @@ def run_metagenomics(in_f, path, config, cores):
 
     # Define output names
     out_files = in_out_metagenomics(path,in_f)
+
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
     path_snkf = os.path.join(holopath,'workflows/metagenomics/assembly_based/Snakefile')
@@ -169,7 +170,7 @@ def run_metagenomics(in_f, path, config, cores):
     log_file.write("Have a nice run!\n\t\tHOLOFOW Metagenomics-AssemblyBased starting")
     log_file.close()
 
-    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+' -n -r'
+    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(mtg_snk_Cmd, shell=True)
 
     log_file = open(str(log),'a+')
