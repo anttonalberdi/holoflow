@@ -22,7 +22,7 @@ rule assembly_annot:
     input:
         read1="{projectpath}/MAB_00-InputData/{job}/{group}.fastq",
     output:
-        directory"{projectpath}/MAB_01-Annotation/{job}/{group}"
+        directory("{projectpath}/MAB_01-Annotation/{job}/{group}")
     params:
         conda_env_file=expand("{conda_env_file}", conda_env_file=config['conda_env_file']), ## ENVIRONMENT file to create conda env. Add to config.yaml in launcher file
         DRAM_config=expand("{DRAM_config}", DRAM_config=config['DRAM_config']), ## Add to config.yaml in launcher file

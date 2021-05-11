@@ -69,7 +69,7 @@ with open(str(config), 'w') as config_file:
 def in_out_metagenomics(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
-    in_dir_0 = os.path.join(path,"MAB_00-InputData")
+    in_dir_0 = os.path.join(path,"MAB_00-InputData") # general path
 
     if not os.path.exists(in_dir_0):
         os.makedirs(in_dir_0)
