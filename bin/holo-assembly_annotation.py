@@ -4,11 +4,14 @@ import subprocess
 import argparse
 import os
 import time
+import sys
 
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-a', help="assembly file", dest="a", required=True)
+parser.add_argument('-conda_env_file', help="conda_env_file", dest="conda_env_file", required=True)
+parser.add_argument('-config', help="config to load dbs", dest="config_dbs", required=True)
 parser.add_argument('-out_dir', help="output directory", dest="out_dir", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-t', help="threads", dest="t", required=True)
@@ -18,6 +21,8 @@ args = parser.parse_args()
 
 
 a=args.a
+conda_env_file=args.conda_env_file
+config_dbs=args.config_dbs
 out_dir=args.out_dir
 ID=args.ID
 log=args.log
@@ -35,8 +40,6 @@ with open(str(log),'a+') as log:
 
 # Run annotation
 if os.path.isfile(a):
-    dram1Cmd='module load dram/1.2.0 && DRAM.py annotate -i '+a+' -o '+out_dir+' --threads '+t+' --min_contig_size '+min_c_size+''
-    subprocess.Popen(dram1Cmd,shell=True).wait()
 
 # In the output annotation folder there will be various files. genes.faa and genes.fna are fasta files with all genes called by prodigal
 # with additional header information gained from the annotation as nucleotide and amino acid records respectively. genes.gff is a GFF3
@@ -45,6 +48,9 @@ if os.path.isfile(a):
 # includes all annotation information about every gene from all MAGs. Each line is a different gene and each column contains annotation
 # information. trnas.tsv contains a summary of the tRNAs found in each MAG.
 
-    # Summarise annotation
-    dram2Cmd='DRAM.py distill -i '+out_dir+'/annotations.tsv -o '+out_dir+'/summary --trna_path '+out_dir+'/trnas.tsv --rrna_path '+out_dir+'/rrnas.tsv'
-    #subprocess.Popen(dram1Cmd,shell=True).wait()
+    # Call Rscript to generate sub-trees
+    file = os.path.dirname(sys.argv[0])
+    curr_dir = os.path.abspath(file)
+
+    dram_conda_runCmd= 'bash '+curr_dir+'/holo-assembly_annotation.sh '+conda_env_file+' '+config_dbs+' '+a+' '+out_dir+' '+t+' '+min_c_size+''
+    subprocess.Popen(dram_conda_runCmd,shell=True).wait()
