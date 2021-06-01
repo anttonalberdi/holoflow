@@ -34,15 +34,26 @@ with open(str(log),'a+') as logi:
     logi.write('   \n\n')
 
 # Inputs
-# annot file
-annot_file = glob.glob(annot_dir+'/*-annotation.dmnd')[0]
 # bam_files list
 bam_files = glob.glob(bam_dir+'/*mapped.bam')
+
+# annot files
+annot_files = glob.glob(annot_dir+'/*-annot.dmnd')
+annot_files_str = ''
+annot_IDs = list()
+    # merge annotations
+for annot_file in annot_files:
+    annot_files_str += annot_file
+    annot_IDs.append(annot_file.replace(annot_dir,'').replace('-annot.dmnd',''))
+
+annot_db = annot_dir+'/'+'-'.join(annot_IDs)+'__annot.dmnd'
+mergeCmd='zcat '+annot_files_str+' > '+annot_db+''    # merge the selected annotation dbs into one file
+subprocess.Popen(mergeCmd,shell=True).wait()
 
 
     # Create list of the genes that were successfully annotated by diamond
 gene_annot__ids = {}
-with open(annot_file,'r') as annot_data:
+with open(annot_db,'r') as annot_data:
     for line in annot_data.readlines():
         (gene_ID,gene_annot) = line.split('\t', 1) # keep two first fields of file
         gene_annot__ids[gene_ID.strip()] = gene_annot.strip()

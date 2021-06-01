@@ -51,8 +51,8 @@ rule annotate:
 # Map each sample .fastq to Predicted ORFs .fna
 rule map_diet:
     input:
-        fna_orf="{projectpath}/MDI_01-Predict/{group}/{group}.predORFs.fna'" # works as gene catalogue
-        fq_dir="{projectpath}/MDI_00-InputData/{group}/mag_unmapped_fq" # directory to be created in .py launcher
+        fna_orf="{projectpath}/MDI_01-Predict/{group}/{group}.predORFs.fna" # works as gene catalogue
+        fq_dir="{projectpath}/MDI_00-InputData/{group}/mag_unmapped_fq" # directory to be created in .py launcher - soft link to files
     output:
         directory("{projectpath}/MDI_03-MapToGC/{group}")
     params:
@@ -64,7 +64,7 @@ rule map_diet:
     """
 
 
-# QUANITFY
+# QUANITFY ######### check again soon 
 # Get number of mapped reads per GENE
 rule quantify_diet:
     input:

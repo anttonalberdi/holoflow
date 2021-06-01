@@ -33,7 +33,7 @@ with open(str(log),'a+') as logi:
     logi.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\t - '+ID+'\n')
     logi.write('   \n\n')
 
-# index gene catalogue file
+# index gene catalogue file: .fna predicted sequences by prodigal
 if not os.path.exists(fna+'.fai'):
     idxsamCmd='module load tools samtools/1.11 && samtools faidx '+fna+''
     idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+fna+''
@@ -44,7 +44,7 @@ if not os.path.exists(fna+'.fai'):
 
 
 if os.path.exists(fna+'.amb'):
-# Get read1 and read2 paths
+# Get read1 and read2 paths #### reads that were not mapped to MAGs
     reads1=glob.glob(fq_dir+'/*_1.fastq.gz')
 
     for read1 in reads1:
