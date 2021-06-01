@@ -14,6 +14,7 @@ The main *holoflow* directory contains a given number of Python scripts which wo
   - ***metagenomics_CB.py***  - Coassembly-based analysis and metagenomics binning. 
   - ***metagenomics_DR.py***  - Dereplication and Annotation of metagenomic bins produced by either *metagenomics_IB* or *metagenomics_CB*. 
   - ***metagenomics_FS.py***  - Final statistical report of dereplicated bins obtained with *metagenomics_DR.py*. 
+  - ***metagenomics_AB.py***  - Functional annotation of (co-)assembly file with DRAM.  
   - ***genomics.py***         - Variant calling, Phasing (for HD) and Imputation (for LD) with *genomics.py*. 
 
   
@@ -25,21 +26,20 @@ REQUIRED ARGUMENTS:
   -d WORK_DIR         Output directory.
   -t THREADS          Thread maximum number to be used by Snakemake.
   -W REWRITE          Wants to re-run the worfklow from scratch: remove all directories previous runs. - NOT IN PREPAREGENOMES.
-  [{-g REF_GENOME}]   Reference genome(s) file path to be used in read mapping. Unzipped for genomics.
-  {-adapter1 ADAPTER1} Adapter sequence 1 for removal.
-  {-adapter2 ADAPTER2} Adapter sequence 2 for removal.
-  [-Q DATA QUALITY]    Low depth (LD) or High depth (HD) data set.
-  [-vc VAR CALLER]     Variant caller to choose: 1 {bcftools/samtools}, 2 {GATK}, 3 {ANGSD}.
-  ([-N JOB ID])        ID of the sent job, so another different-N-job can be run simultaneously.
+  -g REF_GENOME   Reference genome(s) file path to be used in read mapping. Unzipped for genomics. - only in PREPROCESSING, GENOMICS.  
+  -adapter1 ADAPTER1 Adapter sequence 1 for removal. - only in PREPROCESSING.
+  -adapter2 ADAPTER2 Adapter sequence 2 for removal. - only in PREPROCESSING. 
+  -Q DATA QUALITY]     Low depth (LD) or High depth (HD) data set. - only in GENOMICS.
+  -vc VAR CALLER       Variant caller to choose: 1 {bcftools/samtools}, 2 {GATK}, 3 {ANGSD}. - only in GENOMICS.
+  -N JOB ID            ID of the sent job, so another different-N-job can be run simultaneously. - only in GENOMICS, METAGENOMICS IB, AB.
 
 OPTIONAL ARGUMENTS:
-  [-r REF_PANEL]      Reference panel necessary for likelihoods update and imputation of LD variants.
+  -r REF_PANEL        Reference panel necessary for likelihoods update and imputation of LD variants. - only in GENOMICS.
   -k KEEP_TMP         If present, keep temporal directories - NOT IN PREPAREGENOMES.
   -l LOG              Desired pipeline log file path.
   -c CONFIG           Configuration file full path.
   
 ```  
-**{only in PREPROCESSING}**, **[only in GENOMICS]**, **(only in METAGENOMICS INDIVIDUAL BINNING)**
  
  
 ### Config files description
@@ -132,6 +132,19 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
 | DrepGroup2 | /home/PPR_03-MappedToReference/Sample2 | /home/MDR_01-BinDereplication/Sample2/dereplicated_genomes | /home/MDR_02-BinAnnotation/DrepGroup3/bin_funct_annotations |
 
 
+##### *metagenomics_AB.py*
+
+  1. (Co-)Assembly or group ID.   
+  2. Path to assembly file.  
+  
+- Example:
+
+|   |   |   |
+| --- | --- | --- |
+| GroupA | /home/dir/assembly_A.fa |
+| GroupB | /home/second/dir/assembly_B.fna.gz |
+
+
 ##### *genomics.py*
 
   1. Sample group name to analyse.  
@@ -192,7 +205,10 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   2. Obtaining coverage statistics of contigs and MAGs in used samples.
   3. Retrieve quality statistics (CheckM) and summary plot of the MAGs.
   4. Get coverage of KEGG KO single-copy core genes in MAGs. 
-  
+
+#### Metagenomics - Assembly Based
+- *Snakefile* - which contains rules for:
+  1. DRAM functional annotation and distilling of an assembly file.   
   
 #### Genomics
 - *Snakefile* - which contains rules for:  
