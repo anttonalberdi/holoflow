@@ -1,0 +1,3 @@
+#Group_ID, Assembly_path, MAG_unmappedReads_path
+# By now, we use the full assembly, at some point, will use only reads not included in binning.
+Cavia_samples home/path/cavia/assembly.fa home/path/cavia/not_mapped_MAG

@@ -1,6 +1,9 @@
+#Group_ID, Assembly_path, MAG_unmappedReads_path
+# By now, we use the full assembly, at some point, will use only reads not included in binning.
+#Cavia_samples home/path/cavia/assembly.fa home/path/cavia/not_mapped_MAG
+
 import argparse
 import subprocess
-import glob
 import os
 import sys
 
@@ -28,20 +31,19 @@ curr_dir = os.path.abspath(file)
 
 # If the user does not specify a config file, provide default file in GitHub
 if not (args.config_file):
-    config = os.path.join(os.path.abspath(curr_dir),"workflows/metagenomics/final_stats/config.yaml")
+    config = os.path.join(os.path.abspath(curr_dir),"workflows/metagenomics/dietary_analysis/config.yaml")
 else:
     config=args.config_file
-
 # If the user does not specify a log file, provide default path
 if not (args.log):
-    log = os.path.join(path,"Holoflow_final_stats.log")
+    log = os.path.join(path,"Holoflow_DietaryAnalysis_metagenomics.log")
 else:
     log=args.log
+
 
     # Load dependencies
 loaddepCmd='module unload gcc && module load tools anaconda3/4.4.0'
 subprocess.Popen(loaddepCmd,shell=True).wait()
-
 
     #Append current directory to .yaml config for standalone calling
     # see preprocessing.py for verbose description
@@ -54,15 +56,12 @@ with open(str(config), 'r') as config_file:
         data = {}
 
 with open(str(config), 'w') as config_file:
+    # Find the databases installed by Bent Petersen for annotation of predicted ORFs
+    data['db_dir'] = str('path_tospecify')
     data['threads'] = str(cores)
     data['holopath'] = str(curr_dir)
     data['logpath'] = str(log)
-    data['KO_DB'] = str('/home/databases/ku-cbd/aalberdi/prokka2kegg/idmapping_KO.tab.gz')
-    data['KO_list'] = str(curr_dir+'/workflows/metagenomics/final_stats/KO_list.txt')
     dump = yaml.dump(data, config_file)
-
-
-
 
 ###########################
 ## Functions
@@ -73,11 +72,11 @@ with open(str(config), 'w') as config_file:
     ###########################
     ###### METAGENOMIC FUNCTIONS
 
-def in_out_final_stats(path,in_f):
+def in_out_dietary_analysis(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
     # Define input directory and create it if not exists "00-InputData"
-    in_dir = os.path.join(path,"MFS_00-InputData")
+    in_dir = os.path.join(path,"MDI_00-InputData")
 
     if not os.path.exists(in_dir):
         os.makedirs(in_dir)
@@ -90,104 +89,75 @@ def in_out_final_stats(path,in_f):
 
         # Define variables
         output_files=''
-        final_temp_dir="MFS_04-KOAbundances"
+        final_temp_dir="MDI_03-Quantify"
 
     for line in lines:
         ### Skip line if starts with # (comment line)
         if not (line.startswith('#')):
 
             line = line.strip('\n').split(' ') # Create a list of each line
-            sample_name=line[0]
-            mtg_reads_dir=line[1]
-            mtg_files = ''.join(glob.glob(mtg_reads_dir+'/*')[1]) # keep only second metagenomic file
-            drep_bins_dir=line[2]
-            annot_dir=line[3]
+            group_name=line[0]
+            assembly_path=line[1]
+            nonmapp_fastq_dir=line[2]
 
-            in_sample = in_dir+'/'+sample_name
-            if os.path.exists(in_sample):
-                in_mtg_files = os.listdir(in_sample+'/metagenomic_reads') # if the dir already exists, save names of files inside
-
-            if args.REWRITE:    # if rewrite, remove directory
-                if os.path.basename(mtg_files) in in_mtg_files: # the directory has not been yet removed: this group's files already exist in dir
-                    rmCmd='rm -rf '+in_sample+''
+            in_group = in_dir+'/'+group_name
+            if os.path.exists(in_group):
+                if args.REWRITE:    # if rewrite, remove directory - start from 0
+                    rmCmd='rm -rf '+in_group+''
                     subprocess.Popen(rmCmd,shell=True).wait()
-                else:                              # the directory has been  removed already by a previous line in the input file
-                    pass                           # belonging to the same group, this is the fill-up round
+                else:               # don't want to rewrite, continue from last rule completed
+                    pass
 
-            if not os.path.exists(in_sample): # if dir not exists either because of REWRITE or bc first time, DO EVERYTHING
-                os.makedirs(in_sample)
-            else:
-                pass
+            if not os.path.exists(in_group): # if dir not exists either because of REWRITE or bc first time, DO EVERYTHING
+                os.makedirs(in_group)
+
 
             # Define output files based on input.txt
-            output_files+=path+'/'+final_temp_dir+'/'+sample_name+' '
+            output_files+=path+'/'+final_temp_dir+'/'+group_name+' '
 
-            # Define input dir
-            in1=in_sample+'/metagenomic_reads'
+            # Soft link from assembly file
+            a_file = in_group+'/'+'group_name.fna'
+            if not os.path.isfile(a_file):
+                linkAssemblyCmd = 'ln -s '+assembly_path+' '+in_group+''
+                subprocess.Popen(linkAssemblyCmd,shell=True).wait()
+
+            # Link .fastq files of non-MAG mapped reads to subdir
+            input_nonmapp_dir = in_group+'/'+'mag_unmapped_fastq'
+
             # Check if input files already in desired dir
-            if os.path.exists(in1):
+            if os.path.exists(input_nonmapp_dir):
                 try:    # try to create the link - if the link already exists ... -> TRY/Except is to avoid exception errors
-                    mvreadsCmd = 'ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
+                    mvreadsCmd = 'ln -s '+nonmapp_fastq_dir+'/*notMAGmap*fastq* '+input_nonmapp_dir+''
                     subprocess.Popen(mvreadsCmd, shell=True).wait()
                 except: # ... it won't be created, but pass
                     pass
             else:
-                mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
+                mvreadsCmd = 'mkdir '+input_nonmapp_dir+' && ln -s '+nonmapp_fastq_dir+'/*notMAGmap*fastq* '+input_nonmapp_dir+''
                 subprocess.Popen(mvreadsCmd, shell=True).wait()
-
-# same for the two other directories that have to be created for input
-
-            # Define input dir
-            in2=in_sample+'/dereplicated_bins'
-            # Check if input files already in desired dir
-            if os.path.exists(in2):
-                try:
-                    mvbinsCmd = 'ln -s '+drep_bins_dir+'/*.fa '+in2+' && cp '+drep_bins_dir+'/../final_bins_Info.csv '+in2+' && cp '+drep_bins_dir+'/../data_tables/Widb.csv '+in2+''
-                    subprocess.Popen(mvbinsCmd, shell=True).wait()
-                except:
-                    pass
-            else:
-                mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+' && cp '+drep_bins_dir+'/../final_bins_Info.csv '+in2+' && cp '+drep_bins_dir+'/../data_tables/Widb.csv '+in2+''
-                subprocess.Popen(mvbinsCmd, shell=True).wait()
-
-            # Define input dir
-            in3=in_sample+'/annotation'
-            # Check if input files already in desired dir
-            if os.path.exists(in3):
-                try:
-                    mvgffCmd = 'ln -s '+annot_dir+'/*.gff '+in3+''
-                    subprocess.Popen(mvgffCmd, shell=True).wait()
-                except:
-                    pass
-            else:
-                mvgffCmd = 'mkdir '+in3+' && ln -s '+annot_dir+'/*.gff '+in3+''
-                subprocess.Popen(mvgffCmd, shell=True).wait()
-
 
     return output_files
 
 
-
-def run_final_stats(in_f, path, config, cores):
+def run_dietary_analysis(in_f, path, config, cores):
     """Run snakemake on shell, wait for it to finish.
     Given flag, decide whether keep only last directory."""
 
     # Define output names
-    out_files = in_out_final_stats(path,in_f)
+    out_files = in_out_dietary_analysis(path,in_f)
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
-    path_snkf = os.path.join(holopath,'workflows/metagenomics/final_stats/Snakefile')
+    path_snkf = os.path.join(holopath,'workflows/metagenomics/dietary_analysis/Snakefile')
 
     # Run snakemake
     log_file = open(str(log),'w+')
-    log_file.write("Have a nice run!\n\t\tHOLOFOW Final Stats starting")
+    log_file.write("Have a nice run!\n\t\tHOLOFOW Dietary Analysis starting")
     log_file.close()
 
-    final_stats_snk_Cmd = 'module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
-    subprocess.Popen(final_stats_snk_Cmd, shell=True).wait()
+    dietary_analysis_snk_Cmd = 'module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
+    #subprocess.Popen(dietary_analysis_snk_Cmd, shell=True).wait()
 
     log_file = open(str(log),'a+')
-    log_file.write("\n\t\tHOLOFOW Final Stats has finished :)")
+    log_file.write("\n\t\tHOLOFOW Dietary Analysis has finished :)")
     log_file.close()
 
     # Keep temp dirs / remove all
@@ -199,7 +169,7 @@ def run_final_stats(in_f, path, config, cores):
             exist.append(os.path.isfile(file))
 
         if all(exist): # all output files exist
-            rmCmd='cd '+path+' | grep -v '+final_temp_dir+' | xargs rm -rf && mv '+final_temp_dir+' MFS_Holoflow'
+            rmCmd='cd '+path+' | grep -v '+final_temp_dir+' | xargs rm -rf && mv '+final_temp_dir+' MDI_Holoflow'
             subprocess.Popen(rmCmd,shell=True).wait()
 
         else:   # all expected output files don't exist: keep tmp dirs
@@ -216,4 +186,4 @@ def run_final_stats(in_f, path, config, cores):
 
 
 # 1    # Final Stats workflow
-run_final_stats(in_f, path, config, cores)
+run_dietary_analysis(in_f, path, config, cores)

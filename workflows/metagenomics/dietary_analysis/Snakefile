@@ -64,7 +64,7 @@ rule map_diet:
     """
 
 
-# QUANITFY ######### check again soon 
+# QUANITFY ######### check again soon
 # Get number of mapped reads per GENE
 rule quantify_diet:
     input:
