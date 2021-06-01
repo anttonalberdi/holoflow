@@ -46,7 +46,7 @@ refgenomes:
     # These values correspond to the default options for bwa mem, customise if desired
 t:
   40
-  # Either: loose / semistringent / superstringent. Correspond to 19, 30, 50 respectively.
+  # Either: loose / semistringent / superstringent. Correspond to 19, 21, 23 respectively.
   # Default loose{19}
 k:
   'loose'
