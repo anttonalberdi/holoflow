@@ -115,7 +115,6 @@ if not os.path.exists(out_dir):
 
         else: # Chromosomes specified
 
-            print('This should not be printed')
 
             if not (multicaller == 'False'):
                 bcf1Cmd = 'module load bcftools/1.12 && bcftools mpileup -C '+degr_mqual+' -q '+min_mqual+' -Q '+min_bqual+' -Ou  -f '+ref_g+' -r '+CHR+' -b '+bam_list_file+' | bcftools call -m -v -Oz -o '+mpileup_output+''
