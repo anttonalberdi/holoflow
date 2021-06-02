@@ -1,7 +1,4 @@
-#Group_ID, Assembly_path, MAG_unmappedReads_path
-# By now, we use the full assembly, at some point, will use only reads not included in binning.
-#Cavia_samples home/path/cavia/assembly.fa home/path/cavia/not_mapped_MAG
-
+# 02.06.21
 import argparse
 import subprocess
 import os
@@ -57,7 +54,7 @@ with open(str(config), 'r') as config_file:
 
 with open(str(config), 'w') as config_file:
     # Find the databases installed by Bent Petersen for annotation of predicted ORFs
-    data['db_dir'] = str('path_tospecify')
+    data['db_dir'] = str('/home/projects/ku-cbd/people/nurher/diet_analysis/Diet_DBs')
     data['threads'] = str(cores)
     data['holopath'] = str(curr_dir)
     data['logpath'] = str(log)
@@ -124,7 +121,7 @@ def in_out_dietary_analysis(path,in_f):
             # Link .fastq files of non-MAG mapped reads to subdir
             input_nonmapp_dir = in_group+'/'+'mag_unmapped_fastq'
 
-            # Check if input files already in desired dir  -> link fastq of non mapped to MAG reads 
+            # Check if input files already in desired dir  -> link fastq of non mapped to MAG reads
             if os.path.exists(input_nonmapp_dir):
                 try:    # try to create the link - if the link already exists ... -> TRY/Except is to avoid exception errors
                     mvreadsCmd = 'ln -s '+nonmapp_fastq_dir+'/*notMAGmap*fastq* '+input_nonmapp_dir+''
@@ -153,8 +150,9 @@ def run_dietary_analysis(in_f, path, config, cores):
     log_file.write("Have a nice run!\n\t\tHOLOFOW Dietary Analysis starting")
     log_file.close()
 
-    dietary_analysis_snk_Cmd = 'module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
-    #subprocess.Popen(dietary_analysis_snk_Cmd, shell=True).wait()
+    print(out_files)
+    dietary_analysis_snk_Cmd = 'module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+' -n -r'
+    subprocess.Popen(dietary_analysis_snk_Cmd, shell=True).wait()
 
     log_file = open(str(log),'a+')
     log_file.write("\n\t\tHOLOFOW Dietary Analysis has finished :)")

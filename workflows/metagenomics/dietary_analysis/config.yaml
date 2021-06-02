@@ -1,0 +1,6 @@
+threads:
+  40
+
+# Write Plants or Invertebrates - or both such as: Invertebrates_Plants or Plants_Invertebrates
+annot_db:
+  'Plants'

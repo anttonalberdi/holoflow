@@ -58,14 +58,14 @@ if not os.path.exists(out_dir):
             in_file_base = var_dir+'/'+ID+'.SNPs_'+CHR+in_extension
             bgl_out_base = out_dir+'/'+ID+'.probs_'+CHR
 
-            bglCmd = 'module load java/1.8.0 anaconda3/4.4.0 && java  -jar /services/tools/beagle/4.1/beagle.27Jul16.86a.jar gl='+in_file_base+' ref='+ref_panel+' chrom='+CHR+' gprobs=true out='+bgl_out_base+''
+            bglCmd = 'module load java/1.8.0 anaconda3/4.4.0 && java -Xss5m -jar /services/tools/beagle/4.1/beagle.27Jul16.86a.jar gl='+in_file_base+' ref='+ref_panel+' chrom='+CHR+' gprobs=true out='+bgl_out_base+''
             subprocess.Popen(bglCmd,shell=True).wait()
 
             # Index and set genotypes in output
             bgl_out = bgl_out_base+'.vcf.gz'
             filt_out = out_dir+'/'+ID+'.probs_filt.vcf'
 
-            bcfCmd = 'module load tools bcftools/1.11 && bcftools index '+bgl_out+' && bcftools +setGT '+bgl_out+' -- -t -q -n . -e "FORMAT/GP>=0.99" > '+filt_out+' && bgzip '+filt_out+''
+            bcfCmd = 'module load tools bcftools/1.11 && bcftools index '+bgl_out+' && bcftools +setGT '+bgl_out+' -- -t -q -n . -e "FORMAT/GP>=0.99" > '+filt_out+' && bgzip -f '+filt_out+''
             subprocess.Popen(bcfCmd,shell=True).wait()
         except:
             lnsCmd='ln -s '+in_file_base+' '+out_dir+'' # likelihoods were not updated, keep original

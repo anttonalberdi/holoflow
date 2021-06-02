@@ -55,5 +55,5 @@ if not os.path.exists(out_dir):
         bgl_out = bgl_out_base+'.vcf.gz'
         bcf_out = out_dir+'/'+ID+'.imputed_filt_'+CHR+'.vcf'
 
-        bcfCmd = 'module load bcftools/1.11 && bcftools index '+bgl_out+' && bcftools +setGT '+bgl_out+' -- -t q -n . -e"FORMAT/GP>=0.99" > '+bcf_out+' && bgzip '+bcf_out+''
+        bcfCmd = 'module load bcftools/1.11 && bcftools index '+bgl_out+' && bcftools +setGT '+bgl_out+' -- -t q -n . -e"FORMAT/GP>=0.99" > '+bcf_out+' && bgzip -f '+bcf_out+''
         subprocess.Popen(bcfCmd,shell=True).wait()

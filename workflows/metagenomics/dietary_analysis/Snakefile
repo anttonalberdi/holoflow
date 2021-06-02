@@ -25,9 +25,9 @@ rule predict:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
-    """
-    python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_pred.py -a {input.assembly} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
-    """
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_pred.py -a {input.assembly} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """
 
 # 3. Diamond map these orfs to UNIPROT {Only eukaryotic entries . Lasse }
 rule annotate:
@@ -41,9 +41,9 @@ rule annotate:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
-    """
-    python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_annot.py -faa {input} -out_dir {output} -db_names {params.annot_db} -db_dir {params.db_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
-    """
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_annot.py -faa {input} -out_dir {output} -db_names {params.annot_db} -db_dir {params.db_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """
 
 
 # MAP
@@ -51,7 +51,7 @@ rule annotate:
 # Map each sample .fastq to Predicted ORFs .fna
 rule map_diet:
     input:
-        fna_orf="{projectpath}/MDI_01-Predict/{group}/{group}.predORFs.fna" # works as gene catalogue
+        fna_orf="{projectpath}/MDI_01-Predict/{group}/{group}.predORFs.fna", # works as gene catalogue
         fq_dir="{projectpath}/MDI_00-InputData/{group}/mag_unmapped_fq" # directory to be created in .py launcher - soft link to files
     output:
         directory("{projectpath}/MDI_03-MapToGC/{group}")
@@ -59,16 +59,16 @@ rule map_diet:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
-    """
-    python {rules.get_paths.input.holopath}/bin/holo-diet_map_GC.py -fna {input.fna_orf} -fq_dir {input.fq_dir} -out_dir {output} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
-    """
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-diet_map_GC.py -fna {input.fna_orf} -fq_dir {input.fq_dir} -out_dir {output} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
+        """
 
 
 # QUANITFY ######### check again soon
 # Get number of mapped reads per GENE
 rule quantify_diet:
     input:
-        annot_dir="{projectpath}/MDI_02-Annotate/{group}"
+        annot_dir="{projectpath}/MDI_02-Annotate/{group}",
         bam_dir="{projectpath}/MDI_03-MapToGC/{group}"
     output:
         directory("{projectpath}/MDI_03-Quantify/{group}")
@@ -76,6 +76,6 @@ rule quantify_diet:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
-    """
-    python {rules.get_paths.input.holopath}/bin/holo-diet_quantify.py -annot_dir {input.annot_dir} -bam_dir {input.bam_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
-    """
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-diet_quantify.py -annot_dir {input.annot_dir} -bam_dir {input.bam_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """

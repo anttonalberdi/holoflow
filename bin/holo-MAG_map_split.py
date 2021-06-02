@@ -81,12 +81,10 @@ if not os.path.exists(out_dir):
                 # Split bams into MAGs
                 # Now BAM headers are only the contig ID - Removed MAG_ID-
                     samtoolsCmd='module load tools samtools/1.11 && samtools view -h '+bam+' | grep "'+mag_ID+'-" | sed "s/'+mag_ID+'-//" | samtools view -bS - | htseq-count -t CDS -r pos -f bam - '+gtf+' > '+sample_counts_tmp+''
-                    print(samtoolsCmd)
                     subprocess.Popen(samtoolsCmd,shell=True).wait()
 
                 else:
                     htseqCountsCmd='module load tools && htseq-count -t CDS -r pos -f bam '+new_bam+' '+gtf+' > '+sample_counts_tmp+'' ## ?? --nonunique all ??
-                    print(htseqCountsCmd)
                     subprocess.Popen(htseqCountsCmd,shell=True).wait()
 
 

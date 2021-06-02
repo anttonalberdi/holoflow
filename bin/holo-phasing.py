@@ -51,7 +51,6 @@ if not os.path.exists(out_dir):
         output = out_dir+'/'+ID+'_'+CHR+'.filt_phased.vcf.gz'
 
         # Plink filtration of SNPs before phasing
-
         plink1Cmd='module load plink2/1.90beta6.17 && plink --vcf '+input+' --double-id --make-bed --allow-extra-chr --keep-allele-order  --real-ref-alleles --set-missing-var-ids "@:#\$1,\$2" --out '+plink_tmp_output_base+''
         subprocess.Popen(plink1Cmd,shell=True).wait()
 
@@ -75,3 +74,15 @@ if not os.path.exists(out_dir):
         # Index phased panel
         idxCmd='module load tabix/1.2.1 && tabix '+output+''
         subprocess.Popen(idxCmd,shell=True).wait()
+
+
+    # Concatenate all CHR phased files into one ref panel
+    ref_panel_phased = out_dir+'/'+ID+'_RefPanel-Phased.vcf.gz'
+    phased_files = glob.glob(out_dir+'/'+ID+'_*filt_phased.vcf.gz')
+    files_to_concat = out_dir+'/'+ID+'_files_to_concat.txt'
+    with open(files_to_concat,'w+') as concat:
+        for file in phased_files:
+            concat.write(file.strip()+'\n')
+
+    # make sure chr in same order chr list
+    concatCmd= 'module load bcftools/1.11  && bcftools concat -f '+files_to_concat+' -Oz -o '+ref_panel_phased+' && rm '+files_to_concat+''

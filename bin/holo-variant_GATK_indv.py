@@ -68,7 +68,7 @@ if not os.path.exists(out_dir):
         if '_ref' in bam_ID:
             bam_ID = bam_ID.replace('_ref','')
 
-        # Index bam with picard
+        # Index bam with samtools
         if not os.path.isfile(bam+'.bai'):
             idxCmd = 'module load tools samtools/1.11 && samtools index '+bam+''
             subprocess.Popen(idxCmd,shell=True).wait()

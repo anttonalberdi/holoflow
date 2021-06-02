@@ -55,7 +55,7 @@ if not os.path.exists(out_dir):
     with open(chr_list,'r+') as chr_data:
         for chr in chr_data.readlines():
             if chr.strip() == 'ALL':
-                all_genome_atonce = True 
+                all_genome_atonce = True
             else:
                 pass
             chromosome_list.append(chr.strip())
@@ -81,7 +81,7 @@ if not os.path.exists(out_dir):
             bgl_out = bgl_out_base+'.vcf.gz'
             filt_out = out_dir+'/'+ID+'.probs_filt.vcf'
 
-            bcfCmd = 'module load tools bcftools/1.11 && bcftools index '+bgl_out+' && bcftools +setGT '+bgl_out+' -- -t -q -n . -e "FORMAT/GP>=0.99" > '+filt_out+' && bgzip '+filt_out+''
+            bcfCmd = 'module load tools bcftools/1.11 && bcftools index '+bgl_out+' && bcftools +setGT '+bgl_out+' -- -t -q -n . -e "FORMAT/GP>=0.99" > '+filt_out+' && bgzip -f '+filt_out+''
             subprocess.Popen(bcfCmd,shell=True).wait()
 
 

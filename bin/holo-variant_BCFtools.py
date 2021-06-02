@@ -65,7 +65,6 @@ if not os.path.exists(out_dir):
         for bam in bam_list:
             bam_files.write(str(bam)+'\n')
 
-
             if not os.path.isfile(bam+'.bai'): # If not indexed, index bam - Theoretically these are sorted from preprocessing
                 idxbamCmd = 'module load tools samtools/1.12 && samtools index '+bam+''
                 subprocess.Popen(idxbamCmd,shell=True).wait()
