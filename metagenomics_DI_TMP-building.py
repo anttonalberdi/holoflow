@@ -124,7 +124,7 @@ def in_out_dietary_analysis(path,in_f):
             # Link .fastq files of non-MAG mapped reads to subdir
             input_nonmapp_dir = in_group+'/'+'mag_unmapped_fastq'
 
-            # Check if input files already in desired dir
+            # Check if input files already in desired dir  -> link fastq of non mapped to MAG reads 
             if os.path.exists(input_nonmapp_dir):
                 try:    # try to create the link - if the link already exists ... -> TRY/Except is to avoid exception errors
                     mvreadsCmd = 'ln -s '+nonmapp_fastq_dir+'/*notMAGmap*fastq* '+input_nonmapp_dir+''

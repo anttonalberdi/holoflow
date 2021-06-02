@@ -48,7 +48,7 @@ if os.path.isfile(a):
 # includes all annotation information about every gene from all MAGs. Each line is a different gene and each column contains annotation
 # information. trnas.tsv contains a summary of the tRNAs found in each MAG.
 
-    # Call Rscript to generate sub-trees
+    # Call Rscript to make functional annotation with DRAM
     file = os.path.dirname(sys.argv[0])
     curr_dir = os.path.abspath(file)
 

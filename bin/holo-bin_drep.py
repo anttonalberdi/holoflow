@@ -43,7 +43,7 @@ if not (os.path.exists(str(out_dir))):
     with open(str(''+out_dir+'/final_bins_Info.csv'),'w+') as bin_data:
         bin_data.write('genome,completeness,contamination\n')
 
-        stats_list=glob.glob(str(dt_bd)+"/*_DASTool_summary.txt")
+        stats_list=glob.glob(str(dt_bd)+"/*_DASTool_summary.txt") # recover all stats files  from DASTool of all bin groups that want to be drep together
         for file in stats_list:
             with open(str(file),'r') as summary:
                 summary_data=summary.readlines()
