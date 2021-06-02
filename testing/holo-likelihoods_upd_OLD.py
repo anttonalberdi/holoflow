@@ -48,16 +48,8 @@ if not os.path.exists(out_dir):
 
     # Run Beagle per chromosome
     chromosome_list = list()
-    # if the reference genome is not split by chromosomes but by scaffolds (for example)
-    # remove -r region option and analyse all at once.
-    # For this, chr_list will have only ONE row with 'ALL'
-    all_genome_atonce = False
     with open(chr_list,'r+') as chr_data:
         for chr in chr_data.readlines():
-            if chr.strip() == 'ALL':
-                all_genome_atonce = True
-            else:
-                pass
             chromosome_list.append(chr.strip())
 
     for CHR in chromosome_list:
@@ -66,16 +58,8 @@ if not os.path.exists(out_dir):
             in_file_base = var_dir+'/'+ID+'.SNPs_'+CHR+in_extension
             bgl_out_base = out_dir+'/'+ID+'.probs_'+CHR
 
-            if not all_genome_atonce: # Chromosomes specified
-
-                bglCmd = 'module load java/1.8.0 anaconda3/4.4.0 && java  -jar /services/tools/beagle/4.1/beagle.27Jul16.86a.jar gl='+in_file_base+' ref='+ref_panel+' chrom='+CHR+' gprobs=true out='+bgl_out_base+''
-                subprocess.Popen(bglCmd,shell=True).wait()
-
-            if all_genome_atonce: # No chromosomes specified in genome
-
-                bglCmd = 'module load java/1.8.0 anaconda3/4.4.0 && java  -jar /services/tools/beagle/4.1/beagle.27Jul16.86a.jar gl='+in_file_base+' ref='+ref_panel+' gprobs=true out='+bgl_out_base+''
-                subprocess.Popen(bglCmd,shell=True).wait()
-
+            bglCmd = 'module load java/1.8.0 anaconda3/4.4.0 && java -Xss5m -jar /services/tools/beagle/4.1/beagle.27Jul16.86a.jar gl='+in_file_base+' ref='+ref_panel+' chrom='+CHR+' gprobs=true out='+bgl_out_base+''
+            subprocess.Popen(bglCmd,shell=True).wait()
 
             # Index and set genotypes in output
             bgl_out = bgl_out_base+'.vcf.gz'
@@ -83,8 +67,6 @@ if not os.path.exists(out_dir):
 
             bcfCmd = 'module load tools bcftools/1.11 && bcftools index '+bgl_out+' && bcftools +setGT '+bgl_out+' -- -t -q -n . -e "FORMAT/GP>=0.99" > '+filt_out+' && bgzip -f '+filt_out+''
             subprocess.Popen(bcfCmd,shell=True).wait()
-
-
         except:
             lnsCmd='ln -s '+in_file_base+' '+out_dir+'' # likelihoods were not updated, keep original
             subprocess.Popen(lnsCmd,shell=True).wait()
