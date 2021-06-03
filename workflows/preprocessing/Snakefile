@@ -28,7 +28,6 @@ rule in_reformat:
 ##
 # Quality-filtering
 ##
-
 rule qual_filt:
     input:
         read1="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.gz",
@@ -51,7 +50,9 @@ rule qual_filt:
         """
 
 
-
+##
+# Duplicates removal
+##
 rule dup_rem_paired:
     input:
       read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq.gz",
@@ -118,6 +119,9 @@ rule map_ref:
         python {rules.get_paths.input.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {params.refgenomes} -obam {output} -t {params.t} -M {params.M} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
+##
+# Split bam file into metagenomic reads and host bam 
+##
 rule map_ref_split:
     input:
         all_bam="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam",
