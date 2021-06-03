@@ -38,40 +38,26 @@ stats=args.stats
 
 
 # Run
+
+# write to stats
 statsfile=open(str(stats),"w+")
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 statsfile.write("Statistic\tValue \r\n".format(current_time))
-
-if (os.path.exists(read1i)):
-    compressCmd1='gunzip '+read1i+' & gunzip '+read2i+''
-    subprocess.Popen(compressCmd1,shell=True).wait()
-    read1i = read1i.replace('.gz','')
-    read2i = read2i.replace('.gz','')
-
 
 #Get initial stats
 reads = 0
 bases = 0
 #If gzipped
-if str(read1i).endswith('.gz'):
-    with gzip.open(str(read1i), 'rb') as read:
-        for id in read:
+with gzip.open(str(read1i), 'rt') as read:
+    for id in read:
+        try:
             seq = next(read)
             reads += 1
             bases += len(seq.strip())*2
             next(read)
             next(read)
-else:
-    with open(str(read1i), 'rb') as read:
-        for id in read:
-            try:
-                seq = next(read)
-                reads += 1
-                bases += len(seq.strip())*2
-                next(read)
-                next(read)
-            except:
-                break
+        except:
+            break
 statsfile.write("Input reads\t{0} ({1} bases)\r\n".format(reads,bases))
 statsfile.close()
 
@@ -80,7 +66,6 @@ statsfile.close()
 with open(str(log),'a+') as log:
     log.write('\tHOLOFLOW\tPREPROCESSING\n\t\t'+current_time+'\tQuality Filtering step\n')
     log.write('Those reads with a minimum quality of '+minq+' are being removed.\nThe sequencing adapters of all reads as well.\n\n')
-
 
 
 
@@ -124,10 +109,6 @@ with gzip.open(str(read1o), 'rt') as read:
         except:
             break
 
-# re-compress inputs
-if (os.path.exists(read1o)):
-    compressCmd2='gzip '+read1i+' & gzip '+read2i+''
-    subprocess.Popen(compressCmd2,shell=True).wait()
 
 #Print stats to stats file
 statsfile=open(str(str(stats)),"a+")

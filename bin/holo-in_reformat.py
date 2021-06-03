@@ -110,5 +110,8 @@ if not (os.path.exists(str(read1o))):
 
 
 if (os.path.exists(read2o)):
+
+
+    # compress and remove
     compressCmd2='rm '+read1i+' '+read2i+' && gzip '+read1o+' '+read2o+''
     subprocess.Popen(compressCmd2,shell=True).wait()

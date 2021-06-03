@@ -40,46 +40,34 @@ with open(str(log),'a+') as log:
     log.write('\t\t'+current_time+'\tDuplicates Removal step - '+ID+'\n')
     log.write('Duplicate sequences are being removed.\n\n')
 
-# de -compress inputs
-if (os.path.exists(read1)):
-    compressCmd1='gunzip '+read1+' & gunzip '+read2+''
-    subprocess.Popen(compressCmd1,shell=True).wait()
-    read1 = read1.replace('.gz','')
-    read2 = read2.replace('.gz','')
-    output = output.replace('.gz','')
-
+# compressed input and outputs
 # all different conditions for different variables in config that can be used, modified or not used at all. Not very optimal
 if by_seq == 'True':
     if (not file_to_dups == 'False') and (ignore == 'True'):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -i -D '+file_to_dups+' -o '+ output+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' <(zcat '+read1+') <(zcat '+read2+') | seqkit -j 40 rmdup -s -i -D '+file_to_dups+' -o '+ output+''
 
     elif (not file_to_dups == 'False') and (ignore == 'False'):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -D '+file_to_dups+' -o '+ output+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' <(zcat '+read1+') <(zcat '+read2+') | seqkit -j 40 rmdup -s -D '+file_to_dups+' -o '+ output+''
 
     elif (file_to_dups == 'False') and (ignore == 'True'):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -i -o '+ output+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' <(zcat '+read1+') <(zcat '+read2+') | seqkit -j 40 rmdup -s -i -o '+ output+''
 
     else:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -s -o '+ output+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' <(zcat '+read1+') <(zcat '+read2+') | seqkit -j 40 rmdup -s -o '+ output+''
 
 
 
 if by_name == 'True':
     if (not file_to_dups == 'False') and (ignore == 'True'):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -i -D '+file_to_dups+' -o '+output+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' <(zcat '+read1+') <(zcat '+read2+') | seqkit -j 40 rmdup -n -i -D '+file_to_dups+' -o '+output+''
 
     elif (not file_to_dups == 'False') and (ignore == 'False'):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -D '+file_to_dups+' -o '+output+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' <(zcat '+read1+') <(zcat '+read2+') | seqkit -j 40 rmdup -n -D '+file_to_dups+' -o '+output+''
 
     elif (file_to_dups == 'False') and (ignore == 'True'):
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -i -o '+output+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' <(zcat '+read1+') <(zcat '+read2+') | seqkit -j 40 rmdup -n -i -o '+output+''
 
     else:
-        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' '+read1+' '+read2+' | seqkit -j 40 rmdup -n -o '+output+''
+        seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' <(zcat '+read1+') <(zcat '+read2+') | seqkit -j 40 rmdup -n -o '+output+''
 
 subprocess.check_call(seqkitCmd, shell=True)
-
-
-if (os.path.isfile(output)): # it's actually a file
-    compressCmd2='gzip '+read1+' & gzip '+read2+' & gzip '+output+''
-    subprocess.Popen(compressCmd2,shell=True).wait()
