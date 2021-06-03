@@ -63,7 +63,7 @@ if not os.path.exists(out_dir):
     for CHR in chromosome_list:
         try:
 
-            in_file_base = var_dir+'/'+ID+'.SNPs_'+CHR+in_extension
+            in_file_base = var_dir+'/'+ID+'.LD_SNPs_'+CHR+in_extension
             bgl_out_base = out_dir+'/'+ID+'.probs_'+CHR
 
             if not all_genome_atonce: # Chromosomes specified
