@@ -20,14 +20,15 @@ rule predict:
     input:
         assembly="{projectpath}/MDI_00-InputData/{group}/{group}.fa"
     output:
-        "{projectpath}/MDI_01-Predict/{group}/{group}.ptranslations.faa"
+        proteins = "{projectpath}/MDI_01-Predict/{group}/{group}.ptranslations.faa",
+        nucl = "{projectpath}/MDI_01-Predict/{group}/{group}.predORFs.fna",
+        coords = "{projectpath}/MDI_01-Predict/{group}/{group}.coords.gff"
     params:
         threads=expand("{threads}", threads=config['threads']),
-        out_dir="{projectpath}/MDI_01-Predict/{group}",
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_pred.py -a {input.assembly} -out_dir {params.out_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_pred.py -a {input.assembly} -faa {output.proteins} -fna {output.nucl} -coords {output.coords} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 # 3. Diamond map these orfs to UNIPROT {Only eukaryotic entries . Lasse }
@@ -52,16 +53,16 @@ rule annotate:
 # Map each sample .fastq to Predicted ORFs .fna
 rule map_diet:
     input:
-        fna_orf="{projectpath}/MDI_01-Predict/{group}/{group}.predORFs.fna", # works as gene catalogue
-        fq_dir="{projectpath}/MDI_00-InputData/{group}/mag_unmapped_fq" # directory to be created in .py launcher - soft link to files
+        fna_orf="{projectpath}/MDI_01-Predict/{group}/{group}.predORFs.fna" # works as gene catalogue
     output:
         directory("{projectpath}/MDI_03-MapToGC/{group}")
     params:
+        fq_dir="{projectpath}/MDI_00-InputData/{group}/mag_unmapped_fq", # directory to be created in .py launcher - soft link to files
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-diet_map_GC.py -fna {input.fna_orf} -fq_dir {input.fq_dir} -out_dir {output} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-diet_map_GC.py -fna {input.fna_orf} -fq_dir {params.fq_dir} -out_dir {output} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
         """
 
 

@@ -8,7 +8,9 @@ import time
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-a', help="assembly file", dest="a", required=True)
-parser.add_argument('-out_dir', help="out_dir", dest="out_dir", required=True)
+parser.add_argument('-faa', help="faa file", dest="faa", required=True)
+parser.add_argument('-fna', help="fna file", dest="fna", required=True)
+parser.add_argument('-coords', help="coords file", dest="coords", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
@@ -16,7 +18,9 @@ args = parser.parse_args()
 
 
 a=args.a
-out_dir=args.out_dir
+faa=args.faa
+fna=args.fna
+coords=args.coords
 t=args.threads
 ID=args.ID
 log=args.log
@@ -32,10 +36,7 @@ with open(str(log),'a+') as logi:
 
 
 # Generate .faa and .fna outputs
-out_coords = out_dir+'/'+ID+'.coords.gff'
-ptranslations = out_dir+'/'+ID+'.ptranslations.faa'
-nsequences = out_dir+'/'+ID+'.predORFs.fna'
 
-if not os.path.isfile(ptranslations):
-    prodigalCmd='module unload gcc && module load tools prodigal/2.6.3 && prodigal -i '+a+' -o '+out_coords+' -a '+ptranslations+' -p meta -f gff -d '+nsequences+''
+if not os.path.isfile(faa):
+    prodigalCmd='module unload gcc && module load tools prodigal/2.6.3 && prodigal -i '+a+' -o '+coords+' -a '+faa+' -p meta -f gff -d '+fna+''
     subprocess.check_call(prodigalCmd, shell=True)

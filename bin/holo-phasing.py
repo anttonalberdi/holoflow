@@ -86,3 +86,4 @@ if not os.path.exists(out_dir):
 
     # make sure chr in same order chr list
     concatCmd= 'module load bcftools/1.11  && bcftools concat -f '+files_to_concat+' -Oz -o '+ref_panel_phased+' && rm '+files_to_concat+''
+    subprocess.Popen(concatCmd,shell=True).wait()

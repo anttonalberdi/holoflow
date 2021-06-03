@@ -63,7 +63,7 @@ if args.check_b: # means all binners have bins, either duplicated or own
         # Move definitive bins to final directory
         # Remove '.contigs' from bin ID, which was added by DASTool
         ori_dir=o+"_DASTool_bins"
-        out_dir=o.replace('/'+ID,'')
+        out_dir=o.replace('/A','')
         bins=glob.glob(ori_dir+"/*.fa")
 
         for bin in bins:
@@ -75,7 +75,7 @@ if args.check_b: # means all binners have bins, either duplicated or own
 
         # Move definitive bins to final directory and rest to sub-dir
         # bins in DASTool bins and rest of files in DASTool files && bins out to main dir, remove DASTool bins dir
-        mvCmd='mv '+o+'_DASTool_summary.txt '+ori_dir+' && mv '+ori_dir+' '+ori_dir.replace('_DASTool','')+' && mkdir '+o+'_files && find '+out_dir+' -maxdepth 1 -type f | xargs -I {} mv {} '+o+'_files'# && mv '+ori_dir+'/* '+out_dir+''
+        mvCmd='mv '+o+'_DASTool_summary.txt '+ori_dir+' && mkdir '+o+'_DASTool_files && find '+out_dir+' -maxdepth 1 -type f | xargs -I {} mv {} '+o+'_DASTool_files && mv '+ori_dir+'/* '+out_dir+' && rm -rf '+ori_dir+''
         subprocess.check_call(mvCmd,shell=True)
 
 
@@ -111,13 +111,12 @@ if args.check_b: # means all binners have bins, either duplicated or own
 
         dastoolDependencies='module unload maxbin/2.2.7 fraggenescan/1.31 perl/5.20.2 && module load tools gcc/5.4.0 intel/perflibs/2018 R/3.6.1 ruby/2.6.3 pullseq/1.0.2 perl/5.24.0 ncbi-blast/2.6.0+ prodigal/2.6.3 das_tool/1.1.2 diamond/0.9.24 usearch/11.0.667'
         #dastoolCmd=''+dastoolDependencies+' && DAS_Tool -i '+bt_mxb+','+bt_mtb+' -c '+a+' -o '+o+' --proteins '+p+' -l maxbin,metabat --search_engine '+se+' -t '+t+' --db_directory '+db+' --write_bins 1'
-        dastoolCmd=''+dastoolDependencies+' && DAS_Tool -i '+bt_mxb+','+bt_mtb+' -c '+a+' -o '+o+' -l maxbin,metabat --search_engine '+se+' -t '+t+' --db_directory '+db+' --write_bins 1 && mv '+o+'/'
+        dastoolCmd=''+dastoolDependencies+' && DAS_Tool -i '+bt_mxb+','+bt_mtb+' -c '+a+' -o '+o+' -l maxbin,metabat --search_engine '+se+' -t '+t+' --db_directory '+db+' --write_bins 1'
         subprocess.check_call(dastoolCmd, shell=True)
 
 
         # Remove '.contigs' from bin ID, which was added by DASTool
         ori_dir=o+"_DASTool_bins"
-        out_dir=o.replace('/'+ID,'')
         bins=glob.glob(ori_dir+"/*.fa")
 
         for bin in bins:
@@ -129,7 +128,7 @@ if args.check_b: # means all binners have bins, either duplicated or own
 
         # Move definitive bins to final directory and rest to sub-dir
         # bins in DASTool bins and rest of files in DASTool files && bins out to main dir, remove DASTool bins dir
-        mvCmd='mv '+o+'_DASTool_summary.txt '+ori_dir+' && mv '+ori_dir+' '+ori_dir.replace('_DASTool','')+' && mkdir '+o+'_files && find '+out_dir+' -maxdepth 1 -type f | xargs -I {} mv {} '+o+'_files'# && mv '+ori_dir+'/* '+out_dir+''
+        mvCmd='mv '+o+'_DASTool_summary.txt '+ori_dir+' && mkdir '+o+'_DASTool_files && find '+out_dir+' -maxdepth 1 -type f | xargs -I {} mv {} '+o+'_DASTool_files && mv '+ori_dir+'/* '+out_dir+' && rm -rf '+ori_dir+''
         subprocess.check_call(mvCmd,shell=True)
 
 

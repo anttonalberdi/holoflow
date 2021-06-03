@@ -118,7 +118,7 @@ def in_out_dietary_analysis(path,in_f):
             # Soft link from assembly file
             a_file = in_group+'/'+'group_name.fna'
             if not os.path.isfile(a_file):
-                linkAssemblyCmd = 'ln -s '+assembly_path+' '+in_group+''
+                linkAssemblyCmd = 'ln -s '+assembly_path+' '+in_group+'/'+group_name+'.fa'
                 subprocess.Popen(linkAssemblyCmd,shell=True).wait()
 
             # Link .fastq files of non-MAG mapped reads to subdir
@@ -153,8 +153,7 @@ def run_dietary_analysis(in_f, path, config, cores):
     log_file.write("Have a nice run!\n\t\tHOLOFOW Dietary Analysis starting")
     log_file.close()
 
-    print(out_files)
-    dietary_analysis_snk_Cmd = 'module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+' -n -r'
+    dietary_analysis_snk_Cmd = 'module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
     subprocess.Popen(dietary_analysis_snk_Cmd, shell=True).wait()
 
     log_file = open(str(log),'a+')
