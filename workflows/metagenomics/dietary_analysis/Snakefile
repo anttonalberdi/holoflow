@@ -20,13 +20,14 @@ rule predict:
     input:
         assembly="{projectpath}/MDI_00-InputData/{group}/{group}.fa"
     output:
-        directory("{projectpath}/MDI_01-Predict/{group}")
+        "{projectpath}/MDI_01-Predict/{group}/{group}.ptranslations.faa"
     params:
         threads=expand("{threads}", threads=config['threads']),
+        out_dir="{projectpath}/MDI_01-Predict/{group}",
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_pred.py -a {input.assembly} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_pred.py -a {input.assembly} -out_dir {params.out_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 # 3. Diamond map these orfs to UNIPROT {Only eukaryotic entries . Lasse }

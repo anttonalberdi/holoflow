@@ -31,7 +31,7 @@ log=args.log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
     logi.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\t - '+ID+'\n')
-    logi.write('   \n\n')
+    logi.write('The reads not included in the MAG set are mapped to the gene catalogue created by Prodigal 2.6.3.\n\n')
 
 # index gene catalogue file: .fna predicted sequences by prodigal
 if not os.path.exists(fna+'.fai'):

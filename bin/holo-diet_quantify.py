@@ -31,7 +31,7 @@ log=args.log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
     logi.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\t - '+ID+'\n')
-    logi.write('   \n\n')
+    logi.write('The abundances of the non-MAG genes in the gene catalogue created by Prodigal 2.6.3, are obtained by mapping the reads\nnot included in the MAG set to the gene catalogue.\n\n')
 
 # Inputs
 # bam_files list
@@ -105,12 +105,11 @@ for file in all_genes_files:
 
 # Merge counts of all samples in one file
 annot_genes_files = glob.glob(out_dir+'/*all_genes_counts.txt')
-annot_genes_files_string = ''
-for file in annot_genes_files:
-    annot_genes_files_string += file+' '
 
 # 1 unique file per group with counts of annotates genes for all samples
 all_counts_annot_genes = out_dir+'/'+ID+'.annot_counts_tmp.txt'
 
-pasteCmd='infiles="'+annot_genes_files_string+'" && cat '+annot_genes_files[0]+' | cut -f1,2 > UNIPROT && for i in $infiles; do sed -i -E "s/^.*\t.*\t//" $i; done && paste UNIPROT '+annot_genes_files_string+' > '+all_counts_annot_genes+' && rm UNIPROT'
+pasteCmd='infiles="'+' '.join(annot_genes_files)+'" && cat '+annot_genes_files[0]+' | cut -f1,2 > GENEIDS && for i in $infiles; do sed -i -E "s/^.*\t.*\t//" $i; done && paste GENEIDS '+annot_genes_files_string+' > '+all_counts_annot_genes+' && rm GENEIDS'
 subprocess.Popen(pasteCmd,shell=True).wait()
+# All annot genes files have the same genes, the total gene set. Thus, take first two columns (original gene ID, annotation) of the first file, and simply concatenate with all the
+# counts in all files.

@@ -33,7 +33,7 @@ log=args.log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
     logi.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\t - '+ID+'\n')
-    logi.write('   \n\n')
+    logi.write('Genes which map to the designed database(s) {Plants, Invertebrates...} will be annotated by Diamond 2.0.6.\n\n')
 
 #             ####################
 #             #### MERGED dbs option

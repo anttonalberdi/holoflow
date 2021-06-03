@@ -71,6 +71,7 @@ rule checkm:
 ##
 # Get MAG coverage on SELECTED KOs (single-copy core genes: https://github.com/anttonalberdi/metafunk/blob/master/files/USiCGs.txt)
 ##
+### Needs optimization 
 rule genes_coverage:
     input:
         quality="{projectpath}/MFS_03-BinQuality/{group}/{group}_binQuality_Info.csv", # unnecessary for this rule, necessary for creating dependence

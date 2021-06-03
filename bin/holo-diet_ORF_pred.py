@@ -28,7 +28,7 @@ log=args.log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
     logi.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\t - '+ID+'\n')
-    logi.write('   \n\n')
+    logi.write('Genes are being predicted by Prodigal 2.6.3.\n\n')
 
 
 # Generate .faa and .fna outputs
