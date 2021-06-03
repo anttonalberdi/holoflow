@@ -29,7 +29,10 @@ curr_dir = os.path.abspath(file)
 
 # If the user does not specify a config file, provide default file in GitHub
 if not (args.config_file):
-    config = os.path.join(os.path.abspath(curr_dir),"workflows/metagenomics/dereplication/config.yaml")
+    cpconfigCmd= 'cp '+curr_dir+'/workflows/metagenomics/dereplication/config.yaml '+path+'/config.yaml'
+    subprocess.Popen(cpconfigCmd,shell=True).wait()
+
+    config = path+'/config.yaml'
 else:
     config=args.config_file
 
