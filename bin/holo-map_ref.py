@@ -58,28 +58,28 @@ with open(str(log),'a+') as log:
 if (k == "loose"): # -k 19
     if not (picard == 'False'):
         mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -M -t '+t+' -k 19 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" '+ref_gen+' <(gunzip -c '+read1+') <(gunzip -c '+read2+') | samtools view -T '+ref_gen+' -b - > '+all_bam+''
-        subprocess.check_call(mapCmd, shell=True)
+        subprocess.check_call(mapCmd, shell=True,executable="/bin/bash")
     else:
         mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -k 19 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" '+ref_gen+' <(gunzip -c '+read1+') <(gunzip -c '+read2+') | samtools view -T '+ref_gen+' -b - > '+all_bam+''
-        subprocess.check_call(mapCmd, shell=True)
+        subprocess.check_call(mapCmd, shell=True,executable="/bin/bash")
 
 
 if (k == "semistringent"): # -k 21
     if not (picard == 'False'):
         mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -M -t '+t+' -k 21  -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" '+ref_gen+' <(gunzip -c '+read1+') <(gunzip -c '+read2+') | samtools view -T '+ref_gen+' -b - > '+all_bam+''
-        subprocess.check_call(mapCmd, shell=True)
+        subprocess.check_call(mapCmd, shell=True,executable="/bin/bash")
     else:
         mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -k 21 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" '+ref_gen+' <(gunzip -c '+read1+') <(gunzip -c '+read2+') | samtools view -T '+ref_gen+' -b - > '+all_bam+''
-        subprocess.check_call(mapCmd, shell=True)
+        subprocess.check_call(mapCmd, shell=True,executable="/bin/bash")
 
 
 if (k == "superstringent"): # -k 23
     if not (picard == 'False'):
         mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -M -t '+t+' -k 23 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" '+ref_gen+' <(gunzip -c '+read1+') <(gunzip -c '+read2+') | samtools view -T '+ref_gen+' -b - > '+all_bam+''
-        subprocess.check_call(mapCmd, shell=True)
+        subprocess.check_call(mapCmd, shell=True,executable="/bin/bash")
     else:
         mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -k 23 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" '+ref_gen+' <(gunzip -c '+read1+') <(gunzip -c '+read2+') | samtools view -T '+ref_gen+' -b - > '+all_bam+''
-        subprocess.check_call(mapCmd, shell=True)
+        subprocess.check_call(mapCmd, shell=True,executable="/bin/bash")
 
 if not ((k == "loose") or (k == "semistringent") or (k == "superstringent")):
     print(''+k+' is not a valid value, k = loose/semistringent/stringent - See config.yaml')
@@ -87,4 +87,4 @@ if not ((k == "loose") or (k == "semistringent") or (k == "superstringent")):
 # re -compress inputs
 if (os.path.isfile(all_bam)):
     compressCmd2='gzip '+read1+' & gzip '+read2+''
-    subprocess.Popen(compressCmd2,shell=True).wait()
+    subprocess.Popen(compressCmd2,shell=True,executable="/bin/bash").wait()

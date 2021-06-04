@@ -27,9 +27,9 @@ out_stats=args.out_stats
 
 # split not dup sequences into reads again
 cut1Cmd = 'cut --delimiter='+str(separator)+' -f1 <(zcat '+input_file+') | gzip > '+read1+''
-subprocess.Popen(cut1Cmd, shell=True).wait()
+subprocess.Popen(cut1Cmd, shell=True,executable="/bin/bash").wait()
 cut2Cmd = 'cut --delimiter='+str(separator)+' -f2  <(zcat '+input_file+') | gzip > '+read2+''
-subprocess.Popen(cut2Cmd, shell=True).wait()
+subprocess.Popen(cut2Cmd, shell=True,executable="/bin/bash").wait()
 rmCmd = 'rm '+input_file+''
 subprocess.check_call(rmCmd, shell=True)
 

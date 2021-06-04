@@ -70,4 +70,4 @@ if by_name == 'True':
     else:
         seqkitCmd = 'module load tools pigz/2.3.4 seqkit/0.7.1 && paste -d '+separator+' <(zcat '+read1+') <(zcat '+read2+') | seqkit -j 40 rmdup -n -o '+output+''
 
-subprocess.check_call(seqkitCmd, shell=True)
+subprocess.check_call(seqkitCmd, shell=True,executable="/bin/bash")
