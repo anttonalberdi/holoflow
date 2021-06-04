@@ -35,7 +35,7 @@ rule qual_filt:
     threads: 10
     output:
         read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq.gz",
-        read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz".
+        read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz",
         stats_file="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.stats"
     params:
         adapter1=expand("{adapter1}", adapter1=config['adapter1']),
@@ -120,7 +120,7 @@ rule map_ref:
         """
 
 ##
-# Split bam file into metagenomic reads and host bam 
+# Split bam file into metagenomic reads and host bam
 ##
 rule map_ref_split:
     input:
