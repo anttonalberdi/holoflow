@@ -1,0 +1,29 @@
+# 30.06.20
+
+rule get_paths:
+    input:
+        holopath=expand("{holopath}", holopath=config['holopath']),
+        logpath=expand("{logpath}", logpath=config['logpath'])
+
+
+################################################################################################################
+############################################     MAG Polishing     #############################################
+################################################################################################################
+
+
+##
+# Assembly
+##
+rule assembly:
+    input:
+
+    output:
+        "{projectpath}/M"
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+
+
+    shell:
+        """
+        python  -ID {params.sample} -log {rules.get_paths.input.logpath}
+        """
