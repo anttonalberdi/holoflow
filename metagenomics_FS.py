@@ -3,6 +3,7 @@ import subprocess
 import glob
 import os
 import sys
+import time
 
 ###########################
 #Argument parsing
@@ -27,8 +28,9 @@ file = os.path.dirname(sys.argv[0])
 curr_dir = os.path.abspath(file)
 
 # If the user does not specify a config file, provide default file in GitHub
+current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 if not (args.config_file):
-    cpconfigCmd= 'cp '+curr_dir+'/workflows/metagenomics/final_stats/config.yaml '+path+'/config.yaml'
+    cpconfigCmd= 'cp '+curr_dir+'/workflows/metagenomics/final_stats/config.yaml '+path+'/'+current_time+'_config.yaml'
     subprocess.Popen(cpconfigCmd,shell=True).wait()
 
     config = path+'/config.yaml'

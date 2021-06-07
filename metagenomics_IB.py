@@ -29,7 +29,7 @@ curr_dir = os.path.abspath(file)
 
 # If the user does not specify a config file, provide default file in GitHub
 if not (args.config_file):
-    cpconfigCmd= 'cp '+curr_dir+'/workflows/individual_binning/config.yaml '+path+'/config.yaml'
+    cpconfigCmd= 'cp '+curr_dir+'/workflows/individual_binning/config.yaml '+path+'/'+job+'_config.yaml'
     subprocess.Popen(cpconfigCmd,shell=True).wait()
 
     config = path+'/config.yaml'
