@@ -10,7 +10,7 @@ import glob
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-faa', help="protein sequences predicted ORFs", dest="faa", required=True)
 parser.add_argument('-db_dir', help="db directory", dest="db_dir", required=True)
-parser.add_argument('-db_names', help="names of the db/dbs to be used", dest="out_dir", required=True)
+parser.add_argument('-db_names', help="names of the db/dbs to be used", dest="db_names", required=True)
 parser.add_argument('-out_dir', help="out_dir", dest="out_dir", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
