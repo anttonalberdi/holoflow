@@ -35,7 +35,6 @@ if not (args.config_file):
     cpconfigCmd= 'cp '+curr_dir+'/workflows/metagenomics/coassembly_binning/config.yaml '+path+'/'+current_time+'_config.yaml'
     subprocess.Popen(cpconfigCmd,shell=True).wait()
 
-
     config = path+'/config.yaml'
 else:
     config=args.config_file
@@ -209,7 +208,7 @@ def in_out_metagenomics(path,in_f):
                                 coa2.write(file2.strip()+',')
 
                 # Define Snakemake output files
-                output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_files ")
+                output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_DASTool_files ")
 
                 # Define new coa group
                 coa_group=line[1]
@@ -295,7 +294,7 @@ def in_out_metagenomics(path,in_f):
                                 coa2.write(file2.strip()+',')
 
                 # Define Snakemake output files
-                output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_files ")
+                output_files+=(path+"/"+final_temp_dir+"/"+coa_group+"_DASTool_files ")
 
     return output_files
 
