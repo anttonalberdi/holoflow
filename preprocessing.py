@@ -38,7 +38,7 @@ if not (args.config_file):
     cpconfigCmd= 'cp '+curr_dir+'/workflows/preprocessing/config.yaml '+path+'/'+job+'_config.yaml'
     subprocess.Popen(cpconfigCmd,shell=True).wait()
 
-    config = path+'/config.yaml'
+    config = path+'/'+job+'_config.yaml'
 else:
     config=args.config_file
 

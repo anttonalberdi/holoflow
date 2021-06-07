@@ -32,7 +32,7 @@ if not (args.config_file):
     cpconfigCmd= 'cp '+curr_dir+'/workflows/individual_binning/config.yaml '+path+'/'+job+'_config.yaml'
     subprocess.Popen(cpconfigCmd,shell=True).wait()
 
-    config = path+'/config.yaml'
+    config = path+'/'+job+'_config.yaml'
 else:
     config=args.config_file
 # If the user does not specify a log file, provide default path

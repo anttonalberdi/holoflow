@@ -4,7 +4,7 @@ import os
 import re
 import glob
 import sys
-import time 
+import time
 
 ###########################
 #Argument parsing
@@ -36,7 +36,7 @@ if not (args.config_file):
     subprocess.Popen(cpconfigCmd,shell=True).wait()
 
 
-    config = path+'/config.yaml'
+    config = path+'/'+current_time+'_config.yaml'
 else:
     config=args.config_file
 

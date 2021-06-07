@@ -32,7 +32,7 @@ if not (args.config_file):
     cpconfigCmd= 'cp '+curr_dir+'/workflows/metagenomics/dietary_analysis/config.yaml '+path+'/'+current_time+'_config.yaml'
     subprocess.Popen(cpconfigCmd,shell=True).wait()
 
-    config = path+'/config.yaml'
+    config = path+'/'+current_time+'_config.yaml'
 else:
     config=args.config_file
 # If the user does not specify a log file, provide default path

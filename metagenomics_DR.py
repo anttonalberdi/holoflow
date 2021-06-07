@@ -34,7 +34,7 @@ if not (args.config_file):
     cpconfigCmd= 'cp '+curr_dir+'/workflows/metagenomics/dereplication/config.yaml '+path+'/'+current_time+'_config.yaml'
     subprocess.Popen(cpconfigCmd,shell=True).wait()
 
-    config = path+'/config.yaml'
+    config = path+'/'+current_time+'_config.yaml'
 else:
     config=args.config_file
 
