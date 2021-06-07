@@ -33,6 +33,7 @@ with open(str(log),'a+') as logi:
     logi.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\t - '+ID+'\n')
     logi.write('The reads not included in the MAG set are mapped to the gene catalogue created by Prodigal 2.6.3.\n\n')
 
+
 # index gene catalogue file: .fna predicted sequences by prodigal
 if not os.path.exists(fna+'.fai'):
     idxsamCmd='module load tools samtools/1.11 && samtools faidx '+fna+''
@@ -45,15 +46,16 @@ if not os.path.exists(fna+'.fai'):
 
 if os.path.exists(fna+'.amb'):
 # Get read1 and read2 paths #### reads that were not mapped to MAGs
-    reads1=glob.glob(fq_dir+'/*_1.fastq.gz')
+    reads1=glob.glob(fq_dir+'/*_1.fastq*')
+
 
     for read1 in reads1:
         sampleID=os.path.basename(read1)
         sampleID=sampleID.replace('_1.fastq.gz','')
 
         read2=fq_dir+'/'+sampleID+'_2.fastq.gz'
-        obam=obam_b+'/'+ID+'.'+sampleID+'.MAG_unmapped.bam'
+        obam=out_dir+'/'+ID+'.'+sampleID+'.MAG_unmapped.bam'
 
         if not os.path.exists(str(obam)):
-            mappingCmd='module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+fna+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+obam+'.'+sampleID+' -o '+obam+''
+            mappingCmd='mkdir -p '+out_dir+' && module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+fna+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+obam+'.'+sampleID+' -o '+obam+''
             subprocess.Popen(mappingCmd, shell=True).wait()

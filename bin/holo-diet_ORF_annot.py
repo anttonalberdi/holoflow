@@ -35,6 +35,10 @@ with open(str(log),'a+') as logi:
     logi.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\t - '+ID+'\n')
     logi.write('Genes which map to the designed database(s) {Plants, Invertebrates...} will be annotated by Diamond 2.0.6.\n\n')
 
+if not os.path.exists(out_dir):
+    mkdirCmd='mkdir -p '+out_dir+''
+    subprocess.Popen(mkdirCmd,shell=True).wait()
+
             ####################
             #### MERGED dbs option ---> COMPETITIVE
             ####################
@@ -46,13 +50,16 @@ if not os.path.isfile(tmp_dbs):
     db_files = glob.glob(db_dir+'/*.fasta.gz')
     db_tomerge = ''
      # generate a string with those dbs to merge
-    for db_path in db_files:                    # find all databases in db dir
-        for db_name in db_names.split('_'):     # get names of the tax. groups the user wants to annotate from, _ delim
+    for db_path in db_files:
+        # find all databases in db dir
+        for db_name in db_names.strip().split('_'):
+            # get names of the tax. groups the user wants to annotate from, _ delim
             if db_name in db_path:
                 db_tomerge += db_path+' '       # create string with paths to selected dbs
+
             else:
                 pass
-
+    print('zcat '+db_tomerge+' > '+tmp_dbs)
     mergeCmd='zcat '+db_tomerge+' > '+tmp_dbs+''    # merge the selected dbs into one file
     subprocess.Popen(mergeCmd,shell=True).wait()
 

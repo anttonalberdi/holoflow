@@ -53,11 +53,12 @@ rule annotate:
 # Map each sample .fastq to Predicted ORFs .fna
 rule map_diet:
     input:
-        fna_orf="{projectpath}/MDI_01-Predict/{group}/{group}.predORFs.fna" # works as gene catalogue
+        fna_orf="{projectpath}/MDI_01-Predict/{group}/{group}.predORFs.fna", # works as gene catalogue
+        annot = "{projectpath}/MDI_02-Annotate/{group}" # not really necessary for this rule, but to keep dependency, otherwise it is skipped
     output:
         directory("{projectpath}/MDI_03-MapToGC/{group}")
     params:
-        fq_dir="{projectpath}/MDI_00-InputData/{group}/mag_unmapped_fq", # directory to be created in .py launcher - soft link to files
+        fq_dir="{projectpath}/MDI_00-InputData/{group}/mag_unmapped_fastq", # directory to be created in .py launcher - soft link to files
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
