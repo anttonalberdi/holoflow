@@ -74,7 +74,7 @@ rule quantify_diet:
         annot_dir="{projectpath}/MDI_02-Annotate/{group}",
         bam_dir="{projectpath}/MDI_03-MapToGC/{group}"
     output:
-        directory("{projectpath}/MDI_03-Quantify/{group}")
+        directory("{projectpath}/MDI_04-Quantify/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"

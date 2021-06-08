@@ -10,11 +10,13 @@ rule get_paths:
 ############################################     MAG Polishing     #############################################
 ################################################################################################################
 
+# 1- Run MAGPurify on each MAG to reduce contamination (rather than RefineM)
+# https://github.com/snayfach/MAGpurify
 
 ##
-# Assembly
+# MAG purification
 ##
-rule assembly:
+rule mag_purification:
     input:
 
     output:
@@ -27,3 +29,33 @@ rule assembly:
         """
         python  -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
+
+# 2- Map reads to the purified catalogue (the same finalstats does right now - then finalstats could reuse this info)
+# > Use bam file for the downstream finalstats (I don’t think there is any need to remap again against the polished MAG)
+# > Extract mapped short reads for next step
+
+##
+# Purified MAG catalogue mapping to metagenomic reads
+##
+rule mag_purification:
+    input:
+
+    output:
+        "{projectpath}/M"
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+
+
+    shell:
+        """
+        python  -ID {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+
+
+# 3- Run SSPACE (I believe this is implemented in holo-bin_scaffolding.py), PRICE or GapFiller
+# to extend MAG contigs (alternativelly GapFiller could be used - I remember I gave it a try some
+# months ago, but cannot find any reference)
+# http://derisilab.ucsf.edu/software/price/PriceDocumentation130506/userManual.html
+# > With the MAG as the contigs to be extended
+# > Short read as paired end input
