@@ -50,24 +50,24 @@ subprocess.check_call(rmAllbamCmd, shell=True)
     # Get stats after duplicate removal
 mvstatsCmd= 'mv '+in_stats+' '+out_stats+''
 subprocess.check_call(mvstatsCmd, shell=True)
-#
-# reads = 0
-# bases = 0
-# with gzip.open(str(read1), 'rt') as read: # outputs are compressed files: .gz extension
-#     for id in read:
-#         seq = next(read)
-#         reads += 1
-#         bases += len(seq.strip())*2
-#         next(read)
-#         next(read)
-#
-# #Print stats to statsfile
-# statsfile=open(str(out_stats),"a+")
-# statsfile.write("Reads after mapping to reference genome \t{0} ({1} bases)\r\n".format(reads,bases))
-# statsfile.close()
-#
-#
-# # Write to log
-# current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-# with open(str(log),'a+') as logo:
-#     logo.write('\t\t'+current_time+'\tPreprocessing with Holoflow has finished.\n')
+
+reads = 0
+bases = 0
+with open(str(read1), 'rt') as read: # outputs are compressed files: .gz extension
+    for id in read:
+        seq = next(read)
+        reads += 1
+        bases += len(seq.strip())*2
+        next(read)
+        next(read)
+
+#Print stats to statsfile
+statsfile=open(str(out_stats),"a+")
+statsfile.write("Reads after mapping to reference genome \t{0} ({1} bases)\r\n".format(reads,bases))
+statsfile.close()
+
+
+# Write to log
+current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
+with open(str(log),'a+') as logo:
+    logo.write('\t\t'+current_time+'\tPreprocessing with Holoflow has finished.\n')
