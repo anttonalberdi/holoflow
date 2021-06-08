@@ -59,8 +59,7 @@ if not os.path.isfile(tmp_dbs):
 
             else:
                 pass
-    print('zcat '+db_tomerge+' > '+tmp_dbs)
-    mergeCmd='zcat '+db_tomerge+' > '+tmp_dbs+''    # merge the selected dbs into one file
+    mergeCmd='zcat '+db_tomerge+' | gzip > '+tmp_dbs+''    # merge the selected dbs into one file
     subprocess.Popen(mergeCmd,shell=True).wait()
 
 
@@ -70,7 +69,7 @@ if os.path.isfile(tmp_dbs):
 
     diamondCmd='module load diamond/2.0.6 && diamond blastp -d '+tmp_dbs+' -q '+faa+' -o '+out_annot+' -p '+t+' -k 1'
     subprocess.Popen(diamondCmd, shell=True).wait()
-
+    # given the database and the predicted proteins, retrieve the first best map match
 
 
 #             ####################

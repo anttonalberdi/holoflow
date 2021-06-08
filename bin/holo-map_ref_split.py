@@ -41,7 +41,7 @@ subprocess.check_call(refbam1Cmd, shell=True)
 refbam2Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -1 '+read1+' -2 '+read2+' -'
 subprocess.check_call(refbam2Cmd, shell=True)
 
-# remove general bam 
+# remove general bam
 rmAllbamCmd = 'rm '+all_bam+'' # Change this if dark matter workflow
 subprocess.check_call(rmAllbamCmd, shell=True)
 
@@ -50,24 +50,24 @@ subprocess.check_call(rmAllbamCmd, shell=True)
     # Get stats after duplicate removal
 mvstatsCmd= 'mv '+in_stats+' '+out_stats+''
 subprocess.check_call(mvstatsCmd, shell=True)
-
-reads = 0
-bases = 0
-with gzip.open(str(read1), 'rt') as read: # outputs are compressed files: .gz extension
-    for id in read:
-        seq = next(read)
-        reads += 1
-        bases += len(seq.strip())*2
-        next(read)
-        next(read)
-
-#Print stats to statsfile
-statsfile=open(str(out_stats),"a+")
-statsfile.write("Reads after mapping to reference genome \t{0} ({1} bases)\r\n".format(reads,bases))
-statsfile.close()
-
-
-# Write to log
-current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-with open(str(log),'a+') as logo:
-    logo.write('\t\t'+current_time+'\tPreprocessing with Holoflow has finished.\n')
+#
+# reads = 0
+# bases = 0
+# with gzip.open(str(read1), 'rt') as read: # outputs are compressed files: .gz extension
+#     for id in read:
+#         seq = next(read)
+#         reads += 1
+#         bases += len(seq.strip())*2
+#         next(read)
+#         next(read)
+#
+# #Print stats to statsfile
+# statsfile=open(str(out_stats),"a+")
+# statsfile.write("Reads after mapping to reference genome \t{0} ({1} bases)\r\n".format(reads,bases))
+# statsfile.close()
+#
+#
+# # Write to log
+# current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
+# with open(str(log),'a+') as logo:
+#     logo.write('\t\t'+current_time+'\tPreprocessing with Holoflow has finished.\n')
