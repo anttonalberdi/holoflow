@@ -149,14 +149,14 @@ def in_out_genomics(path,in_f):
                     linkbamsCmd = 'ln -s '+in_bam_path+'/*.bam '+in1+'' # Create soft link for files to be linked to new dir
                     subprocess.Popen(linkbamsCmd, shell=True).wait()
 
-                    # Append chromosome list path to config
-                    yaml = ruamel.yaml.YAML()
-                    yaml.explicit_start = True
-                    with open(str(config), 'r') as config_file:
-                        data = yaml.load(config_file)
-                    with open(str(config), 'w') as config_file:
-                        data['chr_list'] = str(chromosome_list)
-                        dump = yaml.dump(data, config_file)
+                # Append chromosome list path to config
+                yaml = ruamel.yaml.YAML()
+                yaml.explicit_start = True
+                with open(str(config), 'r') as config_file:
+                    data = yaml.load(config_file)
+                with open(str(config), 'w') as config_file:
+                    data['chr_list'] = str(chromosome_list)
+                    dump = yaml.dump(data, config_file)
 
     return output_files
 

@@ -38,7 +38,7 @@ refbam1Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b
 subprocess.check_call(refbam1Cmd, shell=True)
 
 # extract not-mapped to the reference genome reads + keep reference bam
-refbam2Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -1 '+read1+' -2 '+read2+' -'
+refbam2Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -c 6 -1 '+read1+' -2 '+read2+' -'
 subprocess.check_call(refbam2Cmd, shell=True)
 
 # remove general bam

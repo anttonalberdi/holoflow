@@ -28,7 +28,6 @@ cores=args.threads
     # retrieve current directory
 file = os.path.dirname(sys.argv[0])
 curr_dir = os.path.abspath(file)
-
 # If the user does not specify a config file, provide default file in GitHub
 current_time = time.strftime("%m.%d.%y_%H:%M", time.localtime())
 if not (args.config_file):

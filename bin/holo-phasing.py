@@ -57,6 +57,9 @@ if not os.path.exists(out_dir):
         plink2Cmd='module load plink2/1.90beta6.17 && plink --bfile '+plink_tmp_output_base+' --double-id --allow-extra-chr --keep-allele-order  --real-ref-alleles --geno '+geno+' --recode vcf-iid bgz --out '+plink_output_base+''
         subprocess.Popen(plink2Cmd,shell=True).wait()
 
+        # plink2Cmd='rm '+os.path.dirname(output)+'/*bim '+os.path.dirname(output)+'/*bed '+os.path.dirname(output)+'/*fam '+os.path.dirname(output)+'/*nosex'
+        # subprocess.Popen(plink3Cmd,shell=True).wait()
+
     # Filter output
         if not os.path.isfile(plink_output_base+'.vcf.csi'):
             indexCmd='module load bcftools/1.11 && bcftools index --threads '+threads+' '+plink_output_base+'.vcf.gz'
@@ -74,6 +77,12 @@ if not os.path.exists(out_dir):
         # Index phased panel
         idxCmd='module load tabix/1.2.1 && tabix '+output+''
         subprocess.Popen(idxCmd,shell=True).wait()
+
+
+        nosex
+        bed
+        bam
+        bim
 
 
     # Concatenate all CHR phased files into one ref panel
