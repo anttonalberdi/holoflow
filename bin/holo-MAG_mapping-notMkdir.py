@@ -35,9 +35,6 @@ with open(str(log),'a+') as logi:
     logi.write('\t\t'+current_time+'\tMAG Mapping step - '+ID+'\n')
     logi.write('MAGs are being mapped to the original metagenomic read files to assess its coverage.\n\n')
 
-if not os.path.exists(out_dir):
-    mkdirCmd='mkdir -p '+out_dir+''
-    subprocess.Popen(mkdirCmd,shell=True).wait()
 
 # Create MAGs file --> competitive mapping for each sample
 mag_catalogue_file=out_dir+'/'+ID+'_MAG_Catalogue.fa'
