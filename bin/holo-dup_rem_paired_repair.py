@@ -2,6 +2,8 @@
 
 import subprocess
 import argparse
+import gzip
+import os
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
@@ -20,11 +22,14 @@ separator=args.separator
 in_stats=args.in_stats
 out_stats=args.out_stats
 
+
 # Run
-cut1Cmd = 'cut --delimiter='+str(separator)+' -f1 '+input_file+' > '+read1+''
-subprocess.check_call(cut1Cmd, shell=True)
-cut2Cmd = 'cut --delimiter='+str(separator)+' -f2 '+input_file+' > '+read2+''
-subprocess.check_call(cut2Cmd, shell=True)
+
+# split not dup sequences into reads again
+cut1Cmd = 'cut --delimiter='+str(separator)+' -f1 <(zcat '+input_file+') | gzip > '+read1+''
+subprocess.Popen(cut1Cmd, shell=True,executable="/bin/bash").wait()
+cut2Cmd = 'cut --delimiter='+str(separator)+' -f2  <(zcat '+input_file+') | gzip > '+read2+''
+subprocess.Popen(cut2Cmd, shell=True,executable="/bin/bash").wait()
 rmCmd = 'rm '+input_file+''
 subprocess.check_call(rmCmd, shell=True)
 
@@ -36,7 +41,7 @@ subprocess.check_call(mvstatsCmd, shell=True)
 
 reads = 0
 bases = 0
-with open(str(read1), 'rb') as read:
+with gzip.open(str(read1), 'rt') as read:
   for id in read:
       seq = next(read)
       reads += 1

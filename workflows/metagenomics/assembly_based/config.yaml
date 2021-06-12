@@ -1,0 +1,11 @@
+min_c_size:
+  1500
+
+threads:
+  40
+
+conda_env_file:
+
+
+DRAM_config:
+  

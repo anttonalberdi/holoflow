@@ -1,0 +1,135 @@
+rule get_paths:
+    input:
+        holopath=expand("{holopath}", holopath=config['holopath']),
+        logpath=expand("{logpath}", logpath=config['logpath'])
+
+
+################################################################################################################
+############################################       PREPROCESSING     ###########################################
+################################################################################################################
+##
+# Input reformat
+##
+rule in_reformat:
+    input:
+        read1i="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.tmp",
+        read2i="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq.tmp"
+    output:
+        read1o="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq",
+        read2o="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq"
+    params:
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-in_reformat.py -r1i {input.read1i} -r2i {input.read2i} -r1o {output.read1o} -r2o {output.read2o} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+##
+# Quality-filtering
+##
+
+rule qual_filt:
+    input:
+        read1="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq",
+        read2="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq"
+    threads: 10
+    output:
+        read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq",
+        read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq",
+        stats_file="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.stats"
+    params:
+        adapter1=expand("{adapter1}", adapter1=config['adapter1']),
+        adapter2=expand("{adapter2}", adapter2=config['adapter2']),
+        maxns=expand("{maxns}", maxns=config['maxns']),
+        minquality=expand("{minquality}", minquality=config['minquality']),
+        mate_separator=expand("{mate_separator}", mate_separator=config['mate_separator']),
+        threads=10
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-qual_filt.py -i1 {input.read1} -i2 {input.read2} -o1 {output.read1} -o2 {output.read2} -a1 {params.adapter1} -a2 {params.adapter2} -maxns {params.maxns} -minq {params.minquality} -t {params.threads} -msep {params.mate_separator} -s {output.stats_file} -log {rules.get_paths.input.logpath}
+        """
+
+
+
+rule dup_rem_paired:
+    input:
+      read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq",
+      read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq"
+    output:
+      out="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.merged.fastq"
+    threads: 10
+    params:
+        separator=expand("{separator}", separator=config['separator']),
+        by_n=expand("{by_n}", by_n=config['by_n']),
+        by_s=expand("{by_s}", by_s=config['by_s']),
+        ignore_case=expand("{ignore_case}",ignore_case=config['ignore_case']),
+        file_to_dups=expand("{file_to_dups}", file_to_dups=config['file_to_dups']),
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.out} -sep {params.separator} -i {params.ignore_case} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+
+rule dup_rem_paired_repair:
+    input:
+      in_file="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.merged.fastq",
+      in_stats="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.stats"
+    output:
+      read1="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_1.fastq",
+      read2="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_2.fastq",
+      out_stats="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.stats"
+    threads: 10
+    params:
+        separator=expand("{separator}", separator=config['separator'])
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired_repair.py -i {input.in_file} -1 {output.read1} -2 {output.read2} -sep {params.separator} -si {input.in_stats} -so {output.out_stats}
+        """
+
+
+##
+# Mapping to host
+##
+
+rule map_ref:
+    input:
+        read1="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_1.fastq",
+        read2="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_2.fastq"
+    output:
+        "{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam"
+    threads: 40
+    params:
+        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
+        t=expand("{t}", t=config['t']),
+        k=expand("{k}", k=config['k']),
+        w=expand("{w}", w=config['w']),
+        d=expand("{d}", d=config['d']),
+        A=expand("{A}", A=config['A']),
+        B=expand("{B}", B=config['B']),
+        O=expand("{O}", O=config['O']),
+        E=expand("{E}", E=config['E']),
+        L=expand("{L}", L=config['L']),
+        M=expand("{L}", L=config['L']),
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {params.refgenomes} -obam {output} -t {params.t} -M {params.M} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+rule map_ref_split:
+    input:
+        all_bam="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam",
+        stats_in="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.stats"
+    output:
+        ref="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_ref.bam",
+        read1="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_1.fastq",
+        read2="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_2.fastq",
+        stats_out="{projectpath}/PPR_03-MappedToReference/{job}/{sample}.stats"
+    params:
+        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-map_ref_split.py -refg {params.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output.ref} -si {input.stats_in} -so {output.stats_out} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        """

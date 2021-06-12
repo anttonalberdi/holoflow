@@ -38,81 +38,77 @@ stats=args.stats
 
 
 # Run
+
+# write to stats
 statsfile=open(str(stats),"w+")
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 statsfile.write("Statistic\tValue \r\n".format(current_time))
-
 
 #Get initial stats
 reads = 0
 bases = 0
 #If gzipped
-if str(read1i).endswith('.gz'):
-    with gzip.open(str(read1i), 'rb') as read:
-        for id in read:
+with gzip.open(str(read1i), 'rt') as read:
+    for id in read:
+        try:
             seq = next(read)
             reads += 1
             bases += len(seq.strip())*2
             next(read)
             next(read)
-else:
-    with open(str(read1i), 'rb') as read:
-        for id in read:
-            try:
-                seq = next(read)
-                reads += 1
-                bases += len(seq.strip())*2
-                next(read)
-                next(read)
-            except:
-                break
+        except:
+            break
 statsfile.write("Input reads\t{0} ({1} bases)\r\n".format(reads,bases))
 statsfile.close()
 
 
 # Write to log
-with open(str(log),'w+') as log:
+with open(str(log),'a+') as log:
     log.write('\tHOLOFLOW\tPREPROCESSING\n\t\t'+current_time+'\tQuality Filtering step\n')
     log.write('Those reads with a minimum quality of '+minq+' are being removed.\nThe sequencing adapters of all reads as well.\n\n')
 
 
 
-
 # Run AdapterRemoval
+# output --gzip files
+# use a diferent separator of reads
 if not (msep == "default"):
     if not os.path.exists(str(read1o)):
+        # different adapters than default
         if not ((a1 == "default") and (a2 == "default")):
-            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --mate-separator '+msep+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
+            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --mate-separator '+msep+' --output1 '+read1o+' --output2 '+read2o+' --gzip --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
             subprocess.check_call(qualfiltCmd, shell=True)
 
         else: # default Illumina adapters will be used
-            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --mate-separator '+msep+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+''
+            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --mate-separator '+msep+' --output1 '+read1o+' --output2 '+read2o+' --gzip --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+''
             subprocess.check_call(qualfiltCmd, shell=True)
 else:
     if not os.path.exists(str(read1o)):
         if not ((a1 == "default") and (a2 == "default")):
-            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
+            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --gzip --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+' --adapter1 '+a1+' --adapter2 '+a2+''
             subprocess.check_call(qualfiltCmd, shell=True)
 
         else: # default Illumina adapters will be used
-            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+''
+            qualfiltCmd = 'module unload gcc tools ngs && module load tools gcc/5.4.0 AdapterRemoval/2.2.4 && AdapterRemoval --file1 '+read1i+' --file2 '+read2i+' --output1 '+read1o+' --output2 '+read2o+' --gzip --trimqualities --trimns --maxns '+maxns+' --minquality '+minq+' --threads '+threads+''
             subprocess.check_call(qualfiltCmd, shell=True)
 
 
 
 #Get stats after quality filtering
+# read --gzip files
 reads = 0
 bases = 0
-with open(str(read1o), 'rb') as read:
+with gzip.open(str(read1o), 'rt') as read:
     for id in read:
         try:
             seq = next(read)
             reads += 1
-            bases += len(seq.strip())
+            bases += len(seq.strip())*2
             next(read)
             next(read)
         except:
             break
+
 
 #Print stats to stats file
 statsfile=open(str(str(stats)),"a+")

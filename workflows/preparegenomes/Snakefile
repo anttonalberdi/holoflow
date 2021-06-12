@@ -1,4 +1,3 @@
-configfile:"/home/projects/ku-cbd/people/nurher/holoflow/workflows/preparegenomes/config.yaml"
 
 rule get_paths:
     input:
@@ -31,9 +30,9 @@ rule check_compress:
         db_path=expand("{DB_path}", DB_path=config['DB_path']),
         idx_db="{projectpath}/PRG/{db_ID}.fna.sa"
     output:
-        check_file="{projectpath}/PRG/{db_ID}.tar.gz"
+        check_file="{projectpath}/{db_ID}.tar.gz"
     params:
-        db_dir="{projectpath}/PRG/",
+        db_dir="{projectpath}/PRG",
         db_ID="{db_ID}"
     shell:
         """

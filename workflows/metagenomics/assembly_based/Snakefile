@@ -1,0 +1,35 @@
+
+# WOKRKFLOW 1 - Functional annotation on coassembly directly
+# Run DRAM
+# Ask Bent petersen to download dbs for us
+
+#28.04.21
+
+rule get_paths:
+   input:
+       holopath=expand("{holopath}", holopath=config['holopath']),
+       logpath=expand("{logpath}", logpath=config['logpath'])
+
+
+################################################################################################################
+####################################      Annotation of assembly file     ######################################
+################################################################################################################
+
+##
+# Assembly
+##
+rule assembly_annot:
+    input:
+        read1="{projectpath}/MAB_00-InputData/{job}/{group}.fastq",
+    output:
+        directory("{projectpath}/MAB_01-Annotation/{job}/{group}")
+    params:
+        conda_env_file=expand("{conda_env_file}", conda_env_file=config['conda_env_file']), ## ENVIRONMENT file to create conda env. Add to config.yaml in launcher file
+        DRAM_config=expand("{DRAM_config}", DRAM_config=config['DRAM_config']), ## Add to config.yaml in launcher file
+        threads=expand("{threads}", threads=config['threads']),
+        min_c_size=expand("{min_c_size}", min_c_size=config['min_c_size']),
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-assembly_annotation.py -a {input} -out_dir {output} -min_c_size {params.min_c_size} -conda_env_file {params.conda_env_file} -config {params.DRAM_config} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """

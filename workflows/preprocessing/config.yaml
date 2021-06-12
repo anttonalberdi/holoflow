@@ -1,7 +1,4 @@
-#General options
-# inputdir:  NOT NECESSARY BC INPUT FILES ARE ALREADY IN PROJECTPATH/00-InputData !
-#projectpath:
-#This information is taken from output files
+
 
 threads:
   40
@@ -18,24 +15,25 @@ minquality:
 
 # Character separating the mate number (1 or 2) from the read name in FASTQ records.
 mate_separator:
-  '.'
+  '/'
 
 
 # dup_rem_paired options
-
   # By-name-n and By-seq-s are mutually exclusive !
+# dereplicate based on sequence full name instead of just ID
 by_n:
   False
-  # By-name-n and By-seq-s are mutually exclusive !
+# dereplicate based on sequence
 by_s:
   True
 
 # if not False, write path instead of True !
+# file to dups writes a file with the duplicate sequences
 file_to_dups:
   False
 
 ignore_case:
-  False
+  True
 
 #dup_rem_paired_repair options
 separator:
@@ -48,10 +46,10 @@ refgenomes:
     # These values correspond to the default options for bwa mem, customise if desired
 t:
   40
-  # Either: loose / semistringent / superstringent. Correspond to 19, 30, 50 respectively.
-  # Default semistringent{30}
+  # Either: loose / semistringent / superstringent. Correspond to 19, 21, 23 respectively.
+  # Default loose{19}
 k:
-  'semistringent'
+  'loose'
 w:
   100
 d:
@@ -66,6 +64,9 @@ E:
   1
 L:
   5
+# Generate picard-friendly bam - used for further Variant Calling with GATK on Genomics workflow
+M:
+  True
 R:
   '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample'
 

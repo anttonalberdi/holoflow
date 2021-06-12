@@ -1,0 +1,3 @@
+#SAMPLE_GROUP, INPUT_DIR
+Bats_groupA /home/projects/ku-cbd/people/nurher/MIB_04-BinMerging/LZ_GroupA
+Bats_groupB /home/projects/ku-cbd/people/nurher/MIB_04-BinMerging/LZ_GroupB

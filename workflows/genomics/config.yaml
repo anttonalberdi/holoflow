@@ -1,0 +1,112 @@
+###### 15.12.20
+# Variant Calling parameters
+# Chosen variant caller in initial command
+
+# Choose between HD - for high depth seqs OR LD - for low depth seqs
+data_quality:
+  LD
+
+threads:
+  40
+
+
+################################### VARIANT CALLING ###################################
+
+#######################
+# BCFTools - High and low depth samples
+#######################
+
+  # mpileup parameters
+
+# Coefficient for downgrading mapping quality for reads containing excessive mismatches.
+# Set to 50 (default),give another number instead.
+degr_mapp_qual:
+  50
+
+# Set to 0 (default),give another number instead.
+min_mapp_qual:
+  0
+
+# Set to 13 (default),give another number instead.
+min_base_qual:
+  13
+
+  # call parameters
+
+# Multicaller mode: alternative model for multiallelic and rare-variant calling designed to overcome known limitations
+# Set to False/True
+multicaller:
+  True
+
+# Set to True if only variants NOT indels to be called, set to False instead if desired
+not_indels:
+  False
+
+# view parameters: Este paso es para quedarse con los variantes bialélicos, sólo con snps.
+# http://samtools.github.io/bcftools/bcftools.html
+
+
+#######################
+# GATK - High and low depth samples
+#######################
+
+  # These two parameters obtain more agressive variants.
+
+# (False/Number) Give number if desired, set to False instead
+min_pruning:
+  1
+
+# (False/Number) Give number if desired, set to False instead
+
+min_dangling:
+  1
+
+
+#######################
+# ANGSD - Low depth samples
+#######################
+
+# Choose model (1/2): 1 = samtools ; 2 = GATK
+model:
+  1
+
+# Outputs log genotype likelihoods to a file (True/False)
+output_logL:
+  True
+
+# How to estimate minor and major alleles (1/2): 1 = from likelihood data ; 2 = from count data
+major_minor:
+  1
+
+# Estimate posterior genotype probability based on the allele frequency as a prior (True/False)
+do_Post:
+  True
+
+
+
+################################### PHASING - Ref panel generation ###################################
+## Filtering ##
+
+# GATK & BCFTOOLS
+
+QUAL:
+  30.0
+# GATK
+QD:
+  2.0
+
+FS:
+  60.0
+
+## Final Phasing ##
+ # How to name the missing SNPS
+# From 0 to 1
+geno:
+  0
+
+
+gmap:
+  False
+
+################################### LIKELIHOOD UPDATE AND IMPUTATION LD ###################################
+# Write path to high quality reference panel generated on a HD data set with the phasing step

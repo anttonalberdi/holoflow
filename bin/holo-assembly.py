@@ -12,58 +12,125 @@ parser.add_argument('-1', help="path1", dest="read1", required=True)
 parser.add_argument('-2', help="path2", dest="read2", required=True)
 parser.add_argument('-o', help="output directory", dest="out", required=True)
 parser.add_argument('-empty_o', help="empty touched file", dest="empty_o", required=True)
-parser.add_argument('-m', help="memory", dest="memory", required=True)
+parser.add_argument('-coa', help='coassembly', dest="coassembly", required=False)
+parser.add_argument('-m', help="memory", dest="memory", required=False)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 parser.add_argument('-k_megahit', help="k-mer size list megahit", dest="k_megahit", required=True)
-parser.add_argument('-k_spades', help="k-mer size list spades", dest="k_spades", required=True)
-parser.add_argument('-a', help="assembler", dest="assembler", required=True)
+parser.add_argument('-k_spades', help="k-mer size list spades", dest="k_spades", required=False)
+parser.add_argument('-a', help="assembler", dest="assembler", required=False)
 parser.add_argument('-temp_a', help="temporal assembly file", dest="temp_a", required=True)
-parser.add_argument('-sample', help="sample", dest="sample", required=True)
+parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
-
 
 read1=args.read1
 read2=args.read2
 out=args.out
-memory=args.memory
 k_megahit=args.k_megahit
-k_spades=args.k_spades
 threads=args.threads
-assembler=args.assembler
 empty_o=args.empty_o
 temp_a=args.temp_a
-sample=args.sample
+ID=args.ID
 log=args.log
 
 
+
 # Run
+# Same assembly script for individual assembly and co-assembly
+# generates temp assembly file before reformatting
+
 
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
-with open(str(log),'w+') as log:
-    log.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\tMetagenomic Data Assembly step - Sample '+sample+'\n')
-    log.write('The .fastq files coming from Holoflow Preprocessing, are those which could not be mapped to a \nreference genome. These contain the metagenomic reads; as no reference genome exists to them,\n they have to be assembled de novo. This is done by '+assembler+' here, which sorts the reads together into\ncontigs or scaffolds giving out one only assembly fasta file.\n\n')
+with open(str(log),'a+') as logi:
+    logi.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\tMetagenomic Data Assembly step - '+ID+'\n')
+    logi.write('The .fastq files coming from Holoflow Preprocessing, are those which could not be mapped to a \nreference genome. These contain the metagenomic reads; as no reference genome exists to them,\n they have to be assembled de novo. This is done by '+args.assembler+' here, which sorts the reads together into\ncontigs or scaffolds giving out one only assembly fasta file.\n\n')
 
 
-if not (os.path.exists(str(empty_o)) or os.path.exists(str(temp_a)) or os.path.exists(str(out))):
+if os.path.exists(temp_a):
+    pass
+
+# if temp assembly has not been created yet, continue
+if not os.path.exists(temp_a):
+
+    if (args.assembler == "megahit"):
+
+        if (args.coassembly):
+            # If coassembly, metagenomics_CB.py will have inputted to Snakemake two files which actually
+            # contain a comma-delimited string of paths of the files to be coassembled -> megahit input
+
+            with open(read1,'r') as f1, open(read2,'r') as f2:
+                # save these paths into variables
+                read1_paths = f1.readline()
+                read2_paths = f2.readline()
+
+            megahitCmd = 'module load tools megahit/1.2.9 && megahit -1 '+read1_paths+' -2 '+read2_paths+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
+            subprocess.Popen(megahitCmd, shell=True).wait()
+
+            mv_megahitCmd = 'mv '+out+'/final.contigs.fa '+out+'/temp_assembly.fa'
+            subprocess.Popen(mv_megahitCmd, shell=True).wait()
+
+        else:
+            # If individual assembly, the inputs to Snakemake are actually .fastq (or gz) files with genomic data
+            megahitCmd = 'module load tools megahit/1.2.9 && megahit -1 '+read1+' -2 '+read2+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
+            subprocess.Popen(megahitCmd, shell=True).wait()
+
+            mv_megahitCmd = 'mv '+out+'/final.contigs.fa '+out+'/temp_assembly.fa'
+            subprocess.Popen(mv_megahitCmd, shell=True).wait()
+
+
+    if args.assembler == "spades":
+
+        if not os.path.exists(out):
+            os.makedirs(out)
+
+        if (args.coassembly):
+            # As before, metagenomics_CB.py has generated two files containing comma-delimited paths of files to co-assemble.
+            # Spades input CAN'T be a string of paths, but has to be a file containing the MERGED SEQUENCES of all files to co-assemble.
+
+
+            # The string of paths is read and after that, the paths of the future MERGED sequences files are defined and
+            # created by either zcat (fastq.gz) or cat (.fastq) the files to co-assemble
+            with open(read1,'r') as f1, open(read2,'r') as f2:
+                read1_paths = f1.readline().strip().split(',')
+                read1_paths = (' ').join(read1_paths)
+                read2_paths = f2.readline().strip().split(',')
+                read2_paths = (' ').join(read2_paths)
+
+            # Merge all read1, read2's content into 1 file each
+            if '.gz' in read1_paths:
+                read1_coa = out+'/'+ID+'.merged_1.fastq.gz'
+                read2_coa = out+'/'+ID+'.merged_2.fastq.gz'
+
+                if not os.path.isfile(read1_coa):
+                    mergeCmd = 'zcat '+read1_paths+' > '+read1_coa+' && zcat '+read2_paths+' > '+read2_coa+''
+                    subprocess.Popen(mergeCmd, shell=True).wait()
+
+            else:
+                read1_coa = out+'/'+ID+'.merged_1.fastq'
+                read2_coa = out+'/'+ID+'.merged_2.fastq'
+
+                if not os.path.isfile(read1_coa):
+                    mergeCmd = 'cat '+read1_paths+' > '+read1_coa+' && cat '+read2_paths+' > '+read2_coa+''
+                    subprocess.Popen(mergeCmd, shell=True).wait()
+
+            # Run spades on merged files
+            spadesCmd = 'module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1_coa+' -2 '+read2_coa+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
+            subprocess.Popen(spadesCmd, shell=True).wait()
+
+            mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
+            subprocess.Popen(mv_spadesCmd, shell=True).wait()
+
+
+        else:
+            # Same as before, if inidividual assembly, the input files are truly .fastq (or gz) files containing genetic data
+
+            spadesCmd = 'module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
+            subprocess.Popen(spadesCmd, shell=True).wait()
+
+            mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
+            subprocess.Popen(mv_spadesCmd, shell=True).wait()
+
 
     emptytouchCmd='touch '+empty_o+''
-    subprocess.check_call(emptytouchCmd, shell=True)
-
-    if assembler == "megahit":
-        megahitCmd = 'module load tools megahit/1.1.1 && mkdir '+out+' && megahit -1 '+read1+' -2 '+read2+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
-        subprocess.check_call(megahitCmd, shell=True)
-
-
-        mv_megahitCmd = 'mv '+out+'/final.contigs.fa '+out+'/temp_assembly.fa'
-        subprocess.check_call(mv_megahitCmd, shell=True)
-
-    if assembler == "spades":
-        spadesCmd = 'module unload anaconda3/4.4.0 && mkdir '+out+' && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+memory+' -k '+k_spades+' --only-assembler -o '+out+''
-        subprocess.check_call(spadesCmd, shell=True)
-
-        mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
-        subprocess.check_call(mv_spadesCmd, shell=True)
-else:
-    pass
+    subprocess.Popen(emptytouchCmd, shell=True).wait()

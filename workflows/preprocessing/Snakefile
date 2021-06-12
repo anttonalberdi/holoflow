@@ -1,5 +1,3 @@
-#configfile:"/home/projects/ku-cbd/people/nurher/holoflow/workflows/preprocessing/config.yaml"
-
 rule get_paths:
     input:
         holopath=expand("{holopath}", holopath=config['holopath']),
@@ -10,20 +8,35 @@ rule get_paths:
 ################################################################################################################
 ############################################       PREPROCESSING     ###########################################
 ################################################################################################################
+##
+# Input reformat
+##
+rule in_reformat:
+    input:
+        read1i="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.tmp.gz",
+        read2i="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq.tmp.gz"
+    output:
+        read1o="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.gz",
+        read2o="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq.gz"
+    params:
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-in_reformat.py -r1i {input.read1i} -r2i {input.read2i} -r1o {output.read1o} -r2o {output.read2o} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        """
 
 ##
 # Quality-filtering
 ##
-
 rule qual_filt:
     input:
-        read1="{projectpath}/PPR_00-InputData/{sample}_1.fastq",
-        read2="{projectpath}/PPR_00-InputData/{sample}_2.fastq"
+        read1="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.gz",
+        read2="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq.gz"
     threads: 10
     output:
-        read1="{projectpath}/PPR_01-QualityFiltered/{sample}_1.fastq",
-        read2="{projectpath}/PPR_01-QualityFiltered/{sample}_2.fastq",
-        stats_file="{projectpath}/PPR_01-QualityFiltered/{sample}.stats"
+        read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq.gz",
+        read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz",
+        stats_file="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.stats"
     params:
         adapter1=expand("{adapter1}", adapter1=config['adapter1']),
         adapter2=expand("{adapter2}", adapter2=config['adapter2']),
@@ -37,36 +50,37 @@ rule qual_filt:
         """
 
 
-
+##
+# Duplicates removal
+##
 rule dup_rem_paired:
     input:
-      read1="{projectpath}/PPR_01-QualityFiltered/{sample}_1.fastq",
-      read2="{projectpath}/PPR_01-QualityFiltered/{sample}_2.fastq"
+      read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq.gz",
+      read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz"
     output:
-      dir="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.merged.fastq"
+      out="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.merged.fastq.gz"
     threads: 10
     params:
         separator=expand("{separator}", separator=config['separator']),
         by_n=expand("{by_n}", by_n=config['by_n']),
         by_s=expand("{by_s}", by_s=config['by_s']),
+        ignore_case=expand("{ignore_case}",ignore_case=config['ignore_case']),
         file_to_dups=expand("{file_to_dups}", file_to_dups=config['file_to_dups']),
-        ignore_case=expand("{ignore_case}", ignore_case=config['ignore_case']),
         sample="{sample}"
-
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.dir} -sep {params.separator} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -i {params.ignore_case} -sample {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.out} -sep {params.separator} -i {params.ignore_case} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """
 
 
 rule dup_rem_paired_repair:
     input:
-      in_file="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.merged.fastq",
-      in_stats="{projectpath}/PPR_01-QualityFiltered/{sample}.stats"
+      in_file="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.merged.fastq.gz",
+      in_stats="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.stats"
     output:
-      read1="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_1.fastq",
-      read2="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_2.fastq",
-      out_stats="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.stats"
+      read1="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_1.fastq.gz",
+      read2="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_2.fastq.gz",
+      out_stats="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.stats"
     threads: 10
     params:
         separator=expand("{separator}", separator=config['separator'])
@@ -82,13 +96,13 @@ rule dup_rem_paired_repair:
 
 rule map_ref:
     input:
-        read1="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_1.fastq",
-        read2="{projectpath}/PPR_02-DuplicatesRemoved/{sample}_2.fastq",
-        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes'])
-
+        read1="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_1.fastq.gz",
+        read2="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_2.fastq.gz"
     output:
-        "{projectpath}/PPR_03-MappedToReference/{sample}_all.bam"
+        "{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam"
+    threads: 40
     params:
+        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
         t=expand("{t}", t=config['t']),
         k=expand("{k}", k=config['k']),
         w=expand("{w}", w=config['w']),
@@ -98,24 +112,29 @@ rule map_ref:
         O=expand("{O}", O=config['O']),
         E=expand("{E}", E=config['E']),
         L=expand("{L}", L=config['L']),
-        sample="{sample}"#,
-        #R=expand("{R}", R=config['R'])
-    shell: #-R {params.R}
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {input.refgenomes} -obam {output} -t {params.t} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L} -sample {params.sample} -log {rules.get_paths.input.logpath}
-        """
-
-rule map_ref_split:
-    input:
-        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
-        all_bam="{projectpath}/PPR_03-MappedToReference/{sample}_all.bam",
-        stats_in="{projectpath}/PPR_02-DuplicatesRemoved/{sample}.stats"
-    output:
-        ref="{projectpath}/PPR_03-MappedToReference/{sample}_ref.bam",
-        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
-        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq",
-        stats_out="{projectpath}/PPR_03-MappedToReference/{sample}.stats"
+        M=expand("{L}", L=config['L']),
+        sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-map_ref_split.py -refg {input.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output.ref} -si {input.stats_in} -so {output.stats_out} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {params.refgenomes} -obam {output} -t {params.t} -M {params.M} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        """
+
+##
+# Split bam file into metagenomic reads and host bam
+##
+rule map_ref_split:
+    input:
+        all_bam="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam",
+        stats_in="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.stats"
+    output:
+        ref="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_ref.bam",
+        read1="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_1.fastq.gz",
+        read2="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_2.fastq.gz",
+        stats_out="{projectpath}/PPR_03-MappedToReference/{job}/{sample}.stats"
+    params:
+        refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
+        sample="{sample}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-map_ref_split.py -refg {params.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output.ref} -si {input.stats_in} -so {output.stats_out} -ID {params.sample} -log {rules.get_paths.input.logpath}
         """

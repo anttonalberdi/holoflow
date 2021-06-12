@@ -1,0 +1,84 @@
+
+ # 30.06.20
+
+rule get_paths:
+    input:
+        holopath=expand("{holopath}", holopath=config['holopath']),
+        logpath=expand("{logpath}", logpath=config['logpath'])
+
+
+################################################################################################################
+ ##############################################       DIET     #################################################
+################################################################################################################
+
+
+# ANNOTATE
+# 1. Extract contigs not in MAGs (grep -v contigs in MAG in coassembly.fa) --- FOR NOW USE COASSEMBLY.FA FILE [INPUT 1]
+
+# 2. Predict ORFs with Prodigal
+rule predict:
+    input:
+        assembly="{projectpath}/MDI_00-InputData/{group}/{group}.fa"
+    output:
+        proteins = "{projectpath}/MDI_01-Predict/{group}/{group}.ptranslations.faa",
+        nucl = "{projectpath}/MDI_01-Predict/{group}/{group}.predORFs.fna",
+        coords = "{projectpath}/MDI_01-Predict/{group}/{group}.coords.gff"
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_pred.py -a {input.assembly} -faa {output.proteins} -fna {output.nucl} -coords {output.coords} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """
+
+# 3. Diamond map these orfs to UNIPROT {Only eukaryotic entries . Lasse }
+rule annotate:
+    input:
+        "{projectpath}/MDI_01-Predict/{group}/{group}.ptranslations.faa"
+    output:
+        directory("{projectpath}/MDI_02-Annotate/{group}")
+    params:
+        annot_db=expand("{annot_db}", annot_db=config['annot_db']), # plants, invertebrates ... UNDERSQUARE SPLIT
+        db_dir=expand("{db_dir}", db_dir=config['db_dir']), # this should be added to config by .py launcher
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_annot.py -faa {input} -out_dir {output} -db_names {params.annot_db} -db_dir {params.db_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """
+
+
+# MAP
+# 1. In metagenomics_CB extract fastq (same as map_ref_split in preprocessing) with reads that are NOT in MAGs - MAG_Mapping step add fastq [INPUT 2]
+# Map each sample .fastq to Predicted ORFs .fna
+rule map_diet:
+    input:
+        fna_orf="{projectpath}/MDI_01-Predict/{group}/{group}.predORFs.fna", # works as gene catalogue
+        annot = "{projectpath}/MDI_02-Annotate/{group}" # not really necessary for this rule, but to keep dependency, otherwise it is skipped
+    output:
+        directory("{projectpath}/MDI_03-MapToGC/{group}")
+    params:
+        fq_dir="{projectpath}/MDI_00-InputData/{group}/mag_unmapped_fastq", # directory to be created in .py launcher - soft link to files
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-diet_map_GC.py -fna {input.fna_orf} -fq_dir {params.fq_dir} -out_dir {output} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
+        """
+
+
+# QUANITFY ######### check again soon
+# Get number of mapped reads per GENE
+rule quantify_diet:
+    input:
+        annot_dir="{projectpath}/MDI_02-Annotate/{group}",
+        bam_dir="{projectpath}/MDI_03-MapToGC/{group}"
+    output:
+        directory("{projectpath}/MDI_04-Quantify/{group}")
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+        """
+        python {rules.get_paths.input.holopath}/bin/holo-diet_quantify.py -annot_dir {input.annot_dir} -bam_dir {input.bam_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        """

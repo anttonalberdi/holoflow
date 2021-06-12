@@ -1,0 +1,44 @@
+
+
+# assembly options
+coassembly:
+  True
+
+threads:
+  40
+
+# spades/megahit
+assembler:
+  megahit
+
+memory:
+  180
+
+#should be higher than 100 if spades wants to be used
+
+klist_megahit:
+  "21,29,39,59,79,99,119,141"
+
+klist_spades:
+  "21,29,39,59,79,99,119"
+
+# reformat assembly options
+min_contig_len:
+  1000
+
+# binning with concoct parameters
+
+min_cl_tobin:
+  1500
+
+min_rl_tobin:
+  150
+
+# bin refinement options
+dastool_db:
+  /home/projects/ku-cbd/people/antalb/databases/dastool_db
+
+
+# either diamond, blast or usearch
+search_eng:
+  diamond

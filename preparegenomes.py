@@ -3,11 +3,11 @@ import subprocess
 import os
 import glob
 import sys
-import ruamel.yaml
 
 ###########################
 #Argument parsing
 ###########################
+# Gather input files and variables from command line
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-f', help="input.txt file", dest="input_txt", required=True)
 parser.add_argument('-d', help="temp files directory path", dest="work_dir", required=True)
@@ -24,22 +24,31 @@ cores=args.threads
 file = os.path.dirname(sys.argv[0])
 curr_dir = os.path.abspath(file)
 
-
+# If the user does not specify a config file, provide default file in GitHub
+# If the user does not specify a config file, provide default file in GitHub
 if not (args.config_file):
-    config = os.path.join(os.path.abspath(curr_dir),"workflows/preparegenomes/config.yaml")
+    cpconfigCmd= 'cp '+curr_dir+'/workflows/preparegenomes/config.yaml '+path+'/config.yaml'
+    subprocess.Popen(cpconfigCmd,shell=True).wait()
+
+    config = path+'/config.yaml'
 else:
     config=args.config_file
 
+# If the user does not specify a log file, provide default path
 if not (args.log):
-    log = os.path.join(path,"Holoflow_metagenomics.log")
+    log = os.path.join(path,"Holoflow_preparegenomes.log")
 else:
     log=args.log
 
 
-##### CONIF LOG FALSE - SET A DEFAULT
+    # Load dependencies
+loaddepCmd='module unload gcc && module load tools anaconda3/4.4.0'
+subprocess.Popen(loaddepCmd,shell=True).wait()
 
 
     #Append current directory to .yaml config for standalone calling
+    # see preprocessing.py for verbose description
+import ruamel.yaml
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
 with open(str(config), 'r') as config_file:
@@ -48,6 +57,7 @@ with open(str(config), 'r') as config_file:
         data = {}
 
 with open(str(config), 'w') as config_file:
+    data['threads'] = str(cores)
     data['holopath'] = str(curr_dir)
     data['logpath'] = str(log)
     dump = yaml.dump(data, config_file)
@@ -64,6 +74,8 @@ def set_up_preparegenomes(path,in_f):
     """Generate output names files from input.txt. Rename and move
     input files where snakemake expects to find them if necessary."""
     db_dir = os.path.join(path,"PRG")
+
+
     if not os.path.exists(db_dir):
         os.makedirs(db_dir)
 
@@ -76,7 +88,11 @@ def set_up_preparegenomes(path,in_f):
         output_files=''
 
 
-        lines = in_file.readlines() # Read input.txt lines
+        all_lines = in_file.readlines() # Read input.txt lines
+        # remove empty lines
+        all_lines = map(lambda s: s.strip(), all_lines)
+        lines = list(filter(None, list(all_lines)))
+
         last_file = lines[-1]
         for file in lines:
 
@@ -92,7 +108,7 @@ def set_up_preparegenomes(path,in_f):
                 if not (refg[2] == db_ID):
                     # call merging function
                     db_paths+=''+merge_genomes(ref_genomes_IDs,ref_genomes_paths,db_ID)+' '
-                    output_files+=''+path+'/PRG/'+db_ID+'.fna.tar.gz'
+                    output_files+=''+path+'/'+db_ID+'.tar.gz'
                     db_ID = refg[2]
                     ref_genomes_IDs=list()
                     ref_genomes_paths=list()
@@ -104,7 +120,7 @@ def set_up_preparegenomes(path,in_f):
                     db_ID = refg[2]
                     # call merging function
                     db_paths+=''+merge_genomes(ref_genomes_IDs,ref_genomes_paths,db_ID)+' '
-                    output_files+=''+path+'/PRG/'+db_ID+'.fna.tar.gz'
+                    output_files+=''+path+'/'+db_ID+'.tar.gz'
 
                 else:
                     pass
@@ -126,13 +142,12 @@ def merge_genomes(refg_IDs,refg_Paths,db_ID):
             genome = refg_Paths[i]
             ID = refg_IDs[i]
 
-            print(''+db_dir+'/'+db_ID+'.fna')
 
             if not (os.path.exists(str(''+db_dir+'/'+ID+'.fna'))):
                 if genome.endswith('.gz'): # uncompress genome for editing
                                         # and save it in db_dir
 
-                    uncompressCmd='gunzip -c '+genome+' > '+db_dir+'/'+ID+'.fna'
+                    uncompressCmd='ln -s '+genome+' '+db_dir+'/'+ID+'.fna.gz && gunzip -c '+db_dir+'/'+ID+'.fna.gz > '+db_dir+'/'+ID+'.fna'
                     subprocess.check_call(uncompressCmd, shell=True)
 
                     # edit ">" genome identifiers
@@ -143,7 +158,7 @@ def merge_genomes(refg_IDs,refg_Paths,db_ID):
 
                 else:
                     # move to project dir and edit ">" genome identifiers
-                    mvgenomeCmd='mv '+genome+' '+db_dir+'/'+ID+'.fna'
+                    mvgenomeCmd='ln -s '+genome+' '+db_dir+'/'+ID+'.fna'
                     subprocess.check_call(mvgenomeCmd, shell=True)
                     editgenomeCmd='sed -i "s/>/>'+str(ID)+'_/g" '+db_dir+'/'+ID+'.fna'
                     subprocess.check_call(editgenomeCmd, shell=True)
@@ -156,11 +171,14 @@ def merge_genomes(refg_IDs,refg_Paths,db_ID):
         mergeCmd='cd '+db_dir+' && cat *.fna > '+db_path+''
         subprocess.check_call(mergeCmd, shell=True)
 
-        # remove all individual genomes
-        rmCmd='cd '+db_dir+' && ls | grep -v "'+db_ID+'*" | xargs rm'
-        subprocess.check_call(rmCmd, shell=True)
+        # remove all individual genomes if more than one
+        if os.path.exists(db_dir+"/"+ID+".fna"):
+            rmCmd='cd '+db_dir+' && ls | grep -v "'+db_ID+'*" | xargs rm'
+            subprocess.check_call(rmCmd, shell=True)
+        else:
+            pass
 
-    else: # the db file alreadhy exists
+    else: # the db file already exists
         # define full db path and merge all reference genomes in it
         db_path = ''+db_dir+'/'+db_ID+'.fna'
 
@@ -194,10 +212,29 @@ def run_preparegenomes(in_f, path, config, cores):
     path_snkf = os.path.join(holopath,'workflows/preparegenomes/Snakefile')
 
     # Run snakemake
-    prg_snk_Cmd = 'module unload gcc/5.1.0 && module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+path_out[1]+' --configfile '+config+' --cores '+cores+''
+    log_file = open(str(log),'w+')
+    log_file.write("Have a nice run!\n\t\tHOLOFOW Preparegenomes starting")
+    log_file.close()
+
+    prg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+path_out[1]+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(prg_snk_Cmd, shell=True)
 
-    print("Have a nice run!\n\t\tHOLOFOW Prepare genomes starting")
+    log_file = open(str(log),'a+')
+    log_file.write("\n\t\tHOLOFOW Preparegenomes has finished :)")
+    log_file.close()
+
+
+    #Check how the run went
+
+    for file in path_out.split(" "):
+        exist.append(os.path.isfile(file))
+
+    if not all(exist): # all output files exist
+
+        log_file = open(str(log),'a+')
+        log_file.write("Looks like something went wrong...\n\t\t")
+        log_file.close()
+
 
 
 

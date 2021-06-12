@@ -45,7 +45,7 @@ if os.path.exists(str(idx_bwa)):
     pass
 
 else:
-    idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+decomp_db+''
+    idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+decomp_db+'' ###### bwa cores 1 
     subprocess.check_call(idxbwaCmd, shell=True)
 
 
@@ -55,5 +55,5 @@ if os.path.exists(str(idx_smt)):
 
 else:
     # index
-    idxsamCmd='module load tools samtools/1.9 && samtools faidx '+decomp_db+''
+    idxsamCmd='module load tools samtools/1.11 && samtools faidx '+decomp_db+''
     subprocess.check_call(idxsamCmd, shell=True)

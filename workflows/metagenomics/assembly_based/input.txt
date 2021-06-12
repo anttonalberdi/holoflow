@@ -1,0 +1,3 @@
+# Assembly_ID path_to_assembly
+Bat_assembly  /home/my/directory1/assembly_bats.fa
+Cavia_assembly /home/my/directory1/assembly_bats.gz

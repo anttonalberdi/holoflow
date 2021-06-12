@@ -3,6 +3,7 @@
 import subprocess
 import argparse
 import time
+import gzip
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
@@ -14,6 +15,7 @@ parser.add_argument('-obam', help="bam file", dest="bam", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-si', help="stats input file", dest="in_stats", required=True)
 parser.add_argument('-so', help="stats output file", dest="out_stats", required=True)
+parser.add_argument('-ID', help="ID", dest="ID", required=True)
 args = parser.parse_args()
 
 all_bam=args.all_bam
@@ -24,20 +26,23 @@ read2=args.read2
 log=args.log
 in_stats=args.in_stats
 out_stats=args.out_stats
+ID=args.ID
 
 # Run
 # Write to log
 with open(str(log),'a+') as logi:
     logi.write('A .bam file is generated containing the mapped reads, and two .fastq files containing the metagenomic ones.\n\n')
 
-
-refbam1Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+''
+# sort bam for genomics
+refbam1Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+'.notsorted && samtools sort -T '+bam+'.'+ID+' -o '+bam+' '+bam+'.notsorted && rm '+bam+'.notsorted'
 subprocess.check_call(refbam1Cmd, shell=True)
 
-refbam2Cmd = 'module load tools samtools/1.9 && samtools view -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -1 '+read1+' -2 '+read2+' -'
+# extract not-mapped to the reference genome reads + keep reference bam
+refbam2Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -c 6 -1 '+read1+' -2 '+read2+' -'
 subprocess.check_call(refbam2Cmd, shell=True)
 
-rmAllbamCmd = 'rm '+all_bam+''
+# remove general bam
+rmAllbamCmd = 'rm '+all_bam+'' # Change this if dark matter workflow
 subprocess.check_call(rmAllbamCmd, shell=True)
 
 
@@ -46,10 +51,9 @@ subprocess.check_call(rmAllbamCmd, shell=True)
 mvstatsCmd= 'mv '+in_stats+' '+out_stats+''
 subprocess.check_call(mvstatsCmd, shell=True)
 
-
 reads = 0
 bases = 0
-with open(str(read1), 'rb') as read:
+with open(str(read1), 'rt') as read: # outputs are compressed files: .gz extension
     for id in read:
         seq = next(read)
         reads += 1

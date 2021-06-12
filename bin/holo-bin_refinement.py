@@ -13,7 +13,7 @@ parser.add_argument('-a', help="assembly file", dest="a", required=True)
 parser.add_argument('-bam', help="assembly mapped bam", dest="bam", required=True)
 parser.add_argument('-dastool_bd', help="dastool bin directory", dest="dt_bd", required=True)
 parser.add_argument('-out_dir', help="main output directory", dest="main_out_dir", required=True)
-parser.add_argument('-sample', help="sample", dest="sample", required=True)
+parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 args = parser.parse_args()
@@ -23,7 +23,7 @@ a=args.a
 bam=args.bam
 dt_bd=args.dt_bd
 main_out_dir=args.main_out_dir
-sample=args.sample
+ID=args.ID
 log=args.log
 threads=args.threads
 
@@ -34,7 +34,7 @@ threads=args.threads
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
 with open(str(log),'a+') as logi:
-    logi.write('\t\t'+current_time+'\tRefineM Bin Refinement step - Sample '+sample+'\n')
+    logi.write('\t\t'+current_time+'\tRefineM Bin Refinement step - '+ID+'\n')
     logi.write('Based on genome properties and taxonomy, RefineM takes as input all Dastool bins merged from Maxbin and Metabat2\nand try to increase its completeness while reducing the redundancy. \n\n')
 
 
@@ -60,12 +60,12 @@ if os.path.exists(str(dt_bd)):
         #index bam before filtering
     idx_bam = ''+bam+'.bai'
     if not (os.path.exists(str(idx_bam))):
-        idxbamCmd='module load tools samtools/1.9 && samtools index -b '+bam+''
+        idxbamCmd='module load tools samtools/1.11 && samtools index -b '+bam+''
         subprocess.check_call(idxbamCmd, shell=True)
 
 
         # filter bam - create a variable with the headers
-    filterbamCmd='module load tools samtools/1.9 && headers=$(<'+dt_bd+'/temp_headers.txt) && samtools view -h '+bam+' $headers > '+bam+'.filtered.sam && samtools view -S -b '+bam+'.filtered.sam > '+bam+'.filtered && rm '+bam+'.filtered.sam '+dt_bd+'/temp_headers.txt'
+    filterbamCmd='module load tools samtools/1.11 && headers=$(<'+dt_bd+'/temp_headers.txt) && samtools view -h '+bam+' $headers > '+bam+'.filtered.sam && samtools view -S -b '+bam+'.filtered.sam > '+bam+'.filtered && rm '+bam+'.filtered.sam '+dt_bd+'/temp_headers.txt'
     subprocess.check_call(filterbamCmd, shell=True)
 
     bam = ''+bam+'.filtered'
@@ -73,7 +73,7 @@ if os.path.exists(str(dt_bd)):
 
         #index bam before refineM
     idx_bam_f = ''+bam+'.bai'
-    idxbamCmd='module load tools samtools/1.9 && samtools index -b '+bam+''
+    idxbamCmd='module load tools samtools/1.11 && samtools index -b '+bam+''
     subprocess.check_call(idxbamCmd, shell=True)
 
     # RefineM
