@@ -149,15 +149,15 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
 
   1. Sample group name to analyse.  
   2. Path to directory containing host reads BAM alignment sorted files - If *preprocessing.py* was used, these are the resulting *ref* BAMs path.   
-  3. Chromosome list. This should be a text file with a single column depicting chromosome IDs. Note that **the given chromosome IDs should be in accordance with the provided reference genome**, otherwise these won't be detected by Holoflow.  
+  3. Chromosome list. This should be a text file with a single column depicting chromosome IDs. Note that **the given chromosome IDs should be in accordance with the provided reference genome**, otherwise these won't be detected by Holoflow. Relevantly, if the used **reference genome does not have chromosomes**, the user can choose to analyse her dataset as one single chromosome, by only writing **ALL** in the chromosome list. 
   
 - Example:  
 
 |   |   |   |
 | --- | --- | --- |
-| Chicken_samples   | /home/path/to/chicken/bams      |  /home/path/to/chicken_chrlist.txt  |
-| Cervid_samples   | /home/path/to/cervid/PPR_03-MappedToReference   | /home/path/to/cervid_chrlist.txt  |
-| Cavia_samples | /home/path/to/cavia/bams     | /home/path/to/cavia_chrlist.txt  |
+| Group1   | /home/path/to/group1/bams      |  /home/path/to/group1_chrlist.txt  |
+| Group2   | /home/path/to/group2/PPR_03-MappedToReference   | /home/path/to/group2_chrlist.txt  |
+| Groupn | /home/path/to/groupn/bams     | /home/path/to/groupn_chrlist.txt  |
 
 
  
