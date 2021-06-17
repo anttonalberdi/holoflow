@@ -11,7 +11,7 @@ rule get_paths:
 
 ##
 # DB indexing
-##
+## Index db created by concatenating all reference genomes with bwa
 
 rule db_index:
     input:
@@ -24,7 +24,7 @@ rule db_index:
         python {rules.get_paths.input.holopath}/bin/holo-db_index.py -db {input.db_path} -idx_bwa {output.idx_db_bwa} -idx_smt {output.idx_db_samtools} -log {rules.get_paths.input.logpath}
         """
 
-
+## Check all files necessary exist, then create .tar.gz file with everything
 rule check_compress:
     input:
         db_path=expand("{DB_path}", DB_path=config['DB_path']),
