@@ -15,7 +15,9 @@ rule get_paths:
 
 ##
 # Map MAGs to original metagenomic fastq files
-##
+## A MAG catalogue file is created to which sample reads are to be mapped competitively.
+## A set of bam files, one per sample, is created and a file outputting % of reads recovered from each sample as well.
+
 rule mag_mapping:
     input:
         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
@@ -33,7 +35,8 @@ rule mag_mapping:
 
 ##
 # Get MAG coverage for each sample
-##
+## Using the previously generated bam files, for each bam the coverage of each mag is extracted.
+
 rule coverage:
     input:
         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
@@ -71,7 +74,10 @@ rule checkm:
 ##
 # Get MAG coverage on SELECTED KOs (single-copy core genes: https://github.com/anttonalberdi/metafunk/blob/master/files/USiCGs.txt)
 ##
-### Needs optimization 
+### Needs optimization
+# This is now calculated with htseq-counts, but would probably be more efficient with samtools¿
+# Too many files are generated and even though it is parallelized it can take a long time.
+
 rule genes_coverage:
     input:
         quality="{projectpath}/MFS_03-BinQuality/{group}/{group}_binQuality_Info.csv", # unnecessary for this rule, necessary for creating dependence
