@@ -124,7 +124,6 @@ all_counts_annot_genes = out_dir+'/'+ID+'.annot_counts_tmp.txt'
 with open(all_counts_annot_genes,'w+') as final_annot_counts:
     final_annot_counts.write(sample_list+'\n')
 
-######## SAMPLE LIST MISSING #########
 
 pasteCmd='infiles="'+' '.join(annot_genes_files)+'" && cat '+annot_genes_files[0]+' | cut -f1,2 > GENEIDS && for i in $infiles; do sed -i -E "s/^.*\t.*\t//" $i; done && paste GENEIDS '+' '.join(annot_genes_files)+' >> '+all_counts_annot_genes+' && rm GENEIDS'
 subprocess.Popen(pasteCmd,shell=True).wait()
