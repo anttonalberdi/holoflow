@@ -107,7 +107,10 @@ if (os.path.isfile(str(IDXmag_catalogue_file))):
 
         # extract not-mapped to the reference genome reads + keep reference bam
         not_map = out_dir+'/not_MAG_mapped'
-        os.makedirs(not_map)
+        if not os.path.exists(not_map):
+            os.makedirs(not_map)
+        else:
+            pass
         read1_not=not_map+'/'+sample+'_notMAGmap_1.fastq.gz'
         read2_not=not_map+'/'+sample+'_notMAGmap_2.fastq.gz'
         refbamCmd = 'module load tools samtools/1.11 && samtools view -T '+mag_catalogue_file+' -b -f12 '+out_bam+' | samtools fastq -1 '+read1_not+' -2 '+read2_not+' -'

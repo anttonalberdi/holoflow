@@ -13,7 +13,7 @@ rule get_paths:
 
 
 
-# BCFtools as variant caller
+# BCFtools as variant caller - selected by user in .py launcher command and then uploaded to config file by .py launcher
 
 if config['var_caller'] == "bcftools":
 
@@ -40,10 +40,11 @@ if config['var_caller'] == "bcftools":
             """
             python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -Dquality {params.data_quality} -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual} -multicaller {params.multicaller} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
             """
-        #python {rules.get_paths.input.holopath}/bin/holo-variant_BCFtools.py  -bam_dir {input} -out_dir {output} -ref_g {params.ref_genome} -chr_list {params.chr_list} -degr_mapp_qual {params.degr_mapp_qual} -min_mapp_qual {params.min_mapp_qual} -min_base_qual {params.min_base_qual}  -multicaller {params.multicaller} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath} #-not_indels {params.not_indels}
 
 
     ## HD Filtering
+    # If these are high depth files, then the called variants will be filtered as a step towards the creation of a reference panel.
+
     if config['data_quality'] == "HD":
 
         rule bcf_filter:
@@ -63,11 +64,11 @@ if config['var_caller'] == "bcftools":
 
 
 
-# GATK as variant caller
+# GATK as variant caller - selected by user in .py launcher command and then uploaded to config file by .py launcher
 
 if config['var_caller'] == "gatk":
     ##
-    # run GATK per sample and chromosome
+    # run GATK per sample and chromosome - one file per combination
     ##
     rule get_samples:
         input:
@@ -88,7 +89,7 @@ if config['var_caller'] == "gatk":
 
 
     ##
-    # run GATK per chromosome on all group
+    # run GATK per chromosome on all group - merge all of one chr files per all samples in group, obtain same output as BCF
     ##
     rule get_group:
         input:
@@ -107,6 +108,8 @@ if config['var_caller'] == "gatk":
             """
 
     ## HD Filtering
+    # If these are high depth files, then the called variants will be filtered as a step towards the creation of a reference panel.
+
     if config['data_quality'] == "HD":
 
         rule gatk_filter:
@@ -128,6 +131,8 @@ if config['var_caller'] == "gatk":
 
 
 ## HD Phasing
+# If these are high depth files, after the filtering of the variants, phasing will lead to the generation of a reference panel for LD samples
+
 if config['data_quality'] == "HD":
 
     rule phasing:
@@ -148,7 +153,8 @@ if config['data_quality'] == "HD":
 
 
 # #ANGSD as variant caller
-#
+# Sofi is not sure this is relevant in our context: too complex and probably won't make a big difference
+
 # if (config['var_caller'] == "angsd") and (config['data_quality'] == "LD"):
 #
 #     ##
@@ -172,7 +178,11 @@ if config['data_quality'] == "HD":
 
 
 ### Conditional LD
-#Reference panel in config has to be defined
+# If these are low depth samples, the obtained variants will have to be improved.
+# This is done by updating the obtained likelihoods and then imputing, this depends on a reference panel
+# whose path must be especified in the .py launcher command to be loaded to config.
+# The reference panel can be the one outputted by this workflow or a pre-existing one. 
+
 
 if (config['data_quality'] == "LD") and (config['ref_panel_HD'] != ''):
 
