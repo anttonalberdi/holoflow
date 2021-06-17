@@ -35,9 +35,6 @@ with open(str(log),'a+') as logi:
     logi.write('\t\t'+current_time+'\tMAG Mapping step - '+ID+'\n')
     logi.write('MAGs are being mapped to the original metagenomic read files to assess its coverage.\n\n')
 
-if not os.path.exists(out_dir):
-    mkdirCmd='mkdir -p '+out_dir+''
-    subprocess.Popen(mkdirCmd,shell=True).wait()
 
 # Create MAGs file --> competitive mapping for each sample
 mag_catalogue_file=out_dir+'/'+ID+'_MAG_Catalogue.fa'
@@ -66,8 +63,8 @@ if not (os.path.isfile(str(IDXmag_catalogue_file))):
     idxsamCmd='module load tools samtools/1.11 && samtools faidx '+mag_catalogue_file+''
     idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+mag_catalogue_file+''
 
-    #subprocess.Popen(idxbwaCmd, shell=True).wait()
-    #subprocess.Popen(idxsamCmd, shell=True).wait()
+    subprocess.Popen(idxbwaCmd, shell=True).wait()
+    subprocess.Popen(idxsamCmd, shell=True).wait()
 
 
 # Initialize stats
@@ -103,7 +100,7 @@ if (os.path.isfile(str(IDXmag_catalogue_file))):
             read2 = fq_dir+'/'+sample+'_2.fastq'
 
         mapbinCmd='module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+mag_catalogue_file+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+out_dir+'/'+ID+' -o '+out_bam+''
-        #subprocess.Popen(mapbinCmd, shell=True).wait()
+        subprocess.Popen(mapbinCmd, shell=True).wait()
 
         # extract not-mapped to the reference genome reads + keep reference bam
         not_map = out_dir+'/not_MAG_mapped'
@@ -119,13 +116,13 @@ if (os.path.isfile(str(IDXmag_catalogue_file))):
         # Get total number of initial reads bases
         # samtools view -c
         totalCmd='module load tools samtools/1.11 && samtools view -c '+out_bam+' >> '+total_reads_tmp+''
-        #subprocess.Popen(totalCmd, shell=True).wait()
+        subprocess.Popen(totalCmd, shell=True).wait()
 
 
         # Get mapped number of reads
         # samtools view -c -F 4
         mappedCmd='module load tools samtools/1.11 && samtools view -c -F 4 '+out_bam+' >> '+mapped_reads_tmp+''
-        #subprocess.Popen(mappedCmd, shell=True).wait()
+        subprocess.Popen(mappedCmd, shell=True).wait()
 
 
     ## Build stats file
@@ -139,18 +136,18 @@ if (os.path.isfile(str(IDXmag_catalogue_file))):
         mapped_reads = list()
         for line in mapped_reads_file.readlines():
             mapped_reads.append(line.strip())
-    #os.remove(mapped_reads_tmp)
+    os.remove(mapped_reads_tmp)
 
         # Retrieve all numbers of TOTAL reads
     with open(total_reads_tmp,'r+') as total_reads_file:
         total_reads = list()
         for line in total_reads_file.readlines():
             total_reads.append(line.strip())
-    #os.remove(total_reads_tmp)
+    os.remove(total_reads_tmp)
 
 
     # Write number of mapped reads per sample
-    #stats.write('Mapped Reads'+'\t'+('\t').join(mapped_reads)+'\n')
+    stats.write('Mapped Reads'+'\t'+('\t').join(mapped_reads)+'\n')
 
         # Calculate percentage of mapped reads from: (mapped reads/ total reads) * 100
     mapped_reads = np.array(mapped_reads).astype(int)
@@ -160,4 +157,4 @@ if (os.path.isfile(str(IDXmag_catalogue_file))):
     percentages = percentages.round(decimals=2).tolist() # true division
 
     # Write percentagesfinal_tips = (',').join('"{0}"'.format(tip) for tip in final_tips)
-    #stats.write('% Mapped Reads'+'\t'+('\t').join(str(perc) for perc in percentages))
+    stats.write('% Mapped Reads'+'\t'+('\t').join(str(perc) for perc in percentages))
