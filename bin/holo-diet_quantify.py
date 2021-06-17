@@ -56,13 +56,13 @@ if not glob.glob(annot_dir+'/*__annot.dmnd'):
         mvCmd='mv '+annot_files_str+'  '+annot_db+''        # if only one annotation db, only rename
         subprocess.Popen(mvCmd,shell=True).wait()
 else:
-    annot_db = glob.glob(annot_dir+'/*__annot.dmnd')[0]
+     annot_db = glob.glob(annot_dir+'/*__annot.dmnd')[0]
 
     # Create list of the genes that were successfully annotated by diamond
 gene_annot__ids = {}
 with open(annot_db,'r') as annot_data:
     for line in annot_data.readlines():
-        (gene_ID,gene_annot) = line.split('\t', 1) # keep two first fields of file
+        (gene_ID,gene_annot,rest) = line.split('\t', 2) # keep two first fields of file
         gene_annot__ids[gene_ID.strip()] = gene_annot.strip()
 
 
@@ -75,13 +75,13 @@ sample_list='Gene_ID\t'
 for bam in bam_files:
     if not os.path.isfile(bam+'.bai'):
         idxsamCmd='module load tools samtools/1.11 && samtools index '+bam+''
-        subprocess.Popen(idxsamCmd, shell=True).wait()
+        #subprocess.Popen(idxsamCmd, shell=True).wait()
 
     sample = os.path.basename(bam).replace(ID+'.','').replace('.MAG_unmapped.bam','')
     sample_list += sample+'\t'
     all_genes_counts = out_dir+'/'+ID+'.'+sample+'.all_genes_counts.txt'
 
-        # If the bam file has been indexed, continue
+        #If the bam file has been indexed, continue
     if os.path.isfile(bam+'.bai'):
         if not os.path.exists(out_dir):
             mkdirCmd='mkdir -p '+out_dir+''
@@ -101,26 +101,32 @@ for bam in bam_files:
 all_genes_files = glob.glob(out_dir+'/*all_genes_counts.txt')
 
 for file in all_genes_files:
-        # file containing only annot
-     annot_genes_counts = out_dir+'/'+ID+'.'+sample+'.annot_genes_counts.txt'
+    print(file)
+    # file containing only annot
+    sample = os.path.basename(file).replace(ID+'.','').replace('.all_genes_counts.txt','')
+    annot_genes_counts = out_dir+'/'+ID+'.'+sample+'.annot_genes_counts.txt'
 
-     with open(file,'r') as all_genes_file, open(annot_genes_counts,'w+') as annot_genes:
-         for line in all_genes_file.readlines():
-             # if the given gene is found in the annot file keep it
-             gene_ID = line.split()[0].strip()
-             if gene_ID in gene_annot__ids.keys():
-                 annot_genes.write(gene_annot__ids[gene_ID]+'\t'+line) # write the gene annotation + gene id + COUNTS
-             else:
-                 pass
+    with open(file,'r') as all_genes_file, open(annot_genes_counts,'w+') as annot_genes:
+        for line in all_genes_file.readlines():
+            # if the given gene is found in the annot file keep it
+            gene_ID = line.split('\t')[0].strip()
+            if gene_ID in gene_annot__ids.keys():
+                annot_genes.write(gene_annot__ids[gene_ID]+'\t'+line) # write the gene annotation + gene id + COUNTS
+            else:
+                pass
 
 
 # Merge counts of all samples in one file
-annot_genes_files = glob.glob(out_dir+'/*all_genes_counts.txt')
+annot_genes_files = glob.glob(out_dir+'/*annot_genes_counts.txt')
 
 # 1 unique file per group with counts of annotates genes for all samples
 all_counts_annot_genes = out_dir+'/'+ID+'.annot_counts_tmp.txt'
+with open(all_counts_annot_genes,'w+') as final_annot_counts:
+    final_annot_counts.write(sample_list+'\n')
 
-pasteCmd='infiles="'+' '.join(annot_genes_files)+'" && cat '+annot_genes_files[0]+' | cut -f1,2 > GENEIDS && for i in $infiles; do sed -i -E "s/^.*\t.*\t//" $i; done && paste GENEIDS '+' '.join(annot_genes_files)+' > '+all_counts_annot_genes+' && rm GENEIDS'
+######## SAMPLE LIST MISSING #########
+
+pasteCmd='infiles="'+' '.join(annot_genes_files)+'" && cat '+annot_genes_files[0]+' | cut -f1,2 > GENEIDS && for i in $infiles; do sed -i -E "s/^.*\t.*\t//" $i; done && paste GENEIDS '+' '.join(annot_genes_files)+' >> '+all_counts_annot_genes+' && rm GENEIDS'
 subprocess.Popen(pasteCmd,shell=True).wait()
 # All annot genes files have the same genes, the total gene set. Thus, take first two columns (original gene ID, annotation) of the first file, and simply concatenate with all the
 # counts in all files.

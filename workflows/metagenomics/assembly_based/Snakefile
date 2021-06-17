@@ -17,7 +17,7 @@ rule get_paths:
 
 ##
 # Assembly
-##
+## This rule will functionally annotate an assembly file with DRAM
 rule assembly_annot:
     input:
         read1="{projectpath}/MAB_00-InputData/{job}/{group}.fastq",
