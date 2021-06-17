@@ -69,7 +69,7 @@ with open(annot_db,'r') as annot_data:
 # Will calculate total number of reads in each bam (mapped and unmapped)
 # In case later user wants to get relative abundances
 total_reads = out_dir+'/total_num_reads_BAMs.txt'
-sample_list='Gene_ID\t'
+sample_list='Gene_Annot\tGene_ID\t'
 
 # Index bam files
 for bam in bam_files:
@@ -78,7 +78,6 @@ for bam in bam_files:
         #subprocess.Popen(idxsamCmd, shell=True).wait()
 
     sample = os.path.basename(bam).replace(ID+'.','').replace('.MAG_unmapped.bam','')
-    sample_list += sample+'\t'
     all_genes_counts = out_dir+'/'+ID+'.'+sample+'.all_genes_counts.txt'
 
         #If the bam file has been indexed, continue
@@ -99,12 +98,14 @@ for bam in bam_files:
 
 # Keep only genes successfully annotated by diamond from all genes
 all_genes_files = glob.glob(out_dir+'/*all_genes_counts.txt')
+annot_genes_files = list()
 
 for file in all_genes_files:
-    print(file)
     # file containing only annot
     sample = os.path.basename(file).replace(ID+'.','').replace('.all_genes_counts.txt','')
+    sample_list += sample+'\t'
     annot_genes_counts = out_dir+'/'+ID+'.'+sample+'.annot_genes_counts.txt'
+    annot_genes_files.append(annot_genes_counts)
 
     with open(file,'r') as all_genes_file, open(annot_genes_counts,'w+') as annot_genes:
         for line in all_genes_file.readlines():
@@ -116,13 +117,10 @@ for file in all_genes_files:
                 pass
 
 
-# Merge counts of all samples in one file
-annot_genes_files = glob.glob(out_dir+'/*annot_genes_counts.txt')
-
 # 1 unique file per group with counts of annotates genes for all samples
 all_counts_annot_genes = out_dir+'/'+ID+'.annot_counts_tmp.txt'
 with open(all_counts_annot_genes,'w+') as final_annot_counts:
-    final_annot_counts.write(sample_list+'\n')
+    final_annot_counts.write('\t'.join(sample_list)+'\n')
 
 
 pasteCmd='infiles="'+' '.join(annot_genes_files)+'" && cat '+annot_genes_files[0]+' | cut -f1,2 > GENEIDS && for i in $infiles; do sed -i -E "s/^.*\t.*\t//" $i; done && paste GENEIDS '+' '.join(annot_genes_files)+' >> '+all_counts_annot_genes+' && rm GENEIDS'
