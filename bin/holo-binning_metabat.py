@@ -36,7 +36,7 @@ with open(str(log),'a+') as log:
     log.write('Individual assembly binning is being done by METABAT. This will sort the contigs into groups,\ncalled bins, which ideally will belong to taxonomically close organisms. This is mainly done\nbased on coverage and tetranucleotide frequencies.\n\n')
 
 
-
+# If no bins in directory, then run metabat
 if not glob.glob(str(bb)+"*.fa"):
     metabatCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && metabat2 -i '+a+' -a '+d+' -o '+bb+' -m 1500 -t '+t+''
     subprocess.Popen(metabatCmd, shell=True).wait()
@@ -49,6 +49,7 @@ if not glob.glob(str(bb)+"*.fa"):
         full_bin=os.path.abspath(bin)
         new_bin=full_bin.replace("mtb.","mtb")
 
+        # rename bins to standard 
         renameBinCmd='mv '+full_bin+' '+new_bin+''
         subprocess.check_call(renameBinCmd, shell=True)
 

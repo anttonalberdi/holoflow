@@ -38,9 +38,9 @@ if not (os.path.exists(str(out_dir))):
 
     # Get bin names and full paths
     bin_dir=str(bin_dir)+"/dereplicated_genomes"
-    bin_list=glob.glob(str(bin_dir)+"/*.fa")
+    bin_list=glob.glob(str(bin_dir)+"/*.fa") # glob.glob retrieves all elements in directory that match pattern
     for bin in bin_list:
-        bin_name=os.path.basename(bin)
+        bin_name=os.path.basename(bin) # file basename
         bin_name=bin_name.replace(".fa","")
         bin=os.path.abspath(bin)
 
@@ -49,7 +49,7 @@ if not (os.path.exists(str(out_dir))):
         subprocess.Popen(annCmd, shell=True).wait()
 
 
-        # Reformat annotations
+        # Reformat annotations into digested directories per each type of relevant output
         if not (os.path.exists(out_dir+'/bin_funct_annotations') and os.path.exists(out_dir+'/bin_translated_genes') and os.path.exists(out_dir+'/bin_untranslated_genes')):
             mkdirCmd='cd '+out_dir+' && mkdir bin_funct_annotations bin_translated_genes bin_untranslated_genes'
             subprocess.Popen(mkdirCmd,shell=True).wait()

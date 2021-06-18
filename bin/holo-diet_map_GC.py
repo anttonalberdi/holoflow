@@ -54,12 +54,12 @@ if os.path.exists(fna+'.amb'):
         sampleID=sampleID.replace('_1.fastq.gz','')
 
         read2=fq_dir+'/'+sampleID+'_2.fastq.gz'
-        obam=out_dir+'/'+ID+'.'+sampleID+'.MAG_unmapped.bam'
+        obam=out_dir+'/'+ID+'.'+sampleID+'.MAG_unmapped.bam' # output bam
 
         if not os.path.exists(out_dir):
             mkdirCmd='mkdir -p '+out_dir+''
             subprocess.Popen(mkdirCmd,shell=True).wait()
 
-        if not os.path.exists(str(obam)):
+        if not os.path.exists(str(obam)):   # run mapping
             mappingCmd='module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+fna+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+obam+'.'+sampleID+' -o '+obam+''
             subprocess.Popen(mappingCmd, shell=True).wait()

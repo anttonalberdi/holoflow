@@ -33,7 +33,7 @@ with open(str(log),'a+') as logi:
     logi.write('\t\t'+current_time+'\tCompressing data base and index files step\n\n')
     logi.close()
 
-
+# If all preparegenomes files are created then compress all 
 if (os.path.exists(str(idx_db)) and os.path.exists(str(db))) and (not os.path.exists(str(check))):
 
     with open(str(check),'w') as check_file:

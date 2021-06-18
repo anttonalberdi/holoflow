@@ -50,11 +50,11 @@ if not (os.path.exists(str(out_dir))):
                 for line in summary_data:
                     if not (line.startswith('bin')):
                         line_data = line.split()
-                        # store compl and red values in variables
+                        # store completeness and redundancy values in variables
                         bin_name = line_data[0]
                         completeness = line_data[11]
                         redundancy = line_data[12]
-
+                        # create bin data file for drep to input
                         bin_data.write(os.path.abspath(bin_name+'.fa')+','+completeness+','+redundancy+'\n')
                     else:
                         pass
@@ -69,7 +69,7 @@ if not (os.path.exists(str(out_dir))):
 
 
 
-
+# run drep 
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))) and not (os.path.exists(str(''+out_dir+'/dereplicated_genomes'))):
         drepbinsCmd='module unload anaconda3/4.4.0 && module load tools ngs anaconda2/4.4.0 pplacer/1.1.alpha19 anaconda3/4.4.0 mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 && dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
         subprocess.check_call(drepbinsCmd, shell=True)

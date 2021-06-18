@@ -44,6 +44,6 @@ if not (os.path.isfile(cct)):
     concoctCmd='cat '+mtb+' | cut -f1,4,6 > '+cct+''
     subprocess.Popen(concoctCmd, shell=True).wait()
 
-# Maxbin
+# Maxbin - is the same as mtb but given fields only 
 maxbinCmd='cut -f1,3 '+mtb+' | tail -n+2 > '+mxb+''
 subprocess.check_call(maxbinCmd, shell=True)

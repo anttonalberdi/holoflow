@@ -31,11 +31,11 @@ colnames(qual_data) <- c("ID","Completeness","Contamination")
 qual_data$avg_depth <- cov_data$totalAvgDepth[match(qual_data$ID,cov_data$MAGName)]
 
 
-
+# Create ggplot
 qual <- ggplot() + geom_point(data=qual_data, aes(x=Completeness, y=Contamination, size=avg_depth, col=avg_depth), alpha=0.5) +
 labs(colour= "Total Average Depth", size="Total Average Depth")
 
 
-
+# Save 
 dpi <- 96
 ggsave(plot = qual,filename = paste0(out_path,'/',ID,'_quality.coverage_Plot.pdf'), width = 1800 / dpi, height = 900 / dpi,dpi = dpi)

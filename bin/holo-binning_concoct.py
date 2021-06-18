@@ -43,7 +43,9 @@ with open(str(log),'a+') as log:
 
 output_path=bb.replace('/'+ID+'.cct','')
 
+# If the output directory does not contain bins, continue
 if not glob.glob(output_path+"/*.fa"):
+    # Three-step concoct run
     if not os.path.isfile(''+bb+'_PCA_components_data_gt1500.csv'):
         concoct1Cmd='module load tools && concoct --coverage_file '+d+' --no_original_data --composition_file '+a+' -b '+bb+' -l '+l+' -t '+t+' -r '+r+' '
         subprocess.Popen(concoct1Cmd, shell=True).wait()
@@ -66,6 +68,7 @@ if not glob.glob(output_path+"/*.fa"):
     # Rename bins
     binlist=glob.glob(output_path+"/*.fa")
 
+    # Rename bins to standard 
     for bin in binlist:
         full_bin=os.path.abspath(bin)
         base_bin=os.path.basename(bin)

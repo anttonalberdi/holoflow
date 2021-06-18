@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# From gff to gtf, select specific columns from gff for this 
 infile=$1
 
 if [ "$infile" == "" ] ; then

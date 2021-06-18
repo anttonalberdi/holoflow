@@ -37,7 +37,7 @@ with open(str(log),'a+') as logi:
 
 
 
-
+# If no bins in directory, then run maxbin 
 if not glob.glob(str(bb)+"*.fa"):
     maxbinCmd='module unload gcc && module load tools perl/5.20.2 maxbin/2.2.7 fraggenescan/1.31 && run_MaxBin.pl -contig '+a+' -abund '+d+' -out '+bb+' -thread '+t+''
     subprocess.check_call(maxbinCmd, shell=True)

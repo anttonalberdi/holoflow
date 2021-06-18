@@ -41,7 +41,7 @@ if not os.path.exists(bb):
         logi.write('Individual assembly binning is being done by VAMB. This will sort the contigs into groups,\ncalled bins, which ideally will belong to taxonomically close organisms. This is mainly done\nbased on coverage and tetranucleotide frequencies and differential coverage.\n\n')
 
 
-
+# If no bins in directory, then run vamb
     if not glob.glob(str(bb)+"*.fa"):
         vambCmd='module unload gcc && module load tools anaconda3/4.4.0 perl/5.20.2 metabat/2.12.1 && vamb  -o _ --outdir '+bb+' --fasta '+a+' --jgi '+d+' --minfasta 200000'
         subprocess.check_call(vambCmd, shell=True)
@@ -56,7 +56,7 @@ if not os.path.exists(bb):
             new_bin=bin_base+str(n)+'.fa'
             print(bin)
 
-            renameBinCmd='mv '+full_bin+' '+new_bin+''
+            renameBinCmd='mv '+full_bin+' '+new_bin+''  # rename to standard
             subprocess.Popen(renameBinCmd, shell=True).wait()
             n +=1
 
