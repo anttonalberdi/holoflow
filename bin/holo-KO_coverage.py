@@ -1,4 +1,6 @@
 #10.02.2021
+################################### NOT IN USE NOW ##################################
+## Calculate MAG coverage based on specific single copy core KO genes 
 
 import subprocess
 import argparse

@@ -47,12 +47,9 @@ if not os.path.exists(out_dir):
         filter_output = out_dir+'/'+ID+'.HD_filt_'+CHR+'.vcf.gz'
         view_output = out_dir+'/'+ID+'.HD_SNPs_'+CHR+'.vcf.gz'
 
-
+        # Filter variants by quality and depth 
         filterCmd='module load bcftools/1.11 && bcftools filter -s LowQual -e "%QUAL<'+QUAL+' || DP<(AVG(DP)*3)" --threads '+threads+' -Oz -o '+filter_output+' '+mpileup_input+''
         subprocess.Popen(filterCmd,shell=True).wait()
 
         viewCmd='module load bcftools/1.11 && bcftools view -m2 -M2 -v snps --threads '+threads+' -Oz -o '+view_output+' '+filter_output+''
         subprocess.Popen(viewCmd,shell=True).wait()
-
-########## TO CONFIG:
-# "%QUAL<30 || DP<(AVG(DP)*3)"  ????
