@@ -80,7 +80,7 @@ rule checkm:
 
 rule genes_coverage:
     input:
-        quality="{projectpath}/MFS_03-BinQuality/{group}/{group}_binQuality_Info.csv", # unnecessary for this rule, necessary for creating dependence
+        quality="{projectpath}/MFS_03-BinQuality/{group}/{group}_binQuality_general_Info.csv", # unnecessary for this rule, necessary for creating dependence
         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
         annot_dir="{projectpath}/MFS_00-InputData/{group}/annotation",
         bam_dir="{projectpath}/MFS_01-MAGMapping/{group}"
