@@ -117,9 +117,9 @@ def in_out_dietary_analysis(path,in_f):
             output_files+=path+'/'+final_temp_dir+'/'+group_name+' '
 
             # Soft link from assembly file
-            a_file = in_group+'/'+'group_name.fna'
+            a_file = in_group+'/'+group_name+'.fa'
             if not os.path.isfile(a_file):
-                linkAssemblyCmd = 'ln -s '+assembly_path+' '+in_group+'/'+group_name+'.fa'
+                linkAssemblyCmd = 'ln -s '+assembly_path+' '+a_file+''
                 subprocess.Popen(linkAssemblyCmd,shell=True).wait()
 
             # Link .fastq files of non-MAG mapped reads to subdir
@@ -127,10 +127,10 @@ def in_out_dietary_analysis(path,in_f):
 
             # Check if input files already in desired dir  -> link fastq of non mapped to MAG reads
             if os.path.exists(input_nonmapp_dir):
-                try:    # try to create the link - if the link already exists ... -> TRY/Except is to avoid exception errors
+                if len(os.listdir(input_nonmapp_dir)) == 0: # if the directory is empty, fill it, otherwise pass 
                     mvreadsCmd = 'ln -s '+nonmapp_fastq_dir+'/*notMAGmap*fastq* '+input_nonmapp_dir+''
                     subprocess.Popen(mvreadsCmd, shell=True).wait()
-                except: # ... it won't be created, but pass
+                else:
                     pass
             else:
                 mvreadsCmd = 'mkdir '+input_nonmapp_dir+' && ln -s '+nonmapp_fastq_dir+'/*notMAGmap*fastq* '+input_nonmapp_dir+''

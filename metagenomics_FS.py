@@ -131,11 +131,10 @@ def in_out_final_stats(path,in_f):
             in1=in_sample+'/metagenomic_reads'
             # Check if input files already in desired dir
             if os.path.exists(in1):
-                try:    # try to create the link - if the link already exists ... -> TRY/Except is to avoid exception errors
+                if (len(os.listdir(in1)) == 0):
                     mvreadsCmd = 'ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
                     subprocess.Popen(mvreadsCmd, shell=True).wait()
-                except: # ... it won't be created, but pass
-                    pass
+
             else:
                 mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
                 subprocess.Popen(mvreadsCmd, shell=True).wait()
@@ -146,11 +145,10 @@ def in_out_final_stats(path,in_f):
             in2=in_sample+'/dereplicated_bins'
             # Check if input files already in desired dir
             if os.path.exists(in2):
-                try:
+                if (len(os.listdir(in2)) == 0):
                     mvbinsCmd = 'ln -s '+drep_bins_dir+'/*.fa '+in2+' && cp '+drep_bins_dir+'/../final_bins_Info.csv '+in2+' && cp '+drep_bins_dir+'/../data_tables/Widb.csv '+in2+''
                     subprocess.Popen(mvbinsCmd, shell=True).wait()
-                except:
-                    pass
+
             else:
                 mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+' && cp '+drep_bins_dir+'/../final_bins_Info.csv '+in2+' && cp '+drep_bins_dir+'/../data_tables/Widb.csv '+in2+''
                 subprocess.Popen(mvbinsCmd, shell=True).wait()
@@ -159,11 +157,10 @@ def in_out_final_stats(path,in_f):
             in3=in_sample+'/annotation'
             # Check if input files already in desired dir
             if os.path.exists(in3):
-                try:
+                if (len(os.listdir(in3)) == 0):
                     mvgffCmd = 'ln -s '+annot_dir+'/*.gff '+in3+''
                     subprocess.Popen(mvgffCmd, shell=True).wait()
-                except:
-                    pass
+
             else:
                 mvgffCmd = 'mkdir '+in3+' && ln -s '+annot_dir+'/*.gff '+in3+''
                 subprocess.Popen(mvgffCmd, shell=True).wait()

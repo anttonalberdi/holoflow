@@ -155,10 +155,10 @@ def in_out_metagenomics(path,in_f):
                     else:
                         read1=input_dir+'/'+sampleID+'_1.fastq'
 
-                    try:
+                    if not os.path.isfile(read1):
                         cp1Cmd='ln -s '+file1+' '+read1+''  # If the file already existed, won't create link
                         subprocess.Popen(cp1Cmd, shell=True).wait()
-                    except:
+                    else:
                         pass
 
                 for file2 in list_read2:
@@ -170,10 +170,10 @@ def in_out_metagenomics(path,in_f):
                     else:
                         read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
 
-                    try:
+                    if not os.path.isfile(read2):
                         cp2Cmd='ln -s '+file2+' '+read2+''  # If the file already existed, won't create link
                         subprocess.Popen(cp2Cmd, shell=True).wait()
-                    except:
+                    else:
                         pass
 
             ###### Create coassembly merged files from all individual samples
@@ -246,10 +246,10 @@ def in_out_metagenomics(path,in_f):
                     else:
                         read1=in_dir+'/'+coa_group+'/'+sampleID+'_1.fastq'
 
-                    try:
+                    if not os.path.isfile(read1):
                         cp1Cmd='ln -s '+file1+' '+read1+''  # If the file already existed, won't create link
                         subprocess.Popen(cp1Cmd, shell=True).wait()
-                    except:
+                    else:
                         pass
 
                 for file2 in list_read2:
@@ -261,10 +261,10 @@ def in_out_metagenomics(path,in_f):
                     else:
                         read2=in_dir+'/'+coa_group+'/'+sampleID+'_2.fastq'
 
-                    try:
+                    if not os.path.isfile(read2):
                         cp2Cmd='ln -s '+file2+' '+read2+''  # If the file already existed, won't create link
                         subprocess.Popen(cp2Cmd, shell=True).wait()
-                    except:
+                    else:
                         pass
 
             ###### Create coassembly files data
