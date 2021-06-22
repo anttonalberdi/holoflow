@@ -104,15 +104,14 @@ def in_out_metagenomics(path,in_f):
             # and move them all there
 
             current_input_dir=os.path.dirname(dir[1])
-            current_in_files = glob.glob(dir[1]+'/*')
-            current_in_file = ''.join(glob.glob(dir[1]+'/*')[1])
+            current_in_files = ''.join(glob.glob(dir[1]+'/*')[1])
 
             desired_input=(str(in_dir)+'/'+str(dir[0])) # desired input dir path
             if os.path.exists(desired_input):
                 desired_in_files = os.listdir(desired_input)
 
             if args.REWRITE:
-                if os.path.basename(current_in_file) in desired_in_files: # the directory has not been yet removed: this group's files already exist in dir
+                if os.path.basename(current_in_files) in desired_in_files: # the directory has not been yet removed: this group's files already exist in dir
                     rmCmd='rm -rf '+desired_input+''
                     subprocess.Popen(rmCmd,shell=True).wait()
                 else:                              # the directory has been  removed already by a previous line in the input file
@@ -121,13 +120,9 @@ def in_out_metagenomics(path,in_f):
             #if bins not in desired input dir, copy them there
             if not desired_input == current_input_dir:
 
-                if os.path.exists(desired_input):
-                    for file in current_in_files:
-                        if os.path.basename(file) in os.listdir(desired_input):
-                            pass
-                        else:
-                            mvinCmd = 'ln -s '+file+' '+desired_input+''
-                            subprocess.Popen(mvinCmd, shell=True).wait()
+                if (len(os.listdir(desired_input)) == 0): # if dir exists but empty
+                    copyfilesCmd='find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
+                    subprocess.check_call(copyfilesCmd, shell=True)
 
                 if not (os.path.exists(str(desired_input))):
                     copyfilesCmd='mkdir '+desired_input+' && find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
