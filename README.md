@@ -233,6 +233,9 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   2. Annotation based on reference diet protein DB - so far Invertebrates and/or Plants.
   3. Map unmapped to MAG Catalogue reads to gene catalogue obtained in step 1.
   4. Extract gene abundances and merge output with annotations.
+ 
+- Config file *config.yaml*, in which the user may be interested in customising:
+  1. Reference DB used for annotation {Plants, Invertebrates, Invertebrates_Plants/Plants_Invertebrates}
   
   
 #### Genomics
