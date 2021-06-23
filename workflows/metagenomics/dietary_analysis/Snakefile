@@ -31,7 +31,7 @@ rule predict:
         python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_pred.py -a {input.assembly} -faa {output.proteins} -fna {output.nucl} -coords {output.coords} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
-# 3. Diamond map these orfs to UNIPROT {Only eukaryotic entries . Lasse }
+# 3. Diamond map these orfs to UNIPROT {Talk to Lasse about how DBs were obtained}
 rule annotate:
     input:
         "{projectpath}/MDI_01-Predict/{group}/{group}.ptranslations.faa"
@@ -67,7 +67,7 @@ rule map_diet:
         """
 
 
-# QUANITFY 
+# QUANITFY
 # Get number of mapped reads per GENE
 rule quantify_diet:
     input:
