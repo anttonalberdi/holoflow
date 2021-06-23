@@ -12,9 +12,10 @@ The main *holoflow* directory contains a given number of Python scripts which wo
   - ***preprocessing.py***    - Data preprocessing from quality to duplicate sequences for further downstream analysis.
   - ***metagenomics_IB.py***  - Individual assembly-based analysis and metagenomics binning. 
   - ***metagenomics_CB.py***  - Coassembly-based analysis and metagenomics binning. 
+  - ***metagenomics_AB.py***  - Functional annotation of (co-)assembly file with DRAM.  
   - ***metagenomics_DR.py***  - Dereplication and Annotation of metagenomic bins produced by either *metagenomics_IB* or *metagenomics_CB*. 
   - ***metagenomics_FS.py***  - Final statistical report of dereplicated bins obtained with *metagenomics_DR.py*. 
-  - ***metagenomics_AB.py***  - Functional annotation of (co-)assembly file with DRAM.  
+  - ***metagenomics_DI.py***  - Diet analysis from reads not mapped to MAG catalogue obtained in *metagenomics_FS.py*.  ######### NOT FULLY FUNCTIONAL YET 
   - ***genomics.py***         - Variant calling, Phasing (for HD) and Imputation (for LD) with *genomics.py*. 
 
   
@@ -23,7 +24,7 @@ These are designed to be called from the command line and require the following 
 ```bash
 REQUIRED ARGUMENTS:
   -f INPUT            File containing input information.
-  -d WORK_DIR         Output directory.
+  -d WORK_DIR         Main output directory.
   -t THREADS          Thread maximum number to be used by Snakemake.
   -W REWRITE          Wants to re-run the worfklow from scratch: remove all directories previous runs. - NOT IN PREPAREGENOMES.
   -g REF_GENOME   Reference genome(s) file path to be used in read mapping. Unzipped for genomics. - only in PREPROCESSING, GENOMICS.  
@@ -101,7 +102,20 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
 | Sample1 | CoassemblyGroup1 | /home/Sample1_1.fq | /home/Sample1_2.fq |  
 | Sample2 | CoassemblyGroup2 | /home/Sample2_1.fq | /home/Sample1_2.fq |  
 | Samplen | CoassemblyGroup3 | /home/Samplen_1.fq | /home/Samplen_2.fq |
+
+
+##### *metagenomics_AB.py*
+
+  1. (Co-)Assembly or group ID.   
+  2. Path to assembly file.  
   
+- Example:
+
+|   |   |   |
+| --- | --- | --- |
+| GroupA | /home/dir/assembly_A.fa |
+| GroupB | /home/second/dir/assembly_B.fna.gz |
+
 
 ##### *metagenomics_DR.py*
 
@@ -132,17 +146,18 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
 | DrepGroup2 | /home/PPR_03-MappedToReference/Sample2 | /home/MDR_01-BinDereplication/Sample2/dereplicated_genomes | /home/MDR_02-BinAnnotation/DrepGroup3/bin_funct_annotations |
 
 
-##### *metagenomics_AB.py*
+##### *metagenomics_DI.py* ######### NOT FULLY FUNCTIONAL YET 
 
-  1. (Co-)Assembly or group ID.   
-  2. Path to assembly file.  
+  1. Group ID.   
+  2. Path to assembly file. 
+  3. Path to .fastq files which contain reads not mapped to MAG catalogue.
   
 - Example:
 
 |   |   |   |
 | --- | --- | --- |
-| GroupA | /home/dir/assembly_A.fa |
-| GroupB | /home/second/dir/assembly_B.fna.gz |
+| GroupA | /home/dir/assembly_A.fa |  /home/dir/MFS_01-MAGUnMapped/GroupA |
+| GroupB | /home/second/dir/assembly_B.fna.gz | /home/dir/MFS_01-MAGUnMapped/GroupB |
 
 
 ##### *genomics.py*
@@ -190,7 +205,12 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   1. Assembler - choose between the mentioned options by writing *megahit* or *spades*
   2. Minimum contig length - minimum bp per contig in final assembly file.
 
-  
+
+#### Metagenomics - Assembly Based
+- *Snakefile* - which contains rules for:
+  1. DRAM functional annotation and distilling of an assembly file.   
+
+
 #### Metagenomics - Dereplication
 - *Snakefile* - which contains rules for:
   1. Bin Dereplication using **dRep**.
@@ -206,9 +226,14 @@ Optimally the metagenomic .fastq files would come from PPR_03-MappedToReference,
   3. Retrieve quality statistics (CheckM) and summary plot of the MAGs.
   4. Get coverage of KEGG KO single-copy core genes in MAGs. 
 
-#### Metagenomics - Assembly Based
+
+#### Metagenomics - Dietary Analysis ######### NOT FULLY FUNCTIONAL YET 
 - *Snakefile* - which contains rules for:
-  1. DRAM functional annotation and distilling of an assembly file.   
+  1. ORF prediction.
+  2. Annotation based on reference diet protein DB - so far Invertebrates and/or Plants.
+  3. Map unmapped to MAG Catalogue reads to gene catalogue obtained in step 1.
+  4. Extract gene abundances and merge output with annotations.
+  
   
 #### Genomics
 - *Snakefile* - which contains rules for:  
