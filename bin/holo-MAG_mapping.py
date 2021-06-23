@@ -105,8 +105,8 @@ if (os.path.isfile(str(IDXmag_catalogue_file))):
         mapbinCmd='module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+threads+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+mag_catalogue_file+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+out_dir+'/'+ID+' -o '+out_bam+''
         subprocess.Popen(mapbinCmd, shell=True).wait()
 
-        # extract not-mapped to the reference genome reads + keep reference bam
-        not_map = out_dir+'/not_MAG_mapped'
+        # extract not-mapped to the reference genome reads + keep reference bam - TO NEW DIRECTORY
+        not_map = out_dir.replace('MAGMapped','MAGUnMapped')
         if not os.path.exists(not_map):
             os.makedirs(not_map)
         else:

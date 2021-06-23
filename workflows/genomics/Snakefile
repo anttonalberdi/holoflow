@@ -181,7 +181,7 @@ if config['data_quality'] == "HD":
 # If these are low depth samples, the obtained variants will have to be improved.
 # This is done by updating the obtained likelihoods and then imputing, this depends on a reference panel
 # whose path must be especified in the .py launcher command to be loaded to config.
-# The reference panel can be the one outputted by this workflow or a pre-existing one. 
+# The reference panel can be the one outputted by this workflow or a pre-existing one.
 
 
 if (config['data_quality'] == "LD") and (config['ref_panel_HD'] != ''):
