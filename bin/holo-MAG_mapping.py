@@ -108,7 +108,8 @@ if (os.path.isfile(str(IDXmag_catalogue_file))):
         # extract not-mapped to the reference genome reads + keep reference bam - TO NEW DIRECTORY
         not_map = out_dir.replace('MAGMapped','MAGUnMapped')
         if not os.path.exists(not_map):
-            os.makedirs(not_map)
+            mkdirCmd='mkdir -p '+not_map+''
+            subprocess.Popen(mkdirCmd, shell=True).wait()
         else:
             pass
         read1_not=not_map+'/'+sample+'_notMAGmap_1.fastq.gz'
