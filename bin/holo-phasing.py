@@ -45,9 +45,9 @@ if not os.path.exists(out_dir):
             chromosome_list.append(chr.strip())
 
     for CHR in chromosome_list:
-        input = filt_dir+'/'+ID+'.HD_SNPs_'+CHR+'.vcf.gz'
-        plink_tmp_output_base = out_dir+'/'+ID+'.plink_tmp.HD_SNPs_'+CHR
-        plink_output_base = out_dir+'/'+ID+'.plink.HD_SNPs_'+CHR
+        input = filt_dir+'/'+ID+'.HD_filt_SNPs_'+CHR+'.vcf.gz'
+        plink_tmp_output_base = out_dir+'/'+ID+'.plink_tmp.HD_filt_SNPs_'+CHR
+        plink_output_base = out_dir+'/'+ID+'.plink.HD_filt_SNPs_'+CHR
         output = out_dir+'/'+ID+'_'+CHR+'.filt_phased.vcf.gz'
 
         # Plink filtration of SNPs before phasing

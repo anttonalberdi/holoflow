@@ -53,12 +53,12 @@ if not os.path.exists(out_dir):
             else:
                 pass
             chromosome_list.append(chr.strip())
-            
+
 
     for CHR in chromosome_list:
         geno_input = var_dir+'/'+ID+'.all_'+CHR+'.vcf'
         filter_output = out_dir+'/'+ID+'.HD_filt_'+CHR+'.vcf.gz'
-        select_output = out_dir+'/'+ID+'.HD_SNPs_'+CHR+'.vcf.gz'
+        select_output = out_dir+'/'+ID+'.HD_filt_SNPs_'+CHR+'.vcf.gz'
 
         filterCmd = 'module load tools java/1.8.0 gatk/4.1.8.1 && gatk VariantFiltration -V '+geno_input+' -filter "QD < '+QD+'" --filter-name "QD" -filter "QUAL < '+QUAL+'" --filter-name "QUAL" -filter "FS > '+FS+'" --filter-name "FS" -O '+filter_output+''
         subprocess.Popen(filterCmd,shell=True).wait()

@@ -54,9 +54,9 @@ if not os.path.exists(out_dir):
 
 
     for CHR in chromosome_list:
-        input = filt_dir+'/'+ID+'.HD_SNPs_'+CHR+'.vcf.gz'
-        plink_tmp_output_base = out_dir+'/'+ID+'.plink_tmp.HD_SNPs_'+CHR
-        plink_output_base = out_dir+'/'+ID+'.plink.HD_SNPs_'+CHR
+        input = filt_dir+'/'+ID+'.HD_filt_SNPs_'+CHR+'.vcf.gz'
+        plink_tmp_output_base = out_dir+'/'+ID+'.plink_tmp.HD_filt_SNPs_'+CHR
+        plink_output_base = out_dir+'/'+ID+'.plink.HD_filt_SNPs_'+CHR
         output = out_dir+'/'+ID+'_'+CHR+'.filt_phased.vcf.gz'
 
         # Plink filtration of SNPs before phasing
@@ -86,7 +86,7 @@ if not os.path.exists(out_dir):
                 subprocess.Popen(phasingCmd,shell=True).wait()
 
         if all_genome_atonce: # No chromosomes specified in genome : ALL
-            phasingALLCmd = 'java -Xmxg -jar /services/tools/beagle/5.1/beagle-5.1.jar gt='+plink_output_base+'.vcf.gz out='+output+''
+            phasingALLCmd = 'java -Xmx180g -jar /services/tools/beagle/5.1/beagle-5.1.jar gt='+plink_output_base+'.vcf.gz out='+output.replace('.vcf.gz','')+''
             subprocess.Popen(phasingALLCmd,shell=True).wait()
 
 

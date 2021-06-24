@@ -39,8 +39,14 @@ if not os.path.exists(out_dir):
     mkdirCmd='mkdir -p '+out_dir+''
     subprocess.Popen(mkdirCmd,shell=True).wait()
 
+# Create separate directory for MAG Catalogue
+out_magC = out_dir.replace('02-MAGMapped','01-MAGCatalogue')
+if not os.path.exists(out_magC):
+    mkdirCmd='mkdir -p '+out_magC+''
+    subprocess.Popen(mkdirCmd,shell=True).wait()
+
 # Create MAGs file --> competitive mapping for each sample
-mag_catalogue_file=out_dir+'/'+ID+'_MAG_Catalogue.fa'
+mag_catalogue_file=out_magC+'/'+ID+'_MAG_Catalogue.fa'
 
 if not (os.path.isfile(str(mag_catalogue_file))):
     with open(mag_catalogue_file,'w+') as magcat:
@@ -60,7 +66,7 @@ if not (os.path.isfile(str(mag_catalogue_file))):
 
 
 # Index MAG catalogue file
-IDXmag_catalogue_file=out_dir+'/'+ID+'_MAG_Catalogue.fa.fai'
+IDXmag_catalogue_file=out_magC+'/'+ID+'_MAG_Catalogue.fa.fai'
 
 if not (os.path.isfile(str(IDXmag_catalogue_file))):
     idxsamCmd='module load tools samtools/1.11 && samtools faidx '+mag_catalogue_file+''
