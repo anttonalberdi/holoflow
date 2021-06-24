@@ -24,7 +24,8 @@ rule mag_mapping:
         read_dir="{projectpath}/MFS_00-InputData/{group}/metagenomic_reads"
     output:
         out_dir_mc=directory("{projectpath}/MFS_01-MAGCatalogue/{group}"),
-        out_dir_map=directory("{projectpath}/MFS_02-MAGMapped/{group}")
+        out_dir_map=directory("{projectpath}/MFS_02-MAGMapped/{group}"),
+        out_dir_ummap=directory("{projectpath}/MFS_02-MAGUnMapped/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
@@ -43,7 +44,9 @@ rule coverage:
         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
         bam_MAGs="{projectpath}/MFS_02-MAGMapped/{group}"
     output:
-        "{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byMAG.txt"
+        contig="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byContig.txt",
+        mag="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byMAG.txt",
+        raw="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.rawmapping_byMAG.txt"
     params:
         threads=expand("{threads}", threads=config['threads']),
         out_dir="{projectpath}/MFS_03-MAGCoverage",
