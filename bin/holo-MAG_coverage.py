@@ -28,8 +28,9 @@ threads=args.threads
 
 # Run
 
-if not (os.path.exists(out_dir)):
-    os.makedirs(out_dir)
+if not (os.path.exists(out_dir+'/'+ID)):
+    mkdirCmd='mkdir -p '+out_dir+'/'+ID+''
+    subprocess.Popen(mkdirCmd,shell=True).wait()
 
 # Write to log
 current_time = time.strftime("%m.%d.%y %H:%M", time.localtime())
@@ -43,7 +44,7 @@ out_dir = out_dir+'/'+ID
 depth_contig=out_dir+'/'+ID+'.coverage_byContig.txt'
 if not (os.path.isfile(depth_contig)):
     getcoverageCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth '+depth_contig+' '+str(bam_dir)+'/*.bam'
-    #subprocess.check_call(getcoverageCmd, shell=True)
+    subprocess.check_call(getcoverageCmd, shell=True)
 else:
     pass
 
