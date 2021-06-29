@@ -33,6 +33,10 @@ with open(str(log),'a+') as logi:
     logi.write('\tHOLOFLOW\tMETAGENOMICS\n\t\t'+current_time+'\t - '+ID+'\n')
     logi.write('The abundances of the non-MAG genes in the gene catalogue created by Prodigal 2.6.3, are obtained by mapping the reads\nnot included in the MAG set to the gene catalogue.\n\n')
 
+if not os.path.exists(out_dir):
+    mkdirCmd='mkdir -p '+out_dir+''
+    subprocess.Popen(mkdirCmd,shell=True).wait()
+
 # Inputs
 # bam_files list
 bam_files = glob.glob(bam_dir+'/*mapped.bam')
@@ -82,9 +86,7 @@ for bam in bam_files:
 
         #If the bam file has been indexed, continue
     if os.path.isfile(bam+'.bai'):
-        if not os.path.exists(out_dir):
-            mkdirCmd='mkdir -p '+out_dir+''
-            subprocess.Popen(mkdirCmd,shell=True).wait()
+        
 
         if not os.path.isfile(all_genes_counts):
                 # extract total number of reads in bam file and append to common file
