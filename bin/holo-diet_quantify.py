@@ -79,14 +79,16 @@ sample_list='Gene_Annot\tGene_ID\t'
 for bam in bam_files:
     if not os.path.isfile(bam+'.bai'):
         idxsamCmd='module load tools samtools/1.11 && samtools index '+bam+''
-        #subprocess.Popen(idxsamCmd, shell=True).wait()
+        subprocess.Popen(idxsamCmd, shell=True).wait()
+    else:
+        pass
 
     sample = os.path.basename(bam).replace(ID+'.','').replace('.MAG_unmapped.bam','')
     all_genes_counts = out_dir+'/'+ID+'.'+sample+'.all_genes_counts.txt'
 
         #If the bam file has been indexed, continue
     if os.path.isfile(bam+'.bai'):
-        
+
 
         if not os.path.isfile(all_genes_counts):
                 # extract total number of reads in bam file and append to common file
