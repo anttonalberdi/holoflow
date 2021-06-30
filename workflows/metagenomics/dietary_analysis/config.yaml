@@ -3,4 +3,4 @@ threads:
 
 # Write Plants or Invertebrates - or both such as: Invertebrates_Plants or Plants_Invertebrates
 annot_db:
-  'Plants'
+  'Plants_Invertebrates'
