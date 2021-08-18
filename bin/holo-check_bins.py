@@ -69,14 +69,14 @@ if args.check_cct:
 
         # Some of all the  binners did not generate bins
         else:
-            # At least one binner generated bins
+            # At least one binner generated bins, continue
             if len(true_bins) >= 1:
-                t_binner=true_bins[0]
+                t_binner=true_bins[0]   # true bins are those binners that generated bins, false those which did not
                 dim_tb=dim_trueb[0].strip()
                 t_bintable=binning_dir+'/'+ID+'.bins_'+t_binner+'.txt'
                 t_bindir=binning_dir+'/'+ID+'_'+t_binner
 
-                for i in range(len(false_bins)):
+                for i in range(len(false_bins)): # for those binners without bins, duplicate data in other binner
                     f_binner=false_bins[i]
                     dim_fb=dim_falseb[i].strip()
                     f_bintable=binning_dir+'/'+ID+'.bins_'+f_binner+'.txt'

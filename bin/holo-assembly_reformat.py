@@ -73,7 +73,7 @@ if not os.path.exists(str(out_a)):
             else:
                 seq += line.strip()
 
-        # Last line - the loop has finished but the last contig has not yet been reformatted + written
+        # Last line - the loop has finished but the last contig has not yet been reformatted + written - do here
         if seq:
             if len(seq) > int(min_cl):
                 n += 1

@@ -40,9 +40,18 @@ if not os.path.exists(out_dir):
         logi.write(' \n\n')
 
     chromosome_list = list()
+    # if the reference genome is not split by chromosomes but by scaffolds (for example)
+    # remove -r region option and analyse all at once.
+    # For this, chr_list will have only ONE row with 'ALL'
+    all_genome_atonce = False
     with open(chr_list,'r+') as chr_data:
         for chr in chr_data.readlines():
+            if chr.strip() == 'ALL':
+                all_genome_atonce = True
+            else:
+                pass
             chromosome_list.append(chr.strip())
+
 
     for CHR in chromosome_list:
         input = filt_dir+'/'+ID+'.HD_filt_SNPs_'+CHR+'.vcf.gz'
@@ -60,32 +69,48 @@ if not os.path.exists(out_dir):
         plink3Cmd='rm '+os.path.dirname(output)+'/*bim '+os.path.dirname(output)+'/*bed '+os.path.dirname(output)+'/*fam '+os.path.dirname(output)+'/*nosex'
         subprocess.Popen(plink3Cmd,shell=True).wait()
 
-    # Filter output
+
+        # Index
         if not os.path.isfile(plink_output_base+'.vcf.csi'):
             indexCmd='module load bcftools/1.11 && bcftools index --threads '+threads+' '+plink_output_base+'.vcf.gz'
             subprocess.Popen(indexCmd,shell=True).wait()
 
+        # Filter output
+        if not all_genome_atonce: # Chromosomes specified
+            if not (gmap == 'False'):
+                phasingCmd= 'module load shapeit4/4.1.3 && shapeit4 --input '+plink_output_base+'.vcf.gz --map '+gmap+' --region '+CHR+' --thread '+threads+' --output '+output+' --sequencing'
+                subprocess.Popen(phasingCmd,shell=True).wait()
 
-        if not (gmap == 'False'):
-            phasingCmd= 'module load shapeit4/4.1.3 && shapeit4 --input '+plink_output_base+'.vcf.gz --map '+gmap+' --region '+CHR+' --thread '+threads+' --output '+output+' --sequencing'
-            subprocess.Popen(phasingCmd,shell=True).wait()
+            else:
+                phasingCmd= 'module load shapeit4/4.1.3 && shapeit4 --input '+plink_output_base+'.vcf.gz --region '+CHR+' --thread '+threads+' --output '+output+' --sequencing'
+                subprocess.Popen(phasingCmd,shell=True).wait()
 
-        else:
-            phasingCmd= 'module load shapeit4/4.1.3 && shapeit4 --input '+plink_output_base+'.vcf.gz --region '+CHR+' --thread '+threads+' --output '+output+' --sequencing'
-            subprocess.Popen(phasingCmd,shell=True).wait()
+        if all_genome_atonce: # No chromosomes specified in genome : ALL
+            phasingALLCmd = 'java -Xmx180g -jar /services/tools/beagle/5.1/beagle-5.1.jar gt='+plink_output_base+'.vcf.gz out='+output.replace('.vcf.gz','')+''
+            subprocess.Popen(phasingALLCmd,shell=True).wait()
 
-        # Index phased panel
-        idxCmd='module load tabix/1.2.1 && tabix '+output+''
-        subprocess.Popen(idxCmd,shell=True).wait()
+
 
     # Concatenate all CHR phased files into one ref panel
     ref_panel_phased = out_dir+'/'+ID+'_RefPanel-Phased.vcf.gz'
-    phased_files = glob.glob(out_dir+'/'+ID+'_*filt_phased.vcf.gz')
-    files_to_concat = out_dir+'/'+ID+'_files_to_concat.txt'
-    with open(files_to_concat,'w+') as concat:
-        for file in phased_files:
-            concat.write(file.strip()+'\n')
 
-    # make sure chr in same order chr list
-    concatCmd= 'module load bcftools/1.11  && bcftools concat -f '+files_to_concat+' -Oz -o '+ref_panel_phased+' && mv '+ref_panel_phased+' '+out_dir+'/.. && rm -rf '+out_dir+'/* && cd '+out_dir+'/.. && mv '+os.path.basename(ref_panel_phased)+' '+out_dir+''
-    subprocess.Popen(concatCmd,shell=True).wait()
+    if not all_genome_atonce: # Chromosomes specified
+        phased_files = glob.glob(out_dir+'/'+ID+'_*filt_phased.vcf.gz')
+        files_to_concat = out_dir+'/'+ID+'_files_to_concat.txt'
+        with open(files_to_concat,'w+') as concat:
+            for file in phased_files:
+                concat.write(file.strip()+'\n')
+
+        # make sure chr in same order chr list
+        concatCmd= 'module load bcftools/1.11  && bcftools concat -f '+files_to_concat+' -Oz -o '+ref_panel_phased+' && mv '+ref_panel_phased+' '+out_dir+'/.. && rm -rf '+out_dir+'/* && cd '+out_dir+'/.. && mv '+os.path.basename(ref_panel_phased)+' '+out_dir+''
+        subprocess.Popen(concatCmd,shell=True).wait()
+
+
+    else: # No chromosomes specified in genome : AL
+        mvALLCmd = 'mv '+output+' '+ref_panel_phased+''
+        subprocess.Popen(mvALLCmd,shell=True).wait()
+
+
+    # Index phased panel
+    idxCmd='module load tabix/1.2.1 && tabix '+ref_panel_phased+''
+    subprocess.Popen(idxCmd,shell=True).wait()

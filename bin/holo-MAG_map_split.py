@@ -48,7 +48,7 @@ if not os.path.exists(out_dir):
     # Prepare mag, bam data and ID
     mag_list=glob.glob(str(mag_dir)+'/*.fa')
 
-    def counts(mag):#,bam_dir,annot_dir,out_dir):
+    def counts(mag): # Create function to extract counts per mag in sample for it to be parallelized
         bam_list=glob.glob(str(bam_dir)+'/*.bam')
 
         mag_ID = os.path.basename(mag).replace('.fa','')
@@ -64,7 +64,7 @@ if not os.path.exists(out_dir):
         file = os.path.dirname(sys.argv[0])
         curr_dir = os.path.abspath(file)
 
-        gtfCmd='bash '+curr_dir+'/holo-create_gtf.sh '+gff+' > '+gtf+''
+        gtfCmd='bash '+curr_dir+'/holo-create_gtf.sh '+gff+' > '+gtf+'' # generate gtf from gff
         subprocess.Popen(gtfCmd,shell=True).wait()
 
 
@@ -80,6 +80,7 @@ if not os.path.exists(out_dir):
                 if not os.path.isfile(new_bam):
                 # Split bams into MAGs
                 # Now BAM headers are only the contig ID - Removed MAG_ID-
+                # Run htseq count on contigs that belong to MAG in each sample
                     samtoolsCmd='module load tools samtools/1.11 && samtools view -h '+bam+' | grep "'+mag_ID+'-" | sed "s/'+mag_ID+'-//" | samtools view -bS - | htseq-count -t CDS -r pos -f bam - '+gtf+' > '+sample_counts_tmp+''
                     subprocess.Popen(samtoolsCmd,shell=True).wait()
 
@@ -98,23 +99,23 @@ if not os.path.exists(out_dir):
         proc.start()
         time.sleep(0.5)
 
-
     # complete the processes
     for proc in procs:
         proc.join()
 
 
 
-    #Some files will be empty -> remove them
+    #Some files will be empty -> remove them (a given MAG did not include contigs of a given sample)
     try:
         rmCmd='find '+out_dir+' -size 0 -delete'
         subprocess.Popen(rmCmd,shell=True).wait()
     except:
         pass
 
+
     ## Handle coverage and IDs
 
-    # Read KO_db into a dictionary [Uniprot]=KO
+    # Read KO_db {Uniprot - KEGG KO} into a dictionary [Uniprot]=KO
     with gzip.open(KO_db,'rt') as kos_db:
         KO_database = {}
         for line in kos_db:
@@ -122,7 +123,7 @@ if not os.path.exists(out_dir):
             KO_database[key] = val
 
 
-    ## Get coverage of annotated genes
+    ## Get coverage only of annotated genes - those that had KO
     for mag in mag_list:
         sample_list = 'KO\t'
         KO_times = {}
@@ -139,8 +140,7 @@ if not os.path.exists(out_dir):
             sample = os.path.basename(file).replace('.counts.txt','').replace(mag_ID+'_','')
             sample_list+=sample+'\t'
 
-        #pasteCmd='infiles="'+counts_string+'" && for i in $infiles; do sed -i -E "s/^.*\t//" $i; done && cut -f1 '+counts_list[0]+' > UNIPROT && paste UNIPROT '+counts_string+' > '+mag_counts_tmp+' && rm UNIPROT'
-        ## ERROR FIRST COLUMN DUP -fixed:
+            # merge all files MAG-sample in one single file per mag
         pasteCmd='infiles="'+counts_string+'" && cut -f1 '+counts_list[0]+' > UNIPROT && for i in $infiles; do sed -i -E "s/^.*\t//" $i; done && paste UNIPROT '+counts_string+' > '+mag_counts_tmp+' && rm UNIPROT'
         subprocess.Popen(pasteCmd,shell=True).wait()
 
@@ -181,6 +181,8 @@ if not os.path.exists(out_dir):
             sample_list = ('\t').join(sample_list)
             ko_counts.write(sample_list+'\n')
 
+# Last column in file will contain how many times a given KO was observed
+# There will be only one row per KO - if seen more than once, counts will be added 
             for key in KO_times.keys():
                 n = len(KO_times[key])
                 counts_sum = np.array(KO_times[key]).astype(int)

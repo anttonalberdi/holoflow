@@ -10,7 +10,7 @@ rule get_paths:
 ################################################################################################################
 ##
 # Input reformat
-##
+## Reformat input file so all reads contain the sample ID in the name + standard digit format
 rule in_reformat:
     input:
         read1i="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.tmp.gz",
@@ -27,7 +27,7 @@ rule in_reformat:
 
 ##
 # Quality-filtering
-##
+## 
 rule qual_filt:
     input:
         read1="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.gz",

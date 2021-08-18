@@ -1,5 +1,5 @@
 #17.09.2020 - Holoflow 0.1.
-
+################################### NOT IN USE NOW ##################################
 import subprocess
 import argparse
 import os
@@ -39,10 +39,10 @@ if not (os.path.exists(str(out_dir))):
         logi.write('This step retrieves the paired-end reads found in each bin as they are to be used in the next step.\n\n')
 
 
-    binlist = glob.glob(str(bin_dir)+"/dereplicated_genomes/*.fa")
+    binlist = glob.glob(str(bin_dir)+"/dereplicated_genomes/*.fa") # extract all bins full paths
     for bin in binlist:
-        bin_name=os.path.basename(bin)
-        bin_name=bin_name.replace(".fa","")
+        bin_name=os.path.basename(bin)   # get bin ID
+        bin_name=bin_name.replace(".fa","") # get bin ID
 
 
             # define output files
@@ -51,7 +51,6 @@ if not (os.path.exists(str(out_dir))):
         oread2=''+out_dir+'/'+bin_name+'_2.fastq'
 
     #Map bin to 1,2.fastq
-
         idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+bin+''
         subprocess.check_call(idxbwaCmd, shell=True)
 

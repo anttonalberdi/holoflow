@@ -36,6 +36,6 @@ if not (os.path.isfile(mtb)):
     metabatCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth '+mtb+' '+bam+''
     subprocess.check_call(metabatCmd, shell=True)
 
-# Maxbin
+# Maxbin - is the same as mtb but given fields only 
 maxbinCmd='cut -f1,3 '+mtb+' | tail -n+2 > '+mxb+''
 subprocess.check_call(maxbinCmd, shell=True)

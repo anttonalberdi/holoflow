@@ -92,9 +92,10 @@ do_Post:
 QUAL:
   30.0
 # GATK
+# Qual by depth
 QD:
   2.0
-
+# Fisher strand
 FS:
   60.0
 

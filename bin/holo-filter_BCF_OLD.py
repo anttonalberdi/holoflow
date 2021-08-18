@@ -38,24 +38,14 @@ if not os.path.exists(out_dir):
         logi.write(' \n\n')
 
     chromosome_list = list()
-    # if the reference genome is not split by chromosomes but by scaffolds (for example)
-    # remove -r region option and analyse all at once.
-    # For this, chr_list will have only ONE row with 'ALL'
-    all_genome_atonce = False
     with open(chr_list,'r+') as chr_data:
         for chr in chr_data.readlines():
-            if chr.strip() == 'ALL':
-                all_genome_atonce = True
-            else:
-                pass
             chromosome_list.append(chr.strip())
-
-
 
     for CHR in chromosome_list:
         mpileup_input = var_dir+'/'+ID+'.all_'+CHR+'.vcf.gz'
         filter_output = out_dir+'/'+ID+'.HD_filt_'+CHR+'.vcf.gz'
-        view_output = out_dir+'/'+ID+'.HD_filt_SNPs_'+CHR+'.vcf.gz'
+        view_output = out_dir+'/'+ID+'.HD_SNPs_'+CHR+'.vcf.gz'
 
         # Filter variants by quality and depth
         filterCmd='module load bcftools/1.11 && bcftools filter -s LowQual -e "%QUAL<'+QUAL+' || DP<(AVG(DP)*3)" --threads '+threads+' -Oz -o '+filter_output+' '+mpileup_input+''

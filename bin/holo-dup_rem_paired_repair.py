@@ -25,7 +25,7 @@ out_stats=args.out_stats
 
 # Run
 
-# split not dup sequences into reads again
+# split not dup sequences into reads again: the F-R reads were concatenated in previous rule 
 cut1Cmd = 'cut --delimiter='+str(separator)+' -f1 <(zcat '+input_file+') | gzip > '+read1+''
 subprocess.Popen(cut1Cmd, shell=True,executable="/bin/bash").wait()
 cut2Cmd = 'cut --delimiter='+str(separator)+' -f2  <(zcat '+input_file+') | gzip > '+read2+''

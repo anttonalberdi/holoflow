@@ -13,7 +13,8 @@ rule get_paths:
 
 ##
 # Assembly
-##
+## Assembly is generated either with megahit or metaspades, chosen in config file.
+
 rule assembly:
     input:
         read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
@@ -37,6 +38,9 @@ rule assembly:
         """
 
 
+##
+# Assembly reformat
+##Contigs shorter than specified in min contig len parameter of config will be removed and the contigs will be renamed
 
 rule assembly_reformat:
     input:
@@ -59,7 +63,7 @@ rule assembly_reformat:
 
 ##
 # Index assembly
-##
+## Coassembly is indexed with samtools and bwa
 rule assembly_index:
     input:
         "{projectpath}/MIB_01-Assembly/{sample}.fa"
@@ -79,7 +83,7 @@ rule assembly_index:
 
 ##
 # Assembly mapping
-##
+## map metagenomic reads to coassembly file to obtain differential coverage in next rule
 
 rule assembly_mapping:
     input:
@@ -117,8 +121,7 @@ rule assembly_mapping:
 
 ##
 # Create depth table
-##
-
+## Create depth table from bam files
 rule depth_table:
     input:
         #genetic_coords="{projectpath}/MIB_02-ProdigalPrediction/{sample}.coords.gbk",  #not actually necessary here, but used to keep order
@@ -177,7 +180,9 @@ rule binning_maxbin:
 
 ##
 # Check binning
-##
+## If all binners created bins, then continue. If Any binner did not create bins, simply copy resulting bins from
+# another software, rename these, and continue (the result is going to be the same for DAStool, is for the sake of the pipeline)
+
 rule check_bins:
     input:
         check_mxb="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.mxb_checked_bins",
@@ -194,10 +199,9 @@ rule check_bins:
 
 
 ##
-# Bin refinement with DASTool using binning: metabat, maxbin and proteins from: prodigal
+# Bin refinement with DASTool using binning: metabat, maxbin 
 ##
- # --proteins                 Predicted proteins in prodigal fasta format (>scaffoldID_geneNo).
- #                              Gene prediction step will be skipped if given. (optional)
+
 rule das_tool:
     input:
         checked_bins="{projectpath}/MIB_03-Binning/{sample}_checked_bins.txt",

@@ -4,13 +4,14 @@ summary_table_tmp=$3
 mag_table=$4
 summary_table=$5
 
-
+# Create empty tmp file
 touch $summary_table_tmp
 while read line; do
 grep $line $in_data_drep | cut -d',' -f1,2,3,5,6 >> $summary_table_tmp
 done < <(cut -d',' -f1 $in_data_checkm)
 sort -t',' -k2,2nr -k3,3n -k5,5nr $summary_table_tmp > $mag_table
 rm $summary_table_tmp
+#Extract info 
 #All MAGs
 echo '
 MAG SUMMARY

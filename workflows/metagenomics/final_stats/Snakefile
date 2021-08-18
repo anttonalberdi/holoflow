@@ -15,34 +15,41 @@ rule get_paths:
 
 ##
 # Map MAGs to original metagenomic fastq files
-##
+## A MAG catalogue file is created to which sample reads are to be mapped competitively.
+## A set of bam files, one per sample, is created and a file outputting % of reads recovered from each sample as well.
+
 rule mag_mapping:
     input:
         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
         read_dir="{projectpath}/MFS_00-InputData/{group}/metagenomic_reads"
     output:
-        directory("{projectpath}/MFS_01-MAGMapping/{group}")
+        out_dir_mc=directory("{projectpath}/MFS_01-MAGCatalogue/{group}"),
+        out_dir_map=directory("{projectpath}/MFS_02-MAGMapped/{group}"),
+        out_dir_ummap=directory("{projectpath}/MFS_02-MAGUnMapped/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-MAG_mapping.py -fq_dir {input.read_dir} -bin_dir {input.drep_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-MAG_mapping.py -fq_dir {input.read_dir} -bin_dir {input.drep_bin_dir} -out_dir {output.out_dir_map} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
 
 
 ##
 # Get MAG coverage for each sample
-##
+## Using the previously generated bam files, for each bam the coverage of each mag is extracted.
+
 rule coverage:
     input:
         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
-        bam_MAGs="{projectpath}/MFS_01-MAGMapping/{group}"
+        bam_MAGs="{projectpath}/MFS_02-MAGMapped/{group}"
     output:
-        "{projectpath}/MFS_02-MAGCoverage/{group}/{group}.coverage_byMAG.txt"
+        contig="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byContig.txt",
+        mag="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byMAG.txt",
+        raw="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.rawmapping_byMAG.txt"
     params:
         threads=expand("{threads}", threads=config['threads']),
-        out_dir="{projectpath}/MFS_02-MAGCoverage",
+        out_dir="{projectpath}/MFS_03-MAGCoverage",
         group="{group}"
     shell:
         """
@@ -54,13 +61,13 @@ rule coverage:
 # #
 rule checkm:
     input:
-        cov="{projectpath}/MFS_02-MAGCoverage/{group}/{group}.coverage_byMAG.txt",
+        cov="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byMAG.txt",
         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
     output:
-        "{projectpath}/MFS_03-BinQuality/{group}/{group}_binQuality_Info.csv"
+        "{projectpath}/MFS_04-BinQuality/{group}/{group}_binQuality_general_Info.csv"
     params:
         threads=expand("{threads}", threads=config['threads']),
-        out_dir="{projectpath}/MFS_03-BinQuality/{group}",
+        out_dir="{projectpath}/MFS_04-BinQuality/{group}",
         group="{group}"
     shell:
         """
@@ -71,15 +78,18 @@ rule checkm:
 ##
 # Get MAG coverage on SELECTED KOs (single-copy core genes: https://github.com/anttonalberdi/metafunk/blob/master/files/USiCGs.txt)
 ##
-### Needs optimization 
+### Needs optimization
+# This is now calculated with htseq-counts, but would probably be more efficient with samtools¿
+# Too many files are generated and even though it is parallelized it can take a long time.
+
 rule genes_coverage:
     input:
-        quality="{projectpath}/MFS_03-BinQuality/{group}/{group}_binQuality_Info.csv", # unnecessary for this rule, necessary for creating dependence
+        quality="{projectpath}/MFS_04-BinQuality/{group}/{group}_binQuality_general_Info.csv", # unnecessary for this rule, necessary for creating dependence
         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
         annot_dir="{projectpath}/MFS_00-InputData/{group}/annotation",
-        bam_dir="{projectpath}/MFS_01-MAGMapping/{group}"
+        bam_dir="{projectpath}/MFS_02-MAGMapped/{group}"
     output:
-        directory("{projectpath}/MFS_04-KOAbundances/{group}")
+        directory("{projectpath}/MFS_05-KOAbundances/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
         KO_DB=expand("{KO_DB}", KO_DB=config['KO_DB']),

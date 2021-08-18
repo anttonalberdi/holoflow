@@ -95,7 +95,7 @@ def in_out_final_stats(path,in_f):
 
         # Define variables
         output_files=''
-        final_temp_dir="MFS_04-KOAbundances"
+        final_temp_dir="MFS_05-KOAbundances"
 
     for line in lines:
         ### Skip line if starts with # (comment line)
@@ -131,11 +131,14 @@ def in_out_final_stats(path,in_f):
             in1=in_sample+'/metagenomic_reads'
             # Check if input files already in desired dir
             if os.path.exists(in1):
-                try:    # try to create the link - if the link already exists ... -> TRY/Except is to avoid exception errors
-                    mvreadsCmd = 'ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
-                    subprocess.Popen(mvreadsCmd, shell=True).wait()
-                except: # ... it won't be created, but pass
-                    pass
+                mtg_reads = glob.glob(mtg_reads_dir+'/*.fastq*')
+                for mtg_file in mtg_reads:
+                    if os.path.basename(mtg_file) in os.listdir(in1):
+                        pass
+                    else:
+                        mvreadsCmd = 'ln -s '+mtg_file+' '+in1+''
+                        subprocess.Popen(mvreadsCmd, shell=True).wait()
+
             else:
                 mvreadsCmd = 'mkdir '+in1+' && ln -s '+mtg_reads_dir+'/*.fastq* '+in1+''
                 subprocess.Popen(mvreadsCmd, shell=True).wait()
@@ -146,24 +149,38 @@ def in_out_final_stats(path,in_f):
             in2=in_sample+'/dereplicated_bins'
             # Check if input files already in desired dir
             if os.path.exists(in2):
-                try:
-                    mvbinsCmd = 'ln -s '+drep_bins_dir+'/*.fa '+in2+' && cp '+drep_bins_dir+'/../final_bins_Info.csv '+in2+' && cp '+drep_bins_dir+'/../data_tables/Widb.csv '+in2+''
-                    subprocess.Popen(mvbinsCmd, shell=True).wait()
-                except:
-                    pass
+                if not os.path.isfile(in2+'/final_bins_Info.csv'):
+                    mvbins1Cmd = 'ln -s '+drep_bins_dir+'/../final_bins_Info.csv '+in2+''
+                    subprocess.Popen(mvbins1Cmd, shell=True).wait()
+
+                if not os.path.isfile(in2+'/Widb.csv'):
+                    mvbins2Cmd = 'ln -s '+drep_bins_dir+'/../data_tables/Widb.csv '+in2+''
+                    subprocess.Popen(mvbins2Cmd, shell=True).wait()
+
+                drep_bins = glob.glob(drep_bins_dir+'/*.fa')
+                for bin in drep_bins:
+                    if os.path.basename(bin) in os.listdir(in2):
+                        pass
+                    else:
+                        mvbins3Cmd = 'ln -s '+bin+' '+in2+''
+                        subprocess.Popen(mvbins3Cmd, shell=True).wait()
+
             else:
-                mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+' && cp '+drep_bins_dir+'/../final_bins_Info.csv '+in2+' && cp '+drep_bins_dir+'/../data_tables/Widb.csv '+in2+''
+                mvbinsCmd = 'mkdir '+in2+' && ln -s '+drep_bins_dir+'/../final_bins_Info.csv '+in2+' && ln -s '+drep_bins_dir+'/../data_tables/Widb.csv '+in2+' && ln -s '+drep_bins_dir+'/*.fa '+in2+''
                 subprocess.Popen(mvbinsCmd, shell=True).wait()
 
             # Define input dir
             in3=in_sample+'/annotation'
             # Check if input files already in desired dir
             if os.path.exists(in3):
-                try:
-                    mvgffCmd = 'ln -s '+annot_dir+'/*.gff '+in3+''
-                    subprocess.Popen(mvgffCmd, shell=True).wait()
-                except:
-                    pass
+                annot_files = glob.glob(annot_dir+'/*.gff')
+                for annot in annot_files:
+                    if os.path.basename(annot) in os.listdir(in3):
+                        pass
+                    else:
+                        mvbins3Cmd = 'ln -s '+annot+' '+in3+''
+                        subprocess.Popen(mvbins3Cmd, shell=True).wait()
+
             else:
                 mvgffCmd = 'mkdir '+in3+' && ln -s '+annot_dir+'/*.gff '+in3+''
                 subprocess.Popen(mvgffCmd, shell=True).wait()
