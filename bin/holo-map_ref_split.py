@@ -53,7 +53,7 @@ subprocess.check_call(mvstatsCmd, shell=True)
 
 reads = 0
 bases = 0
-with open(str(read1), 'rt') as read: # outputs are compressed files: .gz extension
+with gzip.open(str(read1), 'rt') as read: # outputs are compressed files: .gz extension
     for id in read:
         seq = next(read)
         reads += 1
