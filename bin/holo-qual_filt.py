@@ -17,8 +17,8 @@ parser.add_argument('-a2', help="adapter 2 sequence", dest="a2", required=True)
 parser.add_argument('-maxns', help="max number of N's, default 5", dest="maxns", required=True)
 parser.add_argument('-minq', help="minimum quality PHRED, default 30 -> 0.1%", dest="minq", required=True)
 parser.add_argument('-minlen', help="minimum length of reads, default 35", dest="minlen", required=True)
-parser.add_argument('-lowcomplexfilt', help="Enable low complexity read filtering", dest="-lowcomplexfilt", required=True)
-parser.add_argument('-complexthreshold', help="Threhold for complexity, default 30%", dest="-complexthreshold", required=True)
+parser.add_argument('-lowcomplexfilt', help="Enable low complexity read filtering", dest="lowcomplexfilt", required=True)
+parser.add_argument('-complexthreshold', help="Threhold for complexity, default 30%", dest="complexthreshold", required=True)
 #parser.add_argument('-msep', help="mate separator between 1,2 reads", dest="msep", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
@@ -75,8 +75,7 @@ statsfile.write("Statistic\tValue \r\n".format(current_time))
 # Write to log
 with open(str(log),'a+') as log:
     log.write('\tHOLOFLOW\tPREPROCESSING\n\t\t'+current_time+'\tQuality Filtering step\n')
-    log.write('Reads with a minimum quality of '+minq+' are being removed.\n
-               Trimming sequencing adapters of all reads as well.\n\n')
+    log.write('Reads with a minimum quality of '+minq+' are being removed.\nTrimming sequencing adapters of all reads as well.\n\n')
 
 
 
@@ -92,7 +91,6 @@ if not (lowcomplexfilt == "true"):
             && fastp \
             --in1 '+read1i+' --in2 '+read2i+' \
             --out1 '+read1o+' --out2 '+read2o+' \
-            --compression \
             --trim_poly_g \
             --trim_poly_x \
             --n_base_limit '+maxns+' \
@@ -110,14 +108,13 @@ if not (lowcomplexfilt == "true"):
             && fastp \
             --in1 '+read1i+' --in2 '+read2i+' \
             --out1 '+read1o+' --out2 '+read2o+' \
-            --compression \
             --trim_poly_g \
             --trim_poly_x \
             --n_base_limit '+maxns+' \
             --qualified_quality_phred '+minq+' \
             --length_required '+minlen+'\
             --overrepresentation_analysis \
-            --thread '+threads+' \
+            --thread '+threads+''
             subprocess.check_call(qualfiltCmd, shell=True)
 else:
     if not os.path.exists(str(read1o)):
@@ -127,7 +124,6 @@ else:
             && fastp \
             --in1 '+read1i+' --in2 '+read2i+' \
             --out1 '+read1o+' --out2 '+read2o+' \
-            --compression \
             --trim_poly_g \
             --trim_poly_x \
             --n_base_limit '+maxns+' \
@@ -147,7 +143,6 @@ else:
             && fastp \
             --in1 '+read1i+' --in2 '+read2i+' \
             --out1 '+read1o+' --out2 '+read2o+' \
-            --compression \
             --trim_poly_g \
             --trim_poly_x \
             --n_base_limit '+maxns+' \
@@ -156,7 +151,7 @@ else:
             --low_complexity_filter \
             --complexity_threshold '+complexthreshold+'\
             --overrepresentation_analysis \
-            --thread '+threads+' \
+            --thread '+threads+''
             subprocess.check_call(qualfiltCmd, shell=True)
 
 

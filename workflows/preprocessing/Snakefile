@@ -62,7 +62,6 @@ rule qual_filt:
         -maxns {params.maxns} \
         -minq {params.minquality} \
         -t {params.threads} \
-        -msep {params.mate_separator} \
         -minlen {params.minlen} \
         -lowcomplexfilt {params.lowcomplexfilt} \
         -complexthreshold {params.complexthreshold} \
