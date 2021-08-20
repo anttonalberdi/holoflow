@@ -187,8 +187,6 @@ def in_out_preprocessing(path,in_f):
                     # Add stats and bam output files only once per sample
                     output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ")
                     output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".html ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".json ")
 
 
         else: # the input directory already exists and is full, don't want to create it again, just re-run from last step
@@ -208,8 +206,7 @@ def in_out_preprocessing(path,in_f):
                     # Add stats and bam output files only once per sample
                     output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ")
                     output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".html ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".json ")
+
 
 
 
@@ -271,8 +268,7 @@ def in_out_preprocessing(path,in_f):
                     # Add stats and bam output files only once per sample
                     output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".stats ")
                     output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_ref.bam ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".html ")
-                    output_files+=(path+"/"+final_temp_dir+"/"+sample_name+".json ")
+
 
 
     return output_files
