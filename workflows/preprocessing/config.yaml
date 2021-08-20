@@ -21,6 +21,14 @@ mate_separator:
 minlen:
   '35'
 
+# Low complexity read filtering (default enabled)
+lowcomplexfilt:
+  'true'
+
+# Low complexity read filtering threshold (default 30% complexity)
+complexthreshold:
+  '30'
+
 # dup_rem_paired options
   # By-name-n and By-seq-s are mutually exclusive !
 # dereplicate based on sequence full name instead of just ID
