@@ -54,6 +54,8 @@ rule qual_filt:
         lowcomplexfilt=expand("{lowcomplexfilt}", lowcomplexfilt=config['lowcomplexfilt']),
         complexthreshold=expand("{complexthreshold}", complexthreshold=config['complexthreshold']),
         mate_separator=expand("{mate_separator}", mate_separator=config['mate_separator']),
+        fastp_html=expand("{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.html", fastp_html={sample}),
+        fastp_json=expand("{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.json", fastp_json={sample}),
         threads=10
     shell:
         """
@@ -67,11 +69,12 @@ rule qual_filt:
         -minlen {params.minlen} \
         -lowcomplexfilt {params.lowcomplexfilt} \
         -complexthreshold {params.complexthreshold} \
+        -h {params.fastp_html} \
+        -j {params.fastp_json} \
         -s {output.stats_file} \
         -log {rules.get_paths.input.logpath}
         """
-#        -h {output.fastp_html} \
-#        -j {output.fastp_json} \
+
 
 ##
 # Duplicates removal
