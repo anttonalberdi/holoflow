@@ -20,6 +20,8 @@ parser.add_argument('-minlen', help="minimum length of reads, default 35", dest=
 parser.add_argument('-lowcomplexfilt', help="Enable low complexity read filtering", dest="lowcomplexfilt", required=True)
 parser.add_argument('-complexthreshold', help="Threhold for complexity, default 30 percent", dest="complexthreshold", required=True)
 #parser.add_argument('-msep', help="mate separator between 1,2 reads", dest="msep", required=True)
+#parser.add_argument('-html', help="fastp html file", dest="html", required=True)
+#parser.add_argument('-json', help="fastp json file", dest="json", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 parser.add_argument('-s', help="stats file", dest="stats", required=True)
@@ -37,6 +39,8 @@ minlen=args.minlen
 lowcomplexfilt=args.lowcomplexfilt
 complexthreshold=args.complexthreshold
 #msep=args.msep
+#html=args.html
+#json=args.json
 log=args.log
 threads=args.threads
 stats=args.stats
