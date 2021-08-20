@@ -48,9 +48,9 @@ rule qual_filt:
         adapter2=expand("{adapter2}", adapter2=config['adapter2']),
         maxns=expand("{maxns}", maxns=config['maxns']),
         minquality=expand("{minquality}", minquality=config['minquality']),
-        minquality=expand("{minlen}", minlen=config['minlen']),
-        minquality=expand("{lowcomplexfilt}", lowcomplexfilt=config['lowcomplexfilt']),
-        minquality=expand("{complexthreshold}", complexthreshold=config['complexthreshold']),
+        minlen=expand("{minlen}", minlen=config['minlen']),
+        lowcomplexfilt=expand("{lowcomplexfilt}", lowcomplexfilt=config['lowcomplexfilt']),
+        complexthreshold=expand("{complexthreshold}", complexthreshold=config['complexthreshold']),
         mate_separator=expand("{mate_separator}", mate_separator=config['mate_separator']),
         threads=10
     shell:
