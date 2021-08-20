@@ -22,7 +22,7 @@ parser.add_argument('-lowcomplexfilt', help="Enable low complexity read filterin
 parser.add_argument('-complexthreshold', help="Threhold for complexity, default 30 percent", dest="complexthreshold", required=True)
 #parser.add_argument('-msep', help="mate separator between 1,2 reads", dest="msep", required=True)
 parser.add_argument('-html', help="fastp html file", dest="fastp_html", required=True)
-parser.add_argument('-html', help="fastp json file", dest="fastp_json", required=True)
+parser.add_argument('-json', help="fastp json file", dest="fastp_json", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 parser.add_argument('-s', help="stats file", dest="stats", required=True)
