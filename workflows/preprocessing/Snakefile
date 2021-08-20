@@ -42,6 +42,8 @@ rule qual_filt:
     output:
         read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq.gz",
         read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz",
+        fastp_html="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.html",
+        fastp_json="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.json",
         stats_file="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.stats"
     params:
         adapter1=expand("{adapter1}", adapter1=config['adapter1']),
@@ -66,6 +68,8 @@ rule qual_filt:
         -lowcomplexfilt {params.lowcomplexfilt} \
         -complexthreshold {params.complexthreshold} \
         -s {output.stats_file} \
+        -j {output.fastp_json} \
+        -h {output.fastp_html} \
         -log {rules.get_paths.input.logpath}
         """
 
