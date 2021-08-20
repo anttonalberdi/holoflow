@@ -164,7 +164,7 @@ rule map_ref:
 rule map_ref_split:
     input:
         all_bam="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam",
-        stats_in="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.stats"
+        stats_in="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.stats"
     output:
         ref="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_ref.bam",
         read1="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_1.fastq.gz",
