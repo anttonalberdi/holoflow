@@ -54,8 +54,8 @@ rule qual_filt:
         lowcomplexfilt=expand("{lowcomplexfilt}", lowcomplexfilt=config['lowcomplexfilt']),
         complexthreshold=expand("{complexthreshold}", complexthreshold=config['complexthreshold']),
         mate_separator=expand("{mate_separator}", mate_separator=config['mate_separator']),
-        fastp_html=expand("{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.html", fastp_html={sample}),
-        fastp_json=expand("{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.json", fastp_json={sample}),
+        fastp_html="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.html",
+        fastp_json="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.json",
         threads=10
     shell:
         """
