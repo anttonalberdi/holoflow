@@ -11,6 +11,8 @@ rule get_paths:
 ##
 # Input reformat
 ## Reformat input file so all reads contain the sample ID in the name + standard digit format
+### Raph: Might be possible to make this optional, as was only needed when a mix of BGI/illumina data was DuplicatesRemoved
+### Raph: This would save time, as this step has to decompress/ use I/O.
 rule in_reformat:
     input:
         read1i="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.tmp.gz",
@@ -22,12 +24,16 @@ rule in_reformat:
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-in_reformat.py -r1i {input.read1i} -r2i {input.read2i} -r1o {output.read1o} -r2o {output.read2o} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-in_reformat.py \
+        -r1i {input.read1i} -r2i {input.read2i} \
+        -r1o {output.read1o} -r2o {output.read2o} \
+        -ID {params.sample} \
+        -log {rules.get_paths.input.logpath}
         """
 
 ##
 # Quality-filtering
-## 
+##
 rule qual_filt:
     input:
         read1="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.gz",
@@ -42,62 +48,80 @@ rule qual_filt:
         adapter2=expand("{adapter2}", adapter2=config['adapter2']),
         maxns=expand("{maxns}", maxns=config['maxns']),
         minquality=expand("{minquality}", minquality=config['minquality']),
+        minquality=expand("{minlen}", minlen=config['minlen']),
+        minquality=expand("{lowcomplexfilt}", lowcomplexfilt=config['lowcomplexfilt']),
+        minquality=expand("{complexthreshold}", complexthreshold=config['complexthreshold']),
         mate_separator=expand("{mate_separator}", mate_separator=config['mate_separator']),
         threads=10
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-qual_filt.py -i1 {input.read1} -i2 {input.read2} -o1 {output.read1} -o2 {output.read2} -a1 {params.adapter1} -a2 {params.adapter2} -maxns {params.maxns} -minq {params.minquality} -t {params.threads} -msep {params.mate_separator} -s {output.stats_file} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-qual_filt.py \
+        -i1 {input.read1} -i2 {input.read2} \
+        -o1 {output.read1} -o2 {output.read2} \
+        -a1 {params.adapter1} -a2 {params.adapter2} \
+        -maxns {params.maxns} \
+        -minq {params.minquality} \
+        -t {params.threads} \
+        -msep {params.mate_separator} \
+        -minlen {params.minlen} \
+        -lowcomplexfilt {params.lowcomplexfilt} \
+        -complexthreshold {params.complexthreshold} \
+        -s {output.stats_file} \
+        -log {rules.get_paths.input.logpath}
         """
 
 
 ##
 # Duplicates removal
 ##
-rule dup_rem_paired:
-    input:
-      read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq.gz",
-      read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz"
-    output:
-      out="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.merged.fastq.gz"
-    threads: 10
-    params:
-        separator=expand("{separator}", separator=config['separator']),
-        by_n=expand("{by_n}", by_n=config['by_n']),
-        by_s=expand("{by_s}", by_s=config['by_s']),
-        ignore_case=expand("{ignore_case}",ignore_case=config['ignore_case']),
-        file_to_dups=expand("{file_to_dups}", file_to_dups=config['file_to_dups']),
-        sample="{sample}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.out} -sep {params.separator} -i {params.ignore_case} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -ID {params.sample} -log {rules.get_paths.input.logpath}
-        """
+### Raph: removing this step as potentially unecessary, and takes a lot of time to decompress/compress.
+### Raph: fastp has an option for this in v0.22.1 if we want to revisit this in the future.
+# rule dup_rem_paired:
+#     input:
+#       read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq.gz",
+#       read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz"
+#     output:
+#       out="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.merged.fastq.gz"
+#     threads: 10
+#     params:
+#         separator=expand("{separator}", separator=config['separator']),
+#         by_n=expand("{by_n}", by_n=config['by_n']),
+#         by_s=expand("{by_s}", by_s=config['by_s']),
+#         ignore_case=expand("{ignore_case}",ignore_case=config['ignore_case']),
+#         file_to_dups=expand("{file_to_dups}", file_to_dups=config['file_to_dups']),
+#         sample="{sample}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired.py -1 {input.read1} -2 {input.read2} -o {output.out} -sep {params.separator} -i {params.ignore_case} -n {params.by_n} -s {params.by_s} -D {params.file_to_dups} -ID {params.sample} -log {rules.get_paths.input.logpath}
+#         """
 
-
-rule dup_rem_paired_repair:
-    input:
-      in_file="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.merged.fastq.gz",
-      in_stats="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.stats"
-    output:
-      read1="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_1.fastq.gz",
-      read2="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_2.fastq.gz",
-      out_stats="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.stats"
-    threads: 10
-    params:
-        separator=expand("{separator}", separator=config['separator'])
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired_repair.py -i {input.in_file} -1 {output.read1} -2 {output.read2} -sep {params.separator} -si {input.in_stats} -so {output.out_stats}
-        """
+### Raph: removing this step as potentially unecessary, and takes a lot of time to decompress/compress.
+### Raph: fastp has an option for this in v0.22.1 if we want to revisit this in the future.
+# rule dup_rem_paired_repair:
+#     input:
+#       in_file="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.merged.fastq.gz",
+#       in_stats="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.stats"
+#     output:
+#       read1="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_1.fastq.gz",
+#       read2="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_2.fastq.gz",
+#       out_stats="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}.stats"
+#     threads: 10
+#     params:
+#         separator=expand("{separator}", separator=config['separator'])
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-dup_rem_paired_repair.py -i {input.in_file} -1 {output.read1} -2 {output.read2} -sep {params.separator} -si {input.in_stats} -so {output.out_stats}
+#         """
 
 
 ##
 # Mapping to host
 ##
-
+### Raph: Note to fix PPR_03 to PPR_02 as we don't need deduplicate step. Leaving unchanged now for simplicity.
 rule map_ref:
     input:
-        read1="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_1.fastq.gz",
-        read2="{projectpath}/PPR_02-DuplicatesRemoved/{job}/{sample}_2.fastq.gz"
+        read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq.gz",
+        read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz"
     output:
         "{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam"
     threads: 40
@@ -116,7 +140,22 @@ rule map_ref:
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-map_ref.py -1 {input.read1} -2 {input.read2} -refg {params.refgenomes} -obam {output} -t {params.t} -M {params.M} -k {params.k} -w {params.w} -d {params.d} -A {params.A} -B {params.B} -O {params.O} -E {params.E} -L {params.L} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-map_ref.py \
+        -1 {input.read1} -2 {input.read2} \
+        -refg {params.refgenomes} \
+        -obam {output} \
+        -t {params.t} \
+        -M {params.M} \
+        -k {params.k} \
+        -w {params.w} \
+        -d {params.d} \
+        -A {params.A} \
+        -B {params.B} \
+        -O {params.O} \
+        -E {params.E} \
+        -L {params.L} \
+        -ID {params.sample} \
+        -log {rules.get_paths.input.logpath}
         """
 
 ##
@@ -136,5 +175,12 @@ rule map_ref_split:
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-map_ref_split.py -refg {params.refgenomes} -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} -obam {output.ref} -si {input.stats_in} -so {output.stats_out} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-map_ref_split.py \
+        -refg {params.refgenomes} \
+        -ibam {input.all_bam} -1 {output.read1} -2 {output.read2} \
+        -obam {output.ref} \
+        -si {input.stats_in} \
+        -so {output.stats_out} \
+        -ID {params.sample} \
+        -log {rules.get_paths.input.logpath}
         """
