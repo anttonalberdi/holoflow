@@ -20,8 +20,8 @@ parser.add_argument('-minlen', help="minimum length of reads, default 35", dest=
 parser.add_argument('-lowcomplexfilt', help="Enable low complexity read filtering", dest="lowcomplexfilt", required=True)
 parser.add_argument('-complexthreshold', help="Threhold for complexity, default 30 percent", dest="complexthreshold", required=True)
 #parser.add_argument('-msep', help="mate separator between 1,2 reads", dest="msep", required=True)
-#parser.add_argument('-html', help="fastp html file", dest="html", required=True)
-#parser.add_argument('-json', help="fastp json file", dest="json", required=True)
+parser.add_argument('-h', help="fastp html file", dest="fastp_html", required=True)
+parser.add_argument('-j', help="fastp json file", dest="fastp_json", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 parser.add_argument('-s', help="stats file", dest="stats", required=True)
@@ -39,8 +39,8 @@ minlen=args.minlen
 lowcomplexfilt=args.lowcomplexfilt
 complexthreshold=args.complexthreshold
 #msep=args.msep
-#html=args.html
-#json=args.json
+fastp_html=args.fastp_html
+fastp_json=args.fastp_json
 log=args.log
 threads=args.threads
 stats=args.stats
@@ -102,6 +102,8 @@ if not (lowcomplexfilt == "true"):
             --length_required '+minlen+'\
             --overrepresentation_analysis \
             --thread '+threads+' \
+            --html '+fastp_html+' \
+            --json '+fastp_json+' \
             --adapter_sequence '+a1+' \
             --adapter_sequence_r2 '+a2+''
             subprocess.check_call(qualfiltCmd, shell=True)
@@ -118,7 +120,9 @@ if not (lowcomplexfilt == "true"):
             --qualified_quality_phred '+minq+' \
             --length_required '+minlen+'\
             --overrepresentation_analysis \
-            --thread '+threads+''
+            --html '+fastp_html+' \
+            --json '+fastp_json+' \
+            --thread '+threads+'' \
             subprocess.check_call(qualfiltCmd, shell=True)
 else:
     if not os.path.exists(str(read1o)):
@@ -137,6 +141,8 @@ else:
             --complexity_threshold '+complexthreshold+'\
             --overrepresentation_analysis \
             --thread '+threads+' \
+            --html '+fastp_html+' \
+            --json '+fastp_json+' \
             --adapter_sequence '+a1+' \
             --adapter_sequence_r2 '+a2+''
             subprocess.check_call(qualfiltCmd, shell=True)
@@ -155,6 +161,8 @@ else:
             --low_complexity_filter \
             --complexity_threshold '+complexthreshold+'\
             --overrepresentation_analysis \
+            --html '+fastp_html+' \
+            --json '+fastp_json+' \
             --thread '+threads+''
             subprocess.check_call(qualfiltCmd, shell=True)
 
