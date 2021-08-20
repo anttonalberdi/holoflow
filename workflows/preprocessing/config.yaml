@@ -3,7 +3,7 @@
 threads:
   40
 
-#qual_filt options # If Illumina adapters, set to 'default'
+#qual_filt options # If unsure, set to 'default', and fastp will auto-detect. Not recommended.
 adapter1:
   'default'
 adapter2:
@@ -17,6 +17,9 @@ minquality:
 mate_separator:
   '/'
 
+# Minimum read length (default 35)
+minlen:
+  '35'
 
 # dup_rem_paired options
   # By-name-n and By-seq-s are mutually exclusive !
