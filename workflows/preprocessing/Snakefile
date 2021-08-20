@@ -69,8 +69,8 @@ rule qual_filt:
         -minlen {params.minlen} \
         -lowcomplexfilt {params.lowcomplexfilt} \
         -complexthreshold {params.complexthreshold} \
-        -h {output.fastp_html} \
-        -j {output.fastp_json} \
+        -html {output.fastp_html} \
+        -json {output.fastp_json} \
         -s {output.stats_file} \
         -log {rules.get_paths.input.logpath}
         """
