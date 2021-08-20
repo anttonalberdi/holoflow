@@ -7,6 +7,7 @@ import gzip
 import os
 
 #Argument parsing
+parser = argparse.ArgumentParser(add_help=False)
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-i1', help="path1 input", dest="read1i", required=True)
 parser.add_argument('-i2', help="path2 input", dest="read2i", required=True)
