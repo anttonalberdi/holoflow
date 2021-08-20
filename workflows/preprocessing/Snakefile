@@ -67,10 +67,10 @@ rule qual_filt:
         -minlen {params.minlen} \
         -lowcomplexfilt {params.lowcomplexfilt} \
         -complexthreshold {params.complexthreshold} \
-        -h {output.fastp_html} \
+        -s {output.stats_file} \
         -log {rules.get_paths.input.logpath}
         """
-#        -s {output.stats_file} \
+#        -h {output.fastp_html} \
 #        -j {output.fastp_json} \
 
 ##
