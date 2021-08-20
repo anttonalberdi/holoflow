@@ -122,7 +122,7 @@ if not (lowcomplexfilt == "true"):
             --overrepresentation_analysis \
             --html '+fastp_html+' \
             --json '+fastp_json+' \
-            --thread '+threads+'' \
+            --thread '+threads+''
             subprocess.check_call(qualfiltCmd, shell=True)
 else:
     if not os.path.exists(str(read1o)):
