@@ -11,7 +11,7 @@ adapter2:
 maxns:
   5
 minquality:
-  30
+  20
 
 # Character separating the mate number (1 or 2) from the read name in FASTQ records.
 mate_separator:
