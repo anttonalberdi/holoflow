@@ -15,6 +15,7 @@ parser.add_argument('-obam', help="bam file", dest="bam", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-si', help="stats input file", dest="in_stats", required=True)
 parser.add_argument('-so', help="stats output file", dest="out_stats", required=True)
+parser.add_argument('-t', help="number of threads", dest="threads", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 args = parser.parse_args()
 
@@ -26,6 +27,7 @@ read2=args.read2
 log=args.log
 in_stats=args.in_stats
 out_stats=args.out_stats
+threads=args.threads
 ID=args.ID
 
 # Run
@@ -34,11 +36,12 @@ with open(str(log),'a+') as logi:
     logi.write('A .bam file is generated containing the mapped reads, and two .fastq files containing the metagenomic ones.\n\n')
 
 # sort bam for genomics
-refbam1Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+'.notsorted && samtools sort -T '+bam+'.'+ID+' -o '+bam+' '+bam+'.notsorted && rm '+bam+'.notsorted'
+### Raph: n.b. SAM flags: 4 = unmapped, 8 = mate unpaired -- F = exclude, f = include.
+refbam1Cmd = 'module load tools samtools/1.11 && samtools view -@ '+threads+' -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+'.notsorted && samtools sort -@ '+threads+' -T '+bam+'.'+ID+' -o '+bam+' '+bam+'.notsorted && rm '+bam+'.notsorted'
 subprocess.check_call(refbam1Cmd, shell=True)
 
 # extract not-mapped to the reference genome reads + keep reference bam
-refbam2Cmd = 'module load tools samtools/1.11 && samtools view -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -c 6 -1 '+read1+' -2 '+read2+' -'
+refbam2Cmd = 'module load tools samtools/1.11 && samtools view -@ '+threads+' -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -@ '+threads+' -c 6 -1 '+read1+' -2 '+read2+' -'
 subprocess.check_call(refbam2Cmd, shell=True)
 
 # remove general bam
