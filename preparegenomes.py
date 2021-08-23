@@ -48,6 +48,8 @@ subprocess.Popen(loaddepCmd,shell=True).wait()
 
     #Append current directory to .yaml config for standalone calling
     # see preprocessing.py for verbose description
+    ### Raph: This currently does not work, and requires the user to module load
+    ### anaconda prior to running the script...
 import ruamel.yaml
 yaml = ruamel.yaml.YAML()
 yaml.explicit_start = True
