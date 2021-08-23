@@ -34,6 +34,7 @@ rule check_compress:
     input:
         db_path=expand("{DB_path}", DB_path=config['DB_path']),
 #        idx_db="{projectpath}/PRG/{db_ID}.rev.2.bt2l"
+#        -idx_db {input.idx_db} \
     output:
         check_file="{projectpath}/{db_ID}.tar.gz"
     params:
@@ -43,7 +44,6 @@ rule check_compress:
         """
         python {rules.get_paths.input.holopath}/bin/holo-check_compress.py \
         -db {input.db_path} \
-        -idx_db {input.idx_db} \
         -check {output.check_file} \
         -db_dir {params.db_dir} \
         -db_ID {params.db_ID} \
