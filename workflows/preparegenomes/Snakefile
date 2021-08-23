@@ -18,14 +18,14 @@ rule db_index:
         db_path=expand("{DB_path}", DB_path=config['DB_path'])
     threads: 39
     output:
-#        idx_db_bt2="{projectpath}/PRG/{db_ID}.rev.2.bt2l",
-#        -idx_bt2 {output.idx_db_bt2} \
+        idx_db_bt2="{projectpath}/PRG/{db_ID}.rev.2.bt2l",
         idx_db_samtools="{projectpath}/PRG/{db_ID}.fna.fai"
     shell:
         """
         python {rules.get_paths.input.holopath}/bin/holo-db_index.py \
         -db {input.db_path} \
         -idx_smt {output.idx_db_samtools} \
+        -idx_bt2 {output.idx_db_bt2} \
         -log {rules.get_paths.input.logpath}
         """
 
@@ -33,8 +33,8 @@ rule db_index:
 rule check_compress:
     input:
         db_path=expand("{DB_path}", DB_path=config['DB_path']),
-#        idx_db="{projectpath}/PRG/{db_ID}.rev.2.bt2l"
-#        -idx_db {input.idx_db} \
+        idx_db="{projectpath}/PRG/{db_ID}.rev.2.bt2l"
+
     output:
         check_file="{projectpath}/{db_ID}.tar.gz"
     params:
@@ -47,5 +47,6 @@ rule check_compress:
         -check {output.check_file} \
         -db_dir {params.db_dir} \
         -db_ID {params.db_ID} \
+        -idx_db {input.idx_db} \
         -log {rules.get_paths.input.logpath}
         """
