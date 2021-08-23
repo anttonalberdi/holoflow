@@ -9,7 +9,7 @@ import os
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-db', help="data base path", dest="db", required=True)
-parser.add_argument('-idx_db', help="indexed data base file", dest="idx_db", required=True)
+parser.add_argument('-idx_db', help="indexed data base file", dest="idx_db", required=False)
 parser.add_argument('-db_dir', help="data base directory", dest="db_dir", required=True)
 parser.add_argument('-db_ID', help="data base ID", dest="db_ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
