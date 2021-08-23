@@ -147,7 +147,7 @@ def merge_genomes(refg_IDs,refg_Paths,db_ID):
                 if genome.endswith('.gz'): # uncompress genome for editing
                                         # and save it in db_dir
 
-                    uncompressCmd='ln -s '+genome+' '+db_dir+'/'+ID+'.fna.gz && pigz -d -c -p '+cores+' '+db_dir+'/'+ID+'.fna.gz > '+db_dir+'/'+ID+'.fna'
+                    uncompressCmd='module load tools pigz/2.3.4 && ln -s '+genome+' '+db_dir+'/'+ID+'.fna.gz && pigz -d -c -p '+cores+' '+db_dir+'/'+ID+'.fna.gz > '+db_dir+'/'+ID+'.fna'
                     subprocess.check_call(uncompressCmd, shell=True)
 
                     # edit ">" genome identifiers
@@ -216,7 +216,7 @@ def run_preparegenomes(in_f, path, config, cores):
     log_file.write("Have a nice run!\n\t\tHOLOFOW Preparegenomes starting")
     log_file.close()
 
-    prg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+path_out[1]+' --configfile '+config+' --cores '+cores+''
+    prg_snk_Cmd = 'module load tools anaconda3/4.4.0 && snakemake -s '+path_snkf+' -k '+path_out[1]+' --configfile '+config+' --cores '+cores+''
     subprocess.check_call(prg_snk_Cmd, shell=True)
 
     log_file = open(str(log),'a+')

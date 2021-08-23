@@ -33,13 +33,13 @@ with open(str(log),'a+') as logi:
     logi.write('\t\t'+current_time+'\tCompressing data base and index files step\n\n')
     logi.close()
 
-# If all preparegenomes files are created then compress all 
+# If all preparegenomes files are created then compress all
 if (os.path.exists(str(idx_db)) and os.path.exists(str(db))) and (not os.path.exists(str(check))):
 
     with open(str(check),'w') as check_file:
         check_file.write('All reference genomes have been merged and indexed successfully.')
 
-    compressCmd=('cd '+db_dir+' && tar -zcvf ../'+db_ID+'.tar.gz * && rm -rf '+db_dir+'')
+    compressCmd=('module load tools pigz/2.3.4 && cd '+db_dir+' && tar -cf - * | pigz -p 32 > ../'+db_ID+'.tar.gz && rm -rf '+db_dir+'')
     subprocess.check_call(compressCmd, shell=True)
 
 
