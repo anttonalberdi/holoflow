@@ -18,7 +18,7 @@ rule db_index:
         db_path=expand("{DB_path}", DB_path=config['DB_path'])
     threads: 39
     output:
-        idx_db_bt2="{projectpath}/PRG/{db_ID}.rev.2.bt2l",
+        idx_db_bt2="{projectpath}/PRG/{db_ID}.rev.2.bt2",
         idx_db_samtools="{projectpath}/PRG/{db_ID}.fna.fai"
     shell:
         """
@@ -33,7 +33,7 @@ rule db_index:
 rule check_compress:
     input:
         db_path=expand("{DB_path}", DB_path=config['DB_path']),
-        idx_db="{projectpath}/PRG/{db_ID}.rev.2.bt2l"
+        idx_db="{projectpath}/PRG/{db_ID}.rev.2.bt2"
 
     output:
         check_file="{projectpath}/{db_ID}.tar.gz"
