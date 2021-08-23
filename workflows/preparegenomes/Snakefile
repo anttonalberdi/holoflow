@@ -33,7 +33,7 @@ rule db_index:
 rule check_compress:
     input:
         db_path=expand("{DB_path}", DB_path=config['DB_path']),
-        idx_db="{projectpath}/PRG/{db_ID}.fna.1.bt2"
+        idx_db="{projectpath}/PRG/{db_ID}.rev.2.bt2l"
     output:
         check_file="{projectpath}/{db_ID}.tar.gz"
     params:
