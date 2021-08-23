@@ -11,17 +11,22 @@ rule get_paths:
 
 ##
 # DB indexing
-## Index db created by concatenating all reference genomes with bwa
+## Index db created by concatenating all reference genomes with bowtie2
 
 rule db_index:
     input:
         db_path=expand("{DB_path}", DB_path=config['DB_path'])
+    threads: 39
     output:
-        idx_db_bwa="{projectpath}/PRG/{db_ID}.fna.sa",
-        idx_db_samtools="{projectpath}/PRG/{db_ID}.fna.fai"
+        idx_db_bt2="{projectpath}/PRG/{db_ID}.fna.sa"
+#        idx_db_samtools="{projectpath}/PRG/{db_ID}.fna.fai"
+#        -idx_smt {output.idx_db_samtools} \
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-db_index.py -db {input.db_path} -idx_bwa {output.idx_db_bwa} -idx_smt {output.idx_db_samtools} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-db_index.py \
+        -db {input.db_path} \
+        -idx_bt2 {output.idx_db_bt2} \
+        -log {rules.get_paths.input.logpath}
         """
 
 ## Check all files necessary exist, then create .tar.gz file with everything
@@ -36,5 +41,11 @@ rule check_compress:
         db_ID="{db_ID}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-check_compress.py -db {input.db_path} -idx_db {input.idx_db} -check {output.check_file} -db_dir {params.db_dir} -db_ID {params.db_ID} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-check_compress.py \
+        -db {input.db_path} \
+        -idx_db {input.idx_db} \
+        -check {output.check_file} \
+        -db_dir {params.db_dir} \
+        -db_ID {params.db_ID} \
+        -log {rules.get_paths.input.logpath}
         """

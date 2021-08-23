@@ -42,7 +42,7 @@ else:
 
 
     # Load dependencies
-loaddepCmd='module unload gcc && module load tools anaconda3/4.4.0'
+loaddepCmd='module unload gcc && module load tools anaconda3/4.4.0 && module load tools pigz/2.3.4'
 subprocess.Popen(loaddepCmd,shell=True).wait()
 
 
@@ -147,7 +147,7 @@ def merge_genomes(refg_IDs,refg_Paths,db_ID):
                 if genome.endswith('.gz'): # uncompress genome for editing
                                         # and save it in db_dir
 
-                    uncompressCmd='ln -s '+genome+' '+db_dir+'/'+ID+'.fna.gz && gunzip -c '+db_dir+'/'+ID+'.fna.gz > '+db_dir+'/'+ID+'.fna'
+                    uncompressCmd='ln -s '+genome+' '+db_dir+'/'+ID+'.fna.gz && pigz -d -c -p '+cores+' '+db_dir+'/'+ID+'.fna.gz > '+db_dir+'/'+ID+'.fna'
                     subprocess.check_call(uncompressCmd, shell=True)
 
                     # edit ">" genome identifiers
