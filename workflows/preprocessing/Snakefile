@@ -20,6 +20,7 @@ rule in_reformat:
     output:
         read1o="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.gz",
         read2o="{projectpath}/PPR_00-InputData/{job}/{sample}_2.fastq.gz"
+    threads: 10
     params:
         sample="{sample}"
     shell:
@@ -53,10 +54,7 @@ rule qual_filt:
         minlen=expand("{minlen}", minlen=config['minlen']),
         lowcomplexfilt=expand("{lowcomplexfilt}", lowcomplexfilt=config['lowcomplexfilt']),
         complexthreshold=expand("{complexthreshold}", complexthreshold=config['complexthreshold']),
-        mate_separator=expand("{mate_separator}", mate_separator=config['mate_separator']),
-#        fastp_html="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.html",
-#        fastp_json="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}.json",
-        threads=10
+        mate_separator=expand("{mate_separator}", mate_separator=config['mate_separator'])
     shell:
         """
         python {rules.get_paths.input.holopath}/bin/holo-qual_filt.py \
@@ -65,7 +63,7 @@ rule qual_filt:
         -a1 {params.adapter1} -a2 {params.adapter2} \
         -maxns {params.maxns} \
         -minq {params.minquality} \
-        -t {params.threads} \
+        -t {threads} \
         -minlen {params.minlen} \
         -lowcomplexfilt {params.lowcomplexfilt} \
         -complexthreshold {params.complexthreshold} \
@@ -129,7 +127,7 @@ rule map_ref:
         read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz"
     output:
         "{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam"
-    threads: 40
+    threads: 20
     params:
         refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
         t=expand("{t}", t=config['t']),
@@ -175,6 +173,7 @@ rule map_ref_split:
         read1="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_1.fastq.gz",
         read2="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_2.fastq.gz",
         stats_out="{projectpath}/PPR_03-MappedToReference/{job}/{sample}.stats"
+    threads: 10
     params:
         refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
         sample="{sample}"
@@ -187,5 +186,6 @@ rule map_ref_split:
         -si {input.stats_in} \
         -so {output.stats_out} \
         -ID {params.sample} \
+        -t {threads} \
         -log {rules.get_paths.input.logpath}
         """
