@@ -129,6 +129,9 @@ rule map_ref:
         "{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam"
     params:
         refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
+        threads_bt2=expand("{threads_bt2}", threads_bt2=config['threads_bt2']),
+        sensitivity=expand("{sensitivity}", sensitivity['sensitivity']),
+        alignmenttype=expand("{alignmenttype}", alignmenttype['alignmenttype']),
         sample="{sample}"
     shell:
         """
@@ -136,6 +139,9 @@ rule map_ref:
         -1 {input.read1} -2 {input.read2} \
         -refg {params.refgenomes} \
         -obam {output} \
+        -threads_bt2 {params.threads_bt2} \
+        -sensitivity {params.sensitivity} \
+        -alignmenttype {params.alignmenttype} \
         -ID {params.sample} \
         -log {rules.get_paths.input.logpath}
         """
