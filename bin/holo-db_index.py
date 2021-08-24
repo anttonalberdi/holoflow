@@ -29,7 +29,7 @@ with open(str(log),"w+") as log:
     log.write('The data base needs to be indexed with Bowtie2 and SAMTOOLS so the reads can be mapped to it\nduring preprocessing.\n\n')
 
 
- first decompress db if necessary
+# first decompress db if necessary
 if str(db).endswith(".gz"):
     decompressCmd=('module load tools pigz/2.3.4 && pigz -d -p 40 '+db+'')
     subprocess.check_call(decompressCmd, shell=True)
