@@ -29,15 +29,14 @@ with open(str(log),"w+") as log:
     log.write('The data base needs to be indexed with Bowtie2 and SAMTOOLS so the reads can be mapped to it\nduring preprocessing.\n\n')
 
 
-### Raph: not necessary to decompress prior to building the bt2 index.
-# first decompress db if necessary
-#if str(db).endswith(".gz"):
-#    decompressCmd=('gunzip '+db+'')
-#    subprocess.check_call(decompressCmd, shell=True)
-#    decomp_db= db.replace('.gz','')
-#
-#else:
-#    decomp_db = db
+ first decompress db if necessary
+if str(db).endswith(".gz"):
+    decompressCmd=('module load tools pigz/2.3.4 && pigz -d -p 40 '+db+'')
+    subprocess.check_call(decompressCmd, shell=True)
+    decomp_db= db.replace('.gz','')
+
+else:
+    decomp_db = db
 
 # Index
 
@@ -45,7 +44,7 @@ if os.path.exists(str(idx_bt2)):
     pass
 
 else:
-    idxbt2Cmd='module load tools bowtie2/2.4.2 && bowtie2-build --threads 39 '+db+' '+db+''
+    idxbt2Cmd='module load tools bowtie2/2.4.2 && bowtie2-build --large-index --threads 39 '+decomp_db+' '+decomp_db+''
     subprocess.check_call(idxbt2Cmd, shell=True)
 
 
@@ -54,5 +53,5 @@ if os.path.exists(str(idx_smt)):
 
 else:
     # index
-    idxsamCmd='module load tools samtools/1.11 && samtools faidx '+db+''
+    idxsamCmd='module load tools samtools/1.11 && samtools faidx '+decomp_db+''
     subprocess.check_call(idxsamCmd, shell=True)
