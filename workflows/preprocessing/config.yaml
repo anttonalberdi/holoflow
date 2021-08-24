@@ -1,9 +1,9 @@
 
 
 threads:
-  40
+  20
 
-#qual_filt options # If unsure, set to 'default', and fastp will auto-detect. Not recommended.
+###qual_filt options # If unsure, set to 'default', and fastp will auto-detect. Not recommended.
 adapter1:
   'default'
 adapter2:
@@ -12,36 +12,41 @@ maxns:
   5
 minquality:
   20
-
 # Character separating the mate number (1 or 2) from the read name in FASTQ records.
 mate_separator:
   '/'
-
 # Minimum read length (default 35)
 minlen:
   '35'
-
 # Low complexity read filtering (default enabled)
 lowcomplexfilt:
   'true'
-
 # Low complexity read filtering threshold (default 30% complexity)
 complexthreshold:
   '30'
 
+###map_ref options
+#Sensitivity, other options are --very-fast, --fast, --very-sensitive
+threads_bt2:
+  '20'
+sensitivity:
+  '--sensitive'
+#Alignment type, other option is --local
+alignmenttype:
+  '--end-to-end'
 # dup_rem_paired options
   # By-name-n and By-seq-s are mutually exclusive !
 # dereplicate based on sequence full name instead of just ID
-by_n:
-  False
+#by_n:
+#  False
 # dereplicate based on sequence
-by_s:
-  True
+#by_s:
+#  True
 
 # if not False, write path instead of True !
 # file to dups writes a file with the duplicate sequences
-file_to_dups:
-  False
+#file_to_dups:
+#  False
 
 ignore_case:
   True
@@ -56,28 +61,8 @@ refgenomes:
 
     # These values correspond to the default options for bwa mem, customise if desired
 t:
-  40
-  # Either: loose / semistringent / superstringent. Correspond to 19, 21, 23 respectively.
-  # Default loose{19}
-k:
-  'loose'
-w:
-  100
-d:
-  100
-A:
-  1
-B:
-  4
-O:
-  6
-E:
-  1
-L:
-  5
-# Generate picard-friendly bam - used for further Variant Calling with GATK on Genomics workflow
-M:
-  True
+  10
+
 R:
   '@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:Sample'
 

@@ -127,18 +127,8 @@ rule map_ref:
         read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz"
     output:
         "{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam"
-    threads: 20
     params:
         refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
-        t=expand("{t}", t=config['t']),
-        k=expand("{k}", k=config['k']),
-        w=expand("{w}", w=config['w']),
-        d=expand("{d}", d=config['d']),
-        A=expand("{A}", A=config['A']),
-        B=expand("{B}", B=config['B']),
-        O=expand("{O}", O=config['O']),
-        E=expand("{E}", E=config['E']),
-        L=expand("{L}", L=config['L']),
         M=expand("{L}", L=config['L']),
         sample="{sample}"
     shell:
@@ -147,16 +137,6 @@ rule map_ref:
         -1 {input.read1} -2 {input.read2} \
         -refg {params.refgenomes} \
         -obam {output} \
-        -t {params.t} \
-        -M {params.M} \
-        -k {params.k} \
-        -w {params.w} \
-        -d {params.d} \
-        -A {params.A} \
-        -B {params.B} \
-        -O {params.O} \
-        -E {params.E} \
-        -L {params.L} \
         -ID {params.sample} \
         -log {rules.get_paths.input.logpath}
         """

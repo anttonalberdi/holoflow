@@ -37,11 +37,14 @@ with open(str(log),'a+') as logi:
 
 # sort bam for genomics
 ### Raph: n.b. SAM flags: 4 = unmapped, 8 = mate unpaired -- F = exclude, f = include.
-refbam1Cmd = 'module load tools samtools/1.11 && samtools view -@ '+threads+' -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+'.notsorted && samtools sort -@ '+threads+' -T '+bam+'.'+ID+' -o '+bam+' '+bam+'.notsorted && rm '+bam+'.notsorted'
+refbam1Cmd = 'module load tools samtools/1.11 \
+&& samtools view -@ '+threads+' -T '+ref_gen+' -b -F12 '+all_bam+' > '+bam+'.notsorted \
+&& samtools sort -@ '+threads+' -T '+bam+'.'+ID+' -o '+bam+' '+bam+'.notsorted && rm '+bam+'.notsorted'
 subprocess.check_call(refbam1Cmd, shell=True)
 
 # extract not-mapped to the reference genome reads + keep reference bam
-refbam2Cmd = 'module load tools samtools/1.11 && samtools view -@ '+threads+' -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -@ '+threads+' -c 6 -1 '+read1+' -2 '+read2+' -'
+refbam2Cmd = 'module load tools samtools/1.11 \
+&& samtools view -@ '+threads+' -T '+ref_gen+' -b -f12 '+all_bam+' | samtools fastq -@ '+threads+' -c 6 -1 '+read1+' -2 '+read2+' -'
 subprocess.check_call(refbam2Cmd, shell=True)
 
 # remove general bam
