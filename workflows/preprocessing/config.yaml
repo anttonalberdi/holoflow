@@ -30,10 +30,10 @@ complexthreshold:
 threads_bt2:
   '20'
 sensitivity:
-  '--sensitive'
+  '"--sensitive"'
 #Alignment type, other option is --local
 alignmenttype:
-  '--end-to-end'
+  '"--end-to-end"'
 # dup_rem_paired options
   # By-name-n and By-seq-s are mutually exclusive !
 # dereplicate based on sequence full name instead of just ID
