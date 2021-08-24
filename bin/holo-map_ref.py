@@ -12,8 +12,8 @@ parser.add_argument('-2', help="path2", dest="read2", required=True)
 parser.add_argument('-refg', help="reference genomes", dest="ref_gen", required=True)
 parser.add_argument('-obam', help="all bam file", dest="all_bam", required=True)
 parser.add_argument('-threads_bt2', help="threads to use", dest="threads", required=True)
-parser.add_argument('-sensitivity', help="Bowtie2 sensitivity setting, default sensitive", dest="sens", required=True)
-parser.add_argument('-alignmenttype', help="Bowtie2 alignment type, default end-to-end", dest="at", required=True)
+# parser.add_argument('-sensitivity', help="Bowtie2 sensitivity setting, default sensitive", dest="sens", required=True)
+# parser.add_argument('-alignmenttype', help="Bowtie2 alignment type, default end-to-end", dest="at", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
@@ -24,8 +24,8 @@ read2=args.read2
 ref_gen=args.ref_gen
 picard=args.picard
 threads=args.threads
-sens=args.sens
-at=args.at
+# sens=args.sens
+# at=args.at
 ID=args.ID
 log=args.log
 
@@ -45,8 +45,6 @@ mapCmd = 'module load tools samtools/1.11 bowtie2/2.4.2 pigz/2.3.4 \
           && --time \
           --threads '+threads+' \
           --rg-id "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" \
-          '+sens+' \
-          '+at+' \
           -x '+ref_gen+' \
           -1 '+read1+' \
           -2 '+read2+' | samtools view -@ '+threads+' -T '+ref_gen+' -b - > '+all_bam+''

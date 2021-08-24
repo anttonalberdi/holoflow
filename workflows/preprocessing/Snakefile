@@ -130,8 +130,10 @@ rule map_ref:
     params:
         refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
         threads_bt2=expand("{threads_bt2}", threads_bt2=config['threads_bt2']),
-        sensitivity=expand("{sensitivity}", sensitivity=config['sensitivity']),
-        alignmenttype=expand("{alignmenttype}", alignmenttype=config['alignmenttype']),
+        # sensitivity=expand("{sensitivity}", sensitivity=config['sensitivity']),
+        # alignmenttype=expand("{alignmenttype}", alignmenttype=config['alignmenttype']),
+        # -sensitivity {params.sensitivity} \
+        # -alignmenttype {params.alignmenttype} \
         sample="{sample}"
     shell:
         """
@@ -140,8 +142,6 @@ rule map_ref:
         -refg {params.refgenomes} \
         -obam {output} \
         -threads_bt2 {params.threads_bt2} \
-        -sensitivity {params.sensitivity} \
-        -alignmenttype {params.alignmenttype} \
         -ID {params.sample} \
         -log {rules.get_paths.input.logpath}
         """
