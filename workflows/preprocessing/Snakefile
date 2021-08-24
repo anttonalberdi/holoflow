@@ -129,7 +129,6 @@ rule map_ref:
         "{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam"
     params:
         refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
-        M=expand("{L}", L=config['L']),
         sample="{sample}"
     shell:
         """
