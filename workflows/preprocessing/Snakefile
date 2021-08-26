@@ -140,12 +140,13 @@ rule map_ref:
         module load tools samtools/1.11 bowtie2/2.4.2 pigz/2.3.4 \
         && bowtie2 \
         --time \
-        --threads {params.threads_bt2} \
+        --threads 1 \
         --rg-id "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:{params.sample}" \
         -x {params.refgenomes} \
         -1 {input.read1} \
-        -2 {input.read2} | samtools view -@ {params.threads_bt2} -b -o {output} -
+        -2 {input.read2} | samtools view -@ 1 -b -o {output} -
         """
+### {params.threads_bt2}
 ### Raph: can't get bowtie2 to pipe to samtools without an error in the python script...
 ### Raph: just going to call bowtie2 from the snakefile instead.
         # """
