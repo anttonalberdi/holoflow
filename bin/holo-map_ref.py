@@ -44,7 +44,7 @@ mapCmd = 'module load tools samtools/1.11 bowtie2/2.4.2 pigz/2.3.4 \
           && bowtie2 \
           --time \
           --threads '+threads+' \
-          --rg-id "ID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" \
+          --rg-id "'+ID+'" \
           -x '+ref_gen+' \
           -1 '+read1+' \
           -2 '+read2+' \
