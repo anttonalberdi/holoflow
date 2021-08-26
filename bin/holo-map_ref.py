@@ -42,7 +42,8 @@ with open(str(log),'a+') as log:
 # if (k == "loose"): # -k 19
 #     if not (picard == 'False'):
 mapCmd = 'module load tools samtools/1.11 bowtie2/2.4.2 pigz/2.3.4 \
-          && --time \
+          && bowtie2 \
+          --time \
           --threads '+threads+' \
           --rg-id "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" \
           -x '+ref_gen+' \
