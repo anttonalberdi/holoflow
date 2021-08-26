@@ -145,7 +145,7 @@ rule map_ref:
         -x {params.refgenomes} \
         -1 {input.read1} \
         -2 {input.read2} \
-        | samtools view -@ 1 -b -o {output}
+        | samtools view -h -@ {params.threads_bt2} -b -o {output}
         """
 ### Raph: can't get bowtie2 to pipe to samtools without an error in the python script...
 ### Raph: just going to call bowtie2 from the snakefile instead.
