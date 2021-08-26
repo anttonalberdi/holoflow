@@ -1,4 +1,13 @@
 #08.04.2020 - Holoflow 0.1.
+### Raph: This is currently defunct. There is some issue with piping bowtie2 into samtools within a python subprocess.
+### Raph: Here are the errors:
+### [E::sam_parse1] unrecognized type 'P'
+### samtools view: error reading file "-"
+### [E::sam_parse1] unrecognized type 'P'
+### samtools view: error closing "-": -5
+### Raph: I can run the script outside of a python subprocess perfectly fine.
+### Raph: If someone with python knowhow wants to fix this, go ahead. Otherwise I'm just calling the commands from the snakefile -- which is a more optimal way anyway...
+
 
 import subprocess
 import argparse
