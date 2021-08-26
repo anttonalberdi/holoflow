@@ -126,15 +126,10 @@ rule map_ref:
         read1="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_1.fastq.gz",
         read2="{projectpath}/PPR_01-QualityFiltered/{job}/{sample}_2.fastq.gz"
     output:
-#        sam="{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.sam",
         "{projectpath}/PPR_03-MappedToReference/{job}/{sample}_all.bam"
     params:
         refgenomes=expand("{refgenomes}", refgenomes=config['refgenomes']),
         threads_bt2=expand("{threads_bt2}", threads_bt2=config['threads_bt2']),
-        # sensitivity=expand("{sensitivity}", sensitivity=config['sensitivity']),
-        # alignmenttype=expand("{alignmenttype}", alignmenttype=config['alignmenttype']),
-        # -sensitivity {params.sensitivity} \
-        # -alignmenttype {params.alignmenttype} \
         sample="{sample}"
     shell:
         """
