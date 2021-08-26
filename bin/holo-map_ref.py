@@ -1,13 +1,4 @@
 #08.04.2020 - Holoflow 0.1.
-### Raph: This is currently defunct. There is some issue with piping bowtie2 into samtools within a python subprocess.
-### Raph: Here are the errors:
-### [E::sam_parse1] unrecognized type 'P'
-### samtools view: error reading file "-"
-### [E::sam_parse1] unrecognized type 'P'
-### samtools view: error closing "-": -5
-### Raph: I can run the script outside of a python subprocess perfectly fine.
-### Raph: If someone with python knowhow wants to fix this, go ahead. Otherwise I'm just calling the commands from the snakefile -- which is a more optimal way anyway...
-
 
 import subprocess
 import argparse
@@ -49,17 +40,16 @@ with open(str(log),'a+') as log:
 
 # if (k == "loose"): # -k 19
 #     if not (picard == 'False'):
-# mapCmd = 'module load tools samtools/1.11 bowtie2/2.4.2 pigz/2.3.4 \
-#           && bowtie2 \
-#           --time \
-#           --threads '+threads+' \
-#           --rg-id "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" \
-#           -x '+ref_gen+' \
-#           -1 '+read1+' \
-#           -2 '+read2+' \
-#           | samtools view -@ '+threads+' -b -o '+all_bam+''
-mapCmd = 'module load tools samtools/1.11 bowtie2/2.4.2 pigz/2.3.4 && bowtie2 --time --threads '+threads+' --rg-id "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" -x '+ref_gen+' -1 '+read1+' -2 '+read2+' | samtools view -@ '+threads+' -b -o '+all_bam+''
-subprocess.check_call(mapCmd, shell=True,executable="/bin/bash")
+mapCmd = 'module load tools samtools/1.11 bowtie2/2.4.2 pigz/2.3.4 \
+          && bowtie2 \
+          --time \
+          --threads '+threads+' \
+          --rg-id "ID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" \
+          -x '+ref_gen+' \
+          -1 '+read1+' \
+          -2 '+read2+' \
+          | samtools view - -@ '+threads+' -o '+all_bam+''
+
 # -T '+ref_gen+'
 #     else:
 #         mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -k 19 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" '+ref_gen+' <(gunzip -c '+read1+') <(gunzip -c '+read2+') | samtools view -T '+ref_gen+' -b - > '+all_bam+''
