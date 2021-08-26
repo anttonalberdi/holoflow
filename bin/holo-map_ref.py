@@ -40,16 +40,17 @@ with open(str(log),'a+') as log:
 
 # if (k == "loose"): # -k 19
 #     if not (picard == 'False'):
-mapCmd = 'module load tools samtools/1.11 bowtie2/2.4.2 pigz/2.3.4 \
-          && bowtie2 \
-          --time \
-          --threads '+threads+' \
-          --rg-id "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" \
-          -x '+ref_gen+' \
-          -1 '+read1+' \
-          -2 '+read2+' \
-          | samtools view -@ '+threads+' -b -o '+all_bam+''
-subprocess.check_call(mapCmd, shell=True).wait()
+# mapCmd = 'module load tools samtools/1.11 bowtie2/2.4.2 pigz/2.3.4 \
+#           && bowtie2 \
+#           --time \
+#           --threads '+threads+' \
+#           --rg-id "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" \
+#           -x '+ref_gen+' \
+#           -1 '+read1+' \
+#           -2 '+read2+' \
+#           | samtools view -@ '+threads+' -b -o '+all_bam+''
+mapCmd = 'module load tools samtools/1.11 bowtie2/2.4.2 pigz/2.3.4 && bowtie2 --time --threads '+threads+' --rg-id "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" -x '+ref_gen+' -1 '+read1+' -2 '+read2+' | samtools view -@ '+threads+' -b -o '+all_bam+''
+subprocess.check_call(mapCmd, shell=True,executable="/bin/bash")
 # -T '+ref_gen+'
 #     else:
 #         mapCmd = 'module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -k 19 -w '+w+' -d '+d+' -A '+A+' -B '+B+' -O '+O+' -E '+E+' -L '+L+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:'+ID+'" '+ref_gen+' <(gunzip -c '+read1+') <(gunzip -c '+read2+') | samtools view -T '+ref_gen+' -b - > '+all_bam+''
