@@ -70,7 +70,7 @@ python3 $"{"holoflowpath"}"/preprocessing.py \
 # Setup the qsub script to send preparegenomes.sh to computerome job queue
 echo "
 qsub -V -A ku-cbd -W group_list=ku-cbd \
--d '`'pwd'`' \
+-d /home/projects/ku-cbd/people/$user/$directory \
 -e $"{"projectpath"}"logs/preparegenomes_"$directory"_error_file \
 -o $"{"projectpath"}"logs/preparegenomes_"$directory"_out_file.out \
 -l nodes=1:ppn=40,mem=100gb,walltime=00:12:00:00 \
@@ -83,7 +83,7 @@ $"{"projectpath"}"1_Scripts/preparegenomes.sh
 # Setup the qsub script to send preprocess.sh to computerome job queue
 echo "
 qsub -V -A ku-cbd -W group_list=ku-cbd \
--d '`'pwd'`' \
+-d /home/projects/ku-cbd/people/$user/$directory \
 -e $"{"projectpath"}"logs/preprocess_"$directory"_job_error_file \
 -o $"{"projectpath"}"logs/preprocess_"$directory"_job_out_file.out \
 -l nodes=1:ppn=40,mem=100gb,walltime=00:48:00:00 \
