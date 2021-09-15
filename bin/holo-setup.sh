@@ -91,3 +91,5 @@ $"{"projectpath"}"/1_Scripts/preprocess.sh
 " > $directory/1_Scripts/submit_preprocess.sh
 
 ################################################################################
+
+echo "Complete, have a nice day"
