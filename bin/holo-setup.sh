@@ -56,11 +56,11 @@ holoflowpath=/home/projects/ku-cbd/people/$user/holoflow
 python3 $"{"holoflowpath"}"/preprocessing.py \
 -f $"{"projectpath"}"/0_Configs/preprocess_input.txt \
 -d $"{"projectpath"}"/workdir \
--l $"{"projectpath"}"/logs/preprocess_$directory_log.log \
+-l $"{"projectpath"}"/logs/preprocess_"$directory"_log.log \
 -adapter1 'AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA' \
 -adapter2 'AAGTCGGATCGTAGCCATGTCGTTC' \
--N $directory_preprocess \
--g $"{"projectpath"}"/workdir/PRG/$directory_Human.fna \
+-N "$directory"_preprocess \
+-g $"{"projectpath"}"/workdir/PRG/"$directory"_Human.fna \
 -t 40
 " > $directory/1_Scripts/preprocess.sh
 
@@ -70,10 +70,10 @@ python3 $"{"holoflowpath"}"/preprocessing.py \
 echo "
 qsub -V -A ku-cbd -W group_list=ku-cbd \
 -d '`'pwd'`' \
--e $"{"projectpath"}"/logs/preparegenomes_$directory_error_file \
--o $"{"projectpath"}"/logs/preparegenomes_$directory_out_file.out \
+-e $"{"projectpath"}"/logs/preparegenomes_"$directory"_error_file \
+-o $"{"projectpath"}"/logs/preparegenomes_"$directory"_out_file.out \
 -l nodes=1:ppn=40,mem=100gb,walltime=00:12:00:00 \
--N $directory_prepare_genomes \
+-N "$directory"_prepare_genomes \
 $"{"projectpath"}"/1_Scripts/preparegenomes.sh
 " > $directory/1_Scripts/submit_preparegenomes.sh
 
@@ -83,10 +83,10 @@ $"{"projectpath"}"/1_Scripts/preparegenomes.sh
 echo "
 qsub -V -A ku-cbd -W group_list=ku-cbd \
 -d '`'pwd'`' \
--e $"{"projectpath"}"/logs/preprocess_$directory_job_error_file \
--o $"{"projectpath"}"/logs/preprocess_$directory_job_out_file.out \
+-e $"{"projectpath"}"/logs/preprocess_"$directory"_job_error_file \
+-o $"{"projectpath"}"/logs/preprocess_"$directory"_job_out_file.out \
 -l nodes=1:ppn=40,mem=100gb,walltime=00:48:00:00 \
--N $directory_preprocess \
+-N "$directory"_preprocess \
 $"{"projectpath"}"/1_Scripts/preprocess.sh
 " > $directory/1_Scripts/submit_preprocess.sh
 
