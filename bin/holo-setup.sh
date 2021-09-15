@@ -93,6 +93,17 @@ $"{"projectpath"}"1_Scripts/preprocess.sh
 
 ################################################################################
 
+# Setup preparegenomes config.yaml
+echo "
+---
+threads: '40'
+holopath: /home/projects/ku-cbd/people/$user/holoflow
+logpath: /home/projects/ku-cbd/people/$user/$directory/logs/preparegenomes_"$directory"_logger.log
+DB_path: /home/projects/ku-cbd/people/$user/$directory/workdir/PRG/"$directory"_Human.fna
+" > $directory/0_Configs/preparegenomes_config.yaml
+
+################################################################################
+
 # Make scripts executable
 chmod a+x $directory/1_Scripts/*
 
