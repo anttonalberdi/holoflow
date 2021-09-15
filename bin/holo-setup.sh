@@ -23,7 +23,8 @@ mkdir $directory
 mkdir $directory/0_Configs
 mkdir $directory/1_Scripts
 mkdir $directory/2_References
-mkdir $directory/3_Reports
+mkdir $directory/3_Reads
+mkdir $directory/4_Reports
 mkdir $directory/logs
 mkdir $directory/workdir
 
