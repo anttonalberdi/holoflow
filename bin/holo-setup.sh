@@ -71,11 +71,11 @@ python3 $"{"holoflowpath"}"/preprocessing.py \
 echo "
 qsub -V -A ku-cbd -W group_list=ku-cbd \
 -d '`'pwd'`' \
--e $"{"projectpath"}"/logs/preparegenomes_"$directory"_error_file \
--o $"{"projectpath"}"/logs/preparegenomes_"$directory"_out_file.out \
+-e $"{"projectpath"}"logs/preparegenomes_"$directory"_error_file \
+-o $"{"projectpath"}"logs/preparegenomes_"$directory"_out_file.out \
 -l nodes=1:ppn=40,mem=100gb,walltime=00:12:00:00 \
 -N "$directory"_prepare_genomes \
-$"{"projectpath"}"/1_Scripts/preparegenomes.sh
+$"{"projectpath"}"1_Scripts/preparegenomes.sh
 " > $directory/1_Scripts/submit_preparegenomes.sh
 
 ################################################################################
@@ -84,13 +84,16 @@ $"{"projectpath"}"/1_Scripts/preparegenomes.sh
 echo "
 qsub -V -A ku-cbd -W group_list=ku-cbd \
 -d '`'pwd'`' \
--e $"{"projectpath"}"/logs/preprocess_"$directory"_job_error_file \
--o $"{"projectpath"}"/logs/preprocess_"$directory"_job_out_file.out \
+-e $"{"projectpath"}"logs/preprocess_"$directory"_job_error_file \
+-o $"{"projectpath"}"logs/preprocess_"$directory"_job_out_file.out \
 -l nodes=1:ppn=40,mem=100gb,walltime=00:48:00:00 \
 -N "$directory"_preprocess \
-$"{"projectpath"}"/1_Scripts/preprocess.sh
+$"{"projectpath"}"1_Scripts/preprocess.sh
 " > $directory/1_Scripts/submit_preprocess.sh
 
 ################################################################################
+
+# Make scripts executable
+chmod a+x $directory/1_Scripts/*
 
 echo "Complete, have a nice day"
