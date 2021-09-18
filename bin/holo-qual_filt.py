@@ -100,7 +100,6 @@ if not (lowcomplexfilt == "true"):
             --n_base_limit '+maxns+' \
             --qualified_quality_phred '+minq+' \
             --length_required '+minlen+'\
-            --overrepresentation_analysis \
             --thread '+threads+' \
             --html '+fastp_html+' \
             --json '+fastp_json+' \
@@ -118,7 +117,6 @@ if not (lowcomplexfilt == "true"):
             --n_base_limit '+maxns+' \
             --qualified_quality_phred '+minq+' \
             --length_required '+minlen+'\
-            --overrepresentation_analysis \
             --html '+fastp_html+' \
             --json '+fastp_json+' \
             --thread '+threads+''
@@ -137,7 +135,6 @@ else:
             --length_required '+minlen+'\
             --low_complexity_filter \
             --complexity_threshold '+complexthreshold+'\
-            --overrepresentation_analysis \
             --thread '+threads+' \
             --html '+fastp_html+' \
             --json '+fastp_json+' \
@@ -157,7 +154,6 @@ else:
             --length_required '+minlen+'\
             --low_complexity_filter \
             --complexity_threshold '+complexthreshold+'\
-            --overrepresentation_analysis \
             --html '+fastp_html+' \
             --json '+fastp_json+' \
             --thread '+threads+''
