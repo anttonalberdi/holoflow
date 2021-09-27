@@ -65,7 +65,12 @@ if not os.path.exists(temp_a):
                 read2_paths = f2.readline()
 
                 # call megahit
-            megahitCmd = 'module load tools megahit/1.2.9 && megahit -1 '+read1_paths+' -2 '+read2_paths+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
+            megahitCmd = 'module load tools megahit/1.2.9 && \
+            megahit \
+            -1 '+read1_paths+' -2 '+read2_paths+' \
+            -t '+threads+' \
+            --k-list '+k_megahit+' \
+            -o '+out+''
             subprocess.Popen(megahitCmd, shell=True).wait()
 
                 # reformat output assembly so it's the same than outputted by metaspades
@@ -74,7 +79,12 @@ if not os.path.exists(temp_a):
 
         else:
             # If individual assembly, the inputs to Snakemake are actually .fastq (or gz) files with genomic data
-            megahitCmd = 'module load tools megahit/1.2.9 && megahit -1 '+read1+' -2 '+read2+' -t '+threads+' --k-list '+k_megahit+' -o '+out+''
+            megahitCmd = 'module load tools megahit/1.2.9 && \
+            megahit \
+            -1 '+read1+' -2 '+read2+' \
+            -t '+threads+' \
+            --k-list '+k_megahit+' \
+            -o '+out+''
             subprocess.Popen(megahitCmd, shell=True).wait()
 
             mv_megahitCmd = 'mv '+out+'/final.contigs.fa '+out+'/temp_assembly.fa'
@@ -105,7 +115,7 @@ if not os.path.exists(temp_a):
                 read2_coa = out+'/'+ID+'.merged_2.fastq.gz'
 
                 if not os.path.isfile(read1_coa):
-                    mergeCmd = 'zcat '+read1_paths+' > '+read1_coa+' && zcat '+read2_paths+' > '+read2_coa+''
+                    mergeCmd = 'cat '+read1_paths+' > '+read1_coa+' && cat '+read2_paths+' > '+read2_coa+''
                     subprocess.Popen(mergeCmd, shell=True).wait()
 
             else:
@@ -117,7 +127,13 @@ if not os.path.exists(temp_a):
                     subprocess.Popen(mergeCmd, shell=True).wait()
 
             # Run spades on merged files
-            spadesCmd = 'module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1_coa+' -2 '+read2_coa+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
+            spadesCmd = 'module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.15.2 perl/5.20.2 && \
+            metaspades.py \
+            -1 '+read1_coa+' -2 '+read2_coa+' \
+            -m '+args.memory+' \
+            -k '+args.k_spades+' \
+            --only-assembler \
+            -o '+out+''
             subprocess.Popen(spadesCmd, shell=True).wait()
 
             mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
@@ -127,7 +143,13 @@ if not os.path.exists(temp_a):
         else:
             # Same as before, if inidividual assembly, the input files are truly .fastq (or gz) files containing genetic data
 
-            spadesCmd = 'module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.13.1 perl/5.20.2 && metaspades.py -1 '+read1+' -2 '+read2+' -m '+args.memory+' -k '+args.k_spades+' --only-assembler -o '+out+''
+            spadesCmd = 'module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.15.2 perl/5.20.2 && \
+            metaspades.py \
+            -1 '+read1+' -2 '+read2+' \
+            -m '+args.memory+' \
+            -k '+args.k_spades+' \
+            --only-assembler \
+            -o '+out+''
             subprocess.Popen(spadesCmd, shell=True).wait()
 
             mv_spadesCmd = 'mv '+out+'/scaffolds.fasta '+out+'/temp_assembly.fa'
