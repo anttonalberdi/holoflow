@@ -10,6 +10,7 @@ import time
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-a', help="assembly file", dest="a", required=True)
 parser.add_argument('-ia', help="index assembly file", dest="idx_a", required=True)
+parser.add_argument('-bt2i', help="bowtie2 index", dest="bt2i", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 args = parser.parse_args()
@@ -17,6 +18,7 @@ args = parser.parse_args()
 
 a=args.a
 idx_a=args.idx_a
+bt2i=args.bt2i
 ID=args.ID
 log=args.log
 
@@ -34,8 +36,6 @@ if not os.path.isfile(idx_a):
 
     # index assembly with samtools and bwa, both necessary for further steps
     idxsamCmd='module load tools samtools/1.11 && samtools faidx '+a+''
-    idxbwaCmd='module load tools bowtie2/2.4.2 \
-    && bowtie2-build --large-index --threads 40 '+a+' '+a+''
-
-    subprocess.Popen(idxbwaCmd, shell=True).wait()
+    idxbwaCmd='module load tools bowtie2/2.4.2 && bowtie2-build --large-index --threads 40 '+a+' '+a+''
     subprocess.Popen(idxsamCmd, shell=True).wait()
+    subprocess.Popen(idxbwaCmd, shell=True).wait()

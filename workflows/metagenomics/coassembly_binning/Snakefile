@@ -85,13 +85,14 @@ rule assembly_index:
     input:
         "{projectpath}/MCB_01-Assembly/{group}.fa"
     output:
-        samtools="{projectpath}/MCB_01-Assembly/{group}.fa.fai",
-        bt2_index="{projectpath}/MCB_01-Assembly/{group}.fna.rev.2.bt2l"
+        bt2_index="{projectpath}/MCB_01-Assembly/{group}.fna.rev.2.bt2l",
+        samtools="{projectpath}/MCB_01-Assembly/{group}.fa.fai"
         # bwa_bwt="{projectpath}/MCB_01-Assembly/{group}.fa.bwt",
         # bwa_pac="{projectpath}/MCB_01-Assembly/{group}.fa.pac",
         # bwa_ann="{projectpath}/MCB_01-Assembly/{group}.fa.ann",
         # bwa_amb="{projectpath}/MCB_01-Assembly/{group}.fa.amb",
         # bwa_sa="{projectpath}/MCB_01-Assembly/{group}.fa.sa"
+    threads: 40
     params:
         group="{group}"
     shell:
@@ -99,6 +100,7 @@ rule assembly_index:
         python {rules.get_paths.input.holopath}/bin/holo-assembly_index.py \
         -a {input} \
         -ia {output.samtools} \
+        -bt2i {output.bt2_index}
         -log {rules.get_paths.input.logpath} \
         -ID {params.group}
         """
