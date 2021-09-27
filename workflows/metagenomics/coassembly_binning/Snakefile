@@ -84,13 +84,14 @@ rule assembly_reformat:
 rule assembly_index:
     input:
         "{projectpath}/MCB_01-Assembly/{group}.fa"
-    output: # FUTURE: ADD OPTION TO REMOVE ALL BUT FA.FAI
+    output:
         samtools="{projectpath}/MCB_01-Assembly/{group}.fa.fai",
-        bwa_bwt="{projectpath}/MCB_01-Assembly/{group}.fa.bwt",
-        bwa_pac="{projectpath}/MCB_01-Assembly/{group}.fa.pac",
-        bwa_ann="{projectpath}/MCB_01-Assembly/{group}.fa.ann",
-        bwa_amb="{projectpath}/MCB_01-Assembly/{group}.fa.amb",
-        bwa_sa="{projectpath}/MCB_01-Assembly/{group}.fa.sa"
+        bt2_index="{projectpath}/MCB_01-Assembly/{group}.fna.rev.2.bt2l"
+        # bwa_bwt="{projectpath}/MCB_01-Assembly/{group}.fa.bwt",
+        # bwa_pac="{projectpath}/MCB_01-Assembly/{group}.fa.pac",
+        # bwa_ann="{projectpath}/MCB_01-Assembly/{group}.fa.ann",
+        # bwa_amb="{projectpath}/MCB_01-Assembly/{group}.fa.amb",
+        # bwa_sa="{projectpath}/MCB_01-Assembly/{group}.fa.sa"
     params:
         group="{group}"
     shell:

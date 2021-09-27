@@ -24,7 +24,7 @@ klist_spades:
 
 # reformat assembly options
 min_contig_len:
-  1000
+  1500
 
 # binning with concoct parameters
 

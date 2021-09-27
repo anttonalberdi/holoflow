@@ -56,6 +56,17 @@ if not os.path.exists(obam_b):
 
         obam=obam_b+'/'+sampleID+'.mapped.bam' # output bam path
 
-        if not os.path.exists(str(obam)): # run bwa if output bam does not exist 
-            mappingCmd='module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+a+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+obam+'.'+sampleID+' -o '+obam+''
+        if not os.path.exists(str(obam)): # run bwa if output bam does not exist
+            mappingCmd='module load tools samtools/1.11 bowtie2/2.4.2 \
+            && bwa mem \
+            --time \
+            --threads 10 \
+            --rg-id "'+ID+'" \
+            -x '+a+' \
+            -1 '+read1+' \
+            -2 '+read2+' \
+            | samtools view -b -@ 10 - | samtools sort -@ 10 -T '+obam+'.'+sampleID+' -o '+obam+''
+
+            # -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+a+' '+read1+' '+read2+' \
+            # | samtools view -b - | samtools sort -T '+obam+'.'+sampleID+' -o '+obam+''
             subprocess.Popen(mappingCmd, shell=True).wait()

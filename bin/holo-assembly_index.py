@@ -34,7 +34,8 @@ if not os.path.isfile(idx_a):
 
     # index assembly with samtools and bwa, both necessary for further steps
     idxsamCmd='module load tools samtools/1.11 && samtools faidx '+a+''
-    idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+a+''
+    idxbwaCmd='module load tools bowtie2/2.4.2 \
+    && bowtie2-build --large-index --threads 40 '+a+' '+a+''
 
     subprocess.Popen(idxbwaCmd, shell=True).wait()
     subprocess.Popen(idxsamCmd, shell=True).wait()
