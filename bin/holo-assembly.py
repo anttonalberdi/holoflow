@@ -132,6 +132,7 @@ if not os.path.exists(temp_a):
             -1 '+read1_coa+' -2 '+read2_coa+' \
             -m '+args.memory+' \
             -k '+args.k_spades+' \
+            -t '+threads+' \
             --only-assembler \
             -o '+out+''
             subprocess.Popen(spadesCmd, shell=True).wait()
@@ -148,6 +149,7 @@ if not os.path.exists(temp_a):
             -1 '+read1+' -2 '+read2+' \
             -m '+args.memory+' \
             -k '+args.k_spades+' \
+            -t '+threads+' \
             --only-assembler \
             -o '+out+''
             subprocess.Popen(spadesCmd, shell=True).wait()
