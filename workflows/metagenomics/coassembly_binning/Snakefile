@@ -307,7 +307,6 @@ rule check_bins:
     shell:
         """
         python {rules.get_paths.input.holopath}/bin/holo-check_bins.py \
-        --check_vmb {input.check_vmb} \
         --check_cct {input.check_cct} \
         -check_mtb {input.check_mtb} \
         -check_mxb {input.check_mxb} \
@@ -315,7 +314,7 @@ rule check_bins:
         -ID {params.group} \
         -log {rules.get_paths.input.logpath}
         """
-
+#        --check_vmb {input.check_vmb} \
 
 ##
 # Bin refinement with DASTool using binning: metabat, maxbin, concoct and vamb
