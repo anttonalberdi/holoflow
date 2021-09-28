@@ -58,7 +58,7 @@ if not os.path.exists(obam_b):
 
         if not os.path.exists(str(obam)): # run bwa if output bam does not exist
             mappingCmd='module load tools samtools/1.11 bowtie2/2.4.2 \
-            && bwa mem \
+            && bowtie2 \
             --time \
             --threads 10 \
             --rg-id "'+ID+'" \
