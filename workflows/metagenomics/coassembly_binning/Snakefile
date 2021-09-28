@@ -100,7 +100,7 @@ rule assembly_index:
         python {rules.get_paths.input.holopath}/bin/holo-assembly_index.py \
         -a {input} \
         -ia {output.samtools} \
-        -bt2i {output.bt2_index}
+        -bt2i {output.bt2_index} \
         -log {rules.get_paths.input.logpath} \
         -ID {params.group}
         """
