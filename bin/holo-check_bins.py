@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-binning_dir', help="binning directory", dest="binning_dir", required=True)
 parser.add_argument('-check_mtb', help="empty check file", dest="check_mtb", required=True)
 parser.add_argument('-check_mxb', help="empty check file", dest="check_mxb", required=True)
-parser.add_argument('--check_vmb', help="empty check file", dest="check_vmb")
+#parser.add_argument('--check_vmb', help="empty check file", dest="check_vmb")
 parser.add_argument('--check_cct', help="concoct check if empty", dest="check_cct")
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
@@ -37,14 +37,14 @@ final_check=binning_dir+'/'+ID+'_checked_bins.txt'
 
 ######## Coassembly
 if args.check_cct:
-    with open(check_mxb,'r') as mxb, open(check_mtb,'r') as mtb, open(args.check_vmb,'r') as vmb, open(args.check_cct,'r') as cct:
-
+    with open(check_mxb,'r') as mxb, open(check_mtb,'r') as mtb, open(args.check_cct,'r') as cct:
+# open(args.check_vmb,'r') as vmb,
         # Read whether it is True: there are bins or it is False: there are no bins
         check=list()
         check.append(mxb.readline())
         check.append(mtb.readline())
         check.append(cct.readline())
-        check.append(vmb.readline())
+#        check.append(vmb.readline())
 
 
         for binner in check:
@@ -63,7 +63,7 @@ if args.check_cct:
             os.remove(check_mxb)
             os.remove(check_mtb)
             os.remove(args.check_cct)
-            os.remove(args.check_vmb)
+#            os.remove(args.check_vmb)
             os.mknod(final_check)
             pass
 
