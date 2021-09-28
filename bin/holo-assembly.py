@@ -128,6 +128,7 @@ if not os.path.exists(temp_a):
 
             # Run spades on merged files
             spadesCmd = 'module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.15.2 perl/5.20.2 \
+            && export OMP_NUM_THREADS='+threads+' \
             && metaspades.py \
             -1 '+read1_coa+' -2 '+read2_coa+' \
             -m '+args.memory+' \
@@ -145,6 +146,7 @@ if not os.path.exists(temp_a):
             # Same as before, if inidividual assembly, the input files are truly .fastq (or gz) files containing genetic data
 
             spadesCmd = 'module unload anaconda3/4.4.0 && module load tools anaconda3/2.1.0 spades/3.15.2 perl/5.20.2 \
+            && export OMP_NUM_THREADS='+threads+' \
             && metaspades.py \
             -1 '+read1+' -2 '+read2+' \
             -m '+args.memory+' \
