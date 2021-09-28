@@ -298,7 +298,7 @@ rule check_bins:
         check_mxb="{projectpath}/MCB_03-Binning/{group}_maxbin/{group}.mxb_checked_bins",
         check_mtb="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.mtb_checked_bins",
         check_cct="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.cct_checked_bins",
-        check_vmb="{projectpath}/MCB_03-Binning/{group}_vamb/{group}.vmb_checked_bins"
+#        check_vmb="{projectpath}/MCB_03-Binning/{group}_vamb/{group}.vmb_checked_bins"
     output:
         "{projectpath}/MCB_03-Binning/{group}_checked_bins.txt"
     params:
