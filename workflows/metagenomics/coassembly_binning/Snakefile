@@ -357,9 +357,9 @@ rule das_tool:
 
 rule metawrap_refinement:
     input:
-        concoct="{projectpath}/MCB_03-Binning/{group}_concoct/,
-        maxbin="{projectpath}/MCB_03-Binning/{group}_maxbin/,
-        metabat="{projectpath}/MCB_03-Binning/{group}_metabat/
+        concoct="{projectpath}/MCB_03-Binning/{group}_concoct/",
+        maxbin="{projectpath}/MCB_03-Binning/{group}_maxbin/",
+        metabat="{projectpath}/MCB_03-Binning/{group}_metabat/"
     output:
         directory("{projectpath}/MCB_04-BinMerging/{group}_metaWRAP")
     params:
