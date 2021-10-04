@@ -355,6 +355,27 @@ rule das_tool:
         #python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -cb {input.checked_bins} -a {input.assembly} --bt_cct {params.bin_table_cct} -bt_mtb {params.bin_table_mtb} -bt_mxb {params.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.group} -log {rules.get_paths.input.logpath}
 #        --bt_vmb {params.bin_table_vmb} \
 
+rule metawrap_refinement:
+    input:
+        concoct="{projectpath}/MCB_03-Binning/{group}_concoct/,
+        maxbin="{projectpath}/MCB_03-Binning/{group}_maxbin/,
+        metabat="{projectpath}/MCB_03-Binning/{group}_metabat/
+    output:
+        directory("{projectpath}/MCB_04-BinMerging/{group}_metaWRAP")
+    params:
+        threads=expand("{threads}", threads=config['threads'])
+    shell:
+        """
+        module load metawrap-mg/1.2 && \
+        metawrap bin_refinement \
+        -o {output} \
+        -t {params.threads} \
+        -A {input.concoct} \
+        -B {input.maxbin} \
+        -C {input.metabat} \
+        -c 50 \
+        -x 10
+        """
 
 ##
 # RefineM bin refinement
