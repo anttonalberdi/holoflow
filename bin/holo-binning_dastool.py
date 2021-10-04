@@ -55,7 +55,7 @@ if args.check_b: # means all binners have bins, either duplicated or own
         bt_cct=args.bt_cct
 # '+dastoolDependencies+'
 # module unload maxbin/2.2.7 fraggenescan/1.31 perl/5.20.2 &&    gcc/5.4.0 intel/perflibs/2018 perl/5.24.0 ncbi-blast/2.6.0+  usearch/11.0.667
-        dastoolCmd='module load tools ruby/2.7.2 gcc/6.2.0 R/3.6.1 pullseq/1.0.2 prodigal/2.6.3 das_tool/1.1.2 diamond/0.9.24 && \
+        dastoolCmd='module load tools ruby/2.7.2 gcc/6.2.0 intel/perflibs/2020_update4 perl/5.30.2 R/3.6.1 pullseq/1.0.2 prodigal/2.6.3 das_tool/1.1.2 diamond/0.9.24 && \
         DAS_Tool -i '+bt_cct+','+bt_mxb+','+bt_mtb+' -c '+a+' -o '+o+' -l concoct,maxbin,metabat --search_engine '+se+' -t '+t+' --db_directory '+db+' --write_bins 1'
         #dastoolCmd=''+dastoolDependencies+' && DAS_Tool -i '+bt_cct+','+bt_mxb+','+bt_mtb+' -c '+a+' -o '+o+' --proteins '+p+' -l concoct,maxbin,metabat --search_engine '+se+' -t '+t+' --db_directory '+db+' --write_bins 1'
         subprocess.check_call(dastoolCmd, shell=True)
