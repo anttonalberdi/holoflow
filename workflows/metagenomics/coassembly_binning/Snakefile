@@ -320,38 +320,38 @@ rule check_bins:
 # Bin refinement with DASTool using binning: metabat, maxbin, concoct and vamb
 ##
 
-rule das_tool:
-    input:
-        checked_bins="{projectpath}/MCB_03-Binning/{group}_checked_bins.txt",
-        assembly="{projectpath}/MCB_01-Assembly/{group}.fa"#,
-        #pproteins="{projectpath}/MCB_02-ProdigalPrediction/{group}.protein_translations.faa"
-    output:
-        directory("{projectpath}/MCB_04-BinMerging/{group}_files")
-    params:
-        threads=expand("{threads}", threads=config['threads']),
-        search_eng=expand("{search_eng}", search_eng=config['search_eng']),
-        bin_table_mxb="{projectpath}/MCB_03-Binning/{group}.bins_maxbin.txt",
-        bin_table_mtb="{projectpath}/MCB_03-Binning/{group}.bins_metabat.txt",
-        bin_table_cct="{projectpath}/MCB_03-Binning/{group}.bins_concoct.txt",
-#        bin_table_vmb="{projectpath}/MCB_03-Binning/{group}.bins_vamb.txt",
-        dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db']),
-        dastool_dir="{projectpath}/MCB_04-BinMerging/{group}",
-        group="{group}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py \
-        -cb {input.checked_bins} \
-        -a {input.assembly}  \
-        --bt_cct {params.bin_table_cct} \
-        -bt_mtb {params.bin_table_mtb} \
-        -bt_mxb {params.bin_table_mxb} \
-        -o {params.dastool_dir} \
-        -se {params.search_eng} \
-        -t {params.threads} \
-        -db {params.dastool_db} \
-        -ID {params.group} \
-        -log {rules.get_paths.input.logpath}
-        """
+# rule das_tool:
+#     input:
+#         checked_bins="{projectpath}/MCB_03-Binning/{group}_checked_bins.txt",
+#         assembly="{projectpath}/MCB_01-Assembly/{group}.fa"#,
+#         #pproteins="{projectpath}/MCB_02-ProdigalPrediction/{group}.protein_translations.faa"
+#     output:
+#         directory("{projectpath}/MCB_04-BinMerging/{group}_files")
+#     params:
+#         threads=expand("{threads}", threads=config['threads']),
+#         search_eng=expand("{search_eng}", search_eng=config['search_eng']),
+#         bin_table_mxb="{projectpath}/MCB_03-Binning/{group}.bins_maxbin.txt",
+#         bin_table_mtb="{projectpath}/MCB_03-Binning/{group}.bins_metabat.txt",
+#         bin_table_cct="{projectpath}/MCB_03-Binning/{group}.bins_concoct.txt",
+# #        bin_table_vmb="{projectpath}/MCB_03-Binning/{group}.bins_vamb.txt",
+#         dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db']),
+#         dastool_dir="{projectpath}/MCB_04-BinMerging/{group}",
+#         group="{group}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py \
+#         -cb {input.checked_bins} \
+#         -a {input.assembly}  \
+#         --bt_cct {params.bin_table_cct} \
+#         -bt_mtb {params.bin_table_mtb} \
+#         -bt_mxb {params.bin_table_mxb} \
+#         -o {params.dastool_dir} \
+#         -se {params.search_eng} \
+#         -t {params.threads} \
+#         -db {params.dastool_db} \
+#         -ID {params.group} \
+#         -log {rules.get_paths.input.logpath}
+#         """
         #python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -cb {input.checked_bins} -a {input.assembly} --bt_cct {params.bin_table_cct} -bt_mtb {params.bin_table_mtb} -bt_mxb {params.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.group} -log {rules.get_paths.input.logpath}
 #        --bt_vmb {params.bin_table_vmb} \
 
