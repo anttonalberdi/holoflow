@@ -300,7 +300,10 @@ rule check_bins:
         check_cct="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.cct_checked_bins",
 #        check_vmb="{projectpath}/MCB_03-Binning/{group}_vamb/{group}.vmb_checked_bins"
     output:
-        "{projectpath}/MCB_03-Binning/{group}_checked_bins.txt"
+        "{projectpath}/MCB_03-Binning/{group}_checked_bins.txt",
+        directory("{projectpath}/MCB_03-Binning/{group}_concoct/"),
+        directory("{projectpath}/MCB_03-Binning/{group}_maxbin/"),
+        directory("{projectpath}/MCB_03-Binning/{group}_metabat/")
     params:
         binning_dir="{projectpath}/MCB_03-Binning",
         group="{group}"
