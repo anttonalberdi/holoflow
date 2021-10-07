@@ -301,9 +301,6 @@ rule check_bins:
 #        check_vmb="{projectpath}/MCB_03-Binning/{group}_vamb/{group}.vmb_checked_bins"
     output:
         "{projectpath}/MCB_03-Binning/{group}_checked_bins.txt",
-        directory("{projectpath}/MCB_03-Binning/{group}_concoct/"),
-        directory("{projectpath}/MCB_03-Binning/{group}_maxbin/"),
-        directory("{projectpath}/MCB_03-Binning/{group}_metabat/")
     params:
         binning_dir="{projectpath}/MCB_03-Binning",
         group="{group}"
@@ -360,12 +357,12 @@ rule check_bins:
 
 rule metawrap_refinement:
     input:
-        concoct="{projectpath}/MCB_03-Binning/{group}_concoct/",
-        maxbin="{projectpath}/MCB_03-Binning/{group}_maxbin/",
-        metabat="{projectpath}/MCB_03-Binning/{group}_metabat/"
     output:
         directory("{projectpath}/MCB_04-BinMerging/{group}_files")
     params:
+        concoct="{projectpath}/MCB_03-Binning/{group}_concoct/",
+        maxbin="{projectpath}/MCB_03-Binning/{group}_maxbin/",
+        metabat="{projectpath}/MCB_03-Binning/{group}_metabat/",
         threads=expand("{threads}", threads=config['threads'])
     shell:
         """
@@ -373,9 +370,9 @@ rule metawrap_refinement:
         metawrap bin_refinement \
         -o {output} \
         -t {params.threads} \
-        -A {input.concoct} \
-        -B {input.maxbin} \
-        -C {input.metabat} \
+        -A {params.concoct} \
+        -B {params.maxbin} \
+        -C {params.metabat} \
         -c 50 \
         -x 10
         """
