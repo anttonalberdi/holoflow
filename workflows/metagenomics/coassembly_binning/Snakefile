@@ -357,6 +357,7 @@ rule check_bins:
 
 rule metawrap_refinement:
     input:
+        "{projectpath}/MCB_03-Binning/{group}_checked_bins.txt"
     output:
         directory("{projectpath}/MCB_04-BinMerging/{group}_files")
     params:
