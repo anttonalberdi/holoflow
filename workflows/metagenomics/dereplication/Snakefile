@@ -26,7 +26,12 @@ rule drep_bins:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py -dt_bd {input.dastool_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_drep.py \
+        -dt_bd {input.dastool_bin_dir} \
+        -out_dir {output} \
+        -t {params.threads} \
+        -ID {params.group} \
+        -log {rules.get_paths.input.logpath}
         """
 
 
@@ -43,10 +48,12 @@ rule annotation:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_annotation.py -bin_dir {input.drep_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_annotation.py \
+        -bin_dir {input.drep_bin_dir} \
+        -out_dir {output} -t {params.threads} \
+        -ID {params.group} \
+        -log {rules.get_paths.input.logpath}
         """
-
-
 
 ##
 # GTDBTk phylogenetic analysis
@@ -62,13 +69,16 @@ rule phylogeny:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_phylogeny.py -genome_dir {input.drep_bin_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_phylogeny.py \
+        -genome_dir {input.drep_bin_dir} \
+        -out_dir {output} -t {params.threads} \
+        -ID {params.group} \
+        -log {rules.get_paths.input.logpath}
         """
-
 
 ##
 # GTDBTk phylogenetic subtree generation
-## Generate subtree from outputted GTDBTk's, only with bins not with gtdb reference tree 
+## Generate subtree from outputted GTDBTk's, only with bins not with gtdb reference tree
 rule subtree:
     input:
         tree_dir_base="{projectpath}/MDR_03-BinPhylogeny/{group}",
@@ -82,7 +92,13 @@ rule subtree:
         drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}/dereplicated_genomes"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_subtree.py -tree_dir {params.tree_dir} -bin_dir {params.drep_bin_dir} -bac_o {output.bac_subtree} -ar_o {output.ar_subtree} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_subtree.py \
+        -tree_dir {params.tree_dir} \
+        -bin_dir {params.drep_bin_dir} \
+        -bac_o {output.bac_subtree} \
+        -ar_o {output.ar_subtree} \
+        -ID {params.group} \
+        -log {rules.get_paths.input.logpath}
         """
 
 ##

@@ -31,9 +31,14 @@ rule mag_mapping:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-MAG_mapping.py -fq_dir {input.read_dir} -bin_dir {input.drep_bin_dir} -out_dir {output.out_dir_map} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-MAG_mapping.py \
+        -fq_dir {input.read_dir} \
+        -bin_dir {input.drep_bin_dir} \
+        -out_dir {output.out_dir_map} \
+        -t {params.threads} \
+        -ID {params.group} \
+        -log {rules.get_paths.input.logpath}
         """
-
 
 ##
 # Get MAG coverage for each sample
@@ -53,7 +58,13 @@ rule coverage:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py -bam_dir {input.bam_MAGs} -mag_dir {input.drep_bin_dir}  -out_dir {params.out_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py \
+        -bam_dir {input.bam_MAGs} \
+        -mag_dir {input.drep_bin_dir}  \
+        -out_dir {params.out_dir} \
+        -t {params.threads} \
+        -ID {params.group} \
+        -log {rules.get_paths.input.logpath}
         """
 
 ##
@@ -71,7 +82,13 @@ rule checkm:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_quality.py -cov_file {input.cov} -bin_dir {input.drep_bin_dir} -out_dir {params.out_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-bin_quality.py \
+        -cov_file {input.cov} \
+        -bin_dir {input.drep_bin_dir} \
+        -out_dir {params.out_dir} \
+        -t {params.threads} \
+        -ID {params.group} \
+        -log {rules.get_paths.input.logpath}
         """
 
 
@@ -79,23 +96,23 @@ rule checkm:
 # Get MAG coverage on SELECTED KOs (single-copy core genes: https://github.com/anttonalberdi/metafunk/blob/master/files/USiCGs.txt)
 ##
 ### Needs optimization
-# This is now calculated with htseq-counts, but would probably be more efficient with samtools¿
+# This is now calculated with htseq-counts, but would probably be more efficient with samtools
 # Too many files are generated and even though it is parallelized it can take a long time.
 
-rule genes_coverage:
-    input:
-        quality="{projectpath}/MFS_04-BinQuality/{group}/{group}_binQuality_general_Info.csv", # unnecessary for this rule, necessary for creating dependence
-        drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
-        annot_dir="{projectpath}/MFS_00-InputData/{group}/annotation",
-        bam_dir="{projectpath}/MFS_02-MAGMapped/{group}"
-    output:
-        directory("{projectpath}/MFS_05-KOAbundances/{group}")
-    params:
-        threads=expand("{threads}", threads=config['threads']),
-        KO_DB=expand("{KO_DB}", KO_DB=config['KO_DB']),
-        KO_list="{rules.get_paths.input.holopath}/workflows/metagenomics/final_stats/KO_list.txt",
-        group="{group}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-MAG_map_split.py -mag_dir {input.drep_bin_dir} -bam_dir {input.bam_dir} -annot_dir {input.annot_dir} -out_dir {output} -KO_db {params.KO_DB} -KO_list {params.KO_list} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
-        """
+# rule genes_coverage:
+#     input:
+#         quality="{projectpath}/MFS_04-BinQuality/{group}/{group}_binQuality_general_Info.csv", # unnecessary for this rule, necessary for creating dependence
+#         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
+#         annot_dir="{projectpath}/MFS_00-InputData/{group}/annotation",
+#         bam_dir="{projectpath}/MFS_02-MAGMapped/{group}"
+#     output:
+#         directory("{projectpath}/MFS_05-KOAbundances/{group}")
+#     params:
+#         threads=expand("{threads}", threads=config['threads']),
+#         KO_DB=expand("{KO_DB}", KO_DB=config['KO_DB']),
+#         KO_list="{rules.get_paths.input.holopath}/workflows/metagenomics/final_stats/KO_list.txt",
+#         group="{group}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-MAG_map_split.py -mag_dir {input.drep_bin_dir} -bam_dir {input.bam_dir} -annot_dir {input.annot_dir} -out_dir {output} -KO_db {params.KO_DB} -KO_list {params.KO_list} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+#         """
