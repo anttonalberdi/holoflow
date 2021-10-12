@@ -10,7 +10,7 @@ import time
 
 #Argument parsing
 parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
-parser.add_argument('-dt_bd', help="dastool bin directory", dest="dt_bd", required=True)
+parser.add_argument('-mw_bd', help="metawrap bin directory", dest="mw_bd", required=True)
 parser.add_argument('-out_dir', help="main output directory", dest="out_dir", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
@@ -19,7 +19,7 @@ args = parser.parse_args()
 
 
 
-dt_bd=args.dt_bd
+mw_bd=args.mw_bd
 out_dir=args.out_dir
 ID=args.ID
 log=args.log
@@ -43,7 +43,7 @@ if not (os.path.exists(str(out_dir))):
     with open(str(''+out_dir+'/final_bins_Info.csv'),'w+') as bin_data:
         bin_data.write('genome,completeness,contamination\n')
 
-        stats_list=glob.glob(str(dt_bd)+"/*_DASTool_summary.txt") # recover all stats files  from DASTool of all bin groups that want to be drep together
+        stats_list=glob.glob(str(mw_bd)+"/metawrap_50_10_bins.stats") # recover all stats files  from DASTool of all bin groups that want to be drep together
         for file in stats_list:
             with open(str(file),'r') as summary:
                 summary_data=summary.readlines()
@@ -52,15 +52,15 @@ if not (os.path.exists(str(out_dir))):
                         line_data = line.split()
                         # store completeness and redundancy values in variables
                         bin_name = line_data[0]
-                        completeness = line_data[11]
-                        redundancy = line_data[12]
+                        completeness = line_data[1]
+                        redundancy = line_data[2]
                         # create bin data file for drep to input
                         bin_data.write(os.path.abspath(bin_name+'.fa')+','+completeness+','+redundancy+'\n')
                     else:
                         pass
 
     # Rename bins to match DasTool summary data if they don't
-    bin_list=glob.glob(str(dt_bd)+"/*.fa")
+    bin_list=glob.glob(str(mw_bd)+"/*.fa")
     for bin in bin_list:
         if 'contigs' in bin:
             new_bin=bin.replace('.contigs','')
@@ -69,7 +69,8 @@ if not (os.path.exists(str(out_dir))):
 
 
 
-# run drep 
+# run drep
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))) and not (os.path.exists(str(''+out_dir+'/dereplicated_genomes'))):
-        drepbinsCmd='module unload anaconda3/4.4.0 && module load tools ngs anaconda2/4.4.0 pplacer/1.1.alpha19 anaconda3/4.4.0 mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 && dRep dereplicate '+out_dir+' -p '+threads+' -g '+dt_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
+        drepbinsCmd='module unload anaconda3/4.4.0 && module load tools ngs anaconda2/4.4.0 pplacer/1.1.alpha19 anaconda3/4.4.0 mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 && \
+        dRep dereplicate '+out_dir+' -p '+threads+' -g '+mw_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
         subprocess.check_call(drepbinsCmd, shell=True)
