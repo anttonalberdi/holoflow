@@ -35,5 +35,5 @@ if not (os.path.exists(str(out_dir))):
         logi.write('GTDB-Tk is assigning objective taxonomic classifications to baterial genomes based on the Genome Database Taxonomy GTDB.\nThe taxonomic classifications can be found in the .summary.tsv file.\n\n')
 
     # Call gtdbtk
-    gtdbtkCmd='module load tools anaconda3/4.4.0 gtdbtk/1.6.0 prodigal/2.6.3 hmmer/3.2.1 pplacer/1.1.alpha19 fastani/1.1 && gtdbtk classify_wf --genome_dir '+gen_dir+' --extension "fa" --out_dir '+out_dir+' --cpus '+threads+'' #--pplacer_cpus 1'
+    gtdbtkCmd='module load tools anaconda3/4.4.0 anaconda2/4.4.0 gtdbtk/1.6.0 prodigal/2.6.3 hmmer/3.2.1 pplacer/1.1.alpha19 fastani/1.1 && gtdbtk classify_wf --genome_dir '+gen_dir+' --extension "fa" --out_dir '+out_dir+' --cpus '+threads+'' #--pplacer_cpus 1'
     subprocess.Popen(gtdbtkCmd,shell=True).wait()
