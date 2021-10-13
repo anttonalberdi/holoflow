@@ -36,19 +36,19 @@ if not (os.path.exists(str(out_dir))):
         logi.write('\t\t'+current_time+'\tBin Dereplication step - '+ID+'\n')
         logi.write('dRep identifies those bins that are technically the same  and removes all but the “best” one from each\nredundant set. This is done based on the Average Nucleotide Identity (ANI).\n\n')
 
-    # Get genomeInfo from Dastool
+    # Get genomeInfo from MetaWrap
     # Recover completeness and redundancy from Bin Merging Summary
 
     # Save all bin_path,completeness,redundancy in new .csv file
     with open(str(''+out_dir+'/final_bins_Info.csv'),'w+') as bin_data:
         bin_data.write('genome,completeness,contamination\n')
 
-        stats_list=glob.glob(str(mw_bd)+"/metawrap_50_10_bins.stats") # recover all stats files  from DASTool of all bin groups that want to be drep together
+        stats_list=glob.glob(str(mw_bd)+"/metawrap_*_bins.stats") # recover all stats files from MetaWRAP of all bin groups that want to be drep together
         for file in stats_list:
             with open(str(file),'r') as summary:
-                summary_data=summary.readlines()
+                summary_data=summary.readlines()[1:]
                 for line in summary_data:
-                    if not (line.startswith('bin')):
+                    if (line.startswith('bin')):
                         line_data = line.split()
                         # store completeness and redundancy values in variables
                         bin_name = line_data[0]
@@ -60,12 +60,12 @@ if not (os.path.exists(str(out_dir))):
                         pass
 
     # Rename bins to match DasTool summary data if they don't
-    bin_list=glob.glob(str(mw_bd)+"/*.fa")
-    for bin in bin_list:
-        if 'contigs' in bin:
-            new_bin=bin.replace('.contigs','')
-            mvcmd='mv '+bin+' '+new_bin+''
-            subprocess.check_call(mvcmd,shell=True)
+    # bin_list=glob.glob(str(mw_bd)+"/*.fa")
+    # for bin in bin_list:
+    #     if 'contigs' in bin:
+    #         new_bin=bin.replace('.contigs','')
+    #         mvcmd='mv '+bin+' '+new_bin+''
+    #         subprocess.check_call(mvcmd,shell=True)
 
 
 
