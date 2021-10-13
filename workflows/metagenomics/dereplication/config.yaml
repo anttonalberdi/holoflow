@@ -1,9 +1,17 @@
-# bin scaffolding options
+# dereplication pipeline options
 threads:
   40
-
 memory:
-  100
+  180
+#Note, this can impact the depreplication analysis:
+#see https://drep.readthedocs.io/en/latest/choosing_parameters.html
+mincomp:
+  70
+#Note, this is quite an important parameter to consider, and will depend on your-
+#read length and type of downstream analysis. For more information, see:
+#https://instrain.readthedocs.io/en/latest/important_concepts.html
+ani:
+  98
 
 #SSPACE:
   #True

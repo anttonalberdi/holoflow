@@ -23,6 +23,8 @@ rule drep_bins:
         directory("{projectpath}/MDR_01-BinDereplication/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
+        ani=expand("{ani}", ani=config['ani']),
+        mincomp=expand("{mincomp}", mincomp=config['mincomp']),
         group="{group}"
     shell:
         """
@@ -31,6 +33,8 @@ rule drep_bins:
         -out_dir {output} \
         -t {params.threads} \
         -ID {params.group} \
+        -min_comp {param.mincomp} \
+        -ani {params.ani} \
         -log {rules.get_paths.input.logpath}
         """
 

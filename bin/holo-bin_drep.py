@@ -13,6 +13,8 @@ parser = argparse.ArgumentParser(description='Runs holoflow pipeline.')
 parser.add_argument('-mw_bd', help="metawrap bin directory", dest="mw_bd", required=True)
 parser.add_argument('-out_dir', help="main output directory", dest="out_dir", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
+parser.add_argument('-min_comp', help="min checkM completeness", dest="min_comp", required=True)
+parser.add_argument('-ani', help="ANI for secondary clustering", dest="ani", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
 parser.add_argument('-t', help="threads", dest="threads", required=True)
 args = parser.parse_args()
@@ -22,6 +24,8 @@ args = parser.parse_args()
 mw_bd=args.mw_bd
 out_dir=args.out_dir
 ID=args.ID
+min_comp=args.min_comp
+ani=args.ani
 log=args.log
 threads=args.threads
 
@@ -72,5 +76,5 @@ if not (os.path.exists(str(out_dir))):
 # run drep
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))) and not (os.path.exists(str(''+out_dir+'/dereplicated_genomes'))):
         drepbinsCmd='module unload anaconda3/4.4.0 && module load tools ngs anaconda2/4.4.0 pplacer/1.1.alpha19 anaconda3/4.4.0 mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 && \
-        dRep dereplicate '+out_dir+' -p '+threads+' -g '+mw_bd+'/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
+        dRep dereplicate '+out_dir+' -p '+threads+' -comp '+min_comp+' -sa '+ani+' -g '+mw_bd+'/metawrap_*_bins/*.fa --genomeInfo '+out_dir+'/final_bins_Info.csv'
         subprocess.check_call(drepbinsCmd, shell=True)
