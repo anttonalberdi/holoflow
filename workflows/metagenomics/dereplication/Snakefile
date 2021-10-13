@@ -33,7 +33,7 @@ rule drep_bins:
         -out_dir {output} \
         -t {params.threads} \
         -ID {params.group} \
-        -min_comp {param.mincomp} \
+        -min_comp {params.mincomp} \
         -ani {params.ani} \
         -log {rules.get_paths.input.logpath}
         """
