@@ -73,7 +73,7 @@ if not (os.path.exists(str(out_dir))):
                         # store completeness and redundancy values in variables
                         bin_name = line_data[0]
                         # create bin data file for drep to input
-                        bin_data.write(os.path.abspath(bin_name+'.fa'))
+                        bin_path.write(os.path.abspath(bin_name+'.fa'))
                     else:
                         pass
     # Rename bins to match DasTool summary data if they don't
