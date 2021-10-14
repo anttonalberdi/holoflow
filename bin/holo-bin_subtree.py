@@ -32,8 +32,8 @@ if not (os.path.isfile(bac_o)):
 
     # Define in and out tree paths
     in_paths = sorted(glob.glob(tree_dir+'/*.tree'))
-    out_paths = [ar_o,bac_o]
-
+    out_paths = [bac_o]
+#ar_o
     # In case bins come from individually assembled samples: get all sample IDs in group
     # If bins come from coassembly, only one ID will be in the list
     bin_names = [os.path.basename(x) for x in glob.glob(bin_dir+'/*.fa')]
