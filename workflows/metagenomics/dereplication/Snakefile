@@ -93,7 +93,7 @@ rule subtree:
         tree_dir="{projectpath}/MDR_03-BinPhylogeny/{group}/classify", # if I specify these paths in input, Snakemake complains child direcotry error
         drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}/dereplicated_genomes",
         drep_bin_dir_base="{projectpath}/MDR_01-BinDereplication/{group}",
-        holopath="{holopath}"
+        holopath="{holopath}/bin"
     shell:
         """
         python {rules.get_paths.input.holopath}/bin/holo-bin_subtree.py \

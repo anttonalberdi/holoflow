@@ -88,5 +88,5 @@ if not (os.path.isfile(bac_o)):
 
 
         if final_tips:
-            subtreeCmd='module load tools gcc/5.4.0 intel/compiler/64/2018_update2 R/3.5.3-ICC-MKL && Rscript '+holopath+'/bin/holo-bin_subtree.R --tips '+final_tips+' -in_tree '+tree_path+' -out_tree '+out_tree_path+''
+            subtreeCmd='module load tools gcc/5.4.0 intel/compiler/64/2018_update2 R/3.5.3-ICC-MKL && Rscript '+holopath+'/holo-bin_subtree.R --tips '+final_tips+' -in_tree '+tree_path+' -out_tree '+out_tree_path+''
             subprocess.Popen(subtreeCmd,shell=True).wait()
