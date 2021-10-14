@@ -11,8 +11,7 @@ rule get_paths:
 ##
 # Input reformat
 ## Reformat input file so all reads contain the sample ID in the name + standard digit format
-### Raph: Might be possible to make this optional, as was only needed when a mix of BGI/illumina data was DuplicatesRemoved
-### Raph: This would save time, as this step has to decompress/ use I/O.
+
 rule in_reformat:
     input:
         read1i="{projectpath}/PPR_00-InputData/{job}/{sample}_1.fastq.tmp.gz",
@@ -25,11 +24,13 @@ rule in_reformat:
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-in_reformat.py \
-        -r1i {input.read1i} -r2i {input.read2i} \
-        -r1o {output.read1o} -r2o {output.read2o} \
-        -ID {params.sample} \
-        -log {rules.get_paths.input.logpath}
+        module load tools bbmap/38.90 \
+        rename.sh \
+        in={input.read1i} \
+        in2={input.read2i} \
+        out={output.read1o} \
+        out2={output.read2o} \
+        prefix={params.sample}
         """
 
 ##
