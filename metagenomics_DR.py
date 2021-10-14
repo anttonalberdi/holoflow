@@ -132,8 +132,6 @@ def in_out_metagenomics(path,in_f):
                 if not (os.path.exists(str(desired_input))):
                     copyfilesCmd='mkdir '+desired_input+' && find  '+dir[1]+' -maxdepth 1 -type f | xargs -I {} ln -s {} '+desired_input+''
                     subprocess.check_call(copyfilesCmd, shell=True)
-                    copydirsCmd='mkdir '+desired_input+' && find  '+dir[1]+' -maxdepth 1 -type d | xargs -I {} ln -s {} '+desired_input+''
-                    subprocess.check_call(copydirsCmd, shell=True)
 
                 # write output files
 

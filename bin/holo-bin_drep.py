@@ -47,7 +47,7 @@ if not (os.path.exists(str(out_dir))):
     with open(str(''+out_dir+'/final_bins_Info.csv'),'w+') as bin_data:
         bin_data.write('genome,completeness,contamination\n')
 
-        stats_list=glob.glob(str(mw_bd)+"/metawrap_*_bins.stats") # recover all stats files from MetaWRAP of all bin groups that want to be drep together
+        stats_list=glob.glob(str(mw_bd)+"_files/metawrap_*_bins.stats") # recover all stats files from MetaWRAP of all bin groups that want to be drep together
         for file in stats_list:
             with open(str(file),'r') as summary:
                 summary_data=summary.readlines()[1:]
@@ -75,5 +75,5 @@ if not (os.path.exists(str(out_dir))):
 # run drep
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))) and not (os.path.exists(str(''+out_dir+'/dereplicated_genomes'))):
         drepbinsCmd='module unload anaconda3/4.4.0 && module load tools ngs anaconda2/4.4.0 pplacer/1.1.alpha19 anaconda3/4.4.0 mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 && \
-        dRep dereplicate '+out_dir+' -p '+threads+' -comp '+min_comp+' -sa '+ani+' -g '+mw_bd+'/metawrap_*_bins --genomeInfo '+out_dir+'/final_bins_Info.csv'
+        dRep dereplicate '+out_dir+' -p '+threads+' -comp '+min_comp+' -sa '+ani+' -g '+mw_bd+'_files/metawrap_*_bins --genomeInfo '+out_dir+'/final_bins_Info.csv'
         subprocess.check_call(drepbinsCmd, shell=True)
