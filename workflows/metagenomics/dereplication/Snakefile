@@ -100,7 +100,7 @@ rule subtree:
         -tree_dir {params.tree_dir} \
         -bin_dir {params.drep_bin_dir} \
         -bac_o {output.bac_subtree} \
-        -holopath {params.holopath} \
+        -holopath {input.holopath} \
         -ID {params.group} \
         -ar_o {output.ar_subtree} \
         -log {rules.get_paths.input.logpath}
