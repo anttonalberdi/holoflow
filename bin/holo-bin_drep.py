@@ -76,5 +76,5 @@ if not (os.path.exists(str(out_dir))):
 # run drep
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))) and not (os.path.exists(str(''+out_dir+'/dereplicated_genomes'))):
         drepbinsCmd='module unload anaconda3/4.4.0 && module load tools ngs anaconda2/4.4.0 pplacer/1.1.alpha19 anaconda3/4.4.0 mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 && \
-        dRep dereplicate '+out_dir+' -p '+threads+' -comp '+min_comp+' -sa '+ani+' -g '+mw_bd+'/final_bins_Info.csv --genomeInfo '+out_dir+'/final_bins_Info.csv'
+        dRep dereplicate '+out_dir+' -p '+threads+' -comp '+min_comp+' -sa '+ani+' -g '+out_dir+'/final_bins_Info.csv --genomeInfo '+out_dir+'/final_bins_Info.csv'
         subprocess.check_call(drepbinsCmd, shell=True)
