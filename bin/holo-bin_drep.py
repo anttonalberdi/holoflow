@@ -62,6 +62,18 @@ if not (os.path.exists(str(out_dir))):
                         bin_data.write(os.path.abspath(bin_name+'.fa')+','+completeness+','+redundancy+'\n')
                     else:
                         pass
+    with open(str(''+mw_bd+'/bin_paths.txt'),'w+') as bin_path:
+        stats_list=glob.glob(str(mw_bd)+"/metawrap_*_bins.stats") # recover all stats files from MetaWRAP of all bin groups that want to be drep together
+        for file in stats_list:
+            with open(str(file),'r') as summary:
+                summary_data=summary.readlines()[1:]
+                for line in summary_data:
+                    if (line.startswith('bin')):
+                        line_data = line.split()
+                        # store completeness and redundancy values in variables
+                        bin_name = line_data[0]
+                        # create bin data file for drep to input
+                        bin_data.write(os.path.abspath(bin_name+'.fa')+'\n')
     # Rename bins to match DasTool summary data if they don't
     # bin_list=glob.glob(str(mw_bd)+"/*.fa")
     # for bin in bin_list:
@@ -75,5 +87,5 @@ if not (os.path.exists(str(out_dir))):
 # run drep
     if (os.path.exists(str(''+out_dir+'/final_bins_Info.csv'))) and not (os.path.exists(str(''+out_dir+'/dereplicated_genomes'))):
         drepbinsCmd='module unload anaconda3/4.4.0 && module load tools ngs anaconda2/4.4.0 pplacer/1.1.alpha19 anaconda3/4.4.0 mash/2.0 mummer/3.23 prodigal/2.6.3 centrifuge/1.0.3-beta hmmer/3.2.1 && \
-        dRep dereplicate '+out_dir+' -p '+threads+' -comp '+min_comp+' -sa '+ani+' -g '+mw_bd+'/metawrap_*_bins --genomeInfo '+out_dir+'/final_bins_Info.csv'
+        dRep dereplicate '+out_dir+' -p '+threads+' -comp '+min_comp+' -sa '+ani+' -g '+mw_bd+'/bin_paths.txt --genomeInfo '+out_dir+'/final_bins_Info.csv'
         subprocess.check_call(drepbinsCmd, shell=True)
