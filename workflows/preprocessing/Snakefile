@@ -24,7 +24,7 @@ rule in_reformat:
         sample="{sample}"
     shell:
         """
-        module load tools bbmap/38.90 \
+        module load tools jdk/17 bbmap/38.90 \
         rename.sh \
         in={input.read1i} \
         in2={input.read2i} \
