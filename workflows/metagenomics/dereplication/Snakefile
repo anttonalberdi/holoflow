@@ -87,7 +87,7 @@ rule subtree:
         gtdbtk="{projectpath}/MDR_03-BinPhylogeny/{group}"
     output:
         bac_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}_BAC_Holoflow.gtdbtk_sub.tree",
-#        ar_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}_AR_Holoflow.gtdbtk_sub.tree"
+        ar_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}_AR_Holoflow.gtdbtk_sub.tree"
     params:
         group="{group}",
         tree_dir="{projectpath}/MDR_03-BinPhylogeny/{group}/classify", # if I specify these paths in input, Snakemake complains child direcotry error
