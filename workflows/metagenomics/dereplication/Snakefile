@@ -3,7 +3,7 @@
 
 rule get_paths:
     input:
-        holopath=expand("{holopath}", holopath=config['holoflowpath']),
+        holopath=expand("{holopath}", holopath=config['holopath']),
         logpath=expand("{logpath}", logpath=config['logpath'])
 
 
@@ -84,6 +84,7 @@ rule phylogeny:
 ## Generate subtree from outputted GTDBTk's, only with bins not with gtdb reference tree
 rule subtree:
     input:
+        holopath=expand("{holopath}/bin", holopath=config['holopath'])
         gtdbtk="{projectpath}/MDR_03-BinPhylogeny/{group}/classify"
     output:
         bac_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}_BAC_Holoflow.gtdbtk_sub.tree",
@@ -93,7 +94,6 @@ rule subtree:
         tree_dir="{projectpath}/MDR_03-BinPhylogeny/{group}/classify", # if I specify these paths in input, Snakemake complains child direcotry error
         drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}/dereplicated_genomes",
         drep_bin_dir_base="{projectpath}/MDR_01-BinDereplication/{group}",
-        holopath="{holopath}/bin"
     shell:
         """
         python {rules.get_paths.input.holopath}/bin/holo-bin_subtree.py \
