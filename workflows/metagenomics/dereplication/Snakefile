@@ -90,15 +90,17 @@ rule subtree:
         ar_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}_AR_Holoflow.gtdbtk_sub.tree"
     params:
         group="{group}",
-#        tree_dir="{projectpath}/MDR_03-BinPhylogeny/{group}/classify", # if I specify these paths in input, Snakemake complains child direcotry error
+        tree_dir="{projectpath}/MDR_03-BinPhylogeny/{group}/classify", # if I specify these paths in input, Snakemake complains child direcotry error
         drep_bin_dir="{projectpath}/MDR_01-BinDereplication/{group}/dereplicated_genomes",
-#        drep_bin_dir_base="{projectpath}/MDR_01-BinDereplication/{group}"
+        drep_bin_dir_base="{projectpath}/MDR_01-BinDereplication/{group}",
+        holopath="{holopath}"
     shell:
         """
         python {rules.get_paths.input.holopath}/bin/holo-bin_subtree.py \
-        -tree_dir {input.gtdbtk} \
+        -tree_dir {params.tree_dir} \
         -bin_dir {params.drep_bin_dir} \
         -bac_o {output.bac_subtree} \
+        -holopath {params.holopath} \
         -ID {params.group} \
         -ar_o {output.ar_subtree} \
         -log {rules.get_paths.input.logpath}
