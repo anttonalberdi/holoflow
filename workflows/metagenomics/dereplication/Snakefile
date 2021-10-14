@@ -84,7 +84,7 @@ rule phylogeny:
 ## Generate subtree from outputted GTDBTk's, only with bins not with gtdb reference tree
 rule subtree:
     input:
-        directory("{projectpath}/MDR_03-BinPhylogeny/{group}")
+        gtdbtk="{projectpath}/MDR_03-BinPhylogeny/{group}"
     output:
         bac_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}_BAC_Holoflow.gtdbtk_sub.tree",
 #        ar_subtree="{projectpath}/MDR_03-BinPhylogeny/{group}_AR_Holoflow.gtdbtk_sub.tree"
