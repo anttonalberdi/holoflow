@@ -3,7 +3,7 @@
 
 rule get_paths:
     input:
-        holopath=expand("{holopath}", holopath=config['holopath']),
+        holopath=expand("{holoflowpath}", holopath=config['holopath']),
         logpath=expand("{logpath}", logpath=config['logpath'])
 
 
