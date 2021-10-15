@@ -143,15 +143,15 @@ rule unmapped_reads:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
-    """
-    module load tools samtools/1.11 && \
-    samtools view -@ {params.threads} \
-    -b -f12 {input.bams} | \
-    samtools fastq -@ {params.threads} \
-    -c 6 \
-    -1 {output.fq1} \
-    -2 {output.fq2} -'
-    """
+        """
+        module load tools samtools/1.11 && \
+        samtools view -@ {params.threads} \
+        -b -f12 {input.bams} | \
+        samtools fastq -@ {params.threads} \
+        -c 6 \
+        -1 {output.fq1} \
+        -2 {output.fq2} -'
+        """
 # ##
 # # Prodigal ORF prediction
 # ##
