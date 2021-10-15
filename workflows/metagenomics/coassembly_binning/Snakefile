@@ -186,7 +186,7 @@ rule depth_table:
         maxbin_depth_file="{projectpath}/MCB_03-Binning/{group}_maxbin/{group}.depth.txt",
         concoct_depth_file="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.depth.txt"
     params:
-        group="{group}"
+        group="{group}",
         mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}"
     shell:
         """
