@@ -115,7 +115,8 @@ rule assembly_mapping:
         samtools="{projectpath}/MCB_01-Assembly/{group}.fa.fai",
         fq_path="{projectpath}/PPR_03-MappedToReference/{group}"
     output:
-        directory("{projectpath}/MCB_02-AssemblyMapping/{group}")
+        directory("{projectpath}/MCB_02-AssemblyMapping/{group}"),
+        bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
@@ -135,7 +136,8 @@ rule assembly_mapping:
 
 rule unmapped_reads:
     input:
-        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}"
+        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}",
+        bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
     output:
         umfq1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_1.fastq.gz",
         umfq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_2.fastq.gz"
@@ -177,21 +179,18 @@ rule unmapped_reads:
 
 rule depth_table:
     input:
-        umfq1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_1.fastq.gz",
-        umfq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_2.fastq.gz",
         #genetic_coords="{projectpath}/MCB_02-ProdigalPrediction/{group}.coords.gbk",  #not actually necessary here, but used to keep order
-#        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}"
+        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}"
     output:
         metabat_depth_file="{projectpath}/MCB_03-Binning/{group}_metabat/{group}.depth.txt",
         maxbin_depth_file="{projectpath}/MCB_03-Binning/{group}_maxbin/{group}.depth.txt",
         concoct_depth_file="{projectpath}/MCB_03-Binning/{group}_concoct/{group}.depth.txt"
     params:
         group="{group}",
-        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}"
     shell:
         """
         python {rules.get_paths.input.holopath}/bin/holo-depth_files_coa.py \
-        -bam_p {params.mapped_bams} \
+        -bam_p {input.mapped_bams} \
         -cct {output.concoct_depth_file} \
         -mtb {output.metabat_depth_file} \
         -mxb {output.maxbin_depth_file} \
