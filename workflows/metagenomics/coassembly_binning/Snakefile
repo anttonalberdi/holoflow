@@ -130,6 +130,28 @@ rule assembly_mapping:
         -log {rules.get_paths.input.logpath}
         """
 
+# Unmapped reads
+##  Write reads that did not map to assembly to files (for use in viral/diet analyses)
+
+rule unmapped_reads:
+    input:
+        bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
+    output:
+        umfq1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_1.fastq.gz",
+        umfq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_2.fastq.gz"
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+    """
+    module load tools samtools/1.11 && \
+    samtools view -@ {params.threads} \
+    -b -f12 {input.bams} | \
+    samtools fastq -@ {params.threads} \
+    -c 6 \
+    -1 {output.fq1} \
+    -2 {output.fq2} -'
+    """
 # ##
 # # Prodigal ORF prediction
 # ##
