@@ -150,7 +150,7 @@ rule unmapped_reads:
         samtools fastq -@ {params.threads} \
         -c 6 \
         -1 {output.fq1} \
-        -2 {output.fq2} -'
+        -2 {output.fq2} -
         """
 # ##
 # # Prodigal ORF prediction
