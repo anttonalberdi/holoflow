@@ -28,7 +28,14 @@ rule predict:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_pred.py -a {input.assembly} -faa {output.proteins} -fna {output.nucl} -coords {output.coords} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_pred.py \
+        -a {input.assembly} \
+        -faa {output.proteins} \
+        -fna {output.nucl} \
+        -coords {output.coords} \
+        -t {params.threads} \
+        -ID {params.group} \
+        -log {rules.get_paths.input.logpath}
         """
 
 # 3. Diamond map these orfs to UNIPROT {Talk to Lasse about how DBs were obtained}
@@ -44,7 +51,14 @@ rule annotate:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_annot.py -faa {input} -out_dir {output} -db_names {params.annot_db} -db_dir {params.db_dir} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-diet_ORF_annot.py \
+        -faa {input} \
+        -out_dir {output} \
+        -db_names {params.annot_db} \
+        -db_dir {params.db_dir} \
+        -t {params.threads} \
+        -ID {params.group} \
+        -log {rules.get_paths.input.logpath}
         """
 
 
@@ -63,7 +77,13 @@ rule map_diet:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-diet_map_GC.py -fna {input.fna_orf} -fq_dir {params.fq_dir} -out_dir {output} -ID {params.group} -t {params.threads} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-diet_map_GC.py \
+        -fna {input.fna_orf} \
+        -fq_dir {params.fq_dir} \
+        -out_dir {output} \
+        -ID {params.group} \
+        -t {params.threads} \
+        -log {rules.get_paths.input.logpath}
         """
 
 
@@ -80,5 +100,11 @@ rule quantify_diet:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-diet_quantify.py -annot_dir {input.annot_dir} -bam_dir {input.bam_dir} -out_dir {output} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-diet_quantify.py \
+        -annot_dir {input.annot_dir} \
+        -bam_dir {input.bam_dir} \
+        -out_dir {output} \
+        -t {params.threads} \
+        -ID {params.group} \
+        -log {rules.get_paths.input.logpath}
         """

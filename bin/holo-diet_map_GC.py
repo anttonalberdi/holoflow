@@ -37,14 +37,14 @@ with open(str(log),'a+') as logi:
 # index gene catalogue file: .fna predicted sequences by prodigal
 if not os.path.exists(fna+'.fai'):
     idxsamCmd='module load tools samtools/1.11 && samtools faidx '+fna+''
-    idxbwaCmd='module load tools bwa/0.7.15 && bwa index '+fna+''
+    idxbt2Cmd='module load tools bowtie2/2.4.2 && bowtie2-build --threads '+t+' '+fna+' '+fna+''
 
-    subprocess.Popen(idxbwaCmd, shell=True).wait()
+    subprocess.Popen(idxbt2Cmd, shell=True).wait()
     subprocess.Popen(idxsamCmd, shell=True).wait()
 
 
 
-if os.path.exists(fna+'.amb'):
+if os.path.exists(fna+'.rev.2.bt2l'):
 # Get read1 and read2 paths #### reads that were not mapped to MAGs
     reads1=glob.glob(fq_dir+'/*_1.fastq*')
 
@@ -61,5 +61,12 @@ if os.path.exists(fna+'.amb'):
             subprocess.Popen(mkdirCmd,shell=True).wait()
 
         if not os.path.exists(str(obam)):   # run mapping
-            mappingCmd='module load tools samtools/1.11 bwa/0.7.15 && bwa mem -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+fna+' '+read1+' '+read2+' | samtools view -b - | samtools sort -T '+obam+'.'+sampleID+' -o '+obam+''
+            mappingCmd='module load tools samtools/1.11 bowtie2/2.4.2 && \
+            bowtie2 \
+            --threads '+t+' \
+            --rg-id "'+ID+'" \
+            -x '+fna+' \
+            -1 '+read1+' \
+            -2 '+read2+' \
+            | samtools view -@ '+t+' -b - | samtools sort -@ '+t+' -T '+obam+'.'+sampleID+' -o '+obam+''
             subprocess.Popen(mappingCmd, shell=True).wait()

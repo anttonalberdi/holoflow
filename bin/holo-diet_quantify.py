@@ -78,7 +78,7 @@ sample_list='Gene_Annot\tGene_ID\t'
 # Index bam files
 for bam in bam_files:
     if not os.path.isfile(bam+'.bai'):
-        idxsamCmd='module load tools samtools/1.11 && samtools index '+bam+''
+        idxsamCmd='module load tools samtools/1.11 && samtools index -@ '+t+' '+bam+''
         subprocess.Popen(idxsamCmd, shell=True).wait()
     else:
         pass
@@ -92,7 +92,7 @@ for bam in bam_files:
 
         if not os.path.isfile(all_genes_counts):
                 # extract total number of reads in bam file and append to common file
-            totalCmd='module load tools samtools/1.11 && echo '+sample+' >> '+total_reads+' && samtools view -c '+bam+' >> '+total_reads+''
+            totalCmd='module load tools samtools/1.11 && echo '+sample+' >> '+total_reads+' && samtools view -@ '+t+' -c '+bam+' >> '+total_reads+''
             subprocess.Popen(totalCmd,shell=True).wait()
 
                 # calculate counts for all genes in .fna gene catalogue
