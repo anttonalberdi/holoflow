@@ -55,6 +55,8 @@ if not os.path.exists(obam_b):
             read2=fq_path+'/'+sampleID+'_2.fastq'
 
         obam=obam_b+'/'+sampleID+'.mapped.bam' # output bam path
+        unmapped_r1=obam_b+'/'+sampleID+'_unmapped_1.fastq.gz'
+        unmapped_r2=obam_b+'/'+sampleID+'_unmapped_2.fastq.gz'
 
         if not os.path.exists(str(obam)): # run bwa if output bam does not exist
             mappingCmd='module load tools samtools/1.11 bowtie2/2.4.2 \
@@ -66,7 +68,16 @@ if not os.path.exists(obam_b):
             -1 '+read1+' \
             -2 '+read2+' \
             | samtools view -b -@ 10 - | samtools sort -@ 10 -T '+obam+'.'+sampleID+' -o '+obam+''
-
             # -t '+t+' -R "@RG\tID:ProjectName\tCN:AuthorName\tDS:Mappingt\tPL:Illumina1.9\tSM:ID" '+a+' '+read1+' '+read2+' \
             # | samtools view -b - | samtools sort -T '+obam+'.'+sampleID+' -o '+obam+''
             subprocess.Popen(mappingCmd, shell=True).wait()
+
+        if not os.path.exists(str(unmapped_r1)):
+            unmappedCmd='module load tools samtools/1.11 && \
+            samtools view -@ 10 \
+            -b -f12 '+obam+' | \
+            samtools fastq -@ 10 \
+            -c 6 \
+            -1 '+unmapped_r1+' \
+            -2 '+unmapped_r1+' -'
+            subprocess.Popen(unmappedCmd, shell=True).wait()
