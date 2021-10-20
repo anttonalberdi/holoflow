@@ -41,10 +41,12 @@ with open(str(log),'a+') as logi:
 ## RUN
 input_checkM_table = bin_dir+'/Widb.csv'
 if not os.path.isfile(out_dir+'/'+ID+'_binQuality.txt'):
-    checkmCmd = 'module load anaconda2/4.0.0 hmmer/3.2.1 prodigal/2.6.3 pplacer/1.1.alpha17 && checkm lineage_wf -t '+threads+' -x fa '+bin_dir+' '+out_dir+' -f '+out_dir+'/'+ID+'_binQuality.txt'
+    checkmCmd = 'module load anaconda2/4.0.0 hmmer/3.2.1 prodigal/2.6.3 pplacer/1.1.alpha17 \
+    && checkm lineage_wf -t '+threads+' -x fa '+bin_dir+' '+out_dir+' -f '+out_dir+'/'+ID+'_binQuality.txt'
     subprocess.Popen(checkmCmd,shell=True).wait()
 
-    rearrangeoutCmd =' sed -i "s/--//g" '+out_dir+'/'+ID+'_binQuality.txt && sed -i "s/ \+ /\t/g" '+out_dir+'/'+ID+'_binQuality.txt'
+    rearrangeoutCmd =' sed -i "s/--//g" '+out_dir+'/'+ID+'_binQuality.txt \
+    && sed -i "s/ \+ /\t/g" '+out_dir+'/'+ID+'_binQuality.txt'
     subprocess.Popen(rearrangeoutCmd,shell=True).wait()
 
 # Plot quality - coverage
@@ -52,7 +54,8 @@ file = os.path.dirname(sys.argv[0])
 curr_dir = os.path.abspath(file)
 
 if os.path.isfile(out_dir+'/'+ID+'_binQuality.txt'):
-    plotCmd = 'module load tools gcc/5.4.0 intel/compiler/64/2018_update2 R/3.5.3-ICC-MKL && Rscript '+curr_dir+'/holo-bin_quality.plot.R -cov_data '+str(cov_file)+' -qual_data '+out_dir+'/'+ID+'_binQuality.txt -ID '+ID+' -out_path '+out_dir+''
+    plotCmd = 'module load tools gcc/5.4.0 intel/compiler/64/2018_update2 R/3.5.3-ICC-MKL \
+    && Rscript '+curr_dir+'/holo-bin_quality.plot.R -cov_data '+str(cov_file)+' -qual_data '+out_dir+'/'+ID+'_binQuality.txt -ID '+ID+' -out_path '+out_dir+''
     subprocess.Popen(plotCmd,shell=True).wait()
 
 

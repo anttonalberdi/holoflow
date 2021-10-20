@@ -43,7 +43,8 @@ with open(str(log),'a+') as logi:
 out_dir = out_dir+'/'+ID
 depth_contig=out_dir+'/'+ID+'.coverage_byContig.txt'
 if not (os.path.isfile(depth_contig)):
-    getcoverageCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 && jgi_summarize_bam_contig_depths --outputDepth '+depth_contig+' '+str(bam_dir)+'/*.bam'
+    getcoverageCmd='module unload gcc && module load tools perl/5.20.2 metabat/2.12.1 \
+    && jgi_summarize_bam_contig_depths --outputDepth '+depth_contig+' '+str(bam_dir)+'/*.bam'
     subprocess.check_call(getcoverageCmd, shell=True)
 else:
     pass
@@ -159,7 +160,8 @@ for i in range(len(bam_files)):
     bam_stats_file=out_dir+'/'+bam_id+'_bam.txt'
 
     if os.path.isfile(bam+'.bai') and not (os.path.isfile(all_stats_file)):
-        covCmd='module load tools samtools/1.11 && samtools idxstats '+bam+' | cut -f 1,3 > '+all_stats_file+''
+        covCmd='module load tools samtools/1.11 \
+        && samtools idxstats '+bam+' | cut -f 1,3 > '+all_stats_file+''
         subprocess.Popen(covCmd,shell=True).wait()
 
         # summarise reads contig in MAG
