@@ -75,7 +75,8 @@ rule checkm:
         cov="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byMAG.txt",
         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
     output:
-        "{projectpath}/MFS_04-BinQuality/{group}/{group}_binQuality_general_Info.csv"
+        "{projectpath}/MFS_04-BinQuality/{group}/{group}_binQuality_general_Info.csv",
+        directory("{projectpath}/MFS_04-BinQuality/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
         out_dir="{projectpath}/MFS_04-BinQuality/{group}",
