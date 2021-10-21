@@ -112,7 +112,7 @@ if (os.path.isfile(str(IDXmag_catalogue_file))):
         --time \
         --threads '+threads+' \
         --rg-id "'+ID+'" \
-        -x '+a+' \
+        -x '+mag_catalogue_file+' \
         -1 '+read1+' \
         -2 '+read2+' \
         | samtools view -b -@ '+threads+' - | samtools sort -@ '+threads+' -T '+out_dir+'/'+ID+' -o '+out_bam+''
