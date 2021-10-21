@@ -106,7 +106,7 @@ def in_out_final_stats(path,in_f):
             mtg_reads_dir=line[1]
             mtg_files = ''.join(glob.glob(mtg_reads_dir+'/*')[1]) # keep only second metagenomic file
             drep_bins_dir=line[2]
-#            annot_dir=line[3]
+            annot_dir=line[3]
 
             in_sample = in_dir+'/'+sample_name
             if os.path.exists(in_sample):
