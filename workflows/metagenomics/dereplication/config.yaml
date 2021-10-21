@@ -11,7 +11,7 @@ mincomp:
 #read length and type of downstream analysis. For more information, see:
 #https://instrain.readthedocs.io/en/latest/important_concepts.html
 ani:
-  98
+  0.98
 
 #SSPACE:
   #True
