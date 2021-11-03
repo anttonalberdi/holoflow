@@ -69,7 +69,6 @@ if not os.path.exists(temp_a):
             && megahit \
             -1 '+read1_paths+' -2 '+read2_paths+' \
             -t '+threads+' \
-            --k-list '+k_megahit+' \
             -o '+out+''
             subprocess.Popen(megahitCmd, shell=True).wait()
 
@@ -83,7 +82,6 @@ if not os.path.exists(temp_a):
             && megahit \
             -1 '+read1+' -2 '+read2+' \
             -t '+threads+' \
-            --k-list '+k_megahit+' \
             -o '+out+''
             subprocess.Popen(megahitCmd, shell=True).wait()
 
