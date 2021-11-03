@@ -134,6 +134,11 @@ if (os.path.isfile(str(IDXmag_catalogue_file))):
 
 ######################## Stats ########################
 
+        # Index bam files
+        indexCmd='module load tools samtools/1.11 && samtools index -@ '+threads+' '+out_bam+''
+        subprocess.Popen(indexCmd, shell=True).wait()
+
+
         # Get total number of initial reads bases
         # samtools view -c
         totalCmd='module load tools samtools/1.11 && samtools view -@ '+threads+' -c '+out_bam+' >> '+total_reads_tmp+''
