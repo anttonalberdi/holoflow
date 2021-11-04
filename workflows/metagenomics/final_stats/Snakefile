@@ -47,7 +47,7 @@ rule coverm:
     output:
         relab="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_relative_abundance.txt",
         maglength="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_MAG_length.txt",
-        count="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_count.txt"
+        readcount="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_count.txt"
     shell:
         """
         module load tools coverm/0.6.1 && \
@@ -56,7 +56,7 @@ rule coverm:
             -s - \
             -m count \
             --min-covered-fraction 0 \
-            > {output.count}
+            > {output.readcount}
         coverm genome \
             -b {input.in_dir_map}/*.bam \
             -s - \
