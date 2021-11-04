@@ -45,9 +45,9 @@ rule coverm:
     input:
         in_dir_map="{projectpath}/MFS_02-MAGMapped/{group}"
     output:
-        relab="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_relative_abundance.txt",
-        maglength="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_MAG_length.txt",
-        readcount="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_count.txt"
+        relab="{projectpath}/MFS_03-MAGcoverage/{group}_relative_abundance.txt",
+        maglength="{projectpath}/MFS_03-MAGcoverage/{group}_MAG_length.txt",
+        readcount="{projectpath}/MFS_03-MAGcoverage/{group}_count.txt"
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
