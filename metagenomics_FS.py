@@ -95,7 +95,7 @@ def in_out_final_stats(path,in_f):
 
         # Define variables
         output_files=''
-        final_temp_dir="MFS_04-BinQuality"
+        final_temp_dir="MFS_03-MAGcoverage"
 
     for line in lines:
         ### Skip line if starts with # (comment line)

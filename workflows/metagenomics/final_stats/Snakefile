@@ -39,59 +39,91 @@ rule mag_mapping:
         -ID {params.group} \
         -log {rules.get_paths.input.logpath}
         """
+################################################################################################################
 
-##
+rule coverm:
+    input:
+        in_dir_map=directory("{projectpath}/MFS_02-MAGMapped/{group}")
+    output:
+        relab="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_relative_abundance.txt",
+        maglength="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_MAG_length.txt",
+        count="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_count.txt"
+    shell:
+        """
+        module load tools coverm/0.6.1 && \
+        coverm genome \
+            -b {input.in_dir_map}/*.bam \
+            -s - \
+            -m count \
+            --min-covered-fraction 0 \
+            > {output.count}
+        coverm genome \
+            -b {input.in_dir_map}/*.bam \
+            -s - \
+            -m relative_abundance \
+            --min-covered-fraction 50 \
+            > {output.relab}
+        coverm genome \
+            -b {input.in_dir_map}/*.bam \
+            -s - \
+            -m length \
+            --min-covered-fraction 0 \
+            > {output.maglength}
+        """
+################################################################################################################
+
+
 # Get MAG coverage for each sample
 ## Using the previously generated bam files, for each bam the coverage of each mag is extracted.
 
-rule coverage:
-    input:
-        drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
-        bam_MAGs="{projectpath}/MFS_02-MAGMapped/{group}"
-    output:
-        contig="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byContig.txt",
-        mag="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byMAG.txt",
-        raw="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.rawmapping_byMAG.txt"
-    params:
-        threads=expand("{threads}", threads=config['threads']),
-        out_dir="{projectpath}/MFS_03-MAGCoverage",
-        group="{group}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py \
-        -bam_dir {input.bam_MAGs} \
-        -mag_dir {input.drep_bin_dir}  \
-        -out_dir {params.out_dir} \
-        -t {params.threads} \
-        -ID {params.group} \
-        -log {rules.get_paths.input.logpath}
-        """
+# rule coverage:
+#     input:
+#         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
+#         bam_MAGs="{projectpath}/MFS_02-MAGMapped/{group}"
+#     output:
+#         contig="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byContig.txt",
+#         mag="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byMAG.txt",
+#         raw="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.rawmapping_byMAG.txt"
+#     params:
+#         threads=expand("{threads}", threads=config['threads']),
+#         out_dir="{projectpath}/MFS_03-MAGCoverage",
+#         group="{group}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-MAG_coverage.py \
+#         -bam_dir {input.bam_MAGs} \
+#         -mag_dir {input.drep_bin_dir}  \
+#         -out_dir {params.out_dir} \
+#         -t {params.threads} \
+#         -ID {params.group} \
+#         -log {rules.get_paths.input.logpath}
+#         """
 
 ##
 # CheckM quality of MAGs + generate summary table
 # #
-rule checkm:
-    input:
-        cov="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byMAG.txt",
-        drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
-    output:
-        "{projectpath}/MFS_04-BinQuality/{group}/{group}_binQuality_general_Info.csv",
-        directory("{projectpath}/MFS_04-BinQuality/{group}")
-    params:
-        threads=expand("{threads}", threads=config['threads']),
-        out_dir="{projectpath}/MFS_04-BinQuality/{group}",
-        group="{group}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-bin_quality.py \
-        -cov_file {input.cov} \
-        -bin_dir {input.drep_bin_dir} \
-        -out_dir {params.out_dir} \
-        -t {params.threads} \
-        -ID {params.group} \
-        -log {rules.get_paths.input.logpath}
-        """
-
+# rule checkm:
+#     input:
+#         cov="{projectpath}/MFS_03-MAGCoverage/{group}/{group}.coverage_byMAG.txt",
+#         drep_bin_dir="{projectpath}/MFS_00-InputData/{group}/dereplicated_bins",
+#     output:
+#         "{projectpath}/MFS_04-BinQuality/{group}/{group}_binQuality_general_Info.csv",
+#         directory("{projectpath}/MFS_04-BinQuality/{group}")
+#     params:
+#         threads=expand("{threads}", threads=config['threads']),
+#         out_dir="{projectpath}/MFS_04-BinQuality/{group}",
+#         group="{group}"
+#     shell:
+#         """
+#         python {rules.get_paths.input.holopath}/bin/holo-bin_quality.py \
+#         -cov_file {input.cov} \
+#         -bin_dir {input.drep_bin_dir} \
+#         -out_dir {params.out_dir} \
+#         -t {params.threads} \
+#         -ID {params.group} \
+#         -log {rules.get_paths.input.logpath}
+#         """
+#
 
 ##
 # Get MAG coverage on SELECTED KOs (single-copy core genes: https://github.com/anttonalberdi/metafunk/blob/master/files/USiCGs.txt)
