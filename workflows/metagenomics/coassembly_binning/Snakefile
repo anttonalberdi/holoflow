@@ -154,6 +154,28 @@ rule unmapped_reads:
         -1 {output.fq1} \
         -2 {output.fq2} -
         """
+
+rule coverm:
+    input:
+        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}",
+        bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
+    output:
+        coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+        """
+        module load tools coverm/0.6.1 && \
+        coverm genome \
+            -b {input.mapped_bams}/*.bam \
+            -s - \
+            -m relative_abundance \
+            -t {params.threads} \
+            --min-covered-fraction 0 \
+            > {output.coverm}
+        """
+
 # ##
 # # Prodigal ORF prediction
 # ##
@@ -388,19 +410,75 @@ rule metawrap_refinement:
         concoct="{projectpath}/MCB_03-Binning/{group}_concoct/",
         maxbin="{projectpath}/MCB_03-Binning/{group}_maxbin/",
         metabat="{projectpath}/MCB_03-Binning/{group}_metabat/",
-        threads=expand("{threads}", threads=config['threads'])
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
     shell:
         """
         module load metawrap-mg/1.2 && \
         metawrap bin_refinement \
-        -o {output} \
-        -t {params.threads} \
-        -A {params.concoct} \
-        -B {params.maxbin} \
-        -C {params.metabat} \
-        -c 50 \
-        -x 10
+            -o {output} \
+            -t {params.threads} \
+            -A {params.concoct} \
+            -B {params.maxbin} \
+            -C {params.metabat} \
+            -c 50 \
+            -x 10 &&
+        # Rename metawrap bins to match coassembly group:
+        sed -i'' '2,$s/bin/bin_{params.group}/g' {output}/metawrap_50_10_bins.stats %%
+        # Create folder for next rule
+        mkdir {projectpath}/MCB_04-BinMerging/All_files
         """
+
+#This rule merges metawrap .stats files from multiple groups for use in dereplication
+#It also renames and copies the bins from each group to the 'All_files' folder
+rule merge_metawrap:
+    input:
+        "{projectpath}/MCB_04-BinMerging/All_files"
+    output:
+        "{projectpath}/MCB_04-BinMerging/All_files/metawrap_50_10_bins.stats"
+    params:
+        wd="{projectpath}/MCB_04-BinMerging"
+    shell:
+        """
+        #setup headers for combined metawrap file:
+        echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > header.txt
+
+        #Cat the bin info from each group together
+        for group in {params.wd}/*_files; \
+            do grep -v 'contamination' $group/metawrap_50_10_bins.stats >> bins.txt; done
+
+        #Merge header with bins:
+        cat header.txt bins.txt > {output}
+
+        #Copy bins from each group to a new folder in the 'All_files' directory
+        mkdir {input}/metawrap_50_10_bins
+
+        for group in {params.wd}*_files; \
+            do for bin in $group/metawrap_50_10_bins/*.fa; \
+                do echo cp $bin {input}/metawrap_50_10_bins/$(basename ${bin/bin./"${group/_files/}"_bin.}); \
+                done; \
+                    done
+
+        #Clean up
+        rm header.txt
+        rm bins.txt
+        """
+
+rule singleM:
+    input:
+        "{projectpath}/MCB_04-BinMerging/All_files/metawrap_50_10_bins.stats"
+    output:
+        "{projectpath}/MCB_05-SingleM/{group}/<><><><>")
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    conda:
+        "{holopath}/workflows/metagenomics/coassembly_binning/conda.yaml"
+    shell:
+        """
+
+        """
+
 
 ##
 # RefineM bin refinement

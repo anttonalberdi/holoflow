@@ -59,18 +59,21 @@ rule coverm:
             -b {input.in_dir_map}/*.bam \
             -s - \
             -m count \
+            -t {params.threads} \
             --min-covered-fraction 0 \
             > {output.readcount}
         coverm genome \
             -b {input.in_dir_map}/*.bam \
             -s - \
             -m relative_abundance \
+            -t {params.threads} \
             --min-covered-fraction 50 \
             > {output.relab}
         coverm genome \
             -b {input.in_dir_map}/*.bam \
             -s - \
             -m length \
+            -t {params.threads} \
             --min-covered-fraction 0 \
             > {output.maglength}
         """
