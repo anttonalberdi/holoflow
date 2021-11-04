@@ -20,7 +20,7 @@ rule get_paths:
 ## This rule will functionally annotate an assembly file with DRAM
 rule assembly_annot:
     input:
-        read1="{projectpath}/MAB_00-InputData/{job}/{group}.fastq",
+        read1="{projectpath}/MAB_00-InputData/{job}",
     output:
         directory("{projectpath}/MAB_01-Annotation/{job}/{group}")
     params:
@@ -31,5 +31,5 @@ rule assembly_annot:
         group="{group}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-assembly_annotation.py -a {input} -out_dir {output} -min_c_size {params.min_c_size} -conda_env_file {params.conda_env_file} -config {params.DRAM_config} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-assembly_annotation.py -a {input}/*.fa -out_dir {output} -min_c_size {params.min_c_size} -conda_env_file {params.conda_env_file} -config {params.DRAM_config} -t {params.threads} -ID {params.group} -log {rules.get_paths.input.logpath}
         """
