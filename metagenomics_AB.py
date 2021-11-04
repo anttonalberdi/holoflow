@@ -122,7 +122,7 @@ def in_out_metagenomics(path,in_f):
                     assembly_path=line[1]# input for (read1) file
 
                     # Define input file
-                    in1=in_dir+'/'+assembly_id+
+                    in1=in_dir+'/'+assembly_id
                     # Check if input files already in desired dir
                     if os.path.isfile(in1) or os.path.isfile(in1+'.gz'):
                         pass
