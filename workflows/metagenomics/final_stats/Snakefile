@@ -43,7 +43,7 @@ rule mag_mapping:
 
 rule coverm:
     input:
-        in_dir_map=directory("{projectpath}/MFS_02-MAGMapped/{group}")
+        in_dir_map="{projectpath}/MFS_02-MAGMapped/{group}"
     output:
         relab="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_relative_abundance.txt",
         maglength="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_MAG_length.txt",
