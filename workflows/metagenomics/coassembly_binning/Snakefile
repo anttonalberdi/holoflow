@@ -464,20 +464,20 @@ rule merge_metawrap:
         rm bins.txt
         """
 
-rule singleM:
-    input:
-        "{projectpath}/MCB_04-BinMerging/All_files/metawrap_50_10_bins.stats"
-    output:
-        "{projectpath}/MCB_05-SingleM/{group}/<><><><>")
-    params:
-        threads=expand("{threads}", threads=config['threads']),
-        group="{group}"
-    conda:
-        "{holopath}/workflows/metagenomics/coassembly_binning/conda.yaml"
-    shell:
-        """
-
-        """
+# rule singleM:
+#     input:
+#         "{projectpath}/MCB_04-BinMerging/All_files/metawrap_50_10_bins.stats"
+#     output:
+#         "{projectpath}/MCB_05-SingleM/{group}/<><><><>")
+#     params:
+#         threads=expand("{threads}", threads=config['threads']),
+#         group="{group}"
+#     conda:
+#         "{holopath}/workflows/metagenomics/coassembly_binning/conda.yaml"
+#     shell:
+#         """
+#
+#         """
 
 
 ##
