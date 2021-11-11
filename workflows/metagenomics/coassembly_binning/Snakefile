@@ -204,8 +204,6 @@ rule metaWRAP_binning:
         outdir="{projectpath}/MCB_03-Binning/{group}"
     shell:
         """
-        mkdir {params.outdir}
-
         # Run metaWRAP binning
         module load metawrap-mg/1.2 && \
         metawrap binning -o {params.outdir} \
