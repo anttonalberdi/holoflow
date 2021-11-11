@@ -237,7 +237,7 @@ rule prepare_metawrap:
 rule metaWRAP_binning:
     input:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        falseQ1"{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_1.fastq",
+        falseQ1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_1.fastq",
         falseQ2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_2.fastq"
     output:
         concoct="{projectpath}/MCB_03-Binning/{group}/concoct_bins",
