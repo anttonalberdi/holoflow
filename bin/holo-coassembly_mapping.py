@@ -72,12 +72,12 @@ if not os.path.exists(obam_b):
             # | samtools view -b - | samtools sort -T '+obam+'.'+sampleID+' -o '+obam+''
             subprocess.Popen(mappingCmd, shell=True).wait()
 
-        if not os.path.exists(str(unmapped_r1)):
-            unmappedCmd='module load tools samtools/1.11 && \
-            samtools view -@ 10 \
-            -b -f12 '+obam+' | \
-            samtools fastq -@ 10 \
-            -c 6 \
-            -1 '+unmapped_r1+' \
-            -2 '+unmapped_r1+' -'
-            subprocess.Popen(unmappedCmd, shell=True).wait()
+        # if not os.path.exists(str(unmapped_r1)):
+        #     unmappedCmd='module load tools samtools/1.11 && \
+        #     samtools view -@ 10 \
+        #     -b -f12 '+obam+' | \
+        #     samtools fastq -@ 10 \
+        #     -c 6 \
+        #     -1 '+unmapped_r1+' \
+        #     -2 '+unmapped_r1+' -'
+        #     subprocess.Popen(unmappedCmd, shell=True).wait()
