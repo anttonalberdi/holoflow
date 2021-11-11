@@ -113,7 +113,7 @@ rule assembly_mapping:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
     output:
         obams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam",
-        checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/mapping_checkpoint.txt
+        checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/mapping_checkpoint.txt"
     params:
         threads=expand("{threads}", threads=config['threads']),
         outdir="{projectpath}/MCB_02-AssemblyMapping/{group}",
