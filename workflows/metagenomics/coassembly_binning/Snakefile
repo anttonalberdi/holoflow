@@ -127,7 +127,7 @@ rule assembly_mapping:
         -obam_b {output.outdir} \
         -checkpoint {params.checkpoint} \
         -ID {params.group} \
-        -log {rules.get_paths.input.logpath} 
+        -log {rules.get_paths.input.logpath}
         """
 
 # Unmapped reads
@@ -179,18 +179,16 @@ rule prepare_metawrap:
     input:
         checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/checkpoint.txt"
     output:
-        #fq1="{projectpath}/MCB_02-AssemblyMapping/{group}/dummy_1.fastq"
-        #fq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_2.fastq",
         "{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_dummy_fq_checkpoint.txt"
     message: "Creating false fastq files to trick the metaWRAP binning module"
     params:
         bamdir="{projectpath}/MCB_02-AssemblyMapping/{group}",
-        r1="${bam/.bam/_1.fastq}",
-        r2="${bam/.bam/_2.fastq}"
+        dr1="${bam/.bam/_1.fastq}",
+        dr2="${bam/.bam/_2.fastq}"
     shell:
         """
-        for bam in {params.bamdir}/*.bam; do echo "@" > {params.r1}; done
-        for bam in {params.bamdir}/*.bam; do echo "@" > {params.r2}; done
+        for bam in {params.bamdir}/*.bam; do echo "@" > {params.dr1}; done
+        for bam in {params.bamdir}/*.bam; do echo "@" > {params.dr2}; done
         touch {output}
         """
 
@@ -217,7 +215,7 @@ rule metaWRAP_binning:
         --metabat2 \
         --maxbin2 \
         --concoct \
-        {params_readfolder}*_1.fastq {params_readfolder}*_2.fastq
+        {params_readfolder}/*_1.fastq {params_readfolder}/*_2.fastq
         """
 
 ##
