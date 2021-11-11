@@ -112,7 +112,8 @@ rule assembly_mapping:
         bt2_index="{projectpath}/MCB_01-Assembly/{group}.fa.rev.2.bt2l",
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
     output:
-        obams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
+        obams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam",
+        checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/mapping_checkpoint.txt
     params:
         threads=expand("{threads}", threads=config['threads']),
         outdir="{projectpath}/MCB_02-AssemblyMapping/{group}",
@@ -127,7 +128,7 @@ rule assembly_mapping:
         -obam_b {params.outdir} \
         -ID {params.group} \
         -log {rules.get_paths.input.logpath} &&
-        touch {params.outdir}/mapping_checkpoint.txt
+        touch {output.checkpoint}
         """
 
 # Unmapped reads
@@ -177,7 +178,7 @@ rule assembly_mapping:
 #         """
 rule prepare_metawrap:
     input:
-        obams="{projectpath}/MCB_02-AssemblyMapping/{group}/mapping_checkpoint.txt"
+        "{projectpath}/MCB_02-AssemblyMapping/{group}/mapping_checkpoint.txt"
     output:
         "{projectpath}/MCB_02-AssemblyMapping/{group}/dummy_fq_checkpoint.txt"
     message: "Creating false fastq files to trick the metaWRAP binning module"
