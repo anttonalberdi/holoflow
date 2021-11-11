@@ -151,27 +151,6 @@ rule unmapped_reads:
         -2 {output.umfq2} -
         """
 
-rule coverm:
-    input:
-        checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/checkpoint"
-    output:
-        coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
-    params:
-        assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}",
-        threads=expand("{threads}", threads=config['threads']),
-        group="{group}"
-    shell:
-        """
-        module load tools coverm/0.6.1 && \
-        coverm genome \
-            -b {params.mapped_bams}/*.bam \
-            --genome-fasta-files {params.assembly} \
-            -m relative_abundance \
-            -t {params.threads} \
-            --min-covered-fraction 0 \
-            > {output.coverm}
-        """
 
 # ##
 # # Prodigal ORF prediction
@@ -231,7 +210,7 @@ rule coverm:
 
 rule metaWRAP_binning:
     input:
-        coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
+        bamdir="{projectpath}/MCB_02-AssemblyMapping/{group}"
     output:
         concoct="{projectpath}/MCB_03-Binning/{group}/concoct_bins",
         maxbin2="{projectpath}/MCB_03-Binning/{group}/maxbin2_bins",
@@ -446,6 +425,7 @@ rule metawrap_refinement:
         metabat2="{projectpath}/MCB_03-Binning/{group}/metabat2_bins",
     output:
         directory("{projectpath}/MCB_04-BinMerging/{group}_files")
+        all_files="{projectpath}/MCB_04-BinMerging/All_files"
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
@@ -463,7 +443,7 @@ rule metawrap_refinement:
         # Rename metawrap bins to match coassembly group:
         sed -i'' '2,$s/bin/bin_{params.group}/g' {output}/metawrap_70_10_bins.stats %%
         # Create folder for next rule
-        mkdir {projectpath}/MCB_04-BinMerging/All_files
+        mkdir {output.all_files}
         """
 
 #This rule merges metawrap .stats files from multiple groups for use in dereplication
@@ -501,6 +481,28 @@ rule merge_metawrap:
         rm bins.txt
         """
 
+
+rule coverm:
+    input:
+        "{projectpath}/MCB_04-BinMerging/All_files/metawrap_70_10_bins.stats
+    output:
+        coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
+    params:
+        assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
+        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}",
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+        """
+        module load tools coverm/0.6.1 && \
+        coverm genome \
+            -b {params.mapped_bams}/*.bam \
+            --genome-fasta-files {params.assembly} \
+            -m relative_abundance \
+            -t {params.threads} \
+            --min-covered-fraction 0 \
+            > {output.coverm}
+        """
 # rule singleM:
 #     input:
 #         "{projectpath}/MCB_04-BinMerging/All_files/metawrap_50_10_bins.stats"
