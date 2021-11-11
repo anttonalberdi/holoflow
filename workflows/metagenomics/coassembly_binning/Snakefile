@@ -131,27 +131,6 @@ rule assembly_mapping:
 # Unmapped reads
 ##  Write reads that did not map to assembly to files (for use in viral/diet analyses)
 
-rule unmapped_reads:
-    input:
-        bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
-    output:
-        umfq1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_1.fastq.gz",
-        umfq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_2.fastq.gz"
-    params:
-        threads=expand("{threads}", threads=config['threads']),
-        group="{group}"
-    shell:
-        """
-        module load tools samtools/1.11 && \
-        samtools view -@ {params.threads} \
-        -b -f4 {input.bams} | \
-        samtools fastq -@ {params.threads} \
-        -c 6 \
-        -1 {output.umfq1} \
-        -2 {output.umfq2} -
-        """
-
-
 # ##
 # # Prodigal ORF prediction
 # ##
@@ -449,7 +428,7 @@ rule metawrap_refinement:
 #It also renames and copies the bins from each group to the 'All_files' folder
 rule merge_metawrap:
     input:
-        "{projectpath}/MCB_04-BinMerging/{group}_files"
+        expand("{projectpath}/MCB_04-BinMerging/{group}_files", group=group)
     output:
         "{projectpath}/MCB_04-BinMerging/All_files/metawrap_70_10_bins.stats"
     params:
