@@ -111,11 +111,12 @@ rule assembly_index:
 
 rule assembly_mapping:
     input:
+        bt2_index="{projectpath}/MCB_01-Assembly/{group}.fa.rev.2.bt2l",
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        samtools="{projectpath}/MCB_01-Assembly/{group}.fa.fai",
         fq_path="{projectpath}/PPR_03-MappedToReference/{group}"
     output:
-        directory("{projectpath}/MCB_02-AssemblyMapping/{group}")
+        directory("{projectpath}/MCB_02-AssemblyMapping/{group}"),
+        checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/checkpoint"
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
@@ -128,6 +129,7 @@ rule assembly_mapping:
         -obam_b {output} \
         -ID {params.group} \
         -log {rules.get_paths.input.logpath}
+        touch {output.checkpoint}
         """
 
 # Unmapped reads
@@ -135,20 +137,19 @@ rule assembly_mapping:
 
 rule unmapped_reads:
     input:
-        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}",
+        checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/checkpoint",
         bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
     output:
         umfq1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_1.fastq.gz",
         umfq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_2.fastq.gz"
     params:
         threads=expand("{threads}", threads=config['threads']),
-        bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam",
         group="{group}"
     shell:
         """
         module load tools samtools/1.11 && \
         samtools view -@ {params.threads} \
-        -b -f4 {params.bams} | \
+        -b -f4 {input.bams} | \
         samtools fastq -@ {params.threads} \
         -c 6 \
         -1 {output.umfq1} \
@@ -223,19 +224,23 @@ rule coverm:
 #         """
 rule prepare_metawrap:
     input:
+        coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt",
         bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
     output:
         fq1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_1.fastq",
-        fq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_2.fastq"
+        fq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_2.fastq",
+        checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/checkpoint"
     message: "Creating false fastq files to trick the metaWRAP binning module"
     shell:
         """
         echo "@" > {output.fq1}
         echo "@" > {output.fq2}
+        touch {output.checkpoint}
         """
 
 rule metaWRAP_binning:
     input:
+        checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/checkpoint",
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
         # falseQ1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_1.fastq",
         # falseQ2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_2.fastq"
