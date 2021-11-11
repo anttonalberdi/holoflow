@@ -425,9 +425,9 @@ rule metawrap_refinement:
         maxbin2="{projectpath}/MCB_03-Binning/{group}/maxbin2_bins",
         metabat2="{projectpath}/MCB_03-Binning/{group}/metabat2_bins",
     output:
-        directory("{projectpath}/MCB_04-BinMerging/{group}_files"),
-        all_files="{projectpath}/MCB_04-BinMerging/All_files"
+        directory("{projectpath}/MCB_04-BinMerging/{group}_files")
     params:
+        workdir="{projectpath}/MCB_04-BinMerging/{group}_files",
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
@@ -443,21 +443,21 @@ rule metawrap_refinement:
             -x 10 &&
         # Rename metawrap bins to match coassembly group:
         sed -i'' '2,$s/bin/bin_{params.group}/g' {output}/metawrap_70_10_bins.stats %%
-        # Create folder for next rule
-        mkdir {output.all_files}
         """
 
 #This rule merges metawrap .stats files from multiple groups for use in dereplication
 #It also renames and copies the bins from each group to the 'All_files' folder
 rule merge_metawrap:
     input:
-        "{projectpath}/MCB_04-BinMerging/All_files"
+        "{projectpath}/MCB_04-BinMerging/{group}_files"
     output:
         "{projectpath}/MCB_04-BinMerging/All_files/metawrap_70_10_bins.stats"
     params:
         wd="{projectpath}/MCB_04-BinMerging"
     shell:
         """
+        mkdir "{projectpath}/MCB_04-BinMerging/All_files/
+
         #setup headers for combined metawrap file:
         echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > header.txt
 
