@@ -113,9 +113,9 @@ rule assembly_mapping:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
         fq_path="{projectpath}/PPR_03-MappedToReference/{group}"
     output:
-        checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/checkpoint.txt"
-    params:
         outdir=directory("{projectpath}/MCB_02-AssemblyMapping/{group}"),
+    params:
+        checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/checkpoint.txt",
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
@@ -124,10 +124,10 @@ rule assembly_mapping:
         -a {input.assembly} \
         -fq_path {input.fq_path} \
         -t {params.threads} \
-        -obam_b {params.outdir} \
-        -checkpoint {output.checkpoint} \
+        -obam_b {output.outdir} \
+        -checkpoint {params.checkpoint} \
         -ID {params.group} \
-        -log {rules.get_paths.input.logpath}
+        -log {rules.get_paths.input.logpath} 
         """
 
 # Unmapped reads
