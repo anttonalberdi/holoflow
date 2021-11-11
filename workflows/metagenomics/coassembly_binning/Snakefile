@@ -454,10 +454,10 @@ rule metawrap_refinement:
             -A {input.concoct} \
             -B {input.maxbin2} \
             -C {input.metabat2} \
-            -c 50 \
+            -c 70 \
             -x 10 &&
         # Rename metawrap bins to match coassembly group:
-        sed -i'' '2,$s/bin/bin_{params.group}/g' {output}/metawrap_50_10_bins.stats %%
+        sed -i'' '2,$s/bin/bin_{params.group}/g' {output}/metawrap_70_10_bins.stats %%
         # Create folder for next rule
         mkdir {projectpath}/MCB_04-BinMerging/All_files
         """
@@ -468,7 +468,7 @@ rule merge_metawrap:
     input:
         "{projectpath}/MCB_04-BinMerging/All_files"
     output:
-        "{projectpath}/MCB_04-BinMerging/All_files/metawrap_50_10_bins.stats"
+        "{projectpath}/MCB_04-BinMerging/All_files/metawrap_70_10_bins.stats"
     params:
         wd="{projectpath}/MCB_04-BinMerging"
     shell:
@@ -478,17 +478,17 @@ rule merge_metawrap:
 
         #Cat the bin info from each group together
         for group in {params.wd}/*_files; \
-            do grep -v 'contamination' $group/metawrap_50_10_bins.stats >> bins.txt; done
+            do grep -v 'contamination' $group/metawrap_70_10_bins.stats >> bins.txt; done
 
         #Merge header with bins:
         cat header.txt bins.txt > {output}
 
         #Copy bins from each group to a new folder in the 'All_files' directory
-        mkdir {input}/metawrap_50_10_bins
+        mkdir {input}/metawrap_70_10_bins
 
         for group in {params.wd}*_files; \
-            do for bin in $group/metawrap_50_10_bins/*.fa; \
-                do echo cp $bin {input}/metawrap_50_10_bins/$(basename ${bin/bin./"${group/_files/}"_bin.}); \
+            do for bin in $group/metawrap_70_10_bins/*.fa; \
+                do echo cp $bin {input}/metawrap_70_10_bins/$(basename ${bin/bin./"${group/_files/}"_bin.}); \
                 done; \
                     done
 
