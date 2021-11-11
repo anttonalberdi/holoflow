@@ -428,7 +428,7 @@ rule metawrap_refinement:
 #It also renames and copies the bins from each group to the 'All_files' folder
 rule merge_metawrap:
     input:
-        expand("{projectpath}/MCB_04-BinMerging/{group}_files", group=group)
+        "{projectpath}/MCB_04-BinMerging/{group}_files"
     output:
         "{projectpath}/MCB_04-BinMerging/All_files/metawrap_70_10_bins.stats"
     params:
