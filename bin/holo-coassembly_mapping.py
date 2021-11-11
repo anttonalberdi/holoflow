@@ -74,7 +74,7 @@ if not os.path.exists(obam_b):
             # | samtools view -b - | samtools sort -T '+obam+'.'+sampleID+' -o '+obam+''
             subprocess.Popen(mappingCmd, shell=True).wait()
 
-        open('+checkpoint+', 'a').close()
+#        open('+checkpoint+', 'a').close()
         # if not os.path.exists(str(unmapped_r1)):
         #     unmappedCmd='module load tools samtools/1.11 && \
         #     samtools view -@ 10 \
