@@ -214,7 +214,7 @@ rule metaWRAP_binning:
         --metabat2 \
         --maxbin2 \
         --concoct \
-        {params_readfolder}/*_1.fastq {params_readfolder}/*_2.fastq
+        {params.readfolder}/*_1.fastq {params.readfolder}/*_2.fastq
         """
 
 ##
