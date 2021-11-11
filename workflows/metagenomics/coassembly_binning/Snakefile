@@ -205,10 +205,10 @@ rule metaWRAP_binning:
 
         # Create dummy fastq files to trick metaWRAP (we already have BAMs)
         for bam in {params.readfolder}/*.bam;
-            do echo "@" > ${bam/.bam/_1.fastq};
+            do echo "@" > '${bam/.bam/_1.fastq}';
                 done
         for bam in {params.readfolder}/*.bam;
-            do echo "@" > ${bam/.bam/_2.fastq};
+            do echo "@" > '${bam/.bam/_2.fastq}';
                 done
 
         # Run metaWRAP binning
@@ -427,8 +427,8 @@ rule metawrap_refinement:
 #This rule merges metawrap .stats files from multiple groups for use in dereplication
 #It also renames and copies the bins from each group to the 'All_files' folder
 rule merge_metawrap:
-    input:
-        "{projectpath}/MCB_04-BinMerging/{group}_files"
+    # input:
+    #     "{projectpath}/MCB_04-BinMerging/{group}_files"
     output:
         "{projectpath}/MCB_04-BinMerging/All_files/metawrap_70_10_bins.stats"
     params:
