@@ -173,23 +173,24 @@ rule assembly_mapping:
 #         -ID {params.group} \
 #         -log {rules.get_paths.input.logpath}
 #         """
-# rule prepare_metawrap:
-#     input:
-#         coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt",
-#         bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
-#     output:
-#         fq1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_1.fastq",
-#         fq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_2.fastq",
-#     message: "Creating false fastq files to trick the metaWRAP binning module"
-#     shell:
-#         """
-#         echo "@" > {output.fq1}
-#         echo "@" > {output.fq2}
-#         """
+rule prepare_metawrap:
+    input:
+        bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
+    output:
+        fq1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_1.fastq",
+        fq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_2.fastq",
+    message: "Creating false fastq files to trick the metaWRAP binning module"
+    shell:
+        """
+        echo "@" > {output.fq1}
+        echo "@" > {output.fq2}
+        """
 
 rule metaWRAP_binning:
     input:
-        bamdir="{projectpath}/MCB_02-AssemblyMapping/{group}"
+        bamdir="{projectpath}/MCB_02-AssemblyMapping/{group}",
+        fq1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_1.fastq",
+        fq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_2.fastq"
     output:
         concoct="{projectpath}/MCB_03-Binning/{group}/concoct_bins",
         maxbin2="{projectpath}/MCB_03-Binning/{group}/maxbin2_bins",
@@ -203,14 +204,6 @@ rule metaWRAP_binning:
         """
         mkdir {output.outdir}
 
-        # Create dummy fastq files to trick metaWRAP (we already have BAMs)
-        for bam in {params.readfolder}/*.bam;
-            do echo "@" > "${bam/.bam/_1.fastq}";
-                done
-        for bam in {params.readfolder}/*.bam;
-            do echo "@" > "${bam/.bam/_2.fastq}";
-                done
-
         # Run metaWRAP binning
         module load metawrap-mg/1.2 && \
         metawrap binning -o {output.outdir} \
@@ -219,8 +212,9 @@ rule metaWRAP_binning:
         --metabat2 \
         --maxbin2 \
         --concoct \
-        {params.readfolder}/*_1.fastq {params.readfolder}/*_2.fastq
+        {input.fq1} {input.fq2}
         """
+
 ##
 # Binning with metabat
 ##
