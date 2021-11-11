@@ -115,7 +115,7 @@ rule assembly_mapping:
         obams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
     params:
         threads=expand("{threads}", threads=config['threads']),
-        outdir=directory("{projectpath}/MCB_02-AssemblyMapping/{group}"),
+        outdir="{projectpath}/MCB_02-AssemblyMapping/{group}",
         fq_path="{projectpath}/PPR_03-MappedToReference/{group}",
         group="{group}"
     shell:
@@ -126,7 +126,8 @@ rule assembly_mapping:
         -t {params.threads} \
         -obam_b {params.outdir} \
         -ID {params.group} \
-        -log {rules.get_paths.input.logpath}
+        -log {rules.get_paths.input.logpath} &&
+        touch {params.outdir}/mapping_checkpoint.txt
         """
 
 # Unmapped reads
@@ -176,7 +177,7 @@ rule assembly_mapping:
 #         """
 rule prepare_metawrap:
     input:
-        obams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
+        obams="{projectpath}/MCB_02-AssemblyMapping/{group}/mapping_checkpoint.txt
     output:
         "{projectpath}/MCB_02-AssemblyMapping/{group}/dummy_fq_checkpoint.txt"
     message: "Creating false fastq files to trick the metaWRAP binning module"
