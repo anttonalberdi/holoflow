@@ -113,7 +113,7 @@ rule assembly_mapping:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
         fq_path="{projectpath}/PPR_03-MappedToReference/{group}"
     output:
-        directory("{projectpath}/MCB_02-AssemblyMapping/{group}"),
+        outdir=directory("{projectpath}/MCB_02-AssemblyMapping/{group}"),
         checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/checkpoint.txt"
     params:
         threads=expand("{threads}", threads=config['threads']),
@@ -124,7 +124,7 @@ rule assembly_mapping:
         -a {input.assembly} \
         -fq_path {input.fq_path} \
         -t {params.threads} \
-        -obam_b {output} \
+        -obam_b {output.outdir} \
         -checkpoint {output.checkpoint} \
         -ID {params.group} \
         -log {rules.get_paths.input.logpath}
