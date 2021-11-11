@@ -200,7 +200,7 @@ rule metaWRAP_binning:
     threads: 40
     params:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        readfolder="{projectpath}/MCB_02-AssemblyMapping/{group}"
+        readfolder="{projectpath}/MCB_02-AssemblyMapping/{group}",
         outdir="{projectpath}/MCB_03-Binning/{group}"
     shell:
         """
