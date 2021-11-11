@@ -237,14 +237,16 @@ rule prepare_metawrap:
 rule metaWRAP_binning:
     input:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        falseQ1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_1.fastq",
-        falseQ2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_2.fastq"
+        # falseQ1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_1.fastq",
+        # falseQ2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_dummy_2.fastq"
     output:
         concoct="{projectpath}/MCB_03-Binning/{group}/concoct_bins",
         maxbin2="{projectpath}/MCB_03-Binning/{group}/maxbin2_bins",
         metabat2="{projectpath}/MCB_03-Binning/{group}/metabat2_bins",
         outdir=directory("{projectpath}/MCB_03-Binning/{group}")
     threads: 40
+    params:
+        readfolder="{projectpath}/MCB_02-AssemblyMapping/{group}"
     shell:
         """
         mkdir {output.outdir}
@@ -254,7 +256,7 @@ rule metaWRAP_binning:
         --metabat2 \
         --maxbin2 \
         --concoct \
-        {input.falseQ1} {input.falseQ2}
+        {params.readfolder}*_1.fastq {params.readfolder}*_2.fastq
         """
 ##
 # Binning with metabat
