@@ -85,5 +85,6 @@ if not os.path.exists(obam_b):
             -2 '+unmapped_r2+' -'
             subprocess.Popen(unmappedCmd, shell=True).wait()
 
-         checkpointCmd='touch '+checkpoint+''
-         subprocess.Popen(checkpointCmd, shell=True).wait()
+
+            checkpointCmd='touch '+checkpoint+''
+            subprocess.Popen(checkpointCmd, shell=True).wait()
