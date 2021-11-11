@@ -61,6 +61,9 @@ if not os.path.exists(obam_b):
         unmapped_r2=obam_b+'/'+sampleID+'_unmapped_2.fastq.gz'
 
         if not os.path.exists(str(obam)): # run bwa if output bam does not exist
+            checkpointCmd='touch '+checkpoint+''
+            subprocess.Popen(checkpointCmd, shell=True).wait()
+
             mappingCmd='module load tools samtools/1.11 bowtie2/2.4.2 \
             && bowtie2 \
             --time \
@@ -84,7 +87,3 @@ if not os.path.exists(obam_b):
             -1 '+unmapped_r1+' \
             -2 '+unmapped_r2+' -'
             subprocess.Popen(unmappedCmd, shell=True).wait()
-
-
-            checkpointCmd='touch '+checkpoint+''
-            subprocess.Popen(checkpointCmd, shell=True).wait()

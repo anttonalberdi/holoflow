@@ -113,8 +113,8 @@ rule assembly_mapping:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
     output:
         outdir=directory("{projectpath}/MCB_02-AssemblyMapping/{group}"),
-    params:
         checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/checkpoint.txt",
+    params:
         threads=expand("{threads}", threads=config['threads']),
         fq_path="{projectpath}/PPR_03-MappedToReference/{group}",
         group="{group}"
@@ -125,7 +125,7 @@ rule assembly_mapping:
         -fq_path {params.fq_path} \
         -t {params.threads} \
         -obam_b {output.outdir} \
-        -checkpoint {params.checkpoint} \
+        -checkpoint {output.checkpoint} \
         -ID {params.group} \
         -log {rules.get_paths.input.logpath}
         """
@@ -193,6 +193,8 @@ rule prepare_metawrap:
         """
 
 rule metaWRAP_binning:
+    input:
+        "{projectpath}/MCB_02-AssemblyMapping/{group}/dummy_fq_checkpoint.txt"
     output:
         concoct="{projectpath}/MCB_03-Binning/{group}/concoct_bins",
         maxbin2="{projectpath}/MCB_03-Binning/{group}/maxbin2_bins",
