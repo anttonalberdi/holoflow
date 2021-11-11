@@ -120,12 +120,12 @@ rule assembly_mapping:
         group="{group}"
     shell:
         """
+        touch {output.checkpoint} && \
         python {rules.get_paths.input.holopath}/bin/holo-coassembly_mapping.py \
         -a {input.assembly} \
         -fq_path {params.fq_path} \
         -t {params.threads} \
         -obam_b {output.outdir} \
-        -checkpoint {output.checkpoint} \
         -ID {params.group} \
         -log {rules.get_paths.input.logpath}
         """

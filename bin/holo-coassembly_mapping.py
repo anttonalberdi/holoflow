@@ -16,7 +16,6 @@ parser.add_argument('-t', help="threads", dest="t", required=True)
 parser.add_argument('-obam_b', help="output bam file base", dest="obam_b", required=True)
 parser.add_argument('-ID', help="ID", dest="ID", required=True)
 parser.add_argument('-log', help="pipeline log file", dest="log", required=True)
-parser.add_argument('-checkpoint', help="checkpoint file", dest="checkpoint", required=True)
 args = parser.parse_args()
 
 
@@ -26,7 +25,6 @@ t=args.t
 obam_b=args.obam_b
 ID=args.ID
 log=args.log
-checkpoint=args.checkpoint
 
 
 # Run
@@ -61,9 +59,6 @@ if not os.path.exists(obam_b):
         unmapped_r2=obam_b+'/'+sampleID+'_unmapped_2.fastq.gz'
 
         if not os.path.exists(str(obam)): # run bwa if output bam does not exist
-            checkpointCmd='touch '+checkpoint+''
-            subprocess.Popen(checkpointCmd, shell=True).wait()
-
             mappingCmd='module load tools samtools/1.11 bowtie2/2.4.2 \
             && bowtie2 \
             --time \
