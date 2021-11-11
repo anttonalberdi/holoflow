@@ -128,8 +128,7 @@ rule assembly_mapping:
         -t {params.threads} \
         -obam_b {output} \
         -ID {params.group} \
-        -log {rules.get_paths.input.logpath}
-        touch {output.checkpoint}
+        -log {rules.get_paths.input.logpath} && touch {output.checkpoint}
         """
 
 # Unmapped reads
