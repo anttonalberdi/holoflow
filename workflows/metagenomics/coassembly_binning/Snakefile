@@ -125,9 +125,9 @@ rule assembly_mapping:
         -fq_path {input.fq_path} \
         -t {params.threads} \
         -obam_b {output} \
+        -checkpoint {output.checkpoint} \
         -ID {params.group} \
-        -log {rules.get_paths.input.logpath} \
-        -checkpoint {output.checkpoint}
+        -log {rules.get_paths.input.logpath}
         """
 
 # Unmapped reads
