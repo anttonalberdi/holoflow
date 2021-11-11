@@ -485,7 +485,7 @@ rule merge_metawrap:
 
 rule coverm:
     input:
-        "{projectpath}/MCB_04-BinMerging/All_files/metawrap_70_10_bins.stats
+        "{projectpath}/MCB_04-BinMerging/All_files/metawrap_70_10_bins.stats"
     output:
         coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
     params:
