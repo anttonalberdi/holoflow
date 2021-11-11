@@ -205,10 +205,10 @@ rule metaWRAP_binning:
 
         # Create dummy fastq files to trick metaWRAP (we already have BAMs)
         for bam in {params.readfolder}/*.bam;
-            do echo "@" > '${bam/.bam/_1.fastq}';
+            do echo "@" > "${bam/.bam/_1.fastq}";
                 done
         for bam in {params.readfolder}/*.bam;
-            do echo "@" > '${bam/.bam/_2.fastq}';
+            do echo "@" > "${bam/.bam/_2.fastq}";
                 done
 
         # Run metaWRAP binning
