@@ -233,6 +233,7 @@ rule metaWRAP_binning:
                 done
 
         # Run metaWRAP binning
+        module load metawrap-mg/1.2 && \
         metawrap binning -o {output.outdir} \
         -t {threads} \
         -a {params.assembly} \
@@ -424,7 +425,7 @@ rule metawrap_refinement:
         maxbin2="{projectpath}/MCB_03-Binning/{group}/maxbin2_bins",
         metabat2="{projectpath}/MCB_03-Binning/{group}/metabat2_bins",
     output:
-        directory("{projectpath}/MCB_04-BinMerging/{group}_files")
+        directory("{projectpath}/MCB_04-BinMerging/{group}_files"),
         all_files="{projectpath}/MCB_04-BinMerging/All_files"
     params:
         threads=expand("{threads}", threads=config['threads']),
