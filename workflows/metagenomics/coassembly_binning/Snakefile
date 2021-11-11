@@ -158,8 +158,10 @@ rule unmapped_reads:
 rule coverm:
     input:
         mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}",
-        bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam"
-        assembly="{projectpath}/MCB_01-Assembly/{group}.fa"
+        bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam",
+        assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
+        umfq1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_1.fastq.gz",
+        umfq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_2.fastq.gz"
     output:
         coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
     params:
