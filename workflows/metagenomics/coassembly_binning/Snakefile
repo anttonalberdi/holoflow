@@ -158,22 +158,20 @@ rule unmapped_reads:
 
 rule coverm:
     input:
-        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}",
-        bams="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}.bam",
-        assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        umfq1="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_1.fastq.gz",
-        umfq2="{projectpath}/MCB_02-AssemblyMapping/{group}/{sample}_unmapped_2.fastq.gz"
+        checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/checkpoint"
     output:
         coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
     params:
+        assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
+        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}",
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
     shell:
         """
         module load tools coverm/0.6.1 && \
         coverm genome \
-            -b {input.mapped_bams}/*.bam \
-            --genome-fasta-files {input.assembly} \
+            -b {params.mapped_bams}/*.bam \
+            --genome-fasta-files {params.assembly} \
             -m relative_abundance \
             -t {params.threads} \
             --min-covered-fraction 0 \
