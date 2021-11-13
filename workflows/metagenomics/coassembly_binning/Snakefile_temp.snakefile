@@ -207,8 +207,11 @@ rule metaWRAP_binning:
     shell:
         """
         # Create dummy fastq files to trick metaWRAP into running without mapping
-        for bam in {input}/*.bam; do echo "@" > ${{bam/.bam/_1.fastq}}; done
-        for bam in {input}/*.bam; do echo "@" > ${{bam/.bam/_2.fastq}}; done
+        for bam in {input}/*.bam; do echo "@" > {params.outdir}/workfiles/$(basename ${{bam/.bam/_1.fastq}}); done
+        for bam in {input}/*.bam; do echo "@" > {params.outdir}/workfiles/$(basename ${{bam/.bam/_2.fastq}}); done
+
+        #Symlink BAMs for metaWRAP
+        for bam in {input}/*.bam; do ln -s $bam {params.outdir}/workfiles/$bam; done
 
         # Run metaWRAP binning
         module load metawrap-mg/1.2 && \
