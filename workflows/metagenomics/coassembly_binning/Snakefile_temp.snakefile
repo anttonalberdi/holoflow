@@ -221,7 +221,7 @@ rule metaWRAP_binning:
         --metabat2 \
         --maxbin2 \
         --concoct \
-        {input}/*_1.fastq {input}/*_2.fastq
+        {params.outdir}/workfiles/*_1.fastq {params.outdir}/workfiles/*_2.fastq
         """
 
 ##
