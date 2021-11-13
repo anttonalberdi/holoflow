@@ -431,7 +431,7 @@ rule metawrap_refinement:
             -B {input.maxbin2} \
             -C {input.metabat2} \
             -c 70 \
-            -x 10 &&
+            -x 10 
         # Rename metawrap bins to match coassembly group:
         sed -i'' '2,$s/bin/bin_{params.group}/g' {output}/metawrap_70_10_bins.stats %%
         """
