@@ -308,7 +308,7 @@ def run_metagenomics(in_f, path, config, cores):
     out_files = in_out_metagenomics(path,in_f)
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
-    path_snkf = os.path.join(holopath,'workflows/metagenomics/coassembly_binning/Snakefile_temp')
+    path_snkf = os.path.join(holopath,'workflows/metagenomics/coassembly_binning/Snakefile_temp.snakefile')
 
     # Run snakemake
     log_file=open(str(log),'w+')
