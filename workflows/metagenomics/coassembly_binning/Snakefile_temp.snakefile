@@ -207,7 +207,7 @@ rule metaWRAP_binning:
     shell:
         """
         # Create dummy fastq files to trick metaWRAP into running without mapping
-        mkdir {projectpath}/MCB_03-Binning/{group}/work_files
+        mkdir {params.outdir}/work_files
 
         for bam in {input}/*.bam; do echo "@" > {params.outdir}/work_files/$(basename ${{bam/.bam/_1.fastq}}); done
         for bam in {input}/*.bam; do echo "@" > {params.outdir}/work_files/$(basename ${{bam/.bam/_2.fastq}}); done
