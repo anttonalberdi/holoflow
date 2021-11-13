@@ -195,9 +195,9 @@ rule metaWRAP_binning:
     input:
         "{projectpath}/MCB_02-AssemblyMapping/{group}"
     output:
-        concoct="{projectpath}/MCB_03-Binning/{group}/concoct_bins",
-        maxbin2="{projectpath}/MCB_03-Binning/{group}/maxbin2_bins",
-        metabat2="{projectpath}/MCB_03-Binning/{group}/metabat2_bins",
+        concoct=directory("{projectpath}/MCB_03-Binning/{group}/concoct_bins"),
+        maxbin2=directory("{projectpath}/MCB_03-Binning/{group}/maxbin2_bins"),
+        metabat2=directory("{projectpath}/MCB_03-Binning/{group}/metabat2_bins")
     threads: 40
     params:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
@@ -206,8 +206,10 @@ rule metaWRAP_binning:
 
     shell:
         """
-        # Create dummy fastq files to trick metaWRAP into running without mapping
+        # Create dummy fastq/assembly files to trick metaWRAP into running without mapping
         mkdir {params.outdir}/work_files
+
+        touch {params.outdir}/work_files/assembly.fa.bwt
 
         for bam in {input}/*.bam; do echo "@" > {params.outdir}/work_files/$(basename ${{bam/.bam/_1.fastq}}); done
         for bam in {input}/*.bam; do echo "@" > {params.outdir}/work_files/$(basename ${{bam/.bam/_2.fastq}}); done
