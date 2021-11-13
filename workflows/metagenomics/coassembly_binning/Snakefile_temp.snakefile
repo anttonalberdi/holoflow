@@ -433,7 +433,7 @@ rule metawrap_refinement:
             -c 70 \
             -x 10
         # Rename metawrap bins to match coassembly group:
-        sed -i'' '2,$s/bin/bin_{params.group}/g' {output}/metawrap_70_10_bins.stats %%
+        sed -i'' '2,$s/bin/bin_{params.group}/g' {output}/metawrap_70_10_bins.stats
         """
 
 #This rule merges metawrap .stats files from multiple groups for use in dereplication
