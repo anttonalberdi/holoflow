@@ -194,7 +194,7 @@ rule assembly_mapping:
 
 rule metaWRAP_binning:
     input:
-        directory("{projectpath}/MCB_02-AssemblyMapping/{group}")
+        "{projectpath}/MCB_02-AssemblyMapping/{group}"
     output:
         concoct="{projectpath}/MCB_03-Binning/{group}/concoct_bins",
         maxbin2="{projectpath}/MCB_03-Binning/{group}/maxbin2_bins",
