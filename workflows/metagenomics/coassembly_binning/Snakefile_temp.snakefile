@@ -415,7 +415,7 @@ rule metawrap_refinement:
     output:
         directory("{projectpath}/MCB_04-BinMerging/{group}_files")
     resources:
-        mem_gb = memory=expand("{memory}", memory=config['memory'])
+        mem_mb = memory=expand("{memory}", memory=config['memory'])*1000
     params:
         workdir="{projectpath}/MCB_04-BinMerging/{group}_files",
         threads=expand("{threads}", threads=config['threads']),
