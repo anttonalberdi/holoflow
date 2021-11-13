@@ -198,10 +198,11 @@ rule metaWRAP_binning:
         concoct=directory("{projectpath}/MCB_03-Binning/{group}/concoct_bins"),
         maxbin2=directory("{projectpath}/MCB_03-Binning/{group}/maxbin2_bins"),
         metabat2=directory("{projectpath}/MCB_03-Binning/{group}/metabat2_bins")
-    threads: 40
     params:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
         readfolder="{projectpath}/MCB_02-AssemblyMapping/{group}",
+        threads=expand("{threads}", threads=config['threads']),
+        memory=expand("{memory}", memory=config['memory']),
         outdir="{projectpath}/MCB_03-Binning/{group}",
 
     shell:
@@ -220,7 +221,8 @@ rule metaWRAP_binning:
         # Run metaWRAP binning
         module load metawrap-mg/1.2 && \
         metawrap binning -o {params.outdir} \
-        -t {threads} \
+        -t {params.threads} \
+        -m {params.memory} \
         -a {params.assembly} \
         --metabat2 \
         --maxbin2 \
@@ -415,11 +417,14 @@ rule metawrap_refinement:
     params:
         workdir="{projectpath}/MCB_04-BinMerging/{group}_files",
         threads=expand("{threads}", threads=config['threads']),
+        memory=expand("{memory}", memory=config['memory']),
         group="{group}"
     shell:
         """
         module load metawrap-mg/1.2 && \
         metawrap bin_refinement \
+            -m {params.memory} \
+            -t {params.threads} \
             -o {output} \
             -t {params.threads} \
             -A {input.concoct} \
@@ -434,8 +439,8 @@ rule metawrap_refinement:
 #This rule merges metawrap .stats files from multiple groups for use in dereplication
 #It also renames and copies the bins from each group to the 'All_files' folder
 rule merge_metawrap:
-    # input:
-    #     "{projectpath}/MCB_04-BinMerging/{group}_files"
+    input:
+        "{projectpath}/MCB_04-BinMerging/{group}_files"
     output:
         "{projectpath}/MCB_04-BinMerging/All_files/metawrap_70_10_bins.stats"
     params:
@@ -457,9 +462,9 @@ rule merge_metawrap:
         #Copy bins from each group to a new folder in the 'All_files' directory
         mkdir {input}/metawrap_70_10_bins
 
-        for group in {params.wd}*_files; \
+        for group in {params.wd}/*_files; \
             do for bin in $group/metawrap_70_10_bins/*.fa; \
-                do echo cp $bin {input}/metawrap_70_10_bins/$(basename ${bin/bin./"${group/_files/}"_bin.}); \
+                do echo cp $bin {input}/metawrap_70_10_bins/$(basename ${{bin/bin./"${group/_files/}"_bin.}}); \
                 done; \
                     done
 
