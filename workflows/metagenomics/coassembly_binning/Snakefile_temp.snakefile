@@ -414,6 +414,8 @@ rule metawrap_refinement:
         metabat2="{projectpath}/MCB_03-Binning/{group}/metabat2_bins",
     output:
         directory("{projectpath}/MCB_04-BinMerging/{group}_files")
+    resources:
+        mem_gb = memory=expand("{memory}", memory=config['memory'])
     params:
         workdir="{projectpath}/MCB_04-BinMerging/{group}_files",
         threads=expand("{threads}", threads=config['threads']),
@@ -431,7 +433,7 @@ rule metawrap_refinement:
             -B {input.maxbin2} \
             -C {input.metabat2} \
             -c 70 \
-            -x 10 
+            -x 10
         # Rename metawrap bins to match coassembly group:
         sed -i'' '2,$s/bin/bin_{params.group}/g' {output}/metawrap_70_10_bins.stats %%
         """
