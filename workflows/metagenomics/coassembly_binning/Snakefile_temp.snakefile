@@ -126,7 +126,7 @@ rule assembly_mapping:
         -t {params.threads} \
         -obam_b {params.outdir} \
         -ID {params.group} \
-        -log {rules.get_paths.input.logpath} &&
+        -log {rules.get_paths.input.logpath}
         """
 
 # Unmapped reads
