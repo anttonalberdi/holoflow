@@ -127,7 +127,6 @@ rule assembly_mapping:
         -obam_b {params.outdir} \
         -ID {params.group} \
         -log {rules.get_paths.input.logpath} &&
-        touch {output.checkpoint}
         """
 
 # Unmapped reads
