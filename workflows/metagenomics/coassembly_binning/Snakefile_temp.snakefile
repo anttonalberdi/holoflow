@@ -207,11 +207,13 @@ rule metaWRAP_binning:
     shell:
         """
         # Create dummy fastq files to trick metaWRAP into running without mapping
-        for bam in {input}/*.bam; do echo "@" > {params.outdir}/workfiles/$(basename ${{bam/.bam/_1.fastq}}); done
-        for bam in {input}/*.bam; do echo "@" > {params.outdir}/workfiles/$(basename ${{bam/.bam/_2.fastq}}); done
+        mkdir {projectpath}/MCB_03-Binning/{group}/work_files
+
+        for bam in {input}/*.bam; do echo "@" > {params.outdir}/work_files/$(basename ${{bam/.bam/_1.fastq}}); done
+        for bam in {input}/*.bam; do echo "@" > {params.outdir}/work_files/$(basename ${{bam/.bam/_2.fastq}}); done
 
         #Symlink BAMs for metaWRAP
-        for bam in {input}/*.bam; do ln -s $bam {params.outdir}/workfiles/$bam; done
+        for bam in {input}/*.bam; do ln -s $bam {params.outdir}/work_files/$bam; done
 
         # Run metaWRAP binning
         module load metawrap-mg/1.2 && \
@@ -221,7 +223,7 @@ rule metaWRAP_binning:
         --metabat2 \
         --maxbin2 \
         --concoct \
-        {params.outdir}/workfiles/*_1.fastq {params.outdir}/workfiles/*_2.fastq
+        {params.outdir}/work_files/*_1.fastq {params.outdir}/work_files/*_2.fastq
         """
 
 ##
