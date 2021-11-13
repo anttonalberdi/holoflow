@@ -112,7 +112,7 @@ rule assembly_mapping:
         bt2_index="{projectpath}/MCB_01-Assembly/{group}.fa.rev.2.bt2l",
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
     output:
-        checkpoint="{projectpath}/MCB_02-AssemblyMapping/{group}/mapping_checkpoint.txt"
+        directory("{projectpath}/MCB_02-AssemblyMapping/{group}")
     params:
         threads=expand("{threads}", threads=config['threads']),
         outdir="{projectpath}/MCB_02-AssemblyMapping/{group}",
@@ -174,27 +174,27 @@ rule assembly_mapping:
 #         -mxb {output.maxbin_depth_file} \
 #         -ID {params.group} \
 #         -log {rules.get_paths.input.logpath}
+# #         """
+# rule prepare_metawrap:
+#     input:
+#         directory("{projectpath}/MCB_02-AssemblyMapping/{group}")
+#     output:
+#         "{projectpath}/MCB_02-AssemblyMapping/{group}/dummy_fq_checkpoint.txt"
+#     message: "Creating false fastq files to trick the metaWRAP binning module"
+#     params:
+#         bamdir="{projectpath}/MCB_02-AssemblyMapping/{group}",
+#         dr1="${bam/.bam/_1.fastq}",
+#         dr2="${bam/.bam/_2.fastq}"
+#     shell:
 #         """
-rule prepare_metawrap:
-    input:
-        "{projectpath}/MCB_02-AssemblyMapping/{group}/mapping_checkpoint.txt"
-    output:
-        "{projectpath}/MCB_02-AssemblyMapping/{group}/dummy_fq_checkpoint.txt"
-    message: "Creating false fastq files to trick the metaWRAP binning module"
-    params:
-        bamdir="{projectpath}/MCB_02-AssemblyMapping/{group}",
-        dr1="${bam/.bam/_1.fastq}",
-        dr2="${bam/.bam/_2.fastq}"
-    shell:
-        """
-        for bam in {params.bamdir}/*.bam; do echo "@" > {params.dr1}; done
-        for bam in {params.bamdir}/*.bam; do echo "@" > {params.dr2}; done
-        touch {output}
-        """
+#         for bam in {params.bamdir}/*.bam; do echo "@" > {params.dr1}; done
+#         for bam in {params.bamdir}/*.bam; do echo "@" > {params.dr2}; done
+#         touch {output}
+#         """
 
 rule metaWRAP_binning:
     input:
-        "{projectpath}/MCB_02-AssemblyMapping/{group}/dummy_fq_checkpoint.txt"
+        directory("{projectpath}/MCB_02-AssemblyMapping/{group}")
     output:
         concoct="{projectpath}/MCB_03-Binning/{group}/concoct_bins",
         maxbin2="{projectpath}/MCB_03-Binning/{group}/maxbin2_bins",
@@ -203,9 +203,14 @@ rule metaWRAP_binning:
     params:
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
         readfolder="{projectpath}/MCB_02-AssemblyMapping/{group}",
-        outdir="{projectpath}/MCB_03-Binning/{group}"
+        outdir="{projectpath}/MCB_03-Binning/{group}",
+
     shell:
         """
+        # Create dummy fastq files to trick metaWRAP into running without mapping
+        for bam in {input}/*.bam; do echo "@" > ${{bam/.bam/_1.fastq}}; done
+        for bam in {input}/*.bam; do echo "@" > ${{bam/.bam/_2.fastq}}; done
+
         # Run metaWRAP binning
         module load metawrap-mg/1.2 && \
         metawrap binning -o {params.outdir} \
@@ -214,7 +219,7 @@ rule metaWRAP_binning:
         --metabat2 \
         --maxbin2 \
         --concoct \
-        {params.readfolder}/*_1.fastq {params.readfolder}/*_2.fastq
+        {input}/*_1.fastq {input}/*_2.fastq
         """
 
 ##
