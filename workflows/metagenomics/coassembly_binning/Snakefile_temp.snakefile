@@ -2,7 +2,7 @@
 
 rule all:
     input:
-        expand("{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt", group=GROUP)
+        "{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
 
 
 rule get_paths:
