@@ -1,5 +1,10 @@
  # 30.06.20
 
+rule all:
+    input:
+        expand("{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt", group=GROUP)
+
+
 rule get_paths:
     input:
         holopath=expand("{holopath}", holopath=config['holopath']),
@@ -9,6 +14,8 @@ rule get_paths:
 ################################################################################################################
  ############################################       COASSEMBLY     ############################################
 ################################################################################################################
+
+
 
 ##
 # Assembly
@@ -463,7 +470,7 @@ rule merge_metawrap:
         mkdir {params.wd}/All_files/metawrap_70_10_bins
 
         for group in {params.wd}/*_files; \
-            do for bin in $group/metawrap_70_10_bins/*.fa; \
+            do for bin in "$group"/metawrap_70_10_bins/*.fa; \
                 do echo cp $bin {input}/metawrap_70_10_bins/$(basename ${{bin/bin./"${{group/_files/}}"_bin.}}); \
                 done; \
                     done
