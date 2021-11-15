@@ -507,9 +507,11 @@ rule coverm:
 
 
 onsuccess:
-    shell("mail -s "workflow completed" raph.eisenhofer@gmail.com < {log}")
     shell(
         """
+        #Send mail on completion:
+        mail -s "workflow completed" raph.eisenhofer@gmail.com < {log}
+
         mkdir {projectpath}/MCB_04-BinMerging/All_files
         #setup headers for combined metawrap file:
         echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > header.txt
