@@ -2,7 +2,6 @@
 
 rule all:
     input:
-        "{projectpath}/MCB_04-BinMerging/{group}_files/metawrap_70_10_bins.stats",
         "{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
 
 
@@ -471,40 +470,40 @@ rule coverm:
 
 #This rule merges metawrap .stats files from multiple groups for use in dereplication
 #It also renames and copies the bins from each group to the 'All_files' folder
-onsuccess:
-    input:
-        "{projectpath}/MCB_04-BinMerging/{group}_files/metawrap_70_10_bins.stats"
-    output:
-        "{projectpath}/MCB_04-BinMerging/All_files/metawrap_70_10_bins.stats"
-    params:
-        wd="{projectpath}/MCB_04-BinMerging"
-    shell:
-        """
-        mkdir "{params.wd}/All_files/
-
-        #setup headers for combined metawrap file:
-        echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > header.txt
-
-        #Cat the bin info from each group together
-        for group in {params.wd}/*_files; \
-            do grep -v 'contamination' "$group"/metawrap_70_10_bins.stats >> bins.txt; done
-
-        #Merge header with bins:
-        cat header.txt bins.txt > {output}
-
-        #Copy bins from each group to a new folder in the 'All_files' directory
-        mkdir {params.wd}/All_files/metawrap_70_10_bins
-
-        for group in {params.wd}/*_files; \
-            do for bin in "$group"/metawrap_70_10_bins/*.fa; \
-                do echo cp $bin {input}/metawrap_70_10_bins/$(basename ${{bin/bin./"${{group/_files/}}"_bin.}}); \
-                done; \
-                    done
-
-        #Clean up
-        rm header.txt
-        rm bins.txt
-        """
+# onsuccess:
+#     input:
+#         "{projectpath}/MCB_04-BinMerging/{group}_files/metawrap_70_10_bins.stats"
+#     output:
+#         "{projectpath}/MCB_04-BinMerging/All_files/metawrap_70_10_bins.stats"
+#     params:
+#         wd="{projectpath}/MCB_04-BinMerging"
+#     shell:
+#         """
+#         mkdir "{params.wd}/All_files/
+#
+#         #setup headers for combined metawrap file:
+#         echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > header.txt
+#
+#         #Cat the bin info from each group together
+#         for group in {params.wd}/*_files; \
+#             do grep -v 'contamination' "$group"/metawrap_70_10_bins.stats >> bins.txt; done
+#
+#         #Merge header with bins:
+#         cat header.txt bins.txt > {output}
+#
+#         #Copy bins from each group to a new folder in the 'All_files' directory
+#         mkdir {params.wd}/All_files/metawrap_70_10_bins
+#
+#         for group in {params.wd}/*_files; \
+#             do for bin in "$group"/metawrap_70_10_bins/*.fa; \
+#                 do echo cp $bin {input}/metawrap_70_10_bins/$(basename ${{bin/bin./"${{group/_files/}}"_bin.}}); \
+#                 done; \
+#                     done
+#
+#         #Clean up
+#         rm header.txt
+#         rm bins.txt
+#         """
 
 
 onsuccess:
