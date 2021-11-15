@@ -450,6 +450,8 @@ rule coverm:
     output:
         coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
     params:
+        all_mw="{projectpath}/MCB_04-BinMerging/All_files",
+        groups="{projectpath}/MCB_04-BinMerging/{group}",
         assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
         mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}",
         threads=expand("{threads}", threads=config['threads']),
@@ -465,6 +467,32 @@ rule coverm:
             -t {params.threads} \
             --min-covered-fraction 0 \
             > {output.coverm}
+
+        #Merge group metaWRAP refinement results
+        mkdir {params.all_mw}
+
+        #setup headers for combined metawrap file:
+        echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > header.txt
+
+        #Cat the bin info from each group together
+        for group in {params.groups}; \
+            do grep -v 'contamination' "$group"/metawrap_70_10_bins.stats >> bins.txt; done
+
+        #Merge header with bins:
+        cat header.txt bins.txt > {params.all_mw}/All_metawrap_70_10_bins.stats
+
+        #Copy bins from each group to a new folder in the 'All_files' directory
+        mkdir {params.all_mw}/All_metawrap_70_10_bins
+
+        for group in {params.groups}; \
+            do for bin in "$group"/metawrap_70_10_bins/*.fa; \
+                do cp $bin {params.all_mw}/All_metawrap_70_10_bins/$(basename ${{bin/bin./"${{group/_files/}}"_bin.}}); \
+                done; \
+                    done
+
+        #Clean up
+        rm header.txt
+        rm bins.txt
         """
 
 
@@ -507,35 +535,8 @@ rule coverm:
 
 
 onsuccess:
-    shell(
-        """
-        #Send mail on completion:
-        mail -s "workflow completed" raph.eisenhofer@gmail.com < {log}
-
-        mkdir {projectpath}/MCB_04-BinMerging/All_files
-        #setup headers for combined metawrap file:
-        echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > header.txt
-
-        #Cat the bin info from each group together
-        for group in {projectpath}/MCB_04-BinMerging/*; \
-            do grep -v 'contamination' "$group"/metawrap_70_10_bins.stats >> bins.txt; done
-
-        #Merge header with bins:
-        cat header.txt bins.txt > {projectpath}/MCB_04-BinMerging/All_files/All_metawrap_70_10_bins.stats
-
-        #Copy bins from each group to a new folder in the 'All_files' directory
-        mkdir {projectpath}/All_files/All_metawrap_70_10_bins
-
-        for group in {projectpath}/MCB_04-BinMerging/*_files; \
-            do for bin in "$group"/metawrap_70_10_bins/*.fa; \
-                do cp $bin {projectpath}/All_files/All_metawrap_70_10_bins/$(basename ${{bin/bin./"${{group/_files/}}"_bin.}}); \
-                done; \
-                    done
-
-        #Clean up
-        rm header.txt
-        rm bins.txt
-        """)
+    print("Job success!")
+    shell("""mail -s "workflow completed" raph.eisenhofer@gmail.com < {log}""")
 
 onerror:
     print("An error occurred")
