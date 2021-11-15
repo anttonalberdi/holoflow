@@ -444,9 +444,34 @@ rule metawrap_refinement:
         sed -i'' '2,$s/bin/bin_{params.group}/g' {output.stats}
         """
 
+
+rule coverm:
+    input:
+        "{projectpath}/MCB_04-BinMerging/{group}_files/metawrap_70_10_bins.stats"
+    output:
+        coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
+    params:
+        assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
+        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}",
+        threads=expand("{threads}", threads=config['threads']),
+        group="{group}"
+    shell:
+        """
+        echo {input}
+        module load tools coverm/0.6.1 && \
+        coverm genome \
+            -b {params.mapped_bams}/*.bam \
+            --genome-fasta-files {params.assembly} \
+            -m relative_abundance \
+            -t {params.threads} \
+            --min-covered-fraction 0 \
+            > {output.coverm}
+        """
+
+
 #This rule merges metawrap .stats files from multiple groups for use in dereplication
 #It also renames and copies the bins from each group to the 'All_files' folder
-rule merge_metawrap:
+onsuccess:
     input:
         "{projectpath}/MCB_04-BinMerging/{group}_files/metawrap_70_10_bins.stats"
     output:
@@ -482,28 +507,41 @@ rule merge_metawrap:
         """
 
 
-rule coverm:
-    input:
-        "{projectpath}/MCB_04-BinMerging/All_files/metawrap_70_10_bins.stats"
-    output:
-        coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
-    params:
-        assembly="{projectpath}/MCB_01-Assembly/{group}.fa",
-        mapped_bams="{projectpath}/MCB_02-AssemblyMapping/{group}",
-        threads=expand("{threads}", threads=config['threads']),
-        group="{group}"
-    shell:
+onsuccess:
+    shell("mail -s "workflow completed" raph.eisenhofer@gmail.com < {log}")
+    shell(
         """
-        echo {input}
-        module load tools coverm/0.6.1 && \
-        coverm genome \
-            -b {params.mapped_bams}/*.bam \
-            --genome-fasta-files {params.assembly} \
-            -m relative_abundance \
-            -t {params.threads} \
-            --min-covered-fraction 0 \
-            > {output.coverm}
-        """
+        mkdir {projectpath}/MCB_04-BinMerging/All_files
+        #setup headers for combined metawrap file:
+        echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > header.txt
+
+        #Cat the bin info from each group together
+        for group in {projectpath}/MCB_04-BinMerging/*; \
+            do grep -v 'contamination' "$group"/metawrap_70_10_bins.stats >> bins.txt; done
+
+        #Merge header with bins:
+        cat header.txt bins.txt > {projectpath}/MCB_04-BinMerging/All_files/All_metawrap_70_10_bins.stats
+
+        #Copy bins from each group to a new folder in the 'All_files' directory
+        mkdir {projectpath}/All_files/All_metawrap_70_10_bins
+
+        for group in {projectpath}/MCB_04-BinMerging/*_files; \
+            do for bin in "$group"/metawrap_70_10_bins/*.fa; \
+                do cp $bin {projectpath}/All_files/All_metawrap_70_10_bins/$(basename ${{bin/bin./"${{group/_files/}}"_bin.}}); \
+                done; \
+                    done
+
+        #Clean up
+        rm header.txt
+        rm bins.txt
+        """)
+
+onerror:
+    print("An error occurred")
+    shell("mail -s "an error occurred" raph.eisenhofer@gmail.com < {log}")
+
+
+
 # rule singleM:
 #     input:
 #         "{projectpath}/MCB_04-BinMerging/All_files/metawrap_50_10_bins.stats"
