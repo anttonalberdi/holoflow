@@ -2,6 +2,7 @@
 
 rule all:
     input:
+        "{projectpath}/MCB_04-BinMerging/{group}_files/metawrap_70_10_bins.stats",
         "{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
 
 
@@ -493,6 +494,7 @@ rule coverm:
         group="{group}"
     shell:
         """
+        echo {input}
         module load tools coverm/0.6.1 && \
         coverm genome \
             -b {params.mapped_bams}/*.bam \
