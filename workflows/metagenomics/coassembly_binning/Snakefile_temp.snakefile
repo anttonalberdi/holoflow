@@ -539,7 +539,7 @@ onsuccess:
 
 onerror:
     print("An error occurred")
-    shell(mail -s "an error occurred" raph.eisenhofer@gmail.com < {log})
+    shell("""mail -s "an error occurred" raph.eisenhofer@gmail.com < {log}""")
 
 
 
