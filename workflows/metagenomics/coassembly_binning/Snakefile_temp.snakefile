@@ -420,9 +420,9 @@ rule metawrap_refinement:
         maxbin2="{projectpath}/MCB_03-Binning/{group}/maxbin2_bins",
         metabat2="{projectpath}/MCB_03-Binning/{group}/metabat2_bins",
     output:
-        "{projectpath}/MCB_04-BinMerging/{group}_files/metawrap_70_10_bins.stats"
-    params:
+        stats="{projectpath}/MCB_04-BinMerging/{group}_files/metawrap_70_10_bins.stats",
         workdir="{projectpath}/MCB_04-BinMerging/{group}_files",
+    params:
         threads=expand("{threads}", threads=config['threads']),
         memory=expand("{memory}", memory=config['memory']),
         group="{group}"
@@ -432,7 +432,7 @@ rule metawrap_refinement:
         metawrap bin_refinement \
             -m {params.memory} \
             -t {params.threads} \
-            -o {params.workdir} \
+            -o {output.workdir} \
             -t {params.threads} \
             -A {input.concoct} \
             -B {input.maxbin2} \
@@ -440,7 +440,7 @@ rule metawrap_refinement:
             -c 70 \
             -x 10
         # Rename metawrap bins to match coassembly group:
-        sed -i'' '2,$s/bin/bin_{params.group}/g' {output}
+        sed -i'' '2,$s/bin/bin_{params.group}/g' {output.stats}
         """
 
 #This rule merges metawrap .stats files from multiple groups for use in dereplication
