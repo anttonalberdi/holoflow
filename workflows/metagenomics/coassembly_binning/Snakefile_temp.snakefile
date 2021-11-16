@@ -480,7 +480,7 @@ rule coverm:
         mkdir {params.all_mw}/All_metawrap_70_10_bins
 
         for group in {params.groups}; \
-            do for bin in "$group"/metawrap_70_10_bins/*.fa; \
+            do for bin in "$group"_files/metawrap_70_10_bins/*.fa; \
                 do cp $bin {params.all_mw}/All_metawrap_70_10_bins/$(basename ${{bin/bin./"${{group/_files/}}"_bin.}}); \
                 done; \
                     done
