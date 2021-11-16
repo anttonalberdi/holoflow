@@ -1,5 +1,5 @@
  # 30.06.20
-print(projectpath)
+print({projectpath})
 
 rule get_paths:
     input:
