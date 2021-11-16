@@ -471,7 +471,7 @@ rule coverm:
 
         #Cat the bin info from each group together
         for group in {params.groups}_files; \
-            do grep -v 'contamination' "$group"/metawrap_70_10_bins.stats >> {group}_bins.txt; done
+            do grep -v 'contamination' "$group"/metawrap_70_10_bins.stats >> {params.group}_bins.txt; done
 
         #Copy bins from each group to a new folder in the 'All_files' directory
         mkdir -p {params.all_mw}/All_metawrap_70_10_bins
