@@ -454,7 +454,6 @@ rule coverm:
     shell:
         """
         echo {input}
-        mkdir {output.covermdir}
         module load tools coverm/0.6.1 && \
         coverm genome \
             -b {params.mapped_bams}/*.bam \
