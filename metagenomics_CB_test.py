@@ -315,7 +315,7 @@ def run_metagenomics(in_f, path, config, cores):
     log_file.write("Have a nice run!\n\t\tHOLOFOW Metagenomics-Coassembly starting")
     log_file.close()
 
-    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k --configfile '+config+' --cores '+cores+''
+    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
     subprocess.Popen(mtg_snk_Cmd, shell=True).wait()
 
     log_file=open(str(log),'a+')

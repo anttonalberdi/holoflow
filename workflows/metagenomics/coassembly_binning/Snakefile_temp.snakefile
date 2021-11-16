@@ -1,9 +1,5 @@
  # 30.06.20
 
-rule all:
-    input:
-        expand("{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt", group=GROUP)
-
 rule get_paths:
     input:
         holopath=expand("{holopath}", holopath=config['holopath']),
@@ -447,7 +443,8 @@ rule coverm:
     input:
         "{projectpath}/MCB_04-BinMerging/{group}_files/metawrap_70_10_bins.stats"
     output:
-        coverm="{projectpath}/MCB_02-AssemblyMapping/{group}/{group}_coverM.txt"
+        coverm="{projectpath}/MCB_02-AssemblyMapping/{group}_coverM/{group}_coverM.txt",
+        covermdir=directory("{projectpath}/MCB_02-AssemblyMapping/{group}_coverM")
     params:
         all_mw="{projectpath}/MCB_04-BinMerging/All_files",
         groups="{projectpath}/MCB_04-BinMerging/{group}",
@@ -458,6 +455,7 @@ rule coverm:
     shell:
         """
         echo {input}
+        mkdir {output.covermdir}
         module load tools coverm/0.6.1 && \
         coverm genome \
             -b {params.mapped_bams}/*.bam \
