@@ -471,10 +471,7 @@ rule coverm:
 
         #Cat the bin info from each group together
         for group in {params.groups}_files; \
-            do grep -v 'contamination' "$group"/metawrap_70_10_bins.stats >> bins.txt; done
-
-        #Merge header with bins:
-        cat header.txt bins.txt > {params.all_mw}/All_metawrap_70_10_bins.stats
+            do grep -v 'contamination' "$group"/metawrap_70_10_bins.stats >> {group}_bins.txt; done
 
         #Copy bins from each group to a new folder in the 'All_files' directory
         mkdir -p {params.all_mw}/All_metawrap_70_10_bins
@@ -485,9 +482,6 @@ rule coverm:
                 done; \
                     done
 
-        #Clean up
-        rm header.txt
-        rm bins.txt
         """
 
 
@@ -531,7 +525,12 @@ rule coverm:
 
 onsuccess:
     print("Job success!")
-    shell("""mail -s "workflow completed" raph.eisenhofer@gmail.com < {log}""")
+    shell("""
+            mail -s "workflow completed" raph.eisenhofer@gmail.com < {log}
+            cat headers.txt *bins.txt > {projectpath}/MCB_04-BinMerging/All_files/All_metawrap_70_10_bins.stats
+            rm headers.txt
+            rm *bins.txt
+          """)
 
 onerror:
     print("An error occurred")
