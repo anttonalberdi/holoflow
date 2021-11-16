@@ -475,10 +475,10 @@ rule coverm:
         #Copy bins from each group to a new folder in the 'All_files' directory
         mkdir -p {params.all_mw}/All_metawrap_70_10_bins
 
-        for group in {params.groups} \
-            do for bin in "$group"_files/metawrap_70_10_bins/*.fa \
-                do cp $bin {params.all_mw}/All_metawrap_70_10_bins/$(basename ${{bin/bin./"${{group/_files/}}"_bin.}}) \
-                    done \
+        for group in {params.groups}; \
+            do for bin in "$group"_files/metawrap_70_10_bins/*.fa; \
+                do cp $bin {params.all_mw}/All_metawrap_70_10_bins/$(basename ${{bin/bin./"${{group/_files/}}"_bin.}}); \
+                    done; \
                         done
         """
 
