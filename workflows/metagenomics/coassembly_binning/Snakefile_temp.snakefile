@@ -464,7 +464,7 @@ rule coverm:
             > {output.coverm}
 
         #Merge group metaWRAP refinement results
-        mkdir {params.all_mw}
+        mkdir -p {params.all_mw}
 
         #setup headers for combined metawrap file:
         echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > header.txt
