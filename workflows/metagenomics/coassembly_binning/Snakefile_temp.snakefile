@@ -443,8 +443,8 @@ rule coverm:
     input:
         "{projectpath}/MCB_04-BinMerging/{group}_files/metawrap_70_10_bins.stats"
     output:
-        coverm="{projectpath}/MCB_02-AssemblyMapping/{group}_coverM/{group}_coverM.txt",
-        covermdir=directory("{projectpath}/MCB_02-AssemblyMapping/{group}_coverM")
+        coverm="{projectpath}/MCB_05-CoverM/{group}/{group}_coverM.txt",
+        covermdir=directory("{projectpath}/MCB_05-CoverM/{group}")
     params:
         all_mw="{projectpath}/MCB_04-BinMerging/All_files",
         groups="{projectpath}/MCB_04-BinMerging/{group}",

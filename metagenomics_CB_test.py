@@ -101,7 +101,7 @@ def in_out_metagenomics(path,in_f):
         read2_files=''
         list_read2=list()
         output_files=''
-        final_temp_dir="MCB_04-BinMerging"
+        final_temp_dir="MCB_05-CoverM"
 
         all_lines = in_file.readlines() # Read input.txt lines
         # remove empty lines
