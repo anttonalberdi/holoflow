@@ -19,7 +19,6 @@ rule assembly:
     input:
         read1="{projectpath}/MCB_00-MergedData/{group}_1.fastq",
         read2="{projectpath}/MCB_00-MergedData/{group}_2.fastq"
-
     output:
         "{projectpath}/MCB_01-Assembly/{group}_file_to_remove"
     params:
@@ -443,8 +442,8 @@ rule coverm:
     input:
         "{projectpath}/MCB_04-BinMerging/{group}_files/metawrap_70_10_bins.stats"
     output:
-        coverm="{projectpath}/MCB_05-CoverM/{group}/{group}_coverM.txt",
-        covermdir=directory("{projectpath}/MCB_05-CoverM/{group}")
+        coverm="{projectpath}/MCB_05-CoverM/{group}_files/{group}_coverM.txt",
+        covermdir=directory("{projectpath}/MCB_05-CoverM/{group}_files")
     params:
         all_mw="{projectpath}/MCB_04-BinMerging/All_files",
         groups="{projectpath}/MCB_04-BinMerging/{group}",
