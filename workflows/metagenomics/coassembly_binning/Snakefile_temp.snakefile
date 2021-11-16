@@ -1,4 +1,5 @@
  # 30.06.20
+projectpath = $projectpath
 
 rule get_paths:
     input:
