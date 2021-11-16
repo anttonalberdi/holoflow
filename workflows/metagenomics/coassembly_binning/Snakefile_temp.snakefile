@@ -470,7 +470,7 @@ rule coverm:
         echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > {params.all_mw}/header.txt
 
         #Cat the bin info from each group together
-        grep -v 'contamination' {params.groups}/metawrap_70_10_bins.stats >> {params.all_mw}/{params.group}_bins.txt; done
+        grep -v 'contamination' {params.groups}/metawrap_70_10_bins.stats >> {params.all_mw}/{params.group}_bins.txt
 
         #Copy bins from each group to a new folder in the 'All_files' directory
         mkdir -p {params.all_mw}/All_metawrap_70_10_bins
