@@ -415,7 +415,7 @@ rule metawrap_refinement:
         metabat2="{projectpath}/MCB_03-Binning/{group}/metabat2_bins",
     output:
         stats="{projectpath}/MCB_04-BinMerging/{group}_files/metawrap_70_10_bins.stats",
-        workdir="{projectpath}/MCB_04-BinMerging/{group}_files",
+        workdir=directory("{projectpath}/MCB_04-BinMerging/{group}_files")
     params:
         threads=expand("{threads}", threads=config['threads']),
         memory=expand("{memory}", memory=config['memory']),
@@ -467,11 +467,10 @@ rule coverm:
         mkdir -p {params.all_mw}
 
         #setup headers for combined metawrap file:
-        echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > header.txt
+        echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > {params.all_mw}/header.txt
 
         #Cat the bin info from each group together
-        for group in {params.groups}_files; \
-            do grep -v 'contamination' "$group"/metawrap_70_10_bins.stats >> {params.group}_bins.txt; done
+        grep -v 'contamination' {params.groups}/metawrap_70_10_bins.stats >> {params.all_mw}/{params.group}_bins.txt; done
 
         #Copy bins from each group to a new folder in the 'All_files' directory
         mkdir -p {params.all_mw}/All_metawrap_70_10_bins
