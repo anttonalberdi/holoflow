@@ -470,7 +470,7 @@ rule coverm:
         echo -e bin' \t 'completeness' \t 'contamination' \t 'GC' \t 'lineage' \t 'N50' \t 'size' \t 'binner > header.txt
 
         #Cat the bin info from each group together
-        for group in {params.groups}; \
+        for group in {params.groups}_files; \
             do grep -v 'contamination' "$group"/metawrap_70_10_bins.stats >> bins.txt; done
 
         #Merge header with bins:
