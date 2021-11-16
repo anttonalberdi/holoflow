@@ -477,7 +477,7 @@ rule coverm:
         cat header.txt bins.txt > {params.all_mw}/All_metawrap_70_10_bins.stats
 
         #Copy bins from each group to a new folder in the 'All_files' directory
-        mkdir {params.all_mw}/All_metawrap_70_10_bins
+        mkdir -p {params.all_mw}/All_metawrap_70_10_bins
 
         for group in {params.groups}; \
             do for bin in "$group"_files/metawrap_70_10_bins/*.fa; \
