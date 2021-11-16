@@ -1,5 +1,4 @@
  # 30.06.20
-print(path)
 
 rule get_paths:
     input:
@@ -524,18 +523,18 @@ rule coverm:
 #         """
 
 
-onsuccess:
-    print("Job success!")
-    shell("""
-            mail -s "workflow completed" raph.eisenhofer@gmail.com < {log}
-            cat headers.txt *bins.txt > {path}/MCB_04-BinMerging/All_files/All_metawrap_70_10_bins.stats
-            rm headers.txt
-            rm *bins.txt
-          """)
-
-onerror:
-    print("An error occurred")
-    shell("""mail -s "an error occurred" raph.eisenhofer@gmail.com < {log}""")
+# onsuccess:
+#     print("Job success!")
+#     shell("""
+#             mail -s "workflow completed" raph.eisenhofer@gmail.com < {log}
+#             cat headers.txt *bins.txt > {path}/MCB_04-BinMerging/All_files/All_metawrap_70_10_bins.stats
+#             rm headers.txt
+#             rm *bins.txt
+#           """)
+#
+# onerror:
+#     print("An error occurred")
+#     shell("""mail -s "an error occurred" raph.eisenhofer@gmail.com < {log}""")
 
 
 
