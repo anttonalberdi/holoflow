@@ -246,7 +246,6 @@ rule coverm:
         """
 
 
-
 # rule singleM:
 #     input:
 #         "{projectpath}/MCB_04-BinMerging/All_files/metawrap_50_10_bins.stats"
