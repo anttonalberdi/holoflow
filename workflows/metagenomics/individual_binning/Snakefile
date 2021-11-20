@@ -87,6 +87,7 @@ rule assembly_index:
         bwa_bt2="{projectpath}/MIB_01-Assembly/{sample}.fa.rev.2.bt2l",
     params:
         sample="{sample}"
+    threads: 40
     shell:
         """
         python {rules.get_paths.input.holopath}/bin/holo-assembly_index.py \
