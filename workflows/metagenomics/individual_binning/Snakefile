@@ -17,9 +17,8 @@ rule get_paths:
 
 rule assembly:
     input:
-        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq",
-        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq"
-
+        read1="{projectpath}/PPR_03-MappedToReference/{sample}_1.fastq.gz",
+        read2="{projectpath}/PPR_03-MappedToReference/{sample}_2.fastq.gz"
     output:
         "{projectpath}/MIB_01-Assembly/{sample}_file_to_remove"
     params:
@@ -34,9 +33,20 @@ rule assembly:
 
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-assembly.py -1 {input.read1} -2 {input.read2} -m {params.memory} -t {params.threads} -k_megahit {params.klist_megahit} -k_spades {params.klist_spades} -a {params.assembler} -o {params.out_dir} -empty_o {output} -temp_a {params.temp_assembly} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-assembly.py \
+        -1 {input.read1} \
+        -2 {input.read2} \
+        -m {params.memory} \
+        -t {params.threads} \
+        -k_megahit {params.klist_megahit} \
+        -k_spades {params.klist_spades} \
+        -a {params.assembler} \
+        -o {params.out_dir} \
+        -empty_o {output} \
+        -temp_a {params.temp_assembly} \
+        -ID {params.sample} \
+        -log {rules.get_paths.input.logpath}
         """
-
 
 ##
 # Assembly reformat
@@ -53,32 +63,37 @@ rule assembly_reformat:
         stats_in="{projectpath}/PPR_03-MappedToReference/{sample}.stats",
         min_contig_len=expand("{min_contig_len}", min_contig_len=config['min_contig_len']),
         in_assembly="{projectpath}/MIB_01-Assembly/{sample}_assembly/temp_assembly.fa"
-
-
     shell:
         """
-        rm {input.empt_file} && python {rules.get_paths.input.holopath}/bin/holo-assembly_reformat.py -ID {params.sample} -min_cl {params.min_contig_len} -in_a {params.in_assembly} -out_a {output.out_assembly} -st_in {params.stats_in} -st_out {output.stats} -log {rules.get_paths.input.logpath}
+        rm {input.empt_file} && python {rules.get_paths.input.holopath}/bin/holo-assembly_reformat.py \
+        -ID {params.sample} \
+        -min_cl {params.min_contig_len} \
+        -in_a {params.in_assembly} \
+        -out_a {output.out_assembly} \
+        -st_in {params.stats_in} \
+        -st_out {output.stats} \
+        -log {rules.get_paths.input.logpath}
         """
 
 
 ##
 # Index assembly
-## Coassembly is indexed with samtools and bwa
+## Coassembly is indexed with samtools and bowtie2
 rule assembly_index:
     input:
         "{projectpath}/MIB_01-Assembly/{sample}.fa"
-    output: # FUTURE: ADD OPTION TO REMOVE ALL BUT FA.FAI
+    output:
         samtools="{projectpath}/MIB_01-Assembly/{sample}.fa.fai",
-        bwa_bwt="{projectpath}/MIB_01-Assembly/{sample}.fa.bwt",
-        bwa_pac="{projectpath}/MIB_01-Assembly/{sample}.fa.pac",
-        bwa_ann="{projectpath}/MIB_01-Assembly/{sample}.fa.ann",
-        bwa_amb="{projectpath}/MIB_01-Assembly/{sample}.fa.amb",
-        bwa_sa="{projectpath}/MIB_01-Assembly/{sample}.fa.sa"
+        bwa_bt2="{projectpath}/MIB_01-Assembly/{sample}.fa.rev.2.bt2l",
     params:
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-assembly_index.py -a {input} -ia {output.samtools} -log {rules.get_paths.input.logpath} -ID {params.sample}
+        python {rules.get_paths.input.holopath}/bin/holo-assembly_index.py \
+        -a {input} \
+        -ia {output.samtools} \
+        -log {rules.get_paths.input.logpath} \
+        -ID {params.sample}
         """
 
 ##
@@ -98,149 +113,106 @@ rule assembly_mapping:
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-assembly_mapping.py -a {input.assembly} -1 {input.read1} -2 {input.read2} -t {params.threads} -obam {output} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        python {rules.get_paths.input.holopath}/bin/holo-assembly_mapping.py \
+        -a {input.assembly} \
+        -1 {input.read1} \
+        -2 {input.read2} \
+        -t {params.threads} \
+        -obam {output} \
+        -ID {params.sample} \
+        -log {rules.get_paths.input.logpath}
         """
-
 ##
-# Prodigal ORF prediction
+# Binning
 ##
-#"Metagenomes - The simplest approach for metagenomes is to put all the sequences in one FASTA file and analyze them in Anonymous Mode."
-# rule protein_prediction_prodigal:
-#     input:
-#         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-#         mapped_bam="{projectpath}/MIB_02-AssemblyMapping/{sample}.mapped.bam" # not necessary
-#     output:
-#         genetic_coords="{projectpath}/MIB_02-ProdigalPrediction/{sample}.coords.gbk",
-#         protein_translations="{projectpath}/MIB_02-ProdigalPrediction/{sample}.protein_translations.faa"
-#     params:
-#         sample="{sample}"
-#     shell: # Prodigal is run in "anon", Anonymous workflow
-#         """
-#         python {rules.get_paths.input.holopath}/bin/holo-pp_prodigal.py -i {input.assembly} -o {output.genetic_coords} -a {output.protein_translations} -ID {params.sample} -log {rules.get_paths.input.logpath}
-#         """
-
-##
-# Create depth table
-## Create depth table from bam files
-rule depth_table:
+rule metaWRAP_binning:
     input:
-        #genetic_coords="{projectpath}/MIB_02-ProdigalPrediction/{sample}.coords.gbk",  #not actually necessary here, but used to keep order
-        mapped_bam="{projectpath}/MIB_02-AssemblyMapping/{sample}.mapped.bam"
+        "{projectpath}/MIB_02-AssemblyMapping/{sample}.mapped.bam"
     output:
-        metabat_depth_file="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.depth.txt",
-        maxbin_depth_file="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.depth.txt"
+        concoct=directory("{projectpath}/MIB_03-Binning/{sample}/concoct_bins"),
+        maxbin2=directory("{projectpath}/MIB_03-Binning/{sample}/maxbin2_bins"),
+        metabat2=directory("{projectpath}/MIB_03-Binning/{sample}/metabat2_bins"),
+        coverm="{projectpath}/MIB_03-Binning/{sample}/coverM.txt")
     params:
-        sample="{sample}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-depth_files.py -bam {input.mapped_bam} -mtb {output.metabat_depth_file} -mxb {output.maxbin_depth_file} -ID {params.sample} -log {rules.get_paths.input.logpath}
-        """
-
-
-##
-# Binning with metabat
-##
-
-rule binning_metabat:
-    input:
         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-        depth_table="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.depth.txt"
-    output:
-        check_mtb="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.mtb_checked_bins"
-    params:
-        base_mtb="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.mtb",
-        bin_table_mtb="{projectpath}/MIB_03-Binning/{sample}.bins_metabat.txt",
+        readfolder="{projectpath}/MIB_02-AssemblyMapping/{sample}",
         threads=expand("{threads}", threads=config['threads']),
-        sample="{sample}"
+        memory=expand("{memory}", memory=config['memory']),
+        outdir="{projectpath}/MIB_03-Binning/{sample}",
+
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_metabat.py -a {input.assembly} -d {input.depth_table} -bt {params.bin_table_mtb} -bb {params.base_mtb} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        # Create dummy fastq/assembly files to trick metaWRAP into running without mapping
+        mkdir {params.outdir}/work_files
+
+        touch {params.outdir}/work_files/assembly.fa.bwt
+
+        for bam in {input}; do echo "@" > {params.outdir}/work_files/$(basename ${{bam/.bam/_1.fastq}}); done
+        for bam in {input}; do echo "@" > {params.outdir}/work_files/$(basename ${{bam/.bam/_2.fastq}}); done
+
+        #Symlink BAMs for metaWRAP
+        for bam in {input}; do ln -s $bam {params.outdir}/work_files/$(basename $bam); done
+
+        # Run metaWRAP binning
+        module load metawrap-mg/1.2 && \
+        metawrap binning -o {params.outdir} \
+            -t {params.threads} \
+            -m {params.memory} \
+            -a {params.assembly} \
+            --metabat2 \
+            --maxbin2 \
+            --concoct \
+            {params.outdir}/work_files/*_1.fastq {params.outdir}/work_files/*_2.fastq
+
+        # Run coverm on each sample:
+        module load tools coverm/0.6.1 && \
+        coverm genome \
+            -b {input}/ \
+            --genome-fasta-files {params.assembly} \
+            -m relative_abundance \
+            -t {params.threads} \
+            --min-covered-fraction 0 \
+            > {output.coverm}
         """
 
-
-##
-# Binning with maxbin
-##
-
-rule binning_maxbin:
+rule metawrap_refinement:
     input:
-        assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-        depth_table="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.depth.txt"
+        concoct="{projectpath}/MIB_03-Binning/{sample}/concoct_bins",
+        maxbin2="{projectpath}/MIB_03-Binning/{sample}/maxbin2_bins",
+        metabat2="{projectpath}/MIB_03-Binning/{sample}/metabat2_bins",
     output:
-        check_mxb="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.mxb_checked_bins"
-    params:
-        base_mxb="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.mxb",
-        bin_table_mxb="{projectpath}/MIB_03-Binning/{sample}.bins_maxbin.txt",
-        threads=expand("{threads}", threads=config['threads']),
-        sample="{sample}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_maxbin.py -a {input.assembly} -d {input.depth_table} -bt {params.bin_table_mxb} -bb {params.base_mxb} -t {params.threads} -ID {params.sample} -log {rules.get_paths.input.logpath}
-        """
-
-##
-# Check binning
-## If all binners created bins, then continue. If Any binner did not create bins, simply copy resulting bins from
-# another software, rename these, and continue (the result is going to be the same for DAStool, is for the sake of the pipeline)
-
-rule check_bins:
-    input:
-        check_mxb="{projectpath}/MIB_03-Binning/{sample}_maxbin/{sample}.mxb_checked_bins",
-        check_mtb="{projectpath}/MIB_03-Binning/{sample}_metabat/{sample}.mtb_checked_bins",
-    output:
-        "{projectpath}/MIB_03-Binning/{sample}_checked_bins.txt"
-    params:
-        binning_dir="{projectpath}/MIB_03-Binning",
-        sample="{sample}"
-    shell:
-        """
-        python {rules.get_paths.input.holopath}/bin/holo-check_bins.py -check_mtb {input.check_mtb} -check_mxb {input.check_mxb}  -binning_dir {params.binning_dir} -ID {params.sample} -log {rules.get_paths.input.logpath}
-        """
-
-
-##
-# Bin refinement with DASTool using binning: metabat, maxbin 
-##
-
-rule das_tool:
-    input:
-        checked_bins="{projectpath}/MIB_03-Binning/{sample}_checked_bins.txt",
-        assembly="{projectpath}/MIB_01-Assembly/{sample}.fa"#,
-        #pproteins="{projectpath}/MIB_02-ProdigalPrediction/{sample}.protein_translations.faa"
-    output:
-        directory("{projectpath}/MIB_04-BinMerging/{sample}_DASTool_files")
+        stats="{projectpath}/MIB_04-BinMerging/{sample}_files/metawrap_70_10_bins.stats",
+        workdir=directory("{projectpath}/MIB_04-BinMerging/{sample}_files")
     params:
         threads=expand("{threads}", threads=config['threads']),
-        search_eng=expand("{search_eng}", search_eng=config['search_eng']),
-        dastool_db=expand("{dastool_db}", dastool_db=config['dastool_db']),
-        dastool_dir="{projectpath}/MIB_04-BinMerging/{sample}",
-        bin_table_mxb="{projectpath}/MIB_03-Binning/{sample}.bins_maxbin.txt",
-        bin_table_mtb="{projectpath}/MIB_03-Binning/{sample}.bins_metabat.txt",
+        memory=expand("{memory}", memory=config['memory']),
         sample="{sample}"
     shell:
         """
-        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool.py -cb {input.checked_bins} -a {input.assembly} -bt_mtb {params.bin_table_mtb} -bt_mxb {params.bin_table_mxb} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.sample} -log {rules.get_paths.input.logpath}
+        module load metawrap-mg/1.2 && \
+        metawrap bin_refinement \
+            -m {params.memory} \
+            -t {params.threads} \
+            -o {output.workdir} \
+            -t {params.threads} \
+            -A {input.concoct} \
+            -B {input.maxbin2} \
+            -C {input.metabat2} \
+            -c 70 \
+            -x 10
+        # Rename metawrap bins to match coassembly group:
+        sed -i'' '2,$s/bin/bin_{params.sample}/g' {output.stats}
         """
-        #        python {rules.get_paths.input.holopath}/bin/holo-binning_dastool_TMP.py -cb {input.checked_bins} -a {input.assembly} -bt_mtb {params.bin_table_mtb} -bt_mxb {params.bin_table_mxb} -p {input.pproteins} -o {params.dastool_dir} -se {params.search_eng} -t {params.threads} -db {params.dastool_db} -ID {params.sample} -log {rules.get_paths.input.logpath}
 
-
-
-##
-# RefineM bin refinement
-##
-#>refinem filter_bins <bin_dir> <outlier_output_dir>/outliers.tsv <filtered_output_dir>
-# rule bin_refinement:
-#     input:
-#         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
-#         assembly_map="{projectpath}/MIB_02-AssemblyMapping/{sample}.mapped.bam",
-#         check_dastool="{projectpath}/MIB_04-BinMerging/{sample}_DASTool_bins"
-#     output:
-#         directory("{projectpath}/MIB_05-BinRefinement/{sample}")
-#     params:
-#         dastool_bin_dir="{projectpath}/MIB_04-BinMerging/{sample}_DASTool_bins",
-#         threads=expand("{threads}", threads=config['threads']),
-#         sample="{sample}"
-#     shell:
-#         """
-#         python {rules.get_paths.input.holopath}/bin/holo-bin_refinement.py -a {input.assembly} -bam {input.assembly_map} -dastool_bd {params.dastool_bin_dir} -out_dir {output} -ID {params.sample} -t {params.threads} -log {rules.get_paths.input.logpath}
-#         """
+rule merge_coverM:
+    input:
+        expand("{projectpath}/MIB_04-BinMerging/{sample}_files/metawrap_70_10_bins.stats", sample=SAMPLE)
+    output:
+        coverm="{projectpath}/MIB_05-CoverM/coverM_all.txt",
+        covermdir=directory("{projectpath}/MIB_05-CoverM/")
+    params:
+        threads=expand("{threads}", threads=config['threads']),
+    shell:
+        """
+        touch {output.coverm}
+        """

@@ -81,7 +81,7 @@ def in_out_metagenomics(path,in_f):
     with open(in_f,'r') as in_file:
         # Define variables
         output_files=''
-        final_temp_dir="MIB_04-BinMerging"
+        final_temp_dir="MIB_05-CoverM"
         all_lines = in_file.readlines() # Read input.txt lines
 
         # remove empty lines
@@ -120,7 +120,7 @@ def in_out_metagenomics(path,in_f):
                     in_rev=line[2] # input reverse (read2) file
 
                     # Define input file
-                    in1=in_dir+'/'+sample_name+'_1.fastq'
+                    in1=in_dir+'/'+sample_name+'_1.fastq.gz'
                     # Check if input files already in desired dir
                     if os.path.isfile(in1) or os.path.isfile(in1+'.gz'):
                         pass
@@ -128,7 +128,7 @@ def in_out_metagenomics(path,in_f):
                         #If the file is not in the working directory, create soft link in it
                         if os.path.isfile(in_for):
                             if in_for.endswith('.gz'):# if compressed, decompress in standard dir with std ID
-                                read1Cmd = 'ln -s '+in_for+' '+in1+'.gz && gunzip -c '+in1+'.gz > '+in1+''
+                                read1Cmd = 'ln -s '+in_for+' '+in1+'.gz
                                 subprocess.Popen(read1Cmd, shell=True).wait()
                             else:
                                 read1Cmd = 'ln -s '+in_for+' '+in1+''
@@ -137,7 +137,7 @@ def in_out_metagenomics(path,in_f):
 
 
                     # Define input file
-                    in2=in_dir+'/'+sample_name+'_2.fastq'
+                    in2=in_dir+'/'+sample_name+'_2.fastq.gz'
                     # Check if input files already in desired dir
                     if os.path.isfile(in2) or os.path.isfile(in2+'.gz'):
                         pass
@@ -145,14 +145,14 @@ def in_out_metagenomics(path,in_f):
                         #If the file is not in the working directory, transfer it
                         if os.path.isfile(in_rev):
                             if in_for.endswith('.gz'):
-                                read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz && gunzip -c '+in2+'.gz > '+in2+''
+                                read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz
                                 subprocess.Popen(read2Cmd, shell=True).wait()
                             else:
                                 read2Cmd = 'ln -s '+in_rev+' '+in2+''
                                 subprocess.Popen(read2Cmd, shell=True).wait()
 
 
-                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
+                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_CoverM ")
 
 
         else: # the input directory already exists and is full, don't want to create it again, just re-run from last step
@@ -165,7 +165,7 @@ def in_out_metagenomics(path,in_f):
                     in_for=line[1]
                     in_rev=line[2]
 
-                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_DASTool_files ")
+                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_CoverM ")
 
 
 
