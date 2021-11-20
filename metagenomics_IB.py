@@ -152,7 +152,7 @@ def in_out_metagenomics(path,in_f):
                                 subprocess.Popen(read2Cmd, shell=True).wait()
 
 
-                output_files+=(path+"/"+final_temp_dir+"/""coverM_all.txt")
+                output_files+=(path+"/"+final_temp_dir+"/""coverM_all.txt ")
 
 
         else: # the input directory already exists and is full, don't want to create it again, just re-run from last step
@@ -165,7 +165,7 @@ def in_out_metagenomics(path,in_f):
                     in_for=line[1]
                     in_rev=line[2]
 
-                output_files+=(path+"/"+final_temp_dir+"/""coverM_all.txt")
+                output_files+=(path+"/"+final_temp_dir+"/""coverM_all.txt ")
 
 
 
@@ -188,7 +188,7 @@ def run_metagenomics(in_f, path, config, cores):
     log_file.write("Have a nice run!\n\t\tHOLOFOW Metagenomics-IndividualBinning starting")
     log_file.close()
 
-    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
+    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+path+'"/"'+final_temp_dir+'"/""coverM_all.txt" --configfile '+config+' --cores '+cores+''
     subprocess.check_call(mtg_snk_Cmd, shell=True)
 
     log_file = open(str(log),'a+')
