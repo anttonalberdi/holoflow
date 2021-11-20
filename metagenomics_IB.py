@@ -190,7 +190,7 @@ def run_metagenomics(in_f, path, config, cores):
     log_file.write("Have a nice run!\n\t\tHOLOFOW Metagenomics-IndividualBinning starting")
     log_file.close()
 
-    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+path+'/'+final_temp_dir+'/coverM_all.txt"  --configfile '+config+' --cores '+cores+''
+    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+path+'/'+final_temp_dir+'/coverM_all.txt --configfile '+config+' --cores '+cores+''
     subprocess.check_call(mtg_snk_Cmd, shell=True)
 
     log_file = open(str(log),'a+')
