@@ -30,7 +30,6 @@ rule assembly:
         out_dir="{projectpath}/MIB_01-Assembly/{sample}_assembly",
         temp_assembly="{projectpath}/MIB_01-Assembly/{sample}_assembly/temp_assembly.fa",
         sample="{sample}"
-
     shell:
         """
         python {rules.get_paths.input.holopath}/bin/holo-assembly.py \

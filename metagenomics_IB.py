@@ -128,7 +128,7 @@ def in_out_metagenomics(path,in_f):
                         #If the file is not in the working directory, create soft link in it
                         if os.path.isfile(in_for):
                             if in_for.endswith('.gz'):# if compressed, decompress in standard dir with std ID
-                                read1Cmd = 'ln -s '+in_for+' '+in1+'.gz
+                                read1Cmd = 'ln -s '+in_for+' '+in1+'.gz'
                                 subprocess.Popen(read1Cmd, shell=True).wait()
                             else:
                                 read1Cmd = 'ln -s '+in_for+' '+in1+''
@@ -145,7 +145,7 @@ def in_out_metagenomics(path,in_f):
                         #If the file is not in the working directory, transfer it
                         if os.path.isfile(in_rev):
                             if in_for.endswith('.gz'):
-                                read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz
+                                read2Cmd = 'ln -s '+in_rev+' '+in2+'.gz'
                                 subprocess.Popen(read2Cmd, shell=True).wait()
                             else:
                                 read2Cmd = 'ln -s '+in_rev+' '+in2+''
