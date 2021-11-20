@@ -132,7 +132,7 @@ rule metaWRAP_binning:
         concoct=directory("{projectpath}/MIB_03-Binning/{sample}/concoct_bins"),
         maxbin2=directory("{projectpath}/MIB_03-Binning/{sample}/maxbin2_bins"),
         metabat2=directory("{projectpath}/MIB_03-Binning/{sample}/metabat2_bins"),
-        coverm="{projectpath}/MIB_03-Binning/{sample}/coverM.txt")
+        coverm="{projectpath}/MIB_03-Binning/{sample}/coverM.txt"
     params:
         assembly="{projectpath}/MIB_01-Assembly/{sample}.fa",
         readfolder="{projectpath}/MIB_02-AssemblyMapping/{sample}",
