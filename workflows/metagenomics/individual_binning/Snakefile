@@ -212,8 +212,7 @@ rule merge_coverM:
         covermdir=directory("{projectpath}/MIB_05-CoverM")
     params:
         threads=expand("{threads}", threads=config['threads']),
-        job=expand("{job}", job=config['job']),
     shell:
         """
-        touch {output.covermdir}/{params.job}/coverM_{params.job}.txt
+        touch {output.coverm}
         """
