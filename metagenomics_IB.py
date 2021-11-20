@@ -152,7 +152,7 @@ def in_out_metagenomics(path,in_f):
                                 subprocess.Popen(read2Cmd, shell=True).wait()
 
 
-                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_CoverM ")
+                output_files+=(path+"/"+final_temp_dir+"/""coverM_all.txt")
 
 
         else: # the input directory already exists and is full, don't want to create it again, just re-run from last step
@@ -165,7 +165,7 @@ def in_out_metagenomics(path,in_f):
                     in_for=line[1]
                     in_rev=line[2]
 
-                output_files+=(path+"/"+final_temp_dir+"/"+sample_name+"_CoverM ")
+                output_files+=(path+"/"+final_temp_dir+"/""coverM_all.txt")
 
 
 
