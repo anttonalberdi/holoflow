@@ -23,6 +23,8 @@ path=args.work_dir
 cores=args.threads
 job=args.job
 
+final_temp_dir="MIB_05-CoverM"
+
     # retrieve current directory
 file = os.path.dirname(sys.argv[0])
 curr_dir = os.path.abspath(file)
@@ -188,7 +190,7 @@ def run_metagenomics(in_f, path, config, cores):
     log_file.write("Have a nice run!\n\t\tHOLOFOW Metagenomics-IndividualBinning starting")
     log_file.close()
 
-    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+out_files+' --configfile '+config+' --cores '+cores+''
+    mtg_snk_Cmd = 'snakemake -s '+path_snkf+' -k '+path+'"/"'+final_temp_dir+'"/"'+job+'"/""coverM_all.txt"  --configfile '+config+' --cores '+cores+''
     subprocess.check_call(mtg_snk_Cmd, shell=True)
 
     log_file = open(str(log),'a+')
