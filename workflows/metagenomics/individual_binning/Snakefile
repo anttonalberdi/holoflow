@@ -206,7 +206,7 @@ rule metawrap_refinement:
 
 rule merge_coverM:
     input:
-        expand("{projectpath}/MIB_04-BinMerging/{sample}_files/metawrap_70_10_bins.stats")
+        expand("{{projectpath}}/MIB_04-BinMerging/{sample}_files/metawrap_70_10_bins.stats")
     output:
         coverm="{projectpath}/MIB_05-CoverM/coverM_all.txt",
         covermdir=directory("{projectpath}/MIB_05-CoverM")
