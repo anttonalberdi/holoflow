@@ -101,7 +101,7 @@ def in_out_metagenomics(path,in_f):
         read2_files=''
         list_read2=list()
         output_files=''
-        final_temp_dir="MCB_04-BinMerging"
+        final_temp_dir="MCB_05-CoverM"
 
         all_lines = in_file.readlines() # Read input.txt lines
         # remove empty lines
@@ -308,7 +308,7 @@ def run_metagenomics(in_f, path, config, cores):
     out_files = in_out_metagenomics(path,in_f)
     curr_dir = os.path.dirname(sys.argv[0])
     holopath = os.path.abspath(curr_dir)
-    path_snkf = os.path.join(holopath,'workflows/metagenomics/coassembly_binning/Snakefile')
+    path_snkf = os.path.join(holopath,'workflows/metagenomics/coassembly_binning/Snakefile_temp.snakefile')
 
     # Run snakemake
     log_file=open(str(log),'w+')
