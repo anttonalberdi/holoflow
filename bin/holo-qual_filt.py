@@ -97,6 +97,7 @@ if not (lowcomplexfilt == "true"):
             --in1 '+read1i+' --in2 '+read2i+' \
             --out1 '+read1o+' --out2 '+read2o+' \
             --trim_poly_g \
+            --trim_poly_x \
             --n_base_limit '+maxns+' \
             --qualified_quality_phred '+minq+' \
             --length_required '+minlen+'\
@@ -114,6 +115,7 @@ if not (lowcomplexfilt == "true"):
             --in1 '+read1i+' --in2 '+read2i+' \
             --out1 '+read1o+' --out2 '+read2o+' \
             --trim_poly_g \
+            --trim_poly_x \
             --n_base_limit '+maxns+' \
             --qualified_quality_phred '+minq+' \
             --length_required '+minlen+'\
@@ -130,6 +132,7 @@ else:
             --in1 '+read1i+' --in2 '+read2i+' \
             --out1 '+read1o+' --out2 '+read2o+' \
             --trim_poly_g \
+            --trim_poly_x \
             --n_base_limit '+maxns+' \
             --qualified_quality_phred '+minq+' \
             --length_required '+minlen+'\
@@ -149,6 +152,7 @@ else:
             --in1 '+read1i+' --in2 '+read2i+' \
             --out1 '+read1o+' --out2 '+read2o+' \
             --trim_poly_g \
+            --trim_poly_x \
             --n_base_limit '+maxns+' \
             --qualified_quality_phred '+minq+' \
             --length_required '+minlen+'\
