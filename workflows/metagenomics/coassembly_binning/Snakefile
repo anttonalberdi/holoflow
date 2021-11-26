@@ -197,7 +197,7 @@ rule metawrap_refinement:
             -c 70 \
             -x 10
         # Rename metawrap bins to match coassembly group:
-        sed -i'' '2,$s/bin/bin_{params.group}/g' {output.stats}
+        sed -i'' '2,$s/bin/{params.group}_bin/g' {output.stats}
         """
 
 
@@ -240,7 +240,7 @@ rule coverm:
 
         for group in {params.groups}; \
             do for bin in "$group"_files/metawrap_70_10_bins/*.fa; \
-                do cp $bin {params.all_mw}/All_metawrap_70_10_bins/$(basename ${{bin/bin./bin_"${{group/_files/}}".}}); \
+                do cp $bin {params.all_mw}/All_metawrap_70_10_bins/$(basename ${{bin/bin./"${{group/_files/}}"_bin.}}); \
                     done; \
                         done
         """
