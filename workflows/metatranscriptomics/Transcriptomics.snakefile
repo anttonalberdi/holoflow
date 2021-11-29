@@ -120,7 +120,7 @@ rule STAR_host_mapping:
             --runThreadN {threads} \
             --genomeDir {params.host_genome} \
             --readFilesIn {input.r1i} {input.r2i} \
-            --outFileNamePrefix {sample} \
+            --outFileNamePrefix {wildcards.sample} \
             --outSAMtype BAM Unsorted \
             --outReadsUnmapped Fastx \
             --readFilesCommand zcat \
