@@ -95,8 +95,8 @@ rule STAR_host_mapping:
         r1i = "2_Reads/1_Trimmed/{sample}_trimmed_1.fastq.gz",
         r2i = "2_Reads/1_Trimmed/{sample}_trimmed_2.fastq.gz"
     output:
-        non_host_r1 = "3_Outputs/1_Host_Mapping/{sample}_non_host_1.fastq.gz"
-        non_host_r2 = "3_Outputs/1_Host_Mapping/{sample}_non_host_2.fastq.gz"
+        non_host_r1 = "3_Outputs/1_Host_Mapping/{sample}_non_host_1.fastq.gz",
+        non_host_r2 = "3_Outputs/1_Host_Mapping/{sample}_non_host_2.fastq.gz",
         host_bam = "3_Outputs/1_Host_Mapping/{sample}_host.bam"
     params:
         r1rn = "2_Reads/1_Trimmed/{sample}_trimmed_1.fastq",
@@ -174,8 +174,8 @@ rule index_MAGs:
 ### Map non-host reads to DRAM genes files using Bowtie2
 rule bowtie2_mapping:
     input:
-        non_host_r1 = "3_Outputs/1_Host_Mapping/{sample}_non_host_1.fastq.gz"
-        non_host_r2 = "3_Outputs/1_Host_Mapping/{sample}_non_host_2.fastq.gz"
+        non_host_r1 = "3_Outputs/1_Host_Mapping/{sample}_non_host_1.fastq.gz",
+        non_host_r2 = "3_Outputs/1_Host_Mapping/{sample}_non_host_2.fastq.gz",
         bt2_index = "1_References/MAG_genes.rev.2.bt2l"
     output:
         mapped_bam = "3_Outputs/2_MAG_Gene_Mapping/{sample}.bam"
