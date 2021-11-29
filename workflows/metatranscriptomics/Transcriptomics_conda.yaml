@@ -6,7 +6,7 @@
  dependencies:
     - fastp=0.23.1
     - samtools=1.12
-    - bowtie2=2.7.4
+    - bowtie2=2.4.4
     - coverm=0.6.1
     - star=2.7.4
     - htseq=0.13.5
