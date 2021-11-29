@@ -21,7 +21,7 @@ print(SAMPLE)
 ### Setup the desired outputs
 rule all:
     input:
-
+        expand("3_Outputs/4_htseq_counts/{sample}_htseq_counts.txt", sample=SAMPLE)
 ################################################################################
 ### Filter reads with fastp
 rule fastp:
@@ -62,168 +62,157 @@ rule fastp:
         """
 ################################################################################
 ## Index host genomes:
-rule index_ref:
+# rule index_ref:
+#     input:
+#         "1_References"
+#     output:
+#         bt2_index = "1_References/CattedRefs.fna.gz.rev.2.bt2l",
+#         catted_ref = "1_References/CattedRefs.fna.gz"
+#     conda:
+#         "1_QC.yaml"
+#     threads:
+#         40
+#     log:
+#         "3_Outputs/0_Logs/host_genome_indexing.log"
+#     message:
+#         "Concatenating and indexing host genomes with Bowtie2"
+#     shell:
+#         """
+#         # Concatenate input reference genomes
+#         cat {input}/*.gz > {input}/CattedRefs.fna.gz
+#
+#         # Index catted genomes
+#         bowtie2-build \
+#             --large-index \
+#             --threads {threads} \
+#             {output.catted_ref} {output.catted_ref} \
+#         &> {log}
+#         """
+################################################################################
+### Map to host reference genome using STAR
+rule STAR_host_mapping:
+    input:
+        r1i = "2_Reads/1_Trimmed/{sample}_trimmed_1.fastq.gz",
+        r2i = "2_Reads/1_Trimmed/{sample}_trimmed_2.fastq.gz"
+    output:
+        non_host_r1 = "3_Outputs/1_Host_Mapping/{sample}_non_host_1.fastq.gz"
+        non_host_r2 = "3_Outputs/1_Host_Mapping/{sample}_non_host_2.fastq.gz"
+        host_bam = "3_Outputs/1_Host_Mapping/{sample}_host.bam"
+    params:
+        r1rn = "2_Reads/1_Trimmed/{sample}_trimmed_1.fastq",
+        r2rn = "2_Reads/1_Trimmed/{sample}_trimmed_2.fastq",
+        host_genome = "/home/projects/ku-cbd/people/antalb/holofood/chicken_transcriptomics/genome",
+    conda:
+        "Transcriptomics_conda.yaml"
+    threads:
+        10
+    benchmark:
+        "3_Outputs/0_Logs/{sample}_host_mapping.benchmark.tsv"
+    log:
+        "3_Outputs/0_Logs/{sample}_host_mapping.log"
+    message:
+        "Mapping {wildcards.sample} to host genome using STAR"
+    shell:
+        """
+        # Map reads to host genome using STAR
+        STAR \
+            --runMode alignReads \
+            --runThreadN {threads} \
+            --genomeDir {params.host_genome} \
+            --readFilesIn {input.r1i} {input.r2i} \
+            --outFileNamePrefix {sample} \
+            --outSAMtype BAM Unsorted \
+            --outReadsUnmapped Fastx \
+            --readFilesCommand zcat \
+            --quantMode GeneCounts \
+        &> {log} &&
+
+        # Rename files
+        mv {sample}Aligned.sortedByCoord.out.bam {output.host_bam}
+        mv {sample}Unmapped.out.mate1 {params.r1rn}
+        mv {sample}Unmapped.out.mate2 {params.r2rn}
+
+
+        # Compress non-host reads
+        pigz \
+            -p {threads}
+            {params.r1rn}
+
+        pigz \
+            -p {threads}
+            {params.r2rn}
+        """
+################################################################################
+## Index MAGs:
+rule index_MAGs:
     input:
         "1_References"
     output:
-        bt2_index = "1_References/CattedRefs.fna.gz.rev.2.bt2l",
-        catted_ref = "1_References/CattedRefs.fna.gz"
+        bt2_index = "1_References/MAG_genes.rev.2.bt2l",
+        MAG_genes = "1_References/MAG_genes.fna.gz"
     conda:
-        "1_QC.yaml"
+        "Transcriptomics_conda.yaml"
     threads:
         40
     log:
-        "3_Outputs/0_Logs/host_genome_indexing.log"
+        "3_Outputs/0_Logs/MAG_genes_bowtie2_indexing.log"
     message:
-        "Concatenating and indexing host genomes with Bowtie2"
+        "Indexing MAG catalogue with Bowtie2"
     shell:
         """
-        # Concatenate input reference genomes
-        cat {input}/*.gz > {input}/CattedRefs.fna.gz
+        # Rename MAG gene catalogue
+        cat {input}/*.gz > {input}/MAG_genes.fna.gz
 
-        # Index catted genomes
+        # Index MAG gene catalogue
         bowtie2-build \
             --large-index \
             --threads {threads} \
-            {output.catted_ref} {output.catted_ref} \
+            {output.MAG_genes} {output.MAG_genes} \
         &> {log}
         """
 ################################################################################
-### Map a sample's reads to it corresponding assembly
-rule assembly_mapping:
+### Map non-host reads to DRAM genes files using Bowtie2
+rule bowtie2_mapping:
     input:
-        bt2_index = "3_Outputs/2_Assemblies/{sample}_contigs.fasta.rev.2.bt2l"
+        non_host_r1 = "3_Outputs/1_Host_Mapping/{sample}_non_host_1.fastq.gz"
+        non_host_r2 = "3_Outputs/1_Host_Mapping/{sample}_non_host_2.fastq.gz"
+        bt2_index = "1_References/MAG_genes.rev.2.bt2l"
     output:
-        mapped_bam = "3_Outputs/3_Assembly_Mapping/BAMs/{sample}.bam"
+        mapped_bam = "3_Outputs/2_MAG_Gene_Mapping/{sample}.bam"
     params:
-        assembly = "3_Outputs/2_Assemblies/{sample}_contigs.fasta",
-        r1 = "2_Reads/3_Host_removed/{sample}_non_host_1.fastq.gz",
-        r2 = "2_Reads/3_Host_removed/{sample}_non_host_2.fastq.gz"
+        MAG_genes = "1_References/MAG_genes.fna.gz"
     conda:
-        "2_Assembly_Binning.yaml"
+        "Transcriptomics_conda.yaml"
     threads:
         8
     benchmark:
-        "3_Outputs/0_Logs/{sample}_assembly_mapping.benchmark.tsv"
+        "3_Outputs/0_Logs/{sample}_MAG_genes_mapping.benchmark.tsv"
     log:
-        "3_Outputs/0_Logs/{sample}_assembly_mapping.log"
+        "3_Outputs/0_Logs/{sample}_MAG_genes_mapping.log"
     message:
-        "Mapping {wildcards.sample} to its assembly using Bowtie2"
+        "Mapping {wildcards.sample} to MAG genes using Bowtie2"
     shell:
         """
-        # Map reads to assembly using Bowtie2
+        # Map reads to MAGs using Bowtie2
         bowtie2 \
             --time \
             --threads {threads} \
-            -x {params.assembly} \
-            -1 {params.r1} \
-            -2 {params.r2} \
-        | samtools sort -@ {threads} -o {output.mapped_bam}
+            -x {params.MAG_genes} \
+            -1 {input.non_host_r1} \
+            -2 {input.non_host_r2} \
+        | samtools sort -@ {threads} -o {output.mapped_bam} \
+        &> {log}
         """
 ################################################################################
-### Bin each sample's contigs using metaWRAP's binning module
-rule metaWRAP_binning:
+### Calculate the number of reads that mapped to MAG catalogue genes with CoverM
+rule coverM_MAG_genes:
     input:
-        "3_Outputs/3_Assembly_Mapping/BAMs/{sample}.bam"
+        mapped_bam = "3_Outputs/2_MAG_Gene_Mapping/{sample}.bam",
+        MAG_genes = "1_References/MAG_genes.fna.gz"
     output:
-        concoct = directory("3_Outputs/4_Binning/{sample}/concoct_bins"),
-        maxbin2 = directory("3_Outputs/4_Binning/{sample}/maxbin2_bins"),
-        metabat2 = directory("3_Outputs/4_Binning/{sample}/metabat2_bins")
-    params:
-        outdir = "3_Outputs/4_Binning/{sample}",
-        assembly = "3_Outputs/2_Assemblies/{sample}_contigs.fasta",
-        basename = "3_Outputs/3_Assembly_Mapping/BAMs/{sample}",
-        memory = "180"
+        "3_Outputs/3_CoverM/{sample}_coverM.txt"
     conda:
-        "2_MetaWRAP.yaml"
-    threads:
-        40
-    benchmark:
-        "3_Outputs/0_Logs/{sample}_assembly_binning.benchmark.tsv"
-    log:
-        "3_Outputs/0_Logs/{sample}_assembly_binning.log"
-    message:
-        "Binning {wildcards.sample} contigs with MetaWRAP (concoct, maxbin2, metabat2)"
-    shell:
-        """
-        # Create dummy fastq/assembly files to trick metaWRAP into running without mapping
-        mkdir {params.outdir}/work_files
-
-        touch {params.outdir}/work_files/assembly.fa.bwt
-
-        echo "@" > {params.outdir}/work_files/$(basename {params.basename}_1.fastq)
-        echo "@" > {params.outdir}/work_files/$(basename {params.basename}_2.fastq)
-
-        #Symlink BAMs for metaWRAP
-        ln -s `pwd`/{input} {params.outdir}/work_files/$(basename {input})
-
-        # Run metaWRAP binning
-        metawrap binning -o {params.outdir} \
-            -t {threads} \
-            -m {params.memory} \
-            -a {params.assembly} \
-            --metabat2 \
-            --maxbin2 \
-            --concoct \
-        {params.outdir}/work_files/*_1.fastq {params.outdir}/work_files/*_2.fastq
-        """
-################################################################################
-### Automatically refine bins using metaWRAP's refinement module
-rule metaWRAP_refinement:
-    input:
-        concoct = "3_Outputs/4_Binning/{sample}/concoct_bins",
-        maxbin2 = "3_Outputs/4_Binning/{sample}/maxbin2_bins",
-        metabat2 = "3_Outputs/4_Binning/{sample}/metabat2_bins",
-    output:
-        stats = "3_Outputs/5_Refined_Bins/{sample}_metawrap_70_10_bins.stats",
-        contigmap = "3_Outputs/5_Refined_Bins/{sample}_metawrap_70_10_bins.contigs"
-    params:
-        outdir = "3_Outputs/5_Refined_Bins/{sample}",
-        memory = "180",
-        sample = "{sample}"
-    conda:
-        "2_MetaWRAP.yaml"
-    threads:
-        40
-    benchmark:
-        "3_Outputs/0_Logs/{sample}_assembly_bin_refinement.benchmark.tsv"
-    log:
-        "3_Outputs/0_Logs/{sample}_assembly_bin_refinement.log"
-    message:
-        "Refining {wildcards.sample} bins with MetaWRAP's bin refinement module"
-    shell:
-        """
-        # Setup checkM path
-        printf "/home/projects/ku-cbd/people/rapeis/0_DBs/CHECKM" | checkm data setRoot
-
-        metawrap bin_refinement \
-            -m {params.memory} \
-            -t {threads} \
-            -o {params.outdir} \
-            -A {input.concoct} \
-            -B {input.maxbin2} \
-            -C {input.metabat2} \
-            -c 70 \
-            -x 10
-
-        # Rename metawrap bins to match coassembly group:
-        cp {params.outdir}/metawrap_70_10_bins.stats {output.stats}
-        cp {params.outdir}/metawrap_70_10_bins.contigs {output.contigmap}
-        sed -i'' '2,$s/bin/bin_{params.sample}/g' {output.stats}
-        sed -i'' 's/bin/bin_{params.sample}/g' {output.contigmap}
-        """
-################################################################################
-### Calculate the number of reads that mapped to coassemblies
-rule coverM_assembly:
-    input:
-        stats = "3_Outputs/5_Refined_Bins/{sample}_metawrap_70_10_bins.stats",
-        assembly = "3_Outputs/2_Assemblies/{sample}_contigs.fasta",
-        mapped_bam = "3_Outputs/3_Assembly_Mapping/BAMs/{sample}.bam"
-    output:
-        "3_Outputs/6_CoverM/{sample}_coverM.txt"
-    params:
-    conda:
-        "2_Assembly_Binning.yaml"
+        "Transcriptomics_conda.yaml"
     threads:
         8
     benchmark:
@@ -231,14 +220,71 @@ rule coverM_assembly:
     log:
         "3_Outputs/0_Logs/{sample}_coverM.log"
     message:
-        "Calculating assembly mapping rate for {wildcards.sample} with CoverM"
+        "Calculating MAG gene mapping rate for {wildcards.sample} with CoverM"
     shell:
         """
         coverm genome \
             -b {input.mapped_bam} \
-            --genome-fasta-files {input.assembly} \
-            -m relative_abundance \
+            --genome-fasta-files {input.MAG_genes} \
+            -m count \
             -t {threads} \
             --min-covered-fraction 0 \
-            > {output}
+            > {output} \
+            &> {log}
+        """
+################################################################################
+### Convert MAG gene catalogue GFF to GTF
+rule covert_gff_to_gtf:
+    input:
+        expand("3_Outputs/3_CoverM/{sample}_coverM.txt", sample=SAMPLE)
+    output:
+        "3_Outputs/4_htseq_counts/MAG_genes.gtf"
+    params:
+        gff = "1_References/",
+    conda:
+        "Transcriptomics_conda.yaml"
+    threads:
+        8
+    benchmark:
+        "3_Outputs/0_Logs/convert_to_gtf.benchmark.tsv"
+    log:
+        "3_Outputs/0_Logs/convert_to_gtf.log"
+    message:
+        "Converting GFF to GTF"
+    shell:
+        """
+        gffread \
+            {params.gff}*.gff \
+            -T \
+            -o {output.gtf} \
+        &> {log}
+        """
+################################################################################
+### Generate count data using htseq
+rule htseq_count:
+    input:
+        gtf = "3_Outputs/4_htseq_counts/MAG_genes.gtf",
+        mapped_bam = "3_Outputs/2_MAG_Gene_Mapping/{sample}.bam",
+    output:
+        "3_Outputs/4_htseq_counts/{sample}_htseq_counts.txt"
+    params:
+        ""
+    conda:
+        "Transcriptomics_conda.yaml"
+    threads:
+        8
+    benchmark:
+        "3_Outputs/0_Logs/{sample}_htseq_count.benchmark.tsv"
+    log:
+        "3_Outputs/0_Logs/{sample}_htseq_count.log"
+    message:
+        "Generating count info for {wildcards.sample} with htseq-count"
+    shell:
+        """
+        htseq-count \
+            -m intersection-nonempty \
+            --stranded=yes \
+            {input.mapped_bam} \
+            {input.gtf}
+            &> {log}
         """

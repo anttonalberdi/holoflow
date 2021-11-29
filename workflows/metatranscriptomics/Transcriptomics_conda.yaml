@@ -1,4 +1,4 @@
- name: Assembly_Binning
+ name: Transcriptomics
  channels:
     - conda-forge
     - bioconda
@@ -8,3 +8,7 @@
     - samtools=1.12
     - bowtie2=2.4.4
     - coverm=0.6.1
+    - star=2.7.9
+    - htseq=0.13.5
+    - cufflinks=2.2.1
+    - pigz=2.6
