@@ -266,7 +266,7 @@ rule coverM_MAG_genes:
 ### Generate count data using htseq
 rule htseq_count:
     input:
-#        gtf = "1_References/MAG_genes.gtf"
+        gff = "1_References/genes.gff",
         mapped_bam = expand("3_Outputs/2_MAG_Gene_Mapping/{sample}.bam", sample=SAMPLE)
     output:
         "3_Outputs/4_htseq_counts/{sample}_htseq_counts.txt"
@@ -295,6 +295,6 @@ rule htseq_count:
             --stranded=yes \
             -n 40 \
             {input.mapped_bam} \
-            {input.gtf} \
+            {input.gff} \
             > {output}
         """
