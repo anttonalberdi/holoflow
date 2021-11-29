@@ -128,9 +128,9 @@ rule STAR_host_mapping:
         &> {log} &&
 
         # Rename files
-        mv {sample}Aligned.sortedByCoord.out.bam {output.host_bam}
-        mv {sample}Unmapped.out.mate1 {params.r1rn}
-        mv {sample}Unmapped.out.mate2 {params.r2rn}
+        mv {wildcards.sample}Aligned.sortedByCoord.out.bam {output.host_bam}
+        mv {wildcards.sample}Unmapped.out.mate1 {params.r1rn}
+        mv {wildcards.sample}Unmapped.out.mate2 {params.r2rn}
 
 
         # Compress non-host reads
