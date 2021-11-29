@@ -105,7 +105,7 @@ rule STAR_host_mapping:
     conda:
         "Transcriptomics_conda.yaml"
     threads:
-        10
+        40
     benchmark:
         "3_Outputs/0_Logs/{sample}_host_mapping.benchmark.tsv"
     log:
