@@ -151,8 +151,8 @@ rule index_MAGs:
     input:
         "1_References/genes.fna.gz"
     output:
-        bt2_index = "1_References/MAG_genes.fna.gz.rev.2.bt2l",
-        MAG_genes = "1_References/MAG_genes.fna.gz"
+        bt2_index = "1_References/MAG_genes.fna.rev.2.bt2l",
+        MAG_genes = "1_References/MAG_genes.fna"
     conda:
         "Transcriptomics_conda.yaml"
     threads:
@@ -179,11 +179,11 @@ rule bowtie2_mapping:
     input:
         non_host_r1 = "3_Outputs/1_Host_Mapping/{sample}_non_host_1.fastq.gz",
         non_host_r2 = "3_Outputs/1_Host_Mapping/{sample}_non_host_2.fastq.gz",
-        bt2_index = "1_References/MAG_genes.fna.gz.rev.2.bt2l"
+        bt2_index = "1_References/MAG_genes.fna.rev.2.bt2l"
     output:
         mapped_bam = "3_Outputs/2_MAG_Gene_Mapping/{sample}.bam"
     params:
-        MAG_genes = "1_References/MAG_genes.fna.gz"
+        MAG_genes = "1_References/MAG_genes.fna"
     conda:
         "Transcriptomics_conda.yaml"
     threads:
@@ -211,7 +211,7 @@ rule bowtie2_mapping:
 rule coverM_MAG_genes:
     input:
         mapped_bam = "3_Outputs/2_MAG_Gene_Mapping/{sample}.bam",
-        MAG_genes = "1_References/MAG_genes.fna.gz"
+        MAG_genes = "1_References/MAG_genes.fna"
     output:
         "3_Outputs/3_CoverM/{sample}_coverM.txt"
     conda:
@@ -228,7 +228,7 @@ rule coverM_MAG_genes:
         """
         coverm genome \
             -b {input.mapped_bam} \
-            --genome-fasta-files {input.MAG_genes} \
+            -s _ \
             -m count \
             -t {threads} \
             --min-covered-fraction 0 \
