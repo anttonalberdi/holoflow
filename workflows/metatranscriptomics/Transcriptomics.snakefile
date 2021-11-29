@@ -256,7 +256,7 @@ rule covert_gff_to_gtf:
         gffread \
             {params.gff} \
             -T \
-            -o {output.gtf} \
+            -o {output} \
         &> {log}
         """
 ################################################################################
