@@ -146,7 +146,7 @@ rule STAR_host_mapping:
 ## Index MAGs:
 rule index_MAGs:
     input:
-        "1_References"
+        "1_References/genes.fna.gz"
     output:
         bt2_index = "1_References/MAG_genes.rev.2.bt2l",
         MAG_genes = "1_References/MAG_genes.fna.gz"
@@ -161,7 +161,7 @@ rule index_MAGs:
     shell:
         """
         # Rename MAG gene catalogue
-        cat {input}/*.gz > {input}/MAG_genes.fna.gz
+        mv {input} {output.MAG_genes}
 
         # Index MAG gene catalogue
         bowtie2-build \
@@ -240,7 +240,7 @@ rule covert_gff_to_gtf:
     output:
         "3_Outputs/4_htseq_counts/MAG_genes.gtf"
     params:
-        gff = "1_References/",
+        gff = "1_References/genes.gff.gz",
     conda:
         "Transcriptomics_conda.yaml"
     threads:
@@ -254,7 +254,7 @@ rule covert_gff_to_gtf:
     shell:
         """
         gffread \
-            {params.gff}*.gff \
+            {params.gff} \
             -T \
             -o {output.gtf} \
         &> {log}
