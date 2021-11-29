@@ -287,7 +287,7 @@ rule htseq_count:
         # Index BAM with samtools
         samtools index \
             -@ {threads} \
-            {intput.mapped_bam}
+            {input.mapped_bam}
 
         # Note, htseq-count is not multithreaded, but can run in parallel with -n
         htseq-count \
