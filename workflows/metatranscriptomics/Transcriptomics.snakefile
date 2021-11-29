@@ -267,7 +267,7 @@ rule coverM_MAG_genes:
 rule htseq_count:
     input:
 #        gtf = "1_References/MAG_genes.gtf"
-        mapped_bam = expand("3_Outputs/2_MAG_Gene_Mapping/{sample}.bam", sample=SMAPLE)
+        mapped_bam = expand("3_Outputs/2_MAG_Gene_Mapping/{sample}.bam", sample=SAMPLE)
     output:
         "3_Outputs/4_htseq_counts/{sample}_htseq_counts.txt"
     params:
