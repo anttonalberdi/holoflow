@@ -179,7 +179,7 @@ rule bowtie2_mapping:
     input:
         non_host_r1 = "3_Outputs/1_Host_Mapping/{sample}_non_host_1.fastq.gz",
         non_host_r2 = "3_Outputs/1_Host_Mapping/{sample}_non_host_2.fastq.gz",
-        bt2_index = "1_References/MAG_genes.rev.2.bt2l"
+        bt2_index = "1_References/MAG_genes.fna.gz.rev.2.bt2l"
     output:
         mapped_bam = "3_Outputs/2_MAG_Gene_Mapping/{sample}.bam"
     params:
@@ -187,7 +187,7 @@ rule bowtie2_mapping:
     conda:
         "Transcriptomics_conda.yaml"
     threads:
-        8
+        10
     benchmark:
         "3_Outputs/0_Logs/{sample}_MAG_genes_mapping.benchmark.tsv"
     log:
