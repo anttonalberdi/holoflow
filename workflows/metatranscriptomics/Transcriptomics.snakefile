@@ -101,6 +101,8 @@ rule STAR_host_mapping:
     params:
         r1rn = "2_Reads/1_Trimmed/{sample}_non_host_1.fastq",
         r2rn = "2_Reads/1_Trimmed/{sample}_non_host_2.fastq",
+        gene_counts = "3_Outputs/1_Host_Mapping/{sample}_read_counts.tsv",
+        sj = "3_Outputs/1_Host_Mapping/{sample}_SJ.tsv",
         host_genome = "/home/projects/ku-cbd/people/antalb/holofood/chicken_transcriptomics/genome",
     conda:
         "Transcriptomics_conda.yaml"
@@ -128,10 +130,11 @@ rule STAR_host_mapping:
         &> {log}
 
         # Rename files
-        mv {wildcards.sample}Aligned.sortedByCoord.out.bam {output.host_bam}
+        mv {wildcards.sample}Aligned.out.bam {output.host_bam}
+        mv {wildcards.sample}ReadsPerGene.out.tab {params.gene_counts}
+        mv {wildcards.sample}SJ.out.tab {params.sj}
         mv {wildcards.sample}Unmapped.out.mate1 {params.r1rn}
         mv {wildcards.sample}Unmapped.out.mate2 {params.r2rn}
-
 
         # Compress non-host reads
         pigz \
