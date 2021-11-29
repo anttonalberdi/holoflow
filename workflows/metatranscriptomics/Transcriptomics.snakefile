@@ -243,7 +243,7 @@ rule covert_gff_to_gtf:
     output:
         "3_Outputs/4_htseq_counts/MAG_genes.gtf"
     params:
-        gff = "1_References/genes.gff.gz",
+        gff = "1_References/genes.gff",
     conda:
         "Transcriptomics_conda.yaml"
     threads:
