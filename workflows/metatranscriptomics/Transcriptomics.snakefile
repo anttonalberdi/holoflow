@@ -138,11 +138,11 @@ rule STAR_host_mapping:
 
         # Compress non-host reads
         pigz \
-            -p {threads}
+            -p {threads} \
             {params.r1rn}
 
         pigz \
-            -p {threads}
+            -p {threads} \
             {params.r2rn}
         """
 ################################################################################
