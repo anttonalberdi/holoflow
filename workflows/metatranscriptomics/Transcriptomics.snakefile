@@ -151,7 +151,7 @@ rule index_MAGs:
     input:
         "1_References/genes.fna.gz"
     output:
-        bt2_index = "1_References/MAG_genes.rev.2.bt2l",
+        bt2_index = "1_References/MAG_genes.fna.gz.rev.2.bt2l",
         MAG_genes = "1_References/MAG_genes.fna.gz"
     conda:
         "Transcriptomics_conda.yaml"
