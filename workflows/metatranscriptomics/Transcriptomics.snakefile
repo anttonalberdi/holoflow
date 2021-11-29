@@ -237,37 +237,37 @@ rule coverM_MAG_genes:
         """
 ################################################################################
 ### Convert MAG gene catalogue GFF to GTF
-rule covert_gff_to_gtf:
-    input:
-        expand("3_Outputs/3_CoverM/{sample}_coverM.txt", sample=SAMPLE)
-    output:
-        "3_Outputs/4_htseq_counts/MAG_genes.gtf"
-    params:
-        gff = "1_References/genes.gff",
-    conda:
-        "Transcriptomics_conda.yaml"
-    threads:
-        8
-    benchmark:
-        "3_Outputs/0_Logs/convert_to_gtf.benchmark.tsv"
-    log:
-        "3_Outputs/0_Logs/convert_to_gtf.log"
-    message:
-        "Converting GFF to GTF"
-    shell:
-        """
-        gffread \
-            {params.gff} \
-            -T \
-            -o {output} \
-        &> {log}
-        """
+# rule covert_gff_to_gtf:
+#     input:
+#         expand("3_Outputs/3_CoverM/{sample}_coverM.txt", sample=SAMPLE)
+#     output:
+#         "1_References/MAG_genes.gtf"
+#     params:
+#         gff = "1_References/genes.gff",
+#     conda:
+#         "Transcriptomics_conda.yaml"
+#     threads:
+#         8
+#     benchmark:
+#         "3_Outputs/0_Logs/convert_to_gtf.benchmark.tsv"
+#     log:
+#         "3_Outputs/0_Logs/convert_to_gtf.log"
+#     message:
+#         "Converting GFF to GTF"
+#     shell:
+#         """
+#         gffread \
+#             {params.gff} \
+#             -T \
+#             -o {output} \
+#         &> {log}
+#         """
 ################################################################################
 ### Generate count data using htseq
 rule htseq_count:
     input:
-        gtf = "3_Outputs/4_htseq_counts/MAG_genes.gtf",
-        mapped_bam = "3_Outputs/2_MAG_Gene_Mapping/{sample}.bam",
+#        gtf = "1_References/MAG_genes.gtf"
+        mapped_bam = expand("3_Outputs/2_MAG_Gene_Mapping/{sample}.bam")
     output:
         "3_Outputs/4_htseq_counts/{sample}_htseq_counts.txt"
     params:
@@ -275,7 +275,7 @@ rule htseq_count:
     conda:
         "Transcriptomics_conda.yaml"
     threads:
-        8
+        40
     benchmark:
         "3_Outputs/0_Logs/{sample}_htseq_count.benchmark.tsv"
     log:
@@ -284,10 +284,17 @@ rule htseq_count:
         "Generating count info for {wildcards.sample} with htseq-count"
     shell:
         """
+        # Index BAM with samtools
+        samtools index \
+            -@ {threads} \
+            {intput.mapped_bam}
+
+        # Note, htseq-count is not multithreaded, but can run in parallel with -n
         htseq-count \
             -m intersection-nonempty \
             --stranded=yes \
+            -n 40 \
             {input.mapped_bam} \
-            {input.gtf}
-            &> {log}
+            {input.gtf} \
+            > {output}
         """
