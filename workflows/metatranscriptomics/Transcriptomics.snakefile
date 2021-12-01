@@ -227,7 +227,7 @@ rule coverM_MAG_genes:
         """
         # Get overall mapping rate
         coverm genome \
-            -b {input.bam} \
+            -b {input} \
             -s _ \
             -m relative_abundance \
             -t {threads} \
@@ -236,7 +236,7 @@ rule coverM_MAG_genes:
 
         # Get counts to specific genes too:
         coverm contig \
-            -b {input.bam} \
+            -b {input} \
             -m count \
             -t {threads} \
             --proper-pairs-only \
