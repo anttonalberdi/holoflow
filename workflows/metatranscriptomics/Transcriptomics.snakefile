@@ -221,10 +221,6 @@ rule coverM_MAG_genes:
         "Transcriptomics_conda.yaml"
     threads:
         8
-    benchmark:
-        "3_Outputs/0_Logs/{sample}_coverM.benchmark.tsv"
-    log:
-        "3_Outputs/0_Logs/{sample}_coverM.log"
     message:
         "Calculating MAG gene mapping rate for {wildcards.sample} with CoverM"
     shell:
