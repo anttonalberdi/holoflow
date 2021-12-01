@@ -294,7 +294,11 @@ rule htseq_count:
             -m intersection-nonempty \
             --stranded=yes \
             -n 40 \
+            -r pos \
             {input.mapped_bam} \
             {input.gff} \
             > {output}
         """
+#Important: The default for strandedness is yes.
+#If your RNA-Seq data has not been made with a strand-specific protocol, this causes half of the reads to be lost.
+#Hence, make sure to set the option --stranded=no unless you have strand-specific data!
