@@ -203,6 +203,7 @@ rule bowtie2_mapping:
             -x {params.MAG_genes} \
             -1 {input.non_host_r1} \
             -2 {input.non_host_r2} \
+            --seed 1337 \
         | samtools sort -@ {threads} -o {output.mapped_bam} \
         &> {log}
         """
@@ -234,6 +235,15 @@ rule coverM_MAG_genes:
             --min-covered-fraction 0 \
             > {output} \
             &> {log}
+
+        # Get counts to specific genes too:
+        coverm contig \
+            -b {input.mapped_bam} \
+            -m count \
+            -t {threads} \
+            --proper-pairs-only \
+            > {output}
+            &> {log}
         """
 ################################################################################
 ### Convert MAG gene catalogue GFF to GTF
@@ -263,42 +273,42 @@ rule coverM_MAG_genes:
 #         &> {log}
 #         """
 ################################################################################
-### Generate count data using htseq
-rule htseq_count:
-    input:
-        gff = "1_References/genes.gff",
-        mapped_bam = expand("3_Outputs/2_MAG_Gene_Mapping/{sample}.bam", sample=SAMPLE)
-    output:
-        "3_Outputs/4_htseq_counts/{sample}_htseq_counts.txt"
-    params:
-        ""
-    conda:
-        "Transcriptomics_conda.yaml"
-    threads:
-        40
-    benchmark:
-        "3_Outputs/0_Logs/{sample}_htseq_count.benchmark.tsv"
-    log:
-        "3_Outputs/0_Logs/{sample}_htseq_count.log"
-    message:
-        "Generating count info for {wildcards.sample} with htseq-count"
-    shell:
-        """
-        # Index BAM with samtools
-        samtools index \
-            -@ {threads} \
-            {input.mapped_bam}
-
-        # Note, htseq-count is not multithreaded, but can run in parallel with -n
-        htseq-count \
-            -m intersection-nonempty \
-            --stranded=yes \
-            -n 40 \
-            -r pos \
-            {input.mapped_bam} \
-            {input.gff} \
-            > {output}
-        """
-#Important: The default for strandedness is yes.
-#If your RNA-Seq data has not been made with a strand-specific protocol, this causes half of the reads to be lost.
-#Hence, make sure to set the option --stranded=no unless you have strand-specific data!
+# ### Generate count data using htseq
+# rule htseq_count:
+#     input:
+#         gff = "1_References/genes.gff",
+#         mapped_bam = expand("3_Outputs/2_MAG_Gene_Mapping/{sample}.bam", sample=SAMPLE)
+#     output:
+#         "3_Outputs/4_htseq_counts/{sample}_htseq_counts.txt"
+#     params:
+#         ""
+#     conda:
+#         "Transcriptomics_conda.yaml"
+#     threads:
+#         40
+#     benchmark:
+#         "3_Outputs/0_Logs/{sample}_htseq_count.benchmark.tsv"
+#     log:
+#         "3_Outputs/0_Logs/{sample}_htseq_count.log"
+#     message:
+#         "Generating count info for {wildcards.sample} with htseq-count"
+#     shell:
+#         """
+#         # Index BAM with samtools
+#         samtools index \
+#             -@ {threads} \
+#             {input.mapped_bam}
+#
+#         # Note, htseq-count is not multithreaded, but can run in parallel with -n
+#         htseq-count \
+#             -m intersection-nonempty \
+#             --stranded=yes \
+#             -n 40 \
+#             -r pos \
+#             {input.mapped_bam} \
+#             {input.gff} \
+#             > {output}
+#         """
+# #Important: The default for strandedness is yes.
+# #If your RNA-Seq data has not been made with a strand-specific protocol, this causes half of the reads to be lost.
+# #Hence, make sure to set the option --stranded=no unless you have strand-specific data!
