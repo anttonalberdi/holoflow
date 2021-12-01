@@ -21,7 +21,8 @@ print(SAMPLE)
 ### Setup the desired outputs
 rule all:
     input:
-        expand("3_Outputs/4_htseq_counts/{sample}_htseq_counts.txt", sample=SAMPLE)
+        "3_Outputs/3_CoverM/coverM_per_gene.txt",
+        "3_Outputs/3_CoverM/coverM_overall_mapping.txt"
 ################################################################################
 ### Filter reads with fastp
 rule fastp:
@@ -181,7 +182,7 @@ rule bowtie2_mapping:
         non_host_r2 = "3_Outputs/1_Host_Mapping/{sample}_non_host_2.fastq.gz",
         bt2_index = "1_References/MAG_genes.fna.gz.rev.2.bt2l"
     output:
-        mapped_bam = "3_Outputs/2_MAG_Gene_Mapping/{sample}.bam"
+        bam = "3_Outputs/2_MAG_Gene_Mapping/{sample}.bam"
     params:
         MAG_genes = "1_References/MAG_genes.fna.gz"
     conda:
@@ -204,17 +205,18 @@ rule bowtie2_mapping:
             -1 {input.non_host_r1} \
             -2 {input.non_host_r2} \
             --seed 1337 \
-        | samtools sort -@ {threads} -o {output.mapped_bam} \
+        | samtools sort -@ {threads} -o {output.bam} \
         &> {log}
         """
 ################################################################################
 ### Calculate the number of reads that mapped to MAG catalogue genes with CoverM
 rule coverM_MAG_genes:
     input:
-        mapped_bam = "3_Outputs/2_MAG_Gene_Mapping/{sample}.bam",
-        MAG_genes = "1_References/MAG_genes.fna.gz"
+        expand("3_Outputs/2_MAG_Gene_Mapping/{sample}.bam", sample=SAMPLE),
     output:
-        "3_Outputs/3_CoverM/{sample}_coverM.txt"
+        gene_counts = "3_Outputs/3_CoverM/coverM_per_gene.txt",
+        total_cov = "3_Outputs/3_CoverM/coverM_overall_mapping.txt"
+    params:
     conda:
         "Transcriptomics_conda.yaml"
     threads:
@@ -227,23 +229,22 @@ rule coverM_MAG_genes:
         "Calculating MAG gene mapping rate for {wildcards.sample} with CoverM"
     shell:
         """
+        # Get overall mapping rate
         coverm genome \
-            -b {input.mapped_bam} \
+            -b {input.bam} \
             -s _ \
-            -m count \
+            -m relative_abundance \
             -t {threads} \
             --min-covered-fraction 0 \
-            > {output} \
-            &> {log}
+            > {output.total_cov}
 
         # Get counts to specific genes too:
         coverm contig \
-            -b {input.mapped_bam} \
+            -b {input.bam} \
             -m count \
             -t {threads} \
             --proper-pairs-only \
-            > {output}
-            &> {log}
+            > {output.gene_counts}
         """
 ################################################################################
 ### Convert MAG gene catalogue GFF to GTF
