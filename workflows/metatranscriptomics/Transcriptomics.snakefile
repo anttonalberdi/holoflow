@@ -222,7 +222,7 @@ rule coverM_MAG_genes:
     threads:
         8
     message:
-        "Calculating MAG gene mapping rate for {wildcards.sample} with CoverM"
+        "Calculating MAG gene mapping rate using CoverM"
     shell:
         """
         # Get overall mapping rate
