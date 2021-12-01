@@ -145,6 +145,10 @@ rule STAR_host_mapping:
         pigz \
             -p {threads} \
             {params.r2rn}
+
+        # Clean up unwanted outputs
+        rm -r {wildcards.sample}_STARtmp
+        rm {wildcards.sample}*out*
         """
 ################################################################################
 ## Index MAGs:
