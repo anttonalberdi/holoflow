@@ -67,7 +67,7 @@ rule coverm:
             -s - \
             -m relative_abundance \
             -t {params.threads} \
-            --min-covered-fraction 50 \
+            --min-covered-fraction 0 \
             > {output.relab}
         coverm genome \
             -b {input.in_dir_map}/*.bam \
