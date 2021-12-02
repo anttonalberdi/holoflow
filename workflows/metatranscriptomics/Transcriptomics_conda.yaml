@@ -9,7 +9,5 @@
     - bowtie2=2.4.4
     - coverm=0.6.1
     - star=2.7.1
-    - htseq=0.13.5
-    - cufflinks=2.2.1
     - pigz=2.3.4
 #Note Star can be upgraded to 2.7.9 once we're happy

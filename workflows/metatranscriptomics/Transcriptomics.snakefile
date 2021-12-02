@@ -37,7 +37,7 @@ rule fastp:
     conda:
         "Transcriptomics_conda.yaml"
     threads:
-        8
+        10
     benchmark:
         "3_Outputs/0_Logs/{sample}_fastp.benchmark.tsv"
     log:
@@ -192,7 +192,7 @@ rule bowtie2_mapping:
     conda:
         "Transcriptomics_conda.yaml"
     threads:
-        10
+        20
     benchmark:
         "3_Outputs/0_Logs/{sample}_MAG_genes_mapping.benchmark.tsv"
     log:
@@ -224,7 +224,7 @@ rule coverM_MAG_genes:
     conda:
         "Transcriptomics_conda.yaml"
     threads:
-        8
+        40
     message:
         "Calculating MAG gene mapping rate using CoverM"
     shell:
