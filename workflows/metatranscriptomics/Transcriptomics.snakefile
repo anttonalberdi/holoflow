@@ -151,6 +151,99 @@ rule STAR_host_mapping:
         rm {wildcards.sample}*out*
         """
 ################################################################################
+## Index rRNA, tRNA databases:
+rule index_MAGs:
+    input:
+        "1_References/Catted_rRNA_tRNA_db.fna.gz"
+    output:
+        bt2_index = "1_References/Catted_rRNA_tRNA_db.fna.gz.rev.2.bt2l",
+    conda:
+        "Transcriptomics_conda.yaml"
+    threads:
+        40
+    log:
+        "3_Outputs/0_Logs/MAG_genes_bowtie2_indexing.log"
+    message:
+        "Indexing MAG catalogue with Bowtie2"
+    shell:
+        """
+        # Index MAG gene catalogue
+        bowtie2-build \
+            --large-index \
+            --threads {threads} \
+            {input} {input} \
+        &> {log}
+        """
+################################################################################
+### Map non-host reads to DRAM genes files using Bowtie2
+rule bowtie2_mapping:
+    input:
+        non_host_r1 = "3_Outputs/1_Host_Mapping/{sample}_non_host_1.fastq.gz",
+        non_host_r2 = "3_Outputs/1_Host_Mapping/{sample}_non_host_2.fastq.gz",
+        bt2_index = "1_References/Catted_rRNA_tRNA_db.fna.gz.rev.2.bt2l"
+    output:
+        non_rna_r1 = "3_Outputs/2_rRNA_Mapping/{sample}_non_ribo_1.fastq.gz",
+        non_rna_r2 = "3_Outputs/2_rRNA_Mapping/{sample}_non_ribo_2.fastq.gz",
+        all_bam = temp("3_Outputs/2_rRNA_Mapping/{sample}.bam"),
+        rna_bam = "3_Outputs/2_rRNA_Mapping/{sample}_rna.bam"
+    params:
+        RNAdb = "1_References/Catted_rRNA_tRNA_db.fna.gz"
+    conda:
+        "Transcriptomics_conda.yaml"
+    threads:
+        20
+    benchmark:
+        "3_Outputs/0_Logs/{sample}_RNAdb_mapping.benchmark.tsv"
+    log:
+        "3_Outputs/0_Logs/{sample}_RNAdb_mapping.log"
+    message:
+        "Mapping {wildcards.sample} to RNA db using Bowtie2"
+    shell:
+        """
+        # Map reads to RNAdb using Bowtie2
+        bowtie2 \
+            --time \
+            --threads {threads} \
+            -x {params.RNAdb} \
+            -1 {input.non_host_r1} \
+            -2 {input.non_host_r2} \
+            --seed 1337 \
+        | samtools view -b {threads} -o {output.all_bam} -
+
+        # Filter out only RNA hits
+        samtools view -b -@ {threads} -F4 {output.all_bam} -o {output.rna_bam}
+
+        # Export unmapped reads (non-RNA)
+        samtools view -b -@ {threads} -f12 {output.all_bam} \
+        | samtools fastq -@ {threads} -1 {output.non_rna_r1} -2 {output.non_rna_r2} -
+        &> {log}
+        """
+################################################################################
+### Calculate the number of reads that mapped to RNA db with CoverM
+rule coverM_MAG_genes:
+    input:
+        expand("3_Outputs/2_rRNA_Mapping/{sample}_rna.bam", sample=SAMPLE),
+    output:
+        total_cov = "3_Outputs/2_rRNA_Mapping/coverM_RNA_mapping.txt"
+    params:
+    conda:
+        "Transcriptomics_conda.yaml"
+    threads:
+        40
+    message:
+        "Calculating RNA mapping rate using CoverM"
+    shell:
+        """
+        # Get overall mapping rate
+        coverm genome \
+            -b {input} \
+            -s _ \
+            -m relative_abundance \
+            -t {threads} \
+            --min-covered-fraction 0 \
+            > {output.total_cov}
+        """
+################################################################################
 ## Index MAGs:
 rule index_MAGs:
     input:
@@ -182,11 +275,11 @@ rule index_MAGs:
 ### Map non-host reads to DRAM genes files using Bowtie2
 rule bowtie2_mapping:
     input:
-        non_host_r1 = "3_Outputs/1_Host_Mapping/{sample}_non_host_1.fastq.gz",
-        non_host_r2 = "3_Outputs/1_Host_Mapping/{sample}_non_host_2.fastq.gz",
+        non_host_r1 = "3_Outputs/2_rRNA_Mapping/{sample}_non_rna_1.fastq.gz",
+        non_host_r2 = "3_Outputs/2_rRNA_Mapping/{sample}_non_rna_2.fastq.gz",
         bt2_index = "1_References/MAG_genes.fna.gz.rev.2.bt2l"
     output:
-        bam = "3_Outputs/2_MAG_Gene_Mapping/{sample}.bam"
+        bam = "3_Outputs/3_MAG_Gene_Mapping/{sample}.bam"
     params:
         MAG_genes = "1_References/MAG_genes.fna.gz"
     conda:
@@ -206,8 +299,8 @@ rule bowtie2_mapping:
             --time \
             --threads {threads} \
             -x {params.MAG_genes} \
-            -1 {input.non_host_r1} \
-            -2 {input.non_host_r2} \
+            -1 {input.non_rna_r1} \
+            -2 {input.non_rna_r2} \
             --seed 1337 \
         | samtools sort -@ {threads} -o {output.bam} \
         &> {log}
@@ -216,10 +309,10 @@ rule bowtie2_mapping:
 ### Calculate the number of reads that mapped to MAG catalogue genes with CoverM
 rule coverM_MAG_genes:
     input:
-        expand("3_Outputs/2_MAG_Gene_Mapping/{sample}.bam", sample=SAMPLE),
+        expand("3_Outputs/3_MAG_Gene_Mapping/{sample}.bam", sample=SAMPLE),
     output:
-        gene_counts = "3_Outputs/3_CoverM/coverM_per_gene.txt",
-        total_cov = "3_Outputs/3_CoverM/coverM_overall_mapping.txt"
+        gene_counts = "3_Outputs/3_MAG_Gene_Mapping/coverM_per_gene.txt",
+        total_cov = "3_Outputs/3_MAG_Gene_Mapping/coverM_overall_mapping.txt"
     params:
     conda:
         "Transcriptomics_conda.yaml"
