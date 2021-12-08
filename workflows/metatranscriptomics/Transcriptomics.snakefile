@@ -152,7 +152,7 @@ rule STAR_host_mapping:
         """
 ################################################################################
 ## Index rRNA, tRNA databases:
-rule index_MAGs:
+rule index_RNA:
     input:
         "1_References/Catted_rRNA_tRNA_db.fna.gz"
     output:
@@ -176,7 +176,7 @@ rule index_MAGs:
         """
 ################################################################################
 ### Map non-host reads to DRAM genes files using Bowtie2
-rule bowtie2_mapping:
+rule bowtie2_RNA_mapping:
     input:
         non_host_r1 = "3_Outputs/1_Host_Mapping/{sample}_non_host_1.fastq.gz",
         non_host_r2 = "3_Outputs/1_Host_Mapping/{sample}_non_host_2.fastq.gz",
@@ -220,7 +220,7 @@ rule bowtie2_mapping:
         """
 ################################################################################
 ### Calculate the number of reads that mapped to RNA db with CoverM
-rule coverM_MAG_genes:
+rule coverM_RNA_genes:
     input:
         expand("3_Outputs/2_rRNA_Mapping/{sample}_rna.bam", sample=SAMPLE),
     output:
@@ -273,7 +273,7 @@ rule index_MAGs:
         """
 ################################################################################
 ### Map non-host reads to DRAM genes files using Bowtie2
-rule bowtie2_mapping:
+rule bowtie2_MAG_mapping:
     input:
         non_host_r1 = "3_Outputs/2_rRNA_Mapping/{sample}_non_rna_1.fastq.gz",
         non_host_r2 = "3_Outputs/2_rRNA_Mapping/{sample}_non_rna_2.fastq.gz",
