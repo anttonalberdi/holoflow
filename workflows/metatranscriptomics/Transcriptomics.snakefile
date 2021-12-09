@@ -209,10 +209,12 @@ rule bowtie2_RNA_mapping:
             -1 {input.non_host_r1} \
             -2 {input.non_host_r2} \
             --seed 1337 \
-        | samtools view -@ {threads} -o {output.all_bam} -
+        | samtools view -@ {threads} \
+        | samtools sort -@ {threads} -o {output.all_bam} -
 
         # Filter out only RNA hits
         samtools view -b -@ {threads} -F4 {output.all_bam} -o {output.rna_bam}
+
 
         # Export unmapped reads (non-RNA)
         samtools view -b -@ {threads} -f12 {output.all_bam} \
@@ -223,10 +225,12 @@ rule bowtie2_RNA_mapping:
 ### Calculate the number of reads that mapped to RNA db with CoverM
 rule coverM_RNA_genes:
     input:
-        expand("3_Outputs/2_rRNA_Mapping/{sample}_rna.bam", sample=SAMPLE),
+        expand("3_Outputs/2_rRNA_Mapping/{sample}.bam", sample=SAMPLE),
     output:
         total_cov = "3_Outputs/2_rRNA_Mapping/coverM_RNA_mapping.txt"
     params:
+        rna_ref = "1_References/Catted_rRNA_tRNA_db.fna.gz"
+        rna_ref_dc = "1_References/Catted_rRNA_tRNA_db.fna"
     conda:
         "Transcriptomics_conda.yaml"
     threads:
@@ -235,14 +239,20 @@ rule coverM_RNA_genes:
         "Calculating RNA mapping rate using CoverM"
     shell:
         """
+        # Decompress reference
+        gunzip {params.rna_ref}
+
         # Get overall mapping rate
         coverm genome \
             -b {input} \
-            -s _ \
+            --genome-fasta-files {params.rna_ref_dc} \
             -m relative_abundance \
             -t {threads} \
             --min-covered-fraction 0 \
             > {output.total_cov}
+
+        # Compress reference
+        pigz -t 40 {params.rna_ref_dc}
         """
 ################################################################################
 ## Index MAGs:
