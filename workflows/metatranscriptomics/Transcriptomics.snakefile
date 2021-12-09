@@ -275,8 +275,8 @@ rule index_MAGs:
 ### Map non-host reads to DRAM genes files using Bowtie2
 rule bowtie2_MAG_mapping:
     input:
-        non_host_r1 = "3_Outputs/2_rRNA_Mapping/{sample}_non_ribo_1.fastq.gz",
-        non_host_r2 = "3_Outputs/2_rRNA_Mapping/{sample}_non_ribo_2.fastq.gz",
+        non_ribo_r1 = "3_Outputs/2_rRNA_Mapping/{sample}_non_ribo_1.fastq.gz",
+        non_ribo_r2 = "3_Outputs/2_rRNA_Mapping/{sample}_non_ribo_2.fastq.gz",
         bt2_index = "1_References/MAG_genes.fna.gz.rev.2.bt2l"
     output:
         bam = "3_Outputs/3_MAG_Gene_Mapping/{sample}.bam"
@@ -299,8 +299,8 @@ rule bowtie2_MAG_mapping:
             --time \
             --threads {threads} \
             -x {params.MAG_genes} \
-            -1 {input.non_rna_r1} \
-            -2 {input.non_rna_r2} \
+            -1 {input.non_ribo_r1} \
+            -2 {input.non_ribo_r2} \
             --seed 1337 \
         | samtools sort -@ {threads} -o {output.bam} \
         &> {log}
