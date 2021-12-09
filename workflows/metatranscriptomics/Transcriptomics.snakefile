@@ -229,7 +229,7 @@ rule coverM_RNA_genes:
     output:
         total_cov = "3_Outputs/2_rRNA_Mapping/coverM_RNA_mapping.txt"
     params:
-        rna_ref = "1_References/Catted_rRNA_tRNA_db.fna.gz"
+        rna_ref = "1_References/Catted_rRNA_tRNA_db.fna.gz",
         rna_ref_dc = "1_References/Catted_rRNA_tRNA_db.fna"
     conda:
         "Transcriptomics_conda.yaml"
