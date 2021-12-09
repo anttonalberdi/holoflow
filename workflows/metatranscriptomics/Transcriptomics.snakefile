@@ -30,8 +30,8 @@ rule fastp:
         r1i = "2_Reads/0_Untrimmed/{sample}_1.fastq.gz",
         r2i = "2_Reads/0_Untrimmed/{sample}_2.fastq.gz"
     output:
-        r1o = "2_Reads/1_Trimmed/{sample}_trimmed_1.fastq.gz",
-        r2o = "2_Reads/1_Trimmed/{sample}_trimmed_2.fastq.gz",
+        r1o = temp("2_Reads/1_Trimmed/{sample}_trimmed_1.fastq.gz"),
+        r2o = temp("2_Reads/1_Trimmed/{sample}_trimmed_2.fastq.gz"),
         fastp_html = "2_Reads/2_fastp_reports/{sample}.html",
         fastp_json = "2_Reads/2_fastp_reports/{sample}.json"
     conda:
