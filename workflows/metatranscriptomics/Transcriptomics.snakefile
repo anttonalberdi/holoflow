@@ -21,6 +21,7 @@ print(SAMPLE)
 ### Setup the desired outputs
 rule all:
     input:
+        "3_Outputs/2_rRNA_Mapping/coverM_RNA_mapping.txt",
         "3_Outputs/3_MAG_Gene_Mapping/coverM_per_gene.txt",
         "3_Outputs/3_MAG_Gene_Mapping/coverM_overall_mapping.txt"
 ################################################################################
