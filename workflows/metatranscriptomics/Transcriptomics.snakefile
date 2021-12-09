@@ -209,7 +209,6 @@ rule bowtie2_RNA_mapping:
             -1 {input.non_host_r1} \
             -2 {input.non_host_r2} \
             --seed 1337 \
-        | samtools view -@ {threads} \
         | samtools sort -@ {threads} -o {output.all_bam} -
 
         # Filter out only RNA hits
