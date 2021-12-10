@@ -46,9 +46,7 @@ rule coverm:
         in_dir_map="{projectpath}/MFS_02-MAGMapped/{group}"
     output:
         out_dir_cov=directory("{projectpath}/MFS_03-MAGcoverage/{group}"),
-        relab="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_relative_abundance.txt",
-        maglength="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_MAG_length.txt",
-        readcount="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_count.txt"
+        coverm="{projectpath}/MFS_03-MAGcoverage/{group}/{group}_coverm.txt"
     params:
         threads=expand("{threads}", threads=config['threads']),
         group="{group}"
@@ -58,24 +56,10 @@ rule coverm:
         coverm genome \
             -b {input.in_dir_map}/*.bam \
             -s - \
-            -m count \
+            -m count relative_abundance covered_fraction length \
             -t {params.threads} \
             --min-covered-fraction 0 \
-            > {output.readcount}
-        coverm genome \
-            -b {input.in_dir_map}/*.bam \
-            -s - \
-            -m relative_abundance \
-            -t {params.threads} \
-            --min-covered-fraction 0 \
-            > {output.relab}
-        coverm genome \
-            -b {input.in_dir_map}/*.bam \
-            -s - \
-            -m length \
-            -t {params.threads} \
-            --min-covered-fraction 0 \
-            > {output.maglength}
+            > {output.coverm}
         """
 ################################################################################################################
 
