@@ -47,7 +47,7 @@ if not (os.path.exists(str(out_dir))):
     with open(str(''+out_dir+'/final_bins_Info.csv'),'w+') as bin_data:
         bin_data.write('genome,completeness,contamination\n')
 
-        stats_list=glob.glob(str(mw_bd)+"/All_metawrap_*_bins.stats") # recover all stats files from MetaWRAP of all bin groups that want to be drep together
+        stats_list=glob.glob(str(mw_bd)+"/*metawrap_*_bins.stats") # recover all stats files from MetaWRAP of all bin groups that want to be drep together
         for file in stats_list:
             with open(str(file),'r') as summary:
                 summary_data=summary.readlines()[1:]
