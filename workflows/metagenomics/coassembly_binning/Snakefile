@@ -235,6 +235,8 @@ rule coverm:
         #Cat the bin info from each group together
         grep -v 'contamination' {params.groups}_files/metawrap_70_10_bins.stats >> {params.all_mw}/{params.group}_metawrap_70_10_bins.stats
 
+        cat {params.all_mw}/header.txt {params.all_mw}/{params.group}_metawrap_70_10_bins.stats > {params.all_mw}/All_metawrap_70_10_bins.stats
+
         #Copy bins from each group to a new folder in the 'All_files' directory
         mkdir -p {params.all_mw}/All_metawrap_70_10_bins
 
